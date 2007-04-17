@@ -1,0 +1,212 @@
+<!-- Build file for ANT -->
+
+<project name="Prometheus" default="dist.bin">
+
+    <property name="version.main"           value="0.1"/>
+    <property name="name.main"              value="prometheus"/>
+    <property name="name.testsupport"       value="prometheus-testsupport"/>
+    
+    <property name="src"                    value="src"/>
+    <property name="src.main"               value="${src}/main"/>
+    <property name="src.test"               value="${src}/test"/>
+    <property name="src.testsupport"        value="${src}/testsupport"/>
+    <property name="lib"                    value="lib"/>
+    <property name="lib.provided"           value="${lib}/provided"/>
+    <property name="lib.support"            value="${lib}/support"/>
+    <property name="doc"                    value="doc"/>
+
+    <property name="target"                 value="target"/>
+    <property name="javadoc.main"           value="${target}/javadoc.main"/>
+    <property name="javadoc.testsupport"    value="${target}/javadoc.testsupport"/>
+    <property name="classes.main"           value="${target}/classes.main"/>
+    <property name="classes.testsupport"    value="${target}/classes.testsupport"/>
+    <property name="classes.tests"          value="${target}/classes.test"/>
+    <property name="unitreports"            value="${target}/junit-reports"/>
+
+    <path id="classpath.provided">
+          <fileset dir="${lib.provided}">
+              <include name="**/*.jar"/>
+          </fileset>
+    </path>
+
+    <path id="classpath.support">
+        <fileset dir="${lib.support}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="clean"
+            description="Removes all generated files">
+
+        <delete dir="${target}"/>        
+    </target>
+
+    <target name="init">
+        <tstamp/>
+    </target>
+
+    <target name="compile.main"
+            description="Compiles the sources of the main package"
+            depends="init">
+
+        <mkdir dir="${classes.main}"/>
+
+        <javac debug="on"
+               srcdir="${src.main}"
+               destdir="${classes.main}"
+               source="1.5">
+            <classpath>
+                <path refid="classpath.provided"/>
+			</classpath>
+         </javac>
+    </target>
+
+    <target name="compile.testsupport"
+            description="Compiles the sources of testsupport"
+            depends="compile.main">
+
+        <mkdir dir="${classes.testsupport}"/>
+
+        <javac debug="on"
+               srcdir="${src.testsupport}"
+               destdir="${classes.testsupport}"
+               source="1.5">
+            <classpath>
+                <pathelement path="${classes.main}/"/>
+                <path refid="classpath.provided"/>
+                <path refid="classpath.support"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target  name="compile.all"
+             description="Compiles all sources"
+             depends="compile.main,compile.testsupport"/>
+
+    <target name="javadoc.main"
+            description="Generates Javadoc for the main package"
+            depends="compile.main">
+
+        <delete dir="${javadoc.main}"/>
+        <mkdir dir="${javadoc.main}"/>
+
+        <javadoc author="true"
+                 destdir="${javadoc.main}"
+                 packagenames="org.codehaus.prometheus.*"
+                 sourcepath="${src.main}"
+                 use="true"
+                 version="true"
+                 windowtitle="Prometheus"
+                 private="false">
+            <!--classpath refid="compile.classpath"/ -->
+        </javadoc>
+    </target>
+
+    <target name="javadoc.testsupport"
+            description="Generates Javadoc for the testsupport package"
+            depends="compile.testsupport">
+
+        <delete dir="${javadoc.testsupport}"/>
+        <mkdir dir="${javadoc.testsupport}"/>
+
+        <javadoc author="true"
+                 destdir="${javadoc.testsupport}"
+                 packagenames="org.codehaus.prometheus.*"
+                 sourcepath="${src.testsupport}"
+                 use="true"
+                 version="true"
+                 windowtitle="Prometheus Testsupport"
+                 private="false">
+                <!--classpath refid="compile.classpath"/ -->
+            </javadoc>
+    </target>
+
+    <target name="javadoc.all"
+            depends="javadoc.main,javadoc.testsupport"
+           description="Generates Javadoc for all packages"/>
+
+    <target name="jar.main"
+            depends="compile.main"
+            description="Builds the main jar">
+
+        <mkdir dir="${target}"/>
+
+        <jar jarfile="${target}/${name.main}-${version.main}.jar"
+             basedir="${classes.main}"/>
+   </target>
+
+    <target name="jar.testsupport"
+            depends="compile.testsupport"
+            description="Builds the jar for testsupport">
+
+        <mkdir dir="${target}"/>
+
+        <jar jarfile="${target}/${name.testsupport}-${version.main}.jar"
+             basedir="${classes.testsupport}"/>
+    </target>
+
+    <target name="jar.all"
+            depends="jar.main,jar.testsupport"
+            description="build all jars"/>
+
+    <target name="dist.bin"
+            depends="clean,jar.all,test.main,javadoc.all"
+            description="Makes the binary distribution">
+
+            <zip file="${target}/${name.main}-${version.main}.zip" >
+                <zipfileset file="License.html"
+                            prefix="${name.main}-${version.main}"/>
+                <zipfileset file="license.css"
+                            prefix="${name.main}-${version.main}"/>
+                <zipfileset file="${target}/${name.main}-${version.main}.jar"
+                            prefix="${name.main}-${version.main}"/>
+                <zipfileset file="${target}/${name.testsupport}-${version.main}.jar"
+                            prefix="${name.main}-${version.main}"/>
+                <zipfileset dir="${lib}"
+                            prefix="${name.main}-${version.main}/lib"/>
+                <zipfileset dir="${javadoc.main}"
+                            prefix="${name.main}-${version.main}/doc/api-main"/>
+                <zipfileset dir="${doc}"
+                            prefix="${name.main}-${version.main}/doc"/>
+                <zipfileset dir="${javadoc.testsupport}"
+                            prefix="${name.main}-${version.main}/doc/api-testsupport"/>
+            </zip>
+    </target>
+
+    <target name="test.main"
+            description="Executes all tests"
+            depends="compile.main">
+
+        <mkdir dir="${classes.tests}"/>
+
+        <javac debug="on" source="1.5" srcdir="${src.test}" destdir="${classes.tests}">
+            <classpath>
+                <pathelement path="${classes.main}/"/>
+                <pathelement path="${classes.testsupport}/"/>
+                <path refid="classpath.provided"/>
+                <path refid="classpath.support"/>
+            </classpath>
+        </javac>
+
+        <mkdir dir="${unitreports}"/>
+
+        <junit haltonfailure="no" fork="on" printsummary="on">
+            <classpath>
+                <pathelement path="${classes.main}/"/>
+                <pathelement path="${classes.testsupport}/"/>
+                <pathelement path="${classes.tests}/"/>                
+                <path refid="classpath.provided"/>
+                <path refid="classpath.support"/>
+            </classpath>
+            <jvmarg value="-ea"/>
+            <formatter type="plain"/>
+            <batchtest todir="${unitreports}">
+                <fileset dir="${src.test}">
+                    <include name="**/*Test.java"/>
+                    <exclude name="**/*AbstractTest.java"/>                    
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+</project>

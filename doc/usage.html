@@ -1,0 +1,213 @@
+<html>
+<body>
+<h1>AwaitableReference</h1>
+The AwaitableReference is a synchronization structure that makes it easy to wait on the availability of
+a reference. I guess this is not something that needs to be done often, but I use this synchronization structure
+within Prometheus.
+
+<pre>
+
+</pre>
+
+<h1>LendableReference</h1>
+
+<h1>Latch</h1>
+A Latch is a single shot mechanism (after is has been opened, it never can be closed again) threads can wait on. As
+long as the Latch is closed, threads block (unless they are interrupted or a timeout occurs). As soon as it opens,
+all waiting threads can proceed. After the Latch has been opened, all threads that want to pass the Latch pass it
+without waiting. Latches are very useful for waiting on state changes that are final, like waiting on the shutdown of a
+Repeater.
+
+<h1>Creating threads with the StandardThreadFactory</h1>
+The new concurrency library found in Java 5 and higher (and also in the backport for 1.4) already has a factory
+interface for creating thread. The strange thing is that there is no customizable implementation of that interface.
+That is why I added it to Prometheus: StandardThreadFactory. All kinds of properties can be set, most important ones is
+priorities (make sure that batch threads, have a low priority).
+
+<h1>Repeating tasks with the Repeater</h1>
+The Repeater and especially the ThreadPoolRepeater can be used for repeated execution of a task. The Executor
+(and the ThreadPoolExecutor) are better suited for executing a task once.
+
+How to use it:
+<pre>
+public class SomeRunnable implements Runnable{
+    public void run(){
+        System.out.println("Hello");
+    }
+}
+
+ThreadPoolRepeater repeater = new ThreadPoolRepeater(1);
+repeater.repeat(new RepeatableRunnable(new SomeRunnable());
+</pre>
+
+<h2>Stopping a Repeater</h2>
+A Repeater can be stopped by placing a null task in the repeater, or let the Repeatable return false. A different
+way to stop a Repeater is to shut it down by calling the shutdown method. The difference between the shutdown and
+placing a null task (or let the repeatable return false) is that the first one is final. So once a Repeater has
+shut down, it can't be actived again. In one of the next releases of Prometheus I'm going to add pauzing functionality.
+This can be done (quite easily) by using a LendableReference decorator: LendableReferenceWithWaitingTakes in combination
+with a CloseableWaitpoint.
+
+<h2>Repeaters and multiple threads in the threadpool</h2>
+The ThreadPoolRepeater has a pool of threads where all threads are running the same task concurrently. The poolsize
+can be set in the constructor, but it also can be set after creation. This can be done with the 'setPoolSize' method.
+
+<h3>Using a Repeater to set up a assembly line</h3>
+Repeaters are very handy if you want to set up a processing assembly line (production line, pipes/filters) for example...
+
+<pre>
+BlockingQueue queue1 = new LinkedBlockingQueue();
+BlockingQueue queue2 = new LinkedBlockingQueue();
+BlockingQueue queue3 = new LinkedBlockingQueue();
+
+public class Process1Repeatable implements Repeatable{
+    public boolean execute()throws Exception{
+        Employee e = queue1.take();
+        e.action1();
+        queue2.put(e);
+        return true;
+    }
+}
+
+public class Process2Repeatable implements Repeatable{
+    public boolean execute()throws Exception{
+        Employee e = queue2.take();
+        e.action2();
+        queue3.put(e);
+        return true;
+    }
+}
+
+public class Process3Repeatable implements Repeatable{
+    public boolean execute()throws Exception{
+        Employee e = queue3.take();
+        e.action3();
+        database.save(e);
+    }
+}
+
+Repeater process1Repeater = new ThreadPoolRepeater(1);
+process1Repeater.repeat(new Process1Runnable());
+
+Repeater process2Repeater = new ThreadPoolRepeater(1);
+process2Repeater.repeat(new Process2Runnable());
+
+Repeater process3Repeater = new ThreadPoolRepeater(1);
+process3Repeater.repeat(new Process3Repeatable());
+</pre>
+
+As you can see the there is no thread creation logic of repeating logic inside the components. This is an example
+you usually see:
+
+<pre>
+class Processor{
+
+    void start(){
+        new Thread(){
+            public void run(){
+                while(true){
+                    Employee e = queue1.take();
+                    e.action1();
+                    queue2.put(e);
+                }
+            }
+        }.start();
+    }
+}
+</pre>
+This is a nightmare to modify, test or reuse. So externalize threading if you can.
+<p/>
+There are some things you have to watch out for. One of the problems is that if multiple threads are used in a repeater
+that is could happen that a messages are processed out of order. Luckely in most cases this is not in issue, but for
+those cases it is a problem I already have a synchronization stone in the sandbox: Resequencer that solves this problem.
+sandbox.
+<p/>
+Another advantage of assembly lines is that they make it possible to make better of resources. Multiple cpu's can be
+used instead of it all running on a single cpu. And with a single thread, you normally have one of the following two
+things:
+<ol>
+    <li>cpu burst</li>
+    <li>io burst</li>
+</ol>
+The problem is that while you have a cpu burst, no io is being performed. And while you are having a cpu burst, no io
+is being performed. The advantage of an assembly lines is that the processes are not synchronous: each process can run
+as fast as it can, so if a process is doing io, others could do cpu. 
+
+<h2>JMX and Repeaters</h2>
+The ThreadPoolRepeater has a JMX MBean, that makes it possible to control a ThreadPoolRepeater by JMX.
+
+<h2>Strict or not strict Repeaters</h2>
+In most cases the task a Repeater executes isn't changed after construction. But there are always situations where you
+do need to change the task. But changing tasks is not without problems either: if multiple threads in the threadpool
+of the ThreadPoolRepeater are executing some task, and if a new task is placed, it could be that at the same moment
+multiple threads are executing different tasks. This behaviour can be controlled by making a Repeater strict or relaxed:
+<ol>
+    <li>a <b>strict</b> repeater doesn't allow concurrent execution of different tasks</li>
+    <li>a <b>relaxed</b> repeater does allow concurrent execution of different tasks</li>
+</ol>
+This behaviour can be controlled by prividing a true/false in the constructor, but at a deeper level it is controlled
+by using different types of LendableReferences. A StrictLendableReference makes a strict Repeater possible, and a
+RelaxedLendableReference makes a relaxed Repeater possible.
+
+<h2>Exception handling</h2>
+Exception handling often is something that could be improved. Especially when you are working with threads yourself
+and are responsible for the calls in the top of the callstack, good exception handling could be a real life saver.
+At the moment exception handling can be added by using a exception handling repeatable that decorates another
+repeatable:
+
+<pre>
+public class ExceptionHandlingRepeatable implements Repeatable{
+    private final Repeatable;
+
+    public ExceptionHandlingRepeatable(Repeatable repeatable){
+        this.repeatable = repeatable;
+    }
+
+    public boolean handle(Exception ex){
+        ... do your logic (in most cases just logging)
+        ... and return true if you want to run another time
+        ... and return false if you want this repeatable to stop
+    }
+
+    public boolean execute()throws InterruptedException{
+        try{
+            return repeatable.execute();
+        }catch(InterruptedException ex){
+            //let interrupted exceptions pass 
+            throw ex;
+        }catch(Exception ex){
+            return handle(ex);
+        }
+    }
+}
+</pre>
+A default exception handler will be added in Prometheus in one of the next releases. This is probably going to be
+integrated into the repeater to prevent 
+
+<h3>Future improvements</h3>
+Setting up factory lines always gives me a kick, but I know it can be complex. That is why I'm working on some components
+that can be used to set up factory lines. The only thing that needs to be provided is one of the following methods:
+
+<pre>
+Object process(Object o);
+void process(Object)
+</pre>
+
+Taking data from queues, and placing on the following queues, dealing with timeouts, dealing with exceptions is all
+taken care of. The only thing that needs to be done is select a Processor (a structure that executes a process method)
+and hook it up to a Repeater, and even this can be simplified by using some sort of facade.
+<p/>
+Another improvement is the introduction of channels (Takeable and Puttable from Doug Lea). BlockingQueue's have too
+many responsibilities: placement of items, taking of items, storage of items. With channels these responsibilities
+are divided.
+
+<h1>Uninterruptible sections</h1>
+
+<h2>Waitpoints</h2>
+
+<h2>Pauzing a ThreadPoolExecutor</h2>
+Waitpoints can be used for all kinds of things like closing/openen structures, throttling.
+Waitpoint is an abstraction for waiting behaviour.
+
+</body>
+</html>
