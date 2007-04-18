@@ -14,28 +14,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * problem:
- * the desiredpoolsize can be larger than the actual poolsize if threads are terminating.
- * <p/>
- * guarantee:
- * after the shutdown is called (same goes for the shutdownNow) the size of the pool is not
- * going to increase.
- * <p/>
- * guarantee:
- * when the threadpool is shutting down, when the last thread exist, it marks the threadpool
- * as shut down.
- * <p/>
- * idea:
- * when the threadpool is shutting down, threads won't terminate themselves when they see
- * that the desired poolsize is smaller than the actual poolsize.
- * <p/>
- * deadlock:
- * when there the threadpool is shutting down, it doesn't allow new threads to be created.
- * when there is outstanding work, and there are no threads to execute it, it could lead
- * to a deadlock because new workers can't be created.
- * <p/>
- * <p/>
- * The ThreadPoolRepeater should keep running when it is shutting down.
+ * The default implementation of the {@link ThreadPool} interface.
+ *
+ * @author Peter Veentjer.
  */
 public class StandardThreadPool implements ThreadPool {
 
@@ -43,23 +24,42 @@ public class StandardThreadPool implements ThreadPool {
     private final Latch shutdownLatch = new Latch(mainLock);
     private final Set<Worker> workers = new HashSet<Worker>();
     private final ThreadFactory threadFactory;
-    private volatile WorkerJob defaultTask;
+    private volatile WorkerJob defaultWorkerJob;
     private volatile ThreadPoolState state = ThreadPoolState.unstarted;
     private volatile int desiredPoolsize;
     private volatile ExceptionHandler exceptionHandler = NullExceptionHandler.INSTANCE;
 
+    /**
+     * Creates a new StandardThreadPool with a {@link StandardThreadFactory} as ThreadFactory
+     * an no {@link WorkerJob}.
+     */
     public StandardThreadPool() {
         this(new StandardThreadFactory());
     }
 
+    /**
+     * Creates a new StandardThreadPool with the given ThreadFactory and no
+     * {@link WorkerJob}.
+     *
+     * @param factory the ThreadFactory that is used to fill the pool.
+     * @throws NullPointerException if factory is <tt>null</tt>.
+     */
     public StandardThreadPool(ThreadFactory factory) {
         if (factory == null) throw new NullPointerException();
         this.threadFactory = factory;
     }
 
-    public StandardThreadPool(WorkerJob task, ThreadFactory factory) {
+    /**
+     * Creates a new StandardThreadPool with the given {@link ThreadFactory} and
+     * workerJob.
+     *
+     * @param workerJob
+     * @param factory   the ThreadFactory that is used to fill the pool.
+     * @throws NullPointerException if workerJob or factory is <tt>null</tt>.
+     */
+    public StandardThreadPool(WorkerJob workerJob, ThreadFactory factory) {
         if (factory == null) throw new NullPointerException();
-        this.defaultTask = task;
+        this.defaultWorkerJob = workerJob;
         this.threadFactory = factory;
     }
 
@@ -73,7 +73,7 @@ public class StandardThreadPool implements ThreadPool {
     }
 
     public WorkerJob getDefaultWorkerJob() {
-        return defaultTask;
+        return defaultWorkerJob;
     }
 
     public ThreadPoolState getState() {
@@ -85,7 +85,7 @@ public class StandardThreadPool implements ThreadPool {
         try {
             switch (state) {
                 case unstarted:
-                    if (defaultTask == null)
+                    if (defaultWorkerJob == null)
                         throw new IllegalStateException("nu default WorkerJob is set");
                     updateState(ThreadPoolState.started);
                     createWorkers(desiredPoolsize);
@@ -132,12 +132,11 @@ public class StandardThreadPool implements ThreadPool {
                         return;
 
                     this.desiredPoolsize = desiredPoolsize;
-                    if (extraThreads > 0){
+                    if (extraThreads > 0) {
                         createWorkers(extraThreads);
-                    }else{
+                    } else {
                         interruptIdleWorkers(-extraThreads);
                     }
-                    //workers are going to do the removing themselves if this is required.
                     break;
                 case shuttingdown:
                     throw new IllegalStateException();
@@ -153,27 +152,53 @@ public class StandardThreadPool implements ThreadPool {
 
     /**
      * Tries to interrupt the given number of idle workers.
-     *
+     * <p/>
      * Call only should be made when main lock is hold.
      *
      * @param count the number of idle workers to interrupt
      */
-    private void interruptIdleWorkers(int count){
+    private void interruptIdleWorkers(int count) {
+        assert count >= 0;
         int interrupted = 0;
-        for(Worker worker: workers){
-            if(worker.interruptIfIdle())
+        for (Worker worker : workers) {
+            if (worker.interruptIfIdle())
                 interrupted++;
             //if the expected number of workers are interrupted, this call can return.
-            if(interrupted == count)
+            if (interrupted == count)
                 return;
         }
     }
 
+    private void interruptAllWorkers() {
+        for (Worker worker : workers)
+            worker.thread.interrupt();
+    }
+
+    private void interruptIdleWorkers() {
+        for (Worker worker : workers)
+            worker.interruptIfIdle();
+    }
+
+    /**
+     * Creates new workers.
+     * <p/>
+     * Call only should be made when the main lock is held.
+     *
+     * @param count the number of workers to create.
+     */
     private void createWorkers(int count) {
+        assert count >= 0;
         for (int k = 0; k < count; k++)
             createNewWorker();
     }
 
+    /**
+     * Creates and registers a new Worker.
+     * <p/>
+     * Call only should be made when the main lock is held.
+     *
+     * @return the created worker.
+     */
     private Worker createNewWorker() {
         assert state == ThreadPoolState.started;
 
@@ -193,6 +218,15 @@ public class StandardThreadPool implements ThreadPool {
         return shutdown(false);
     }
 
+    /**
+     * Changes the state this StandardThreadPool is in. All changes to the state should
+     * be made through this method.
+     * <p/>
+     * Call only should be made when the main lock is held.
+     *
+     * @param newState
+     * @return the old ThreadPoolState
+     */
     private ThreadPoolState updateState(ThreadPoolState newState) {
         assert newState != null;
         ThreadPoolState oldState = state;
@@ -215,39 +249,22 @@ public class StandardThreadPool implements ThreadPool {
                         return updateState(ThreadPoolState.shutdown);
                     } else {
                         updateState(ThreadPoolState.shuttingdown);
-                        //beter nadenken hier.
                         if (interruptWorkers) {
                             interruptAllWorkers();
                         } else {
-                            for (Worker worker : workers)
-                                worker.interruptIfIdle();
+                            interruptIdleWorkers();
                         }
                     }
                     return ThreadPoolState.started;
                 case shuttingdown:
-                    if(interruptWorkers)
-                        interruptAllWorkers();                    
+                    if (interruptWorkers)
+                        interruptAllWorkers();
                     return ThreadPoolState.shuttingdown;
                 case shutdown:
                     return ThreadPoolState.shutdown;
                 default:
                     throw new RuntimeException("unhandeled state: " + state);
             }
-        } finally {
-            mainLock.unlock();
-        }
-    }
-
-    private void interruptAllWorkers() {
-        for (Worker t : workers)
-            t.thread.interrupt();
-    }
-
-    public void interruptIdleWorkers() {
-        mainLock.lock();
-        try {
-            for (Worker worker : workers)
-                worker.interruptIfIdle();
         } finally {
             mainLock.unlock();
         }
@@ -296,7 +313,7 @@ public class StandardThreadPool implements ThreadPool {
             if (state != ThreadPoolState.unstarted)
                 throw new IllegalStateException();
 
-            this.defaultTask = defaultJob;
+            this.defaultWorkerJob = defaultJob;
         } finally {
             mainLock.unlock();
         }
@@ -308,9 +325,9 @@ public class StandardThreadPool implements ThreadPool {
         private final Lock runningLock = new ReentrantLock();
 
         /**
-         * Returns true if the defaultTask should be run again, false otherwise.
+         * Returns true if the defaultWorkerJob should be run again, false otherwise.
          *
-         * @return true if the defaultTask should be run again, false otherwise
+         * @return true if the defaultWorkerJob should be run again, false otherwise
          */
         private boolean runAgain() {
             //this method can't be called if the threadpool is unstarted, of shutdown.
@@ -343,7 +360,7 @@ public class StandardThreadPool implements ThreadPool {
         }
 
         /**
-         * Interrupts the thread only if isn't executing a defaultTask.
+         * Interrupts the thread only if isn't executing a defaultWorkerJob.
          */
         private boolean interruptIfIdle() {
             //if the running lock is available, it isn't running, so
@@ -355,8 +372,8 @@ public class StandardThreadPool implements ThreadPool {
                     return true;
                 } finally {
                     runningLock.unlock();
-                }                
-            }else{
+                }
+            } else {
                 //interrupt was failure.
                 return false;
             }
@@ -368,10 +385,10 @@ public class StandardThreadPool implements ThreadPool {
                     //get the task
                     Object task = null;
                     try {
-                        //while getting the defaultTask, a thread can be interrupted
+                        //while getting the defaultWorkerJob, a thread can be interrupted
                         //this means that is can interrupt when it is waiting
                         //for something to do.
-                        task = defaultTask.getTask();
+                        task = defaultWorkerJob.getTask();
                     } catch (InterruptedException ex) {
                         //do nothing
                         //     System.out.println("interrupted while getting task");
@@ -384,11 +401,11 @@ public class StandardThreadPool implements ThreadPool {
                         try {
                             runningLock.lock();
                             try {
-                                defaultTask.executeTask(task);
+                                defaultWorkerJob.executeTask(task);
                             } finally {
                                 runningLock.unlock();
                             }
-                        } catch (Exception e) {                            
+                        } catch (Exception e) {
                             exceptionHandler.handle(e);
                         } finally {
                             //remove the interrupt flag, if the threadpool is shutting down (and possibly

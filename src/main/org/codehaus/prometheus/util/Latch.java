@@ -22,6 +22,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * todo: explain why the closeable interface is not implemented<p/>
  * todo: explain why the waitpoint interface is not implemented<p/>
  * todo: explain why the AbstractQueuedSynhronizer was not used<p/>
+ * <p/>
+ * Doug Lea his library also contained a
+ * <a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/Latch.java">Latch"> but
+ * it never made it in the java.util.concurrent package.
  *
  * @author Peter Veentjer.
  */

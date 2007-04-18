@@ -38,7 +38,7 @@ import java.util.concurrent.locks.Lock;
 public interface ThreadPool {
 
     /**
-     * Gets the job this ThreadPool is executing.  If no job is set, null is returned.
+     * Gets the job this ThreadPool is executing.  If no job is set, <tt>null</tt> is returned.
      *
      * @return the job this ThreadPool is executing.
      */
@@ -48,7 +48,7 @@ public interface ThreadPool {
      * Sets the WorkerJob this ThreadPool executes.
      *
      * @param job the
-     * @throws NullPointerException  if job is null.
+     * @throws NullPointerException  if job is <tt>null</tt>.
      * @throws IllegalStateException if the ThreadPool isn't in the unstarted state anymore.
      */
     void setDefaultWorkerJob(WorkerJob job);
@@ -64,7 +64,7 @@ public interface ThreadPool {
      * Sets the ExceptionHandler of this ThreadPool.
      *
      * @param handler the new ExceptionHandler
-     * @throws NullPointerException if handler is null.
+     * @throws NullPointerException if handler is <tt>null</tt>.
      */
     void setExceptionHandler(ExceptionHandler handler);
 
@@ -124,7 +124,7 @@ public interface ThreadPool {
      * @throws InterruptedException if the thread is interrupted while waiting for the complete shutdown
      *                              to take place.
      * @throws TimeoutException     if a timeout occurred.
-     * @throws NullPointerException if unit is null.
+     * @throws NullPointerException if unit is <tt>null</tt>.
      */
     void tryAwaitShutdown(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
 
@@ -137,8 +137,7 @@ public interface ThreadPool {
 
     /**
      * Gets the desired poolsize. The desired poolsize doesn't have to match the actual poolsize.
-     * It can take some time for the pool to grow or shrink. But after some time, chances are big
-     * that they are the same.
+     * It can take some time for the pool to grow or shrink to the desired poolsize. 
      *
      * @return the desired poolsize.
      */
@@ -146,9 +145,9 @@ public interface ThreadPool {
 
     /**
      * Sets the desired poolsize of this ThreadPool. The actual poolsize doesn't have to match
-     * the desired poolsize because growing and shrinking of the pool could take some time.
+     * the desired poolsize because growing and shrinking of the pool can take some time.
      *
-     * @param desiredPoolsize
+     * @param desiredPoolsize the desired size of the threadpool.
      * @throws IllegalArgumentException if desiredPoolsize is smaller than 0.
      * @throws IllegalStateException    if the ThreadPool is shutting down, or shutdown.
      */

@@ -13,16 +13,36 @@ import java.util.concurrent.TimeoutException;
 
 
 /**
- * A {@link Repeater} that provides methods to access and change the state. If an implementation
- * needs more states, you can always create your own state.
+ * A {@link Repeater} that provides methods to access and change the state.
  * <p/>
+ * <h3>Exception handling</h3>
+ * <p>
+ * Exceptions can be handled by injecting a {@link ExceptionHandler}. If no ExceptionHandler is injected,
+ * caught exceptions are discarded. 
+ * <p/>
+ * <h3>Shutting down</h3>
+ * <p>
+ * A RepeaterService can be shutdown by calling:
+ * </p>
+ * <ol>
+ *  <li>
+ *      {@link #shutdown()}: doesn't interrupt a running task.
+ *  </li>
+ *  <li>
+ *      {@link #shutdownNow()}: does interrupt a running task.
+ *  </li>
+ * </ol>
+ * <p>
+ * Both shutdown methods can be called regardless of the state the RepeaterService is in. The call
+ * doesn't await shutdown, see the {@link #awaitShutdown()} and {@link #tryAwaitShutdown(long, TimeUnit)}
+ * methods. 
+ * </p>
+ *
  * Pauzing will be added in one of the next releases.
  *
  * @author Peter Veentjer.
  */
 public interface RepeaterService extends Repeater {
-
-
 
     /**
      * Starts this RepeaterService.
@@ -35,22 +55,36 @@ public interface RepeaterService extends Repeater {
      */
     void start();
 
-
-
-    void shutdown();
-
     /**
-     * Stops this RepeaterService. If a task is running, it is interrupted. In one of the next
-     * releases an extra method will be added for this.
+     * Shuts down this RepeaterService. If a task is running, it is not interrupted. If you want
+     * to interrupt the running task (to force shutdown), see {@link #shutdownNow()}.
      * <p/>
      * If this RepeaterService already is shuttingdown, or shutdown, the call is ignored. This
      * method can be called safely at every moment without throwing exceptions.
      * <p/>
      * This method doesn't block until this RepeaterService has shut down. See the
-     * {@link #awaitShutdown()} for that. 
+     * {@link #awaitShutdown()} for that.
      *
+     * @see #shutdown() 
      * @see #awaitShutdown()
-     * @see #tryAwaitShutdown(long, java.util.concurrent.TimeUnit)   
+     * @see #tryAwaitShutdown(long, TimeUnit)
+     */
+    void shutdown();
+
+    /**
+     * Shuts down this RepeaterService. If a task is running, it is interrupted. If you don't want
+     * to interrupt the running task, see {@link #shutdown()}.  
+     * <p/>
+     * If this RepeaterService already is shuttingdown, the tasks are interrupted. If this repeater
+     * is shutdown, the call is ignored. This method can be called safely at every moment without
+     * throwing exceptions.
+     * <p/>
+     * This method doesn't block until this RepeaterService has shut down. See the
+     * {@link #awaitShutdown()} for that.
+     *
+     * @see #shutdown()
+     * @see #awaitShutdown()
+     * @see #tryAwaitShutdown(long, TimeUnit)
      */
     void shutdownNow();
 
@@ -63,7 +97,7 @@ public interface RepeaterService extends Repeater {
      * </ol>
      *
      * @throws InterruptedException if the thread is interrupted while waiting for termination.
-     * @see #tryAwaitShutdown(long,java.util.concurrent.TimeUnit)
+     * @see #tryAwaitShutdown(long, TimeUnit)
      * @see #shutdownNow()
      */
     void awaitShutdown() throws InterruptedException;
@@ -90,21 +124,26 @@ public interface RepeaterService extends Repeater {
 
     /**
      * Returns the state this RepeaterService is in. This value could be stale as soon as it is
-     * received.
+     * returned.
      *
      * @return the state this RepeaterService is in.
      */
     RepeaterServiceState getState();
 
     /**
+     * Gets the current ExceptionHandler. The value will never be <tt>null</tt>. The value could
+     * be stale as soon as it is returned.
      *
-     * @return
+     * @return the current ExceptionHandler.
      */
     ExceptionHandler getExceptionHandler();
 
     /**
-     * 
-     * @param handler
+     * Sets the ExceptionHandler this RepeaterService uses to handle exceptions. This method can
+     * be called regardless of the state the RepeaterService is in.
+     *
+     * @param handler the ExceptionHandler this RepeaterService uses to handle exceptions.
+     * @throws NullPointerException if handler is null.
      */
     void setExceptionHandler(ExceptionHandler handler);
 }

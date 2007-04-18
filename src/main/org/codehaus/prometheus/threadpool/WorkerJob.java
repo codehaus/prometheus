@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.threadpool;
 
 /**
- * The Job a Worker in a ThreadPool executes. A WorkJob consists of 2 parts:
+ * The Job a worker-thread in a ThreadPool executes. A WorkJob consists of 2 parts:
  * <ol>
  * <li>{@link #getTask()}: getting task to execute</li>
  * <li>{@link #executeTask(Object)}: executing the task itself</li>
@@ -14,6 +14,9 @@ package org.codehaus.prometheus.threadpool;
  * <p/>
  * A WorkerJob can terminate the worker thread that executes. todo: needs more explanation.
  * <p/>
+ * The reason that the task is seperated in 2 parts is that the getTask parts can be
+ * interrupted if a threadpool needs to shutdown, or when an idle threads needs to be removed
+ * because the threadpool is shrinking. 
  *
  * @author Peter Veentjer.
  */
@@ -32,7 +35,7 @@ public interface WorkerJob<E> {
      *
      * @param task the data required for execution (is allowed to be null).
      * @return true if the Worker should execute another time, false if it should terminate.
-     * @throws Exception
+     * @throws Exception if something goes wrong while executing the task.
      */
     boolean executeTask(E task) throws Exception;
 }
