@@ -13,12 +13,6 @@ import java.util.concurrent.TimeoutException;
 
 public class DummyRepeater implements RepeaterService {
 
-    final static private Repeatable TERMINATE_POINSON = new Repeatable() {
-        public boolean execute() throws Exception {
-            return false;
-        }
-    };
-
     private final LendableReference<Repeatable> lendableRef;
     private final ThreadPool threadPool;
 
@@ -65,10 +59,6 @@ public class DummyRepeater implements RepeaterService {
 
     public void setDesiredPoolSize(int poolSize) {
         threadPool.setDesiredPoolsize(poolSize);
-    }
-
-    public void pauze(){
-        
     }
 
     public RepeaterServiceState getState() {

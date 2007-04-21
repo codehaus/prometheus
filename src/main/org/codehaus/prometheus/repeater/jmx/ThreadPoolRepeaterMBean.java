@@ -36,19 +36,19 @@ public interface ThreadPoolRepeaterMBean {
     RepeaterServiceState getState();
 
     /**
-     * see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#getPoolSize()}.
+     * see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#getDesiredPoolSize()}
      *
      * @return the poolsize.
      */
-    int getPoolSize();
+    int getDesiredPoolSize();
 
     /**
-     * see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#setPoolSize(int)}.
+     * see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#setDesiredPoolSize(int)}
      *
      * @param poolsize the new poolsize
      * @throws IllegalArgumentException if poolsize is smaller than 0.
      */
-    void setPoolSize(int poolsize);
+    void setDesiredPoolSize(int poolsize);
 
     /**
      *  see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#getActualPoolSize()}.

@@ -8,20 +8,18 @@ package org.codehaus.prometheus.repeater;
 import org.codehaus.prometheus.lendablereference.LendableReference;
 import org.codehaus.prometheus.lendablereference.RelaxedLendableReference;
 import org.codehaus.prometheus.lendablereference.StrictLendableReference;
-import org.codehaus.prometheus.uninterruptiblesection.TimedUninterruptibleSection;
-import org.codehaus.prometheus.util.Latch;
-import org.codehaus.prometheus.util.StandardThreadFactory;
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
+import org.codehaus.prometheus.threadpool.ThreadPool;
+import org.codehaus.prometheus.threadpool.ThreadPoolState;
+import org.codehaus.prometheus.threadpool.WorkerJob;
+import org.codehaus.prometheus.threadpool.StandardThreadPool;
+import org.codehaus.prometheus.uninterruptiblesection.TimedUninterruptibleSection;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The default implementation of the {@link RepeaterService} interface that uses a pool of threads
@@ -100,250 +98,146 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ThreadPoolRepeater implements RepeaterService {
 
-    private final static PoisonRepeatable POISON_REPEATABLE = new PoisonRepeatable();
-
-
-
-    /**
-     * Creates a new StrictLendableReference
-     *
-     * @param task the task to be placed in the LendableReference. The task can be null.
-     * @return the created StrictLendableReference.
-     */
-    public static LendableReference<Repeatable> newDefaultLendableRef(Repeatable task) {
-        return newLendableRef(true, task);
+    public static LendableReference<Repeatable> createDefaultLendableReference(Repeatable repeatable) {
+        return new StrictLendableReference(repeatable);
     }
 
-    /**
-     * Creates a new unfair ReentrantLock. See {@link ReentrantLock#ReentrantLock()}
-     *
-     * @return the created Lock.
-     */
-    public static Lock newDefaultMainLock() {
-        return new ReentrantLock();
-    }
-
-    /**
-     * Creates a new default ThreadFactory.
-     *
-     * @return a newly created default ThreadFactory.
-     */
-    public static ThreadFactory newDefaultThreadFactory() {
-        return new StandardThreadFactory("repeater");
-    }
-
-    /**
-     * Creates a new LendableReference.
-     *
-     * @param strict the LendableReference should be relaxed or strict.
-     * @param task   the task that is placed in the LendableReference. This value is allowed to be null.
-     * @return the constructed LendableReference.
-     */
-    public static LendableReference<Repeatable> newLendableRef(boolean strict, Repeatable task) {
+    public static LendableReference<Repeatable> createDefaultLendableReference(boolean strict, Repeatable repeatable) {
         if (strict)
-            return new StrictLendableReference<Repeatable>(task);
+            return new StrictLendableReference<Repeatable>(repeatable);
         else
-            return new RelaxedLendableReference<Repeatable>(task);
+            return new RelaxedLendableReference<Repeatable>(repeatable);
     }
 
+    public static ThreadPool createDefaultThreadpool(int poolsize, ThreadFactory threadFactory) {
+        return new StandardThreadPool(poolsize, threadFactory);
+    }
 
-    private final ThreadFactory threadFactory;
+    public static ThreadPool createDefaultThreadpool(int poolsize) {
+        return new StandardThreadPool(poolsize);
+    }
+
     private final LendableReference<Repeatable> lendableRef;
-    private final Lock mainLock;
-    private final Latch shutdownLatch;
-    private final Set<Thread> threadpool = new HashSet<Thread>();
-    //the desired poolsize.
-    private final AtomicInteger poolsize;
-    private volatile RepeaterServiceState state = RepeaterServiceState.Unstarted;
+    private final ThreadPool threadPool;
 
-    /**
-     * Creates a new ThreadPoolRepeater with the given poolsize.
-     * <p/>
-     * The ThreadPoolRepeater is not started and the threadpool is not filled when the constructor
-     * completes, see {@link #start()}.
-     *
-     * @param poolsize the initial number of threads in the threadpool.
-     * @throws IllegalArgumentException if poolsize smaller than 0.
-     */
     public ThreadPoolRepeater(int poolsize) {
-        this(newDefaultThreadFactory(), newDefaultMainLock(), newDefaultLendableRef(null), poolsize);
+        this(createDefaultThreadpool(poolsize), createDefaultLendableReference(null));
     }
 
-    /**
-     * Creates a new ThreadPoolRepeater with the given task, and poolsize.
-     * <p/>
-     * The ThreadPoolRepeater is not started and the threadpool is not filled when the constructor
-     * completes, see {@link #start()}.
-     *
-     * @param task     the task to repeat.
-     * @param poolsize the initial number of threads in the threadpool.
-     * @throws IllegalArgumentException if poolsize smaller than 0.
-     */
     public ThreadPoolRepeater(Repeatable task, int poolsize) {
-        this(newDefaultThreadFactory(), newDefaultMainLock(), newDefaultLendableRef(task), poolsize);
+        this(createDefaultThreadpool(poolsize), createDefaultLendableReference(task));
     }
 
-    /**
-     * Creates a new ThreadPoolRepeater.
-     * <p/>
-     * The ThreadPoolRepeater is not started and the threadpool is not filled when the constructor
-     * completes, see {@link #start()}.
-     *
-     * @param strict        if the ThreadPoolExecutor should be strict (true) or relaxed (false).
-     * @param task          the task to repeat.
-     * @param poolsize      the initial number of threads in the threadpool.
-     * @param threadFactory the ThreadFactory that is used to populate the threadpool.
-     * @throws NullPointerException if threadFactory is null.
-     */
     public ThreadPoolRepeater(boolean strict, Repeatable task, int poolsize, ThreadFactory threadFactory) {
-        this(threadFactory, newDefaultMainLock(), newLendableRef(strict, task), poolsize);
+        this(createDefaultThreadpool(poolsize, threadFactory), createDefaultLendableReference(strict, task));
     }
 
-    /**
-     * Creates a new ThreadPoolRepeater.
-     * <p/>
-     * The ThreadPoolRepeater is not started and the threadpool is not filled when the constructor
-     * completes, see {@link #start()}.
-     *
-     * @param threadFactory the ThreadFactory that is used to populate the threadpool.
-     * @param mainLock      the mainLock
-     * @param lendableRef   the reference used (should not contain a value).
-     * @param poolsize      the initial number of threads in the threadpool.
-     * @throws NullPointerException     if threadFactory or lendableRef is null.
-     * @throws IllegalArgumentException if poolsize smaller than 0.
-     */
-    public ThreadPoolRepeater(ThreadFactory threadFactory, Lock mainLock,
-                              LendableReference<Repeatable> lendableRef, int poolsize) {
-        if (threadFactory == null || lendableRef == null) throw new NullPointerException();
-        if (poolsize < 0) throw new IllegalArgumentException();
-
-        this.threadFactory = threadFactory;
+    public ThreadPoolRepeater(ThreadPool threadPool, LendableReference<Repeatable> lendableRef) {
+        if (threadPool == null || lendableRef == null) throw new NullPointerException();
+        this.threadPool = threadPool;
+        this.threadPool.setWorkerJob(new WorkerJobImpl());
         this.lendableRef = lendableRef;
-        this.poolsize = new AtomicInteger(poolsize);
-        this.mainLock = mainLock;
-        this.shutdownLatch = new Latch(mainLock);
     }
 
-
-    public ExceptionHandler getExceptionHandler() {
-        throw new RuntimeException();
-    }
-
-    public void setExceptionHandler(ExceptionHandler exceptionHandler) {
-        if(exceptionHandler == null)throw new NullPointerException();
-        throw new RuntimeException();
-    }
-
-
-
-    /**
-     * Returns the ThreadFactory this ThreadPoolRepeater uses to fill the threadpool.
-     *
-     * @return the ThreadFactory this ThreadPoolRepeater uses to fill the
-     *         threadpool.
-     */
-    public ThreadFactory getThreadFactory() {
-        return threadFactory;
-    }
-
-    /**
-     * Returns the LendableReference this ThreadPoolExecutor uses to get the task to execute from.
-     *
-     * @return the LendableReference this ThreadPoolRepeater uses to get the task to execute from.
-     */
     public LendableReference<Repeatable> getLendableRef() {
         return lendableRef;
     }
 
-    /**
-     * Returns the mainLock.
-     *
-     * @return the mainLock.
-     */
-    public Lock getMainLock() {
-        return mainLock;
+    public ThreadPool getThreadPool() {
+        return threadPool;
     }
 
-    /**
-     * Returns the shutdown Latch. The Latch should not be modified from the outside.
-     *
-     * @return the shutdownNow Latch.
-     */
-    public Latch getShutdownLatch() {
-        return shutdownLatch;
+    public ExceptionHandler getExceptionHandler() {
+        return threadPool.getExceptionHandler();
+    }
+
+    public void setExceptionHandler(ExceptionHandler handler) {
+        threadPool.setExceptionHandler(handler);
+    }
+
+    public void start() {
+        threadPool.start();
+    }
+
+    public void shutdown() {
+        threadPool.shutdown();
+    }
+
+    public void shutdownNow() {
+        threadPool.shutdownNow();
+    }
+
+    public void awaitShutdown() throws InterruptedException {
+        threadPool.awaitShutdown();
+    }
+
+    public void tryAwaitShutdown(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
+        threadPool.tryAwaitShutdown(timeout, unit);
+    }
+
+    public int getActualPoolSize() {
+        return threadPool.getActualPoolSize();
+    }
+
+    public int getDesiredPoolSize() {
+        return threadPool.getDesiredPoolSize();
+    }
+
+    public void setDesiredPoolSize(int poolSize) {
+        threadPool.setDesiredPoolsize(poolSize);
     }
 
     public RepeaterServiceState getState() {
-        return state;
-    }
-
-    interface PlaceTask {
-        void place() throws InterruptedException, TimeoutException;
-    }
-
-
-    public void shutdown() {
-        throw new RuntimeException();
-    }
-
-    private void repeat(PlaceTask placeTask) throws InterruptedException, TimeoutException {
-        //there is a performance problem here: while the put takes place, the lock is held
-        //and nobody can change the state (for example shutting down). This problem needs to
-        //be fixed.
-
-        mainLock.lockInterruptibly();
-
-        try {
-            switch (state) {
-                case Unstarted:
-                    placeTask.place();
-                    internalStart();
-                    break;
-                case Running:
-                    placeTask.place();
-                    break;
-                case Shuttingdown: {
-                    String msg = "Can't repeat task, the ThreadPoolExecutor is shutting down";
-                    throw new RejectedExecutionException(msg);
-                }
-                case Shutdown: {
-                    String msg = "Can't repeat task, the ThreadPoolExecutor is shutdown";
-                    throw new RejectedExecutionException(msg);
-                }
-                default:
-                    throw new RuntimeException("unhandeled state: " + state);
-            }
-        } finally {
-            mainLock.unlock();
+        ThreadPoolState state = threadPool.getState();
+        switch (state) {
+            case unstarted:
+                return RepeaterServiceState.Unstarted;
+            case started:
+                return RepeaterServiceState.Running;
+            case shuttingdown:
+                return RepeaterServiceState.Shuttingdown;
+            case shutdown:
+                return RepeaterServiceState.Shutdown;
+            default:
+                throw new IllegalStateException();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * If the ThreadPoolExecutor is not started yet, it is started.
-     *
-     * @param task {@inheritDoc}
-     * @throws InterruptedException {@inheritDoc}
-     */
-    public void repeat(final Repeatable task) throws InterruptedException {
-        PlaceTask placeTask = new PlaceTask() {
-            public void place() throws InterruptedException {
-                lendableRef.put(task);
-            }
-        };
+    public void repeat(Repeatable task) throws InterruptedException {
+        ensureUsableRepeater();
 
+        //it cnould be that the repeater just has begon shutting down,
+        //or completely has shut down. It is up to the task to figure out
+        //if it is executed.
+        lendableRef.put(task);
+    }
+
+    /**
+     * Makes sure that there is ThreadPoolRepeater that is able to work. If it isn't
+     * possible, a RejectedExecutionException is thrown.
+     *
+     */
+    private void ensureUsableRepeater() {
+        Lock lock = threadPool.getStateChangeLock();
+        lock.lock();
         try {
-            repeat(placeTask);
-        } catch (TimeoutException e) {
-            throw new RuntimeException("should not happen", e);
+            ThreadPoolState state = threadPool.getState();
+            if (state == ThreadPoolState.shutdown || state == ThreadPoolState.shuttingdown)
+                throw new RejectedExecutionException();
+
+            if (state == ThreadPoolState.unstarted)
+                start();
+        } finally {
+            lock.unlock();
         }
     }
 
     public boolean tryRepeat(final Repeatable task) {
-        TimedUninterruptibleSection section = new TimedUninterruptibleSection() {
+        ensureUsableRepeater();
+
+        TimedUninterruptibleSection section = new TimedUninterruptibleSection(){
             protected Object originalsection(long timeoutNs) throws InterruptedException, TimeoutException {
-                tryRepeat(task, timeoutNs, TimeUnit.NANOSECONDS);
+                lendableRef.tryPut(task,timeoutNs,TimeUnit.NANOSECONDS);
                 return null;
             }
         };
@@ -356,358 +250,31 @@ public class ThreadPoolRepeater implements RepeaterService {
         }
     }
 
-    public void tryRepeat(final Repeatable task, final long timeout, final TimeUnit unit)
-            throws TimeoutException, InterruptedException {
-        PlaceTask placeTask = new PlaceTask() {
-            public void place() throws TimeoutException, InterruptedException {
-                lendableRef.tryPut(task, timeout, unit);
-            }
-        };
+    public void tryRepeat(Repeatable task, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
+        ensureUsableRepeater();
 
-        repeat(placeTask);
+        //it could be that this method is called even though the threadpool is shutting down, or shut down.
+        //this means that a task is placed, but not executed.
+        lendableRef.tryPut(task, timeout, unit);
     }
 
-    public void shutdownNow() {
-        mainLock.lock();
-        try {
-            switch (state) {
-                case Unstarted:
-                    internalShutdown();
-                    break;
-                case Running:
-                    internalShutdown();
-                    break;
-                case Shuttingdown:
-                    //nothing special needs to be done, it already is shutting down.
-                    break;
-                case Shutdown:
-                    //nothing special needs to be done, it already is shut down.
-                    break;
-                default:
-                    throw new RuntimeException("unhandeled state:" + state);
-            }
-        } finally {
-            mainLock.unlock();
-        }
-    }
+    private class WorkerJobImpl implements WorkerJob<Repeatable> {
 
-    /**
-     * Shuts down this Repeater.
-     * <p/>
-     * This call only should be made when the mainLock is held.
-     * <p/>
-     * No checking is done on the state, this is a responsibility of the caller.
-     * <p/>
-     * If there are no threadpool, the state is going to be 'shutdown.
-     */
-    private void internalShutdown() {
-        if (threadpool.isEmpty()) {
-            //there are no workers, so this repeater is shut down.
-            updateState(RepeaterServiceState.Shutdown);
-        } else {
-            //there are workers, so change the status to shutting down. As soon as the last
-            //worker has completes, this repeater is completely shutdown.
-            updateState(RepeaterServiceState.Shuttingdown);
-            interruptWorkers();
-        }
-    }
-
-    /**
-     * Interrupts all workers.
-     * <p/>
-     * This call only should be made when the mainLock is held.
-     */
-    private void interruptWorkers() {
-        for (Thread t : threadpool)
-            t.interrupt();
-    }
-
-    public void start() throws IllegalStateException {
-        mainLock.lock();
-        try {
-            switch (state) {
-                case Unstarted:
-                    internalStart();
-                    break;
-                case Running:
-                    //nothing special needs to be done because this
-                    //ThreadPoolRepeater already is started.
-                    return;
-                case Shuttingdown: {
-                    String msg = "this ThreadPoolRepeater can't be started, it already is shutting down";
-                    throw new IllegalStateException(msg);
-                }
-                case Shutdown: {
-                    String msg = "this ThreadPoolRepeater can't be started, it already is shut down";
-                    throw new IllegalStateException(msg);
-                }
-                default:
-                    throw new RuntimeException("unhandeled state: " + state);
-            }
-        } finally {
-            mainLock.unlock();
-        }
-    }
-
-    /**
-     * Starts this repeater.
-     * <p/>
-     * The call only should be made if the mainlock is hold.
-     * <p/>
-     * If the repeater is not in the unstarted state, a assertion error will be thrown.
-     */
-    private void internalStart() {
-        assert state==RepeaterServiceState.Unstarted;
-
-        for (int k = 0; k < poolsize.intValue(); k++) {
-            Thread thread = createAndRegisterWorkerThread();
-            thread.start();
-        }
-        updateState(RepeaterServiceState.Running);
-    }
-
-    /**
-     * Creates a new unstarted worker thread.
-     * <p/>
-     * The thread is added to the threadpool.
-     *
-     * @return the newly created unstarted worker thread.
-     */
-    private Thread createAndRegisterWorkerThread() {
-        Worker worker = new Worker();
-        Thread thread = threadFactory.newThread(worker);
-        worker.thread = thread;
-        threadpool.add(thread);
-        return thread;
-    }
-
-    public void awaitShutdown() throws InterruptedException {
-        shutdownLatch.await();
-    }
-
-    public void tryAwaitShutdown(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
-        shutdownLatch.tryAwait(timeout, unit);
-    }
-
-    /**
-     * Returns the actual number of threads. This value could be stale at the moment it is returned
-     * because the number of running threads could have been changed when:
-     * <ol>
-     * <li>a workerthread that notices it should terminate</li>
-     * <li>a different thread makes a call to {@link #setPoolSize(int)}</li>
-     * </ol>
-     *
-     * @return the actual number of threads.
-     * @see #getPoolSize()
-     */
-    public int getActualPoolSize() {
-        mainLock.lock();
-
-        try {
-            return threadpool.size();
-        } finally {
-            mainLock.unlock();
-        }
-    }
-
-    /**
-     * Returns the size of the threadpool.
-     *
-     * @return the size of the threadpool
-     */
-    public int getPoolSize() {
-        return poolsize.intValue();
-    }
-
-    public void setPoolSize(int newPoolsize) {
-        if (newPoolsize < 0)
-            throw new IllegalArgumentException();
-
-        mainLock.lock();
-        try {
-            switch (state) {
-                case Unstarted:
-                    //this repeater isn't running, so the newPoolsize can be changed without
-                    //extra administration.
-                    poolsize.set(newPoolsize);
-                    break;
-                case Running:
-                    setPoolSizeInternally(newPoolsize);
-                    break;
-                case Shuttingdown:
-                    throw new IllegalStateException();
-                case Shutdown:
-                    throw new IllegalStateException();
-                default:
-                    throw new RuntimeException("unhandeled state:" + state);
-            }
-        } finally {
-            mainLock.unlock();
-        }
-    }
-
-    /**
-     * Changes the number of workers in the pool.
-     * <p/>
-     * This call should only be made when the system is running, pausing, or paused.
-     * <p/>
-     * no state checking is done. This is a responsibility of the caller.
-     * <p/>
-     * mainLock should be held when executing this call.
-     *
-     * @param newpoolsize the new poolsize
-     */
-    private void setPoolSizeInternally(int newpoolsize) {
-        int growSize = newpoolsize - poolsize.intValue();
-        if (growSize == 0)
-            return;//there is no change, so return from this call.
-
-        poolsize.set(newpoolsize);
-
-        if (growSize > 0) {
-            //extra threads need to be created.
-            for (int k = 0; k < growSize; k++) {
-                Thread t = createAndRegisterWorkerThread();
-                t.start();
-            }
-        } else {
-            //if the growSize is smaller than zero (the number of workers needs to be reduced),
-            //workerthreads are going to terminate themselves. So nothing needs to be done
-            //here, it is up to the workers now to reduce their number.
-        }
-    }
-
-    /**
-     * This call should only be made if the mainLock is hold.
-     *
-     * @param state the new state
-     */
-    private void updateState(RepeaterServiceState state) {
-        switch (state) {
-            case Shutdown:
-                shutdownLatch.openWithoutLocking();
-                break;
+        public Repeatable getTask() throws InterruptedException {
+            return lendableRef.take();
         }
 
-        this.state = state;
-    }
-
-    private class Worker implements Runnable {
-
-        //the thread that executes this Worker.
-        private volatile Thread thread;
-
-        /**
-         * Executes the task. The execution of the task is protected against runtime exceptions
-         * (they are caught and dropped). If the task throws a RuntimeException, true is also
-         * returned.
-         *
-         * @param task the Repeatable to execute
-         * @return true if the task can be executed another time, false otherwise.
-         */
-        private boolean execute(Repeatable task) {
-            try {
-                return task.execute();
-            } catch (Exception ex) {
-                //Exception is being caught and ignored. It is up to the task
-                //to deal with the exception. The java.util.prometheus.ThreadPoolExecutor
-                //has a afterExecute mechanism that makes it possible to handle exceptions,
-                //maybe this would be a feature for a future release. And injecting some
-                //sort of handler instead of subclassing would be my preferred solution.
-                return true;
-            }
-        }
-
-        /**
-         * Makes sure that this Worker doesn't have to be terminated.
-         */
-        private boolean ensureNotTerminated() {
-            mainLock.lock();
-            try {
-                if (tooManyWorkers() || isShuttingdown()) {
-                    workerDone();
-                    return false;
-                }
-
-                return true;
-            } finally {
-                mainLock.unlock();
-            }
-        }
-
-        public void run() {
-            boolean again = true;
-            do {
-                try {
-                    again = ensureNotTerminated() && executeOnce();
-                } catch (InterruptedException e) {
-                    //if the interrupt is not caused by a shutdown action.
-                    //it can be ignored.
-                    if (isShuttingdown()){
-                        workerDone();
-                        again = false;
-                    }
-                }finally{
-                    Thread.interrupted();
-                }
-            } while (again);
-        }
-
-        /**
-         * Returns true doesn't need to be terminated, false otherwise.
-         *
-         * @return
-         */
-        private boolean executeOnce() throws InterruptedException {
-            //if the threadpoolrepeater shuts down, it will interrupt
-            //all workers, if a workers is sleeping on this take, it
-            //will be interrupted. And the task won't be executed.
-            Repeatable task = lendableRef.take();
+        public boolean executeTask(Repeatable task) throws Exception {
             boolean again = true;
             try {
-                again = execute(task);
+                again = task.execute();
+                return true;
             } finally {
                 if (again)
                     lendableRef.takeback(task);
-                else {
+                else
                     lendableRef.takebackAndReset(task);
-                }
             }
-            return true;
-        }
-
-        private boolean tooManyWorkers() {
-            return threadpool.size() > poolsize.intValue();
-        }
-
-        private boolean isShuttingdown() {
-            return state == RepeaterServiceState.Shuttingdown;
-        }
-
-        /**
-         * Terminates the worker. The thread that executes the worker is removed from the threadpool, and
-         * if it is the last worker, the state of this repeater is updated to Shutdown.
-         */
-        private void workerDone() {
-            mainLock.lock();
-            try {
-                threadpool.remove(thread);
-
-                //if this is the last thread, this repeater now completely is shut down.
-                if (threadpool.isEmpty() && state == RepeaterServiceState.Shuttingdown)
-                    updateState(RepeaterServiceState.Shutdown);
-            } finally {
-                mainLock.unlock();
-            }
-        }
-    }
-
-    static class TerminatedException extends Exception {
-    }
-
-    static class PoisonRepeatable implements Repeatable {
-        public boolean execute() {
-            return false;
         }
     }
 }

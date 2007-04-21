@@ -26,7 +26,6 @@ public class ThreadPoolBlockingExecutor_AbstractTest extends ConcurrentTestCase 
         executor.start();
     }
 
-
     public void newStartedBlockingExecutor() {
        newShutdownBlockingExecutor(1,1);
     }
@@ -45,8 +44,8 @@ public class ThreadPoolBlockingExecutor_AbstractTest extends ConcurrentTestCase 
     public void newUnstartedBlockingExecutor(int queuesize, int poolsize) {
         executor = new ThreadPoolBlockingExecutor(
                         new StandardThreadFactory(),
-                        new LinkedBlockingQueue<Runnable>(queuesize),
-                        poolsize);
+                        poolsize,
+                        new LinkedBlockingQueue<Runnable>(queuesize));
     }
 
     public void newShutdownBlockingExecutor(int queuesize,int poolsize) {
@@ -59,8 +58,8 @@ public class ThreadPoolBlockingExecutor_AbstractTest extends ConcurrentTestCase 
         executor.shutdown();
     }
 
-    public void assertPoolSize(int expectedPoolSize) {
-        assertEquals(expectedPoolSize, executor.getPoolSize());
+    public void assertDesiredPoolSize(int expectedPoolSize) {
+        assertEquals(expectedPoolSize, executor.getDesiredPoolSize());
     }
 
     public void assertActualPoolSize(int expectedActualPoolSize) {

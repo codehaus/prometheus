@@ -67,8 +67,8 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
 
     public void testShuttingDownRepeater() throws InterruptedException {
         newShuttingdownRepeater(2* DELAY_SMALL_MS);
-        assertRepeatCauseRejectedExecutionException(new DummyRunnable());
-        assertRepeatCauseRejectedExecutionException(null);
+        assertRepeatIsRejected(new DummyRepeatable());
+        assertRepeatIsRejected(null);
     }
 
     //================== interrupted while waiting to take place ===========
@@ -104,19 +104,16 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
 
     public void testShutdownRepeater(boolean strict) throws InterruptedException {
         newShutdownRepeater(strict);
-        assertRepeatCauseRejectedExecutionException(new DummyRunnable());
-        assertRepeatCauseRejectedExecutionException(null);
+        assertRepeatIsRejected(new DummyRepeatable());
+        assertRepeatIsRejected(null);
     }
 
-    public void assertRepeatCauseRejectedExecutionException(Runnable task) throws InterruptedException {
+    public void assertRepeatIsRejected(Repeatable task) throws InterruptedException {
         try {
-            repeater.repeat(new DummyRepeatable());
+            repeater.repeat(task);
             fail("RejectedExecutionException expected");
         } catch (RejectedExecutionException ex) {
             assertTrue(true);
         }
     }
-
-    //========================================
-    // test that the running task is not interrupted by repeating a task
 }

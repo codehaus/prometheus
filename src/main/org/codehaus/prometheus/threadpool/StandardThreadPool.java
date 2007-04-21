@@ -37,6 +37,11 @@ public class StandardThreadPool implements ThreadPool {
         this(new StandardThreadFactory());
     }
 
+    public StandardThreadPool(int poolsize){
+        this();
+        setDesiredPoolsize(poolsize);
+    }
+
     /**
      * Creates a new StandardThreadPool with the given ThreadFactory and no
      * {@link WorkerJob}.
@@ -45,10 +50,14 @@ public class StandardThreadPool implements ThreadPool {
      * @throws NullPointerException if factory is <tt>null</tt>.
      */
     public StandardThreadPool(ThreadFactory factory) {
-        if (factory == null) throw new NullPointerException();
-        this.threadFactory = factory;
+        this(null,factory);
     }
 
+    public StandardThreadPool(int poolsize, ThreadFactory threadFactory){
+        this(null,threadFactory);
+        setDesiredPoolsize(poolsize);
+    }
+    
     /**
      * Creates a new StandardThreadPool with the given {@link ThreadFactory} and
      * workerJob.
@@ -86,7 +95,7 @@ public class StandardThreadPool implements ThreadPool {
             switch (state) {
                 case unstarted:
                     if (defaultWorkerJob == null)
-                        throw new IllegalStateException("nu default WorkerJob is set");
+                        throw new IllegalStateException("Can't start, nu workerJob is set");
                     updateState(ThreadPoolState.started);
                     createWorkers(desiredPoolsize);
                     break;
@@ -98,7 +107,7 @@ public class StandardThreadPool implements ThreadPool {
                 case shutdown:
                     throw new IllegalStateException();
                 default:
-                    throw new RuntimeException();
+                    throw new RuntimeException("unhandled state: "+state);
             }
         } finally {
             mainLock.unlock();
@@ -305,7 +314,7 @@ public class StandardThreadPool implements ThreadPool {
         return threadFactory;
     }
 
-    public void setDefaultWorkerJob(WorkerJob defaultJob) {
+    public void setWorkerJob(WorkerJob defaultJob) {
         if (defaultJob == null) throw new NullPointerException();
 
         mainLock.lock();
@@ -409,7 +418,7 @@ public class StandardThreadPool implements ThreadPool {
                             exceptionHandler.handle(e);
                         } finally {
                             //remove the interrupt flag, if the threadpool is shutting down (and possibly
-                            //interrupted the thread) the loop will stop when it does the runAgain.
+                            //interrupted the thread) the loop will shutdown when it does the runAgain.
                             Thread.interrupted();
                         }
                     }

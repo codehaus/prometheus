@@ -23,7 +23,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
     public void testArguments() throws TimeoutException, InterruptedException {
         newStartedBlockingExecutor();
         try {
-            executor.tryExecute((Runnable) null, 1, TimeUnit.SECONDS);
+            executor.tryExecute(null, 1, TimeUnit.SECONDS);
             fail();
         } catch (NullPointerException ex) {
             assertTrue(true);
@@ -63,7 +63,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
 
         sleepMs(100);
         task.assertExecutedOnce();
-        assertPoolSize(1);
+        assertDesiredPoolSize(1);
         assertActualPoolSize(1);
         assertIsRunning();
     }
@@ -79,7 +79,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
 
         sleepMs(100);
         task.assertExecutedOnce();
-        assertPoolSize(1);
+        assertDesiredPoolSize(1);
         assertActualPoolSize(1);
         assertIsRunning();
     }

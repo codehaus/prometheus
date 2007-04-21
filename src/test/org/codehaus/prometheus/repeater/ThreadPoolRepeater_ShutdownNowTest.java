@@ -16,11 +16,11 @@ import org.codehaus.prometheus.testsupport.SleepingRunnable;
  */
 public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_AbstractTest {
 
-    public void testShutdownIsBlocked(){
-        
+    public void testShutdownIsBlocked() {
+        fail();
     }
 
-    public void testJobExecutingRepeater(){
+    public void testJobExecutingRepeater() {
         newRunningStrictRepeater();
     }
 
@@ -69,7 +69,7 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         assertIsShuttingdown();
         assertActualPoolSize(1);
 
-        sleepMs(2* DELAY_SMALL_MS);
+        sleepMs(2 * DELAY_SMALL_MS);
         assertIsShutdown();
         assertActualPoolSize(0);
     }

@@ -95,7 +95,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
 
     public void newUnstartedThreadPool(int poolsize) {
         newUnstartedThreadPoolWithoutDefaultJob(poolsize);
-        threadpool.setDefaultWorkerJob(new TestWorkerJob());
+        threadpool.setWorkerJob(new TestWorkerJob());
     }
 
     public void newShutdownThreadpool() {
@@ -225,7 +225,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         }
 
         protected void runInternal() throws Exception {
-            threadpool.setDefaultWorkerJob(workerJob);
+            threadpool.setWorkerJob(workerJob);
         }
     }
 

@@ -53,11 +53,11 @@ public class ThreadPoolRepeaterMBeanImpl implements ThreadPoolRepeaterMBean {
         return repeater.getActualPoolSize();
     }
 
-    public int getPoolSize() {
-        return repeater.getPoolSize();
+    public int getDesiredPoolSize() {
+        return repeater.getDesiredPoolSize();
     }
 
-    public void setPoolSize(int poolsize) {
-        repeater.setPoolSize(poolsize);
+    public void setDesiredPoolSize(int poolsize) {
+        repeater.setDesiredPoolSize(poolsize);
     }
 }

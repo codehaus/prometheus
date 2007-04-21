@@ -57,15 +57,15 @@ public class ThreadPoolRepeaterStressTest {
         }
 
         private void assertActualPoolsizeChanges(int poolsize) {
-            repeater.setPoolSize(poolsize);
+            repeater.setDesiredPoolSize(poolsize);
 
-            assertPoolSize(poolsize);
+            assertDesiredPoolSize(poolsize);
 
             //give the workers enough time to terminate
             sleepMs(1000);
 
             assertIsRunning();
-            assertPoolSize(poolsize);
+            assertDesiredPoolSize(poolsize);
             assertActualPoolSize(poolsize);
         }
 

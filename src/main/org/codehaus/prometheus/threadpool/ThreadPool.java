@@ -17,7 +17,7 @@ import java.util.concurrent.locks.Lock;
  * For a worker to execute a WorkJob, it first needs to execute {@link WorkerJob#getTask()} method
  * and after it has got his task it calls the {@link org.codehaus.prometheus.threadpool.WorkerJob#executeTask(Object)}
  * method. The getTask could be taking a reference from a LendableReference for example
- * (see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeaterdPoolRepeater}) or taking a task from a
+ * (see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater}) or taking a task from a
  * blocking queue {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor}. Workers
  * that are idle, are executing the getTask method (they are waiting for something to process) and else
  * they are working.
@@ -51,7 +51,7 @@ public interface ThreadPool {
      * @throws NullPointerException  if job is <tt>null</tt>.
      * @throws IllegalStateException if the ThreadPool isn't in the unstarted state anymore.
      */
-    void setDefaultWorkerJob(WorkerJob job);
+    void setWorkerJob(WorkerJob job);
 
     /**
      * Gets the ExceptionHandler. The value will never be <tt>null</tt>.

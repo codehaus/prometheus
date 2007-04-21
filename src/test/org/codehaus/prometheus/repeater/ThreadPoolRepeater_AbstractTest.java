@@ -137,8 +137,8 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertEquals(RepeaterServiceState.Shuttingdown, repeater.getState());
     }
 
-    public void assertPoolSize(int expected) {
-        assertEquals(expected, repeater.getPoolSize());
+    public void assertDesiredPoolSize(int expected) {
+        assertEquals(expected, repeater.getDesiredPoolSize());
     }
 
     public void assertActualPoolSize(int expected) {

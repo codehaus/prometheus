@@ -68,10 +68,10 @@ public class RepeaterServiceMBeanImplTest extends TestCase {
 
     public void testGetPoolSize() {
         int expectedSize = 10;
-        expect(repeaterMock.getPoolSize()).andReturn(expectedSize);
+        expect(repeaterMock.getDesiredPoolSize()).andReturn(expectedSize);
 
         replayMocks();
-        int foundSize = mbean.getPoolSize();
+        int foundSize = mbean.getDesiredPoolSize();
         verifyMocks();
         assertEquals(expectedSize,foundSize);
     } */

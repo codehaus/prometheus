@@ -8,7 +8,7 @@ package org.codehaus.prometheus.repeater;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
 
 /**
- * Unittests the {@link ThreadPoolRepeater#setPoolSize(int)} method.
+ * Unittests the {@link ThreadPoolRepeater#setDesiredPoolSize(int)}  method.
  *
  * @author Peter Veentjer.
  */
@@ -16,17 +16,17 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
 
     public void testArguments(){
         newRunningStrictRepeater();
-        int poolsize = repeater.getPoolSize();
+        int poolsize = repeater.getDesiredPoolSize();
 
         try{
-            repeater.setPoolSize(-1);
+            repeater.setDesiredPoolSize(-1);
             fail();
         }catch(IllegalArgumentException ex){
             assertTrue(true);
         }
 
         assertIsRunning();
-        assertPoolSize(poolsize);
+        assertDesiredPoolSize(poolsize);
         assertActualPoolSize(1);
     }
 
@@ -34,10 +34,10 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
         newUnstartedStrictRepeater();
         int poolsize = 100;
 
-        repeater.setPoolSize(poolsize);
+        repeater.setDesiredPoolSize(poolsize);
 
         assertIsUnstarted();
-        assertEquals(poolsize,repeater.getPoolSize());
+        assertEquals(poolsize,repeater.getDesiredPoolSize());
         assertActualPoolSize(0);
     }
 
@@ -51,16 +51,16 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
     }
 
     private void assertActualPoolsizeChanges(int poolsize) {
-        int oldPoolsize = repeater.getPoolSize();
+        int oldPoolsize = repeater.getDesiredPoolSize();
 
-        repeater.setPoolSize(poolsize);
-        assertPoolSize(poolsize);
+        repeater.setDesiredPoolSize(poolsize);
+        assertDesiredPoolSize(poolsize);
 
         //give the workers enough time to terminate
         sleepMs((poolsize+oldPoolsize)*20+100);
 
         assertIsRunning();
-        assertPoolSize(poolsize);        
+        assertDesiredPoolSize(poolsize);
         assertActualPoolSize(poolsize);
     }
 
@@ -77,7 +77,7 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
     private void assertSetPoolSizeThrowsIllegalStateException() {
         RepeaterServiceState oldState = repeater.getState();
         try{
-            repeater.setPoolSize(100);
+            repeater.setDesiredPoolSize(100);
             fail();
         }catch(IllegalStateException ex){
             assertTrue(true);
