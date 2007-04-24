@@ -47,7 +47,7 @@ public class WellProcessor<E> implements Processor{
             E msg = process.process();
             outputChannel.put(msg);
         }else{
-            ProcessEventDispatcher.dispatch(process,event);
+           // ProcessEventDispatcher.dispatch(process,event);
         }
         return true;
     }
