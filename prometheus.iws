@@ -29,11 +29,7 @@
     <list default="true" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prometheus.iws" afterPath="$PROJECT_DIR$/prometheus.iws" />
     </list>
-    <list name="Failed commit: Default" comment="- improved the threadpool, better behaving while shutting down&#10;- improved the repeater so it makes use the threadpool improvement&#10;- improved the blockingexecutor so it makes use of the threadpool improvements">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/testsupport" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/threadpool/StandardThreadpoolStressTest.java" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/threadpool/StandardThreadpoolStressTest.java" />
-    </list>
+    <list name="Failed commit: Default" comment="- improved the threadpool, better behaving while shutting down&#10;- improved the repeater so it makes use the threadpool improvement&#10;- improved the blockingexecutor so it makes use of the threadpool improvements" />
   </component>
   <component name="ChangeListSynchronizer" />
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
@@ -189,7 +185,7 @@
       <file leaf-file-name="ThreadPoolBlockingExecutor.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="242" column="21" selection-start="9461" selection-end="9461" vertical-scroll-proportion="2.7892003">
+            <state line="242" column="21" selection-start="9461" selection-end="9461" vertical-scroll-proportion="2.7352343">
               <folding>
                 <element signature="method#getThreadPool#0;class#ThreadPoolBlockingExecutor#0" expanded="true" />
                 <element signature="method#getWorkQueue#0;class#ThreadPoolBlockingExecutor#0" expanded="true" />
@@ -201,7 +197,7 @@
       <file leaf-file-name="ThreadPoolRepeater.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/ThreadPoolRepeater.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="11" selection-start="3710" selection-end="3710" vertical-scroll-proportion="0.017653167">
+            <state line="76" column="11" selection-start="3710" selection-end="3710" vertical-scroll-proportion="0.017311608">
               <folding>
                 <element signature="method#getLendableRef#0;class#ThreadPoolRepeater#0" expanded="true" />
                 <element signature="method#getThreadPool#0;class#ThreadPoolRepeater#0" expanded="true" />
@@ -210,10 +206,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StandardThreadPool.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="StandardThreadPool.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/StandardThreadPool.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="465" column="55" selection-start="15606" selection-end="15664" vertical-scroll-proportion="2.8712356">
+            <state line="465" column="55" selection-start="15606" selection-end="15664" vertical-scroll-proportion="2.8156822">
               <folding>
                 <element signature="method#getExceptionHandler#0;class#StandardThreadPool#0" expanded="true" />
                 <element signature="method#getDefaultWorkerJob#0;class#StandardThreadPool#0" expanded="true" />
@@ -226,19 +222,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ThreadPoolBlockingExecutorStressTest.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutorStressTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="13" selection-start="565" selection-end="565" vertical-scroll-proportion="0.1588785">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Latch.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/Latch.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="147" column="41" selection-start="4268" selection-end="4268" vertical-scroll-proportion="0.59397715">
+            <state line="147" column="41" selection-start="4268" selection-end="4268" vertical-scroll-proportion="0.601833">
               <folding>
                 <element signature="method#getMainLock#0;class#Latch#0" expanded="true" />
                 <element signature="method#getOpenCondition#0;class#Latch#0" expanded="true" />
@@ -251,7 +238,7 @@
       <file leaf-file-name="ThreadPoolBlockingExecutor_AwaitShutdownTest.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor_AwaitShutdownTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="16" selection-start="1348" selection-end="1348" vertical-scroll-proportion="0.017653167">
+            <state line="47" column="16" selection-start="1348" selection-end="1348" vertical-scroll-proportion="0.017311608">
               <folding />
             </state>
           </provider>
@@ -260,7 +247,7 @@
       <file leaf-file-name="ThreadPoolBlockingExecutor_ExecuteRunnableTest.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor_ExecuteRunnableTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="16" selection-start="978" selection-end="978" vertical-scroll-proportion="0.017653167">
+            <state line="32" column="16" selection-start="978" selection-end="978" vertical-scroll-proportion="0.017311608">
               <folding />
             </state>
           </provider>
@@ -269,7 +256,7 @@
       <file leaf-file-name="ThreadPoolBlockingExecutor_ShutdownNowTest.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor_ShutdownNowTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="38" selection-start="542" selection-end="542" vertical-scroll-proportion="0.317757">
+            <state line="22" column="38" selection-start="542" selection-end="542" vertical-scroll-proportion="0.31160897">
               <folding />
             </state>
           </provider>
@@ -278,7 +265,7 @@
       <file leaf-file-name="WorkerJob.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/WorkerJob.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="17" selection-start="1610" selection-end="1610" vertical-scroll-proportion="0.36448598">
+            <state line="34" column="17" selection-start="1610" selection-end="1610" vertical-scroll-proportion="0.3767821">
               <folding />
             </state>
           </provider>
@@ -287,7 +274,7 @@
       <file leaf-file-name="BlockingQueue.java" pinned="false" current="false" current-in-tab="false">
         <entry file="jar:///java/jdk/jdk1.6.0_01/src.zip!/java/util/concurrent/BlockingQueue.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="224" column="12" selection-start="9490" selection-end="9490" vertical-scroll-proportion="0.017653167">
+            <state line="224" column="12" selection-start="9490" selection-end="9490" vertical-scroll-proportion="0.017311608">
               <folding />
             </state>
           </provider>
@@ -500,6 +487,10 @@
           <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
       </PATH>
       <PATH>
         <PATH_ELEMENT>
@@ -509,6 +500,60 @@
         <PATH_ELEMENT>
           <option name="myItemId" value="src" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
       </PATH>
       <PATH>
@@ -576,7 +621,7 @@
     </key>
   </component>
   <component name="RestoreUpdateTree">
-    <UpdateInfo date="4/24/07 1:00 PM" ActionInfo="_Update">
+    <UpdateInfo date="4/24/07 1:07 PM" ActionInfo="_Update">
       <UpdatedFiles>
         <FILE-GROUP>
           <option name="myUpdateName" value="Updated from server" />
@@ -597,10 +642,9 @@
             <option name="mySupportsDeletion" value="false" />
             <option name="myCanBeAbsent" value="false" />
             <option name="myId" value="CREATED" />
-            <PATH>$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/blockingexecutor</PATH>
-            <PATH>$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/blockingexecutor/DummyBlockingExecutor.java</PATH>
-            <PATH>$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/blockingexecutor/BlockingExecutorService.java</PATH>
-            <PATH>$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/blockingexecutor/BlockingExecutorServiceState.java</PATH>
+            <PATH>$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor</PATH>
+            <PATH>$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutorStressTest.java</PATH>
+            <PATH>$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/testsupport</PATH>
           </FILE-GROUP>
           <FILE-GROUP>
             <option name="myUpdateName" value="Deleted" />
@@ -947,7 +991,7 @@
     <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
     <option name="FILE_HISTORY_DIALOG_COMMENTS_SPLITTER_PROPORTION" value="0.8" />
     <option name="FILE_HISTORY_DIALOG_SPLITTER_PROPORTION" value="0.5" />
-    <option name="ERROR_OCCURED" value="false" />
+    <option name="ERROR_OCCURED" value="true" />
     <option name="ACTIVE_VCS_NAME" value="svn" />
     <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
@@ -1042,35 +1086,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor_AwaitShutdownTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="16" selection-start="1348" selection-end="1348" vertical-scroll-proportion="0.017653167">
+        <state line="47" column="16" selection-start="1348" selection-end="1348" vertical-scroll-proportion="0.017311608">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor_ExecuteRunnableTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="16" selection-start="978" selection-end="978" vertical-scroll-proportion="0.017653167">
+        <state line="32" column="16" selection-start="978" selection-end="978" vertical-scroll-proportion="0.017311608">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor_ShutdownNowTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="38" selection-start="542" selection-end="542" vertical-scroll-proportion="0.317757">
+        <state line="22" column="38" selection-start="542" selection-end="542" vertical-scroll-proportion="0.31160897">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar:///java/jdk/jdk1.6.0_01/src.zip!/java/util/concurrent/BlockingQueue.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="224" column="12" selection-start="9490" selection-end="9490" vertical-scroll-proportion="0.017653167">
+        <state line="224" column="12" selection-start="9490" selection-end="9490" vertical-scroll-proportion="0.017311608">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/ThreadPoolRepeater.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="11" selection-start="3710" selection-end="3710" vertical-scroll-proportion="0.017653167">
+        <state line="76" column="11" selection-start="3710" selection-end="3710" vertical-scroll-proportion="0.017311608">
           <folding>
             <element signature="method#getLendableRef#0;class#ThreadPoolRepeater#0" expanded="true" />
             <element signature="method#getThreadPool#0;class#ThreadPoolRepeater#0" expanded="true" />
@@ -1080,7 +1124,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/Latch.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="147" column="41" selection-start="4268" selection-end="4268" vertical-scroll-proportion="0.59397715">
+        <state line="147" column="41" selection-start="4268" selection-end="4268" vertical-scroll-proportion="0.601833">
           <folding>
             <element signature="method#getMainLock#0;class#Latch#0" expanded="true" />
             <element signature="method#getOpenCondition#0;class#Latch#0" expanded="true" />
@@ -1091,7 +1135,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="242" column="21" selection-start="9461" selection-end="9461" vertical-scroll-proportion="2.7892003">
+        <state line="242" column="21" selection-start="9461" selection-end="9461" vertical-scroll-proportion="2.7352343">
           <folding>
             <element signature="method#getThreadPool#0;class#ThreadPoolBlockingExecutor#0" expanded="true" />
             <element signature="method#getWorkQueue#0;class#ThreadPoolBlockingExecutor#0" expanded="true" />
@@ -1101,14 +1145,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/WorkerJob.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="17" selection-start="1610" selection-end="1610" vertical-scroll-proportion="0.36448598">
+        <state line="34" column="17" selection-start="1610" selection-end="1610" vertical-scroll-proportion="0.3767821">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/StandardThreadPool.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="465" column="55" selection-start="15606" selection-end="15664" vertical-scroll-proportion="2.8712356">
+        <state line="465" column="55" selection-start="15606" selection-end="15664" vertical-scroll-proportion="2.8156822">
           <folding>
             <element signature="method#getExceptionHandler#0;class#StandardThreadPool#0" expanded="true" />
             <element signature="method#getDefaultWorkerJob#0;class#StandardThreadPool#0" expanded="true" />
@@ -1117,13 +1161,6 @@
             <element signature="method#getStateChangeLock#0;class#StandardThreadPool#0" expanded="true" />
             <element signature="method#getThreadFactory#0;class#StandardThreadPool#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutorStressTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="13" selection-start="565" selection-end="565" vertical-scroll-proportion="0.1588785">
-          <folding />
         </state>
       </provider>
     </entry>
