@@ -16,20 +16,6 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * The default implementation of the {@link ThreadPool} interface.
  * <p/>
- * Thread Terminate themself. This beats the whole purpose of
- * the return value in {@link org.codehaus.prometheus.threadpool.WorkerJob#runWork(Object)} method.
- * <p/>
- * The problem at the moment is shutting down. After the shutdown is called, which guarantees are made for the
- * worker threads. If the worker thread is getting his work, how can this be 'broken'? We don't want the task
- * to wait for something to occur that can't occur (deadlock). Eg: blocking executor doesn't accept new
- * jobs to be placed as soon as it shuts down, but if a worker happens to do a block on the workqueue,
- * it will never be waked up because nothing can place a new task. So who has the responsibility of shutting down
- * threads? Should it be the enclosing structure? It could work with poison messages.
- * <p/>
- * ANother problem:
- * if a thread retrieves false when doing a runJob, it will terminate itself. This means that the
- * actual poolsize can be smaller than the desired poolsize after termination.
- *
  * @author Peter Veentjer.
  */
 public class StandardThreadPool implements ThreadPool {
