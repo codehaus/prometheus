@@ -132,7 +132,7 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
     public void testUnsetOfInterruptStatus(boolean strict) throws InterruptedException {
         InterruptingAndDetectingRunnable detector = new InterruptingAndDetectingRunnable();
         newRunningRepeater(strict, new RepeatableRunnable(detector));
-        //give the runnable some time to run.
+        //give the runnable some time to runWork.
         sleepMs(DELAY_SMALL_MS);
 
         detector.assertNoInterruptFound();

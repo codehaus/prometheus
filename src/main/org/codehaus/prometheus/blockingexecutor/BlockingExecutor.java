@@ -36,40 +36,45 @@ import java.util.concurrent.*;
  * Integer result = futureTask.get();
  * </pre>
  * </dd>
+ * <p/>
+ * idea: add a tryExecute(Runnable) method.
  *
  * @author Peter Veentjer.
  */
-public interface BlockingExecutor{
-
-	/**
-     * A difference with the {@link java.util.concurrent.Executor#execute(Runnable)} is that
-     * this method blocks until the task can be executed, and the other method rejects the
-     * task.
-     *
-     * Todo:
-     * what about rejectionhandlers? Default no blocking rejectionhandler is
-     * provided.
-     *
-	 * @param task the task to tryExecute.
-	 * @throws InterruptedException if the current thread has been interrupted. If that happens,
-	 *                              the task is not executed.
-     * @throws RejectedExecutionException
-	 * @throws NullPointerException if task is null.
-	 */
-	void execute(Runnable task) throws InterruptedException;
+public interface BlockingExecutor {
 
     /**
-	 * Offers a task to this BlockingExecutor for (possible future) execution.
-	 *
-	 * @param task the task to tryExecute.
-	 * @param timeout how long to wait before giving up, in units of unit
-	 * @param unit    a TimeUnit determining how to interpret the timeout parameter
-	 * @return true if successful, or false if the specified waiting time elapses before space is available.
-	 * @throws InterruptedException if the current thread has been interrupted. If that happens,
-	 *                              the task is not executed by this BlockingExecutor.
-	 * @throws NullPointerException if task or unit is null.
-     * @throws RejectedExecutionException
-     * @throws TimeoutException 
-	 */
-	void tryExecute(Runnable task, long timeout, TimeUnit unit) throws InterruptedException,TimeoutException;
+     * Submits a task for execution. If there is no place to store the task, this call blocks.
+     * <p/>
+     * A difference with this method and the {@link java.util.concurrent.Executor#execute(Runnable)} is that
+     * former blocks and the latter uses his rejected execution handler.
+     *
+     * @param task the task to tryExecute.
+     * @throws InterruptedException       if the current thread has been interrupted. If that happens,
+     *                                    the task is not executed.
+     * @throws RejectedExecutionException if the task is rejected
+     * @throws NullPointerException       if task is <tt>null</tt>.
+     */
+    void execute(Runnable task) throws InterruptedException;
+
+    /**
+     * Offers a task for execution. If there is no place to store the task, this call block until
+     * one of the following things happens:
+     * <ol>
+     * <li>the task is accepted</li>
+     * <li>the task is rejected and throws a RejectedExecutionException</li>
+     * <li>the call is interrupted and throws an InterruptedException</li>
+     * <li>a timeout has occurred and throws a TimeoutException</li>
+     * </ol>
+     *
+     * @param task    the task to tryExecute.
+     * @param timeout how long to wait before giving up, in units of unit
+     * @param unit    a TimeUnit determining how to interpret the timeout parameter
+     * @throws InterruptedException       if the current thread has been interrupted. If that happens,
+     *                                    the task is not executed by this BlockingExecutor.
+     * @throws NullPointerException       if task or unit is <tt>null</tt>.
+     * @throws RejectedExecutionException if the task is rejected
+     * @throws TimeoutException           if the call times out.
+     */
+    void tryExecute(Runnable task, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
 }

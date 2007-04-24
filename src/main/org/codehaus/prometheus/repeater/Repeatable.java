@@ -5,7 +5,7 @@ package org.codehaus.prometheus.repeater;
  * difference between a Runnable is that the {@link #execute()} is able to return a boolean value:
  * <ol>
  *  <li><tt>true</tt> indicates that if should be executed again</li>
- *  <li><tt>false</tt> indicates that it should not be run again</li>
+ *  <li><tt>false</tt> indicates that it should not be runWork again</li>
  * </ol>
  * <p/>
  * 

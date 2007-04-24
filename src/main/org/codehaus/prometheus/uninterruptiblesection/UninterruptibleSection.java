@@ -48,7 +48,7 @@ package org.codehaus.prometheus.uninterruptiblesection;
  * Example of non uninterruptible thread.
  * <pre>
  * public class UninterruptibleThread implements Thread{
- *      public void run(){
+ *      public void runWork(){
  *          UninterruptibleSection section = new UninterruptibleSection(){
  *              protected Object interruptiblesection()throws InterruptedException{
  *                  blockingQueue.put("foo");

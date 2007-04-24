@@ -68,7 +68,7 @@ public abstract class BlockingRunnable extends TestRunnable {
      */
     public void assertState(BlockingState expectedState) {
         assertNoRuntimeException();
-        TestCase.assertNotNull("blocking state has not been set, has the task run?", state);
+        TestCase.assertNotNull("blocking state has not been set, has the task runWork?", state);
         TestCase.assertEquals(expectedState, state);
     }
 

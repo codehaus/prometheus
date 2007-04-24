@@ -260,15 +260,20 @@ public class ThreadPoolRepeater implements RepeaterService {
 
     private class WorkerJobImpl implements WorkerJob<Repeatable> {
 
-        public Repeatable getTask() throws InterruptedException {
+        public Repeatable getWork() throws InterruptedException {
             return lendableRef.take();
         }
 
-        public boolean executeTask(Repeatable task) throws Exception {
+        public Repeatable getWorkWhileShuttingdown() throws InterruptedException {
+            //no guarantees are made how many times a task is executed, so why try to retrieve
+            //one if we aren't required to process it.
+            return null;
+        }
+
+        public void runWork(Repeatable task) throws Exception {
             boolean again = true;
             try {
                 again = task.execute();
-                return true;
             } finally {
                 if (again)
                     lendableRef.takeback(task);

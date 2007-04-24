@@ -21,13 +21,16 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
 
     public class TestWorkerJob implements WorkerJob<Runnable> {
 
-        public Runnable getTask() throws InterruptedException {
+        public Runnable getWork() throws InterruptedException {
             return taskQueue.take();
         }
 
-        public boolean executeTask(Runnable task) throws Exception {
+        public Runnable getWorkWhileShuttingdown() throws InterruptedException {
+            return taskQueue.poll(0, TimeUnit.MILLISECONDS);
+        }
+
+        public void runWork(Runnable task) throws Exception {
             task.run();
-            return true;
         }
     }
 
@@ -68,7 +71,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     public void newShuttingdownThreadpool(int poolsize, long runningTimeMs) {
         newStartedThreadpool(poolsize);
 
-        letWorkersWork(poolsize,runningTimeMs);
+        letWorkersWork(poolsize, runningTimeMs);
         //give workers time to start executing the task.
         sleepMs(DELAY_SMALL_MS);
         //make sure that all workers are executing a job.

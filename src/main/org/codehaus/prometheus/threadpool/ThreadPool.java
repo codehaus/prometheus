@@ -14,12 +14,12 @@ import java.util.concurrent.locks.Lock;
  * The workers in the ThreadPool keep repeating a {@link WorkerJob}. A threadpool can have
  * a default workjob for those cases you always want to keep repeating the same job over
  * and over. But a future improvement is planned: creating a Worker with a given WorkerJob.
- * For a worker to execute a WorkJob, it first needs to execute {@link WorkerJob#getTask()} method
- * and after it has got his task it calls the {@link org.codehaus.prometheus.threadpool.WorkerJob#executeTask(Object)}
- * method. The getTask could be taking a reference from a LendableReference for example
+ * For a worker to execute a WorkJob, it first needs to execute {@link WorkerJob#getWork()} method
+ * and after it has got his task it calls the {@link org.codehaus.prometheus.threadpool.WorkerJob#runWork(Object)}
+ * method. The getWork could be taking a reference from a LendableReference for example
  * (see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater}) or taking a task from a
  * blocking queue {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor}. Workers
- * that are idle, are executing the getTask method (they are waiting for something to process) and else
+ * that are idle, are executing the getWork method (they are waiting for something to process) and else
  * they are working.
  *<p/>
  *
@@ -34,6 +34,9 @@ import java.util.concurrent.locks.Lock;
  * <p/>
  * Threads in threadpools are reused, so you don't want to throw them away.
  * is it desirable to let different jobs in the threadpool?
+ *
+ * The threadpool should have a notice how much work has to be done. For every piece of work
+ * this number is increased.
  */
 public interface ThreadPool {
 

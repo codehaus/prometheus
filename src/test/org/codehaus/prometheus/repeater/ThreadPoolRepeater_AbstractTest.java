@@ -66,8 +66,8 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
             repeater.repeat(task);
             //give the worker in the threadpool time to start the task
             //If this yield is removed, the thread is started, but maybe has not entered his
-            //run method. If the shutdownNow is called before the run method
-            //has run, the worker thread sees that the repeater is shutting down,
+            //runWork method. If the shutdownNow is called before the runWork method
+            //has runWork, the worker thread sees that the repeater is shutting down,
             //so the task is not going to be executed, and this is not
             //what we want.
             Thread.yield();

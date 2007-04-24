@@ -15,6 +15,20 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The default implementation of the {@link ThreadPool} interface.
+ * <p/>
+ * Thread Terminate themself. This beats the whole purpose of
+ * the return value in {@link org.codehaus.prometheus.threadpool.WorkerJob#runWork(Object)} method.
+ * <p/>
+ * The problem at the moment is shutting down. After the shutdown is called, which guarantees are made for the
+ * worker threads. If the worker thread is getting his work, how can this be 'broken'? We don't want the task
+ * to wait for something to occur that can't occur (deadlock). Eg: blocking executor doesn't accept new
+ * jobs to be placed as soon as it shuts down, but if a worker happens to do a block on the workqueue,
+ * it will never be waked up because nothing can place a new task. So who has the responsibility of shutting down
+ * threads? Should it be the enclosing structure? It could work with poison messages.
+ * <p/>
+ * ANother problem:
+ * if a thread retrieves false when doing a runJob, it will terminate itself. This means that the
+ * actual poolsize can be smaller than the desired poolsize after termination.
  *
  * @author Peter Veentjer.
  */
@@ -37,7 +51,7 @@ public class StandardThreadPool implements ThreadPool {
         this(new StandardThreadFactory());
     }
 
-    public StandardThreadPool(int poolsize){
+    public StandardThreadPool(int poolsize) {
         this();
         setDesiredPoolsize(poolsize);
     }
@@ -50,14 +64,14 @@ public class StandardThreadPool implements ThreadPool {
      * @throws NullPointerException if factory is <tt>null</tt>.
      */
     public StandardThreadPool(ThreadFactory factory) {
-        this(null,factory);
+        this(null, factory);
     }
 
-    public StandardThreadPool(int poolsize, ThreadFactory threadFactory){
-        this(null,threadFactory);
+    public StandardThreadPool(int poolsize, ThreadFactory threadFactory) {
+        this(null, threadFactory);
         setDesiredPoolsize(poolsize);
     }
-    
+
     /**
      * Creates a new StandardThreadPool with the given {@link ThreadFactory} and
      * workerJob.
@@ -107,7 +121,7 @@ public class StandardThreadPool implements ThreadPool {
                 case shutdown:
                     throw new IllegalStateException();
                 default:
-                    throw new RuntimeException("unhandled state: "+state);
+                    throw new RuntimeException("unhandled state: " + state);
             }
         } finally {
             mainLock.unlock();
@@ -148,9 +162,9 @@ public class StandardThreadPool implements ThreadPool {
                     }
                     break;
                 case shuttingdown:
-                    throw new IllegalStateException();
+                    throw new IllegalStateException("Can't change the poolsize because this threadpool is shutting down");
                 case shutdown:
-                    throw new IllegalStateException();
+                    throw new IllegalStateException("Can't change the poolsize because this threadpool is shut down");
                 default:
                     throw new RuntimeException("unhandeled state:" + state);
             }
@@ -338,25 +352,29 @@ public class StandardThreadPool implements ThreadPool {
          *
          * @return true if the defaultWorkerJob should be run again, false otherwise
          */
-        private boolean runAgain() {
+        private boolean wantedWorkerCheck() {
             //this method can't be called if the threadpool is unstarted, of shutdown.
             assert state == ThreadPoolState.started || state == ThreadPoolState.shuttingdown;
 
             mainLock.lock();
             try {
+                //if the threadpool is shutting down, we don't want workers to be terminated.
+                //Workers are going to terminate themselves when there is nothing more to do
+                //for them (so when getWorkWhileShuttingdown returns null).
                 if (state == ThreadPoolState.shuttingdown)
-                    return false;
+                    return true;
 
                 if (hasTooManyWorkers()) {
                     //there were too many threads in the pool, so remove this thread and return
-                    //false to indicate it should be terminated. If the worker is not removed,
-                    //another worker could also think he should be removed.
+                    //false to indicate it should be terminated. If the worker is not removed here,
+                    //another worker could also think he should be removed and this means that
+                    //too many threads terminate.
 
                     workers.remove(this);
                     return false;
                 } else {
                     //the pool is not too large, and it it still running, so return true
-                    //to run 
+                    //to runWork
                     return true;
                 }
             } finally {
@@ -364,12 +382,22 @@ public class StandardThreadPool implements ThreadPool {
             }
         }
 
+        /**
+         * Checks if there are too many workers (if there are more threads in the threadpool
+         * than 'desiredPoolSize'.
+         *
+         * @return true if there are too many workers, false otherwise.
+         */
         private boolean hasTooManyWorkers() {
             return workers.size() > desiredPoolsize;
         }
 
         /**
          * Interrupts the thread only if isn't executing a defaultWorkerJob.
+         * It doesn't meant that the worker receives an InterruptedException (it depends on the implementation
+         * of WorkerJob.getWork())
+         *
+         * @return true if the thread was idle, false otherwise.
          */
         private boolean interruptIfIdle() {
             //if the running lock is available, it isn't running, so
@@ -383,60 +411,122 @@ public class StandardThreadPool implements ThreadPool {
                     runningLock.unlock();
                 }
             } else {
-                //interrupt was failure.
+                //the lock could not be obtained because the worker is 'active'.
+                //and this means that it is not interrupted.
                 return false;
+            }
+        }
+
+        boolean isShuttingDown() {
+            mainLock.lock();
+            try {
+                return ThreadPoolState.shuttingdown == state;
+            } finally {
+                mainLock.unlock();
             }
         }
 
         public void run() {
             try {
-                while (runAgain()) {
-                    //get the task
-                    Object task = null;
-                    try {
-                        //while getting the defaultWorkerJob, a thread can be interrupted
-                        //this means that is can interrupt when it is waiting
-                        //for something to do.
-                        task = defaultWorkerJob.getTask();
-                    } catch (InterruptedException ex) {
-                        //do nothing
-                        //     System.out.println("interrupted while getting task");
-                    } catch (Exception ex) {
-                        exceptionHandler.handle(ex);
-                    }
-
-                    //execute the task if one is retrieved.
-                    if (task != null) {
-                        try {
-                            runningLock.lock();
-                            try {
-                                defaultWorkerJob.executeTask(task);
-                            } finally {
-                                runningLock.unlock();
-                            }
-                        } catch (Exception e) {
-                            exceptionHandler.handle(e);
-                        } finally {
-                            //remove the interrupt flag, if the threadpool is shutting down (and possibly
-                            //interrupted the thread) the loop will shutdown when it does the runAgain.
-                            Thread.interrupted();
-                        }
-                    }
+                mainloop();
+                if (isShuttingDown()) {
+                    shuttingdownloop();
                 }
             } finally {
                 workerDone();
             }
         }
 
+        private void mainloop() {
+            //loop that processes all work for shutting down.
+            for (; ;) {
+                if (isShuttingDown())
+                    break;
+
+                Object work = null;
+                try {
+                    work = defaultWorkerJob.getWork();
+                } catch (InterruptedException ex) {
+                    //ignore it
+                } catch (Exception ex) {
+                    //todo: needs to be handled
+                }
+
+                if (work != null)
+                    runWork(work);
+
+                if (!wantedWorkerCheck())
+                    break;
+            }
+        }
+
+        private void shuttingdownloop() {
+            for (; ;) {
+                Object work = null;
+                try {
+                    work = defaultWorkerJob.getWorkWhileShuttingdown();
+                    //if null was returned, the worker is completely finished.
+                    //and can terminate the loop.
+                    if (work == null)
+                        break;
+                } catch (InterruptedException ex) {
+                    //ignore it. If the worker was interrupted while getting work for shutdown,
+                    //just keep trying untill null is returned.
+                } catch (Exception ex) {
+                    //todo: needs to be handled
+                }
+
+                //if work was retrieved, execute it. If null was returned we would not come here.
+                if (work != null)
+                    runWork(work);
+            }
+        }
+
+
+        /**
+         * Lets the Worker execute the Work. The work is executed under a runningLock that marks it as
+         * 'running' and prevents it from being seen as idle (and being interrupted while idle).
+         * <p/>
+         * All exceptions are caught and send to the exceptionHandler. Other throwable's, like Error,
+         * or not caught and could potentially damage the ThreadPool internals. The exceptionhandler
+         * is also called under the same runningLock as defaultWorkJob.runWork. Meaning that it also
+         * won't be seen as an idle action. If an exceptionhandler throws an exception, this exception
+         * is gobbled up.
+         *
+         * @param work
+         */
+        private void runWork(Object work) {
+            runningLock.lock();
+            try {
+                defaultWorkerJob.runWork(work);
+            } catch (Exception e) {
+                //the exceptionHandler also is used under the runningLock. The exceptionhandler
+                //also is used under a try/catch meaning that an exception handler that throws an
+                //exception won't corrupt the threadpool.
+                try {
+                    exceptionHandler.handle(e);
+                } catch (Exception ex) {
+                    //just eat the exception.
+                }
+            } finally {
+                //remove the interrupt flag, if the threadpool is shutting down (and possibly
+                //interrupted the thread)
+                Thread.interrupted();
+                runningLock.unlock();
+            }
+        }
+
+        /**
+         * Does cleanup when a worker terminates. If it is the last worker, it marks the threadpool
+         * as completely shutdown.
+         */
         private void workerDone() {
             //this worker is going to terminate.
             mainLock.lock();
             try {
                 workers.remove(this);//it could be that the thread already is removed.
                 if (state == ThreadPoolState.shuttingdown && workers.isEmpty()) {
-                    //it is the last thread, and the threadpool is shutting down
                     updateState(ThreadPoolState.shutdown);
-                    shutdownLatch.open();
                 }
             } finally {
                 mainLock.unlock();

@@ -19,35 +19,43 @@ import java.util.concurrent.TimeoutException;
  */
 public interface BlockingExecutorService extends BlockingExecutor {
 
+    /**
+     * Returns the ExceptionHandler this BlockingExecutorService uses to handle exceptions.
+     * The returned value will never be <tt>null</tt>.
+     *
+     * @return the ExceptionHandler this BlockingExecutorService uses to handle exceptions.
+     */
     ExceptionHandler getExceptionHandler();
-    
+
+    /**
+     *
+     * @param handler
+     */
     void setExceptionHandler(ExceptionHandler handler);
 
     /**
+     * Starts this BlockingExecutorService.
+     *
      * if already started or paused nothing happens
      * if shutting down or shutdownNow -> illegalsstateexception
      */
     void start();
 
     /**
-     * Shuts down this BlockingExecutor. All outstanding tasks
-     * are executed, but new tasks are not accepted.
+     * Shuts down this BlockingExecutor. All outstanding tasks are executed, but new tasks are not
+     * accepted. Running tasks are not interrupted.
      * <p/>
-     * If this BlockingExecutor already is shutting down,
-     * or shutdownNow, this call is ignored.
+     * If this BlockingExecutor already is shutting down or shutdownNow, this call is ignored.
      * <p/>
-     * This call doesn't block until all outstanding and currently
-     * started tasks are executed, a {@link #awaitShutdown()} has
-     * to be used for that.
-     *
-     * todo: are started tasks interrupted?
+     * This call doesn't block until all outstanding and currently started tasks are executed,
+     * a {@link #awaitShutdown()} has to be used for that.
      */
     void shutdown();
 
     /**
-     * Shuts down this BlockingExecutor. All outstanding tasks
-     * are not executed, but are returned. New tasks are not
-     * accepted.
+     * Shuts down this BlockingExecutor. All outstanding tasks are not executed, but are returned.
+     * New tasks are not accepted. Running tasks are interrupted, it is up to the task to be responsive
+     * to interrupts. If a task isn't responsibe, it can lead to a delay in the shutdown.
      * <p/>
      * If this BlockingExecutor already is shutting down, or shutdownNow,
      * this call is ignored.
@@ -55,16 +63,14 @@ public interface BlockingExecutorService extends BlockingExecutor {
      * This call doesn't block until all currently started tasks are
      * executed, a {@link #awaitShutdown()} has to be used for that.
      *
-     * todo: are started tasks interrupted?
-     *
      * @return a List containing all not executed tasks.
      */
     List<Runnable> shutdownNow();
 
     /**
-     * Returns the BlockingExecutorServiceState this BlockingExecutorService is in.
+     * Returns the state this BlockingExecutorService has.
      *
-     * @return the BlockingExecutorServiceState this BlockingExecutorService is in.
+     * @return the state this BlockingExecutorService has.
      */
     BlockingExecutorServiceState getState();
 
@@ -73,11 +79,11 @@ public interface BlockingExecutorService extends BlockingExecutor {
      * <p/>
      * This call can finish in 2 ways:
      * <ol>
-     * <li>this BlockingExecutorService is completely shutdownNow</li>
-     * <li>the calling thread is interrupted</li>
+     * <li>this BlockingExecutorService is completely shutdown</li>
+     * <li>the calling thread is interrupted and throws an InterruptedException</li>
      * </ol>
      *
-     * @throws InterruptedException if the current thread is interrupted while waiting for shutdownNow.
+     * @throws InterruptedException if the current thread is interrupted while waiting for shutdown.
      */
     void awaitShutdown() throws InterruptedException;
    /**
@@ -92,8 +98,8 @@ public interface BlockingExecutorService extends BlockingExecutor {
      *
      * @param timeout
      * @param unit
-     * @throws TimeoutException
-     * @throws InterruptedException
+     * @throws TimeoutException if the wait has timed out.
+     * @throws InterruptedException if the wait was interrupted
      * @throws NullPointerException if unit is null.
      */
     void tryAwaitShutdown(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException;

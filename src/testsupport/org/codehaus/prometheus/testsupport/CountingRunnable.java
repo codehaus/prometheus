@@ -49,7 +49,7 @@ public class CountingRunnable implements Runnable {
     }
 
     /**
-     * Returns the number of times the run method is called. This value
+     * Returns the number of times the runWork method is called. This value
      * could be stale at the moment it is received.
      */
     public long getCount() {

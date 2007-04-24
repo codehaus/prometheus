@@ -34,7 +34,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
         Thread t = new Thread(r);
         t.start();
 
-        //give other thread time to run
+        //give other thread time to runWork
         Thread.yield();
         return t;
     }

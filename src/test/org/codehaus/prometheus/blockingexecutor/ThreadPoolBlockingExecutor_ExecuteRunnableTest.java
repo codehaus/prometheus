@@ -90,7 +90,7 @@ public class ThreadPoolBlockingExecutor_ExecuteRunnableTest extends ThreadPoolBl
 
         t.assertIsTerminatedWithThrowing(RejectedExecutionException.class);
 
-        //give a worker thread the chance to run
+        //give a worker thread the chance to runWork
         sleepMs(100);
         assertEquals(oldState, executor.getState());
         task.assertNotExecuted();

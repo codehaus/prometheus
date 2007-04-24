@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A CountingCallable is a Callable that maintains a count and
- * increases it everytime it is run. When the call is executed, it
+ * increases it everytime it is runWork. When the call is executed, it
  * returns null.
  *
  * @author Peter Veentjer.

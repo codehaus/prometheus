@@ -12,7 +12,7 @@ import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.concurrent.*;
 
-public class ThreadPoolBlockingExecutor_AbstractTest extends ConcurrentTestCase {
+public abstract class ThreadPoolBlockingExecutor_AbstractTest extends ConcurrentTestCase {
 
     public volatile ThreadPoolBlockingExecutor executor;
 
