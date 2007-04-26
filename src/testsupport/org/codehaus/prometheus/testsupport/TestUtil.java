@@ -54,9 +54,9 @@ public class TestUtil {
     public static void allowOtherThreadsToRun() {
         Thread.yield();
     }
-    
+
     public static TestThread scheduleSignallAll(final Lock lock, final Condition cond) {
-        if(lock == null || cond == null)throw new NullPointerException();
+        if (lock == null || cond == null) throw new NullPointerException();
 
         Runnable notifier = new Runnable() {
             public void run() {
@@ -76,7 +76,7 @@ public class TestUtil {
 
 
     public static TestThread scheduleSpuriousWakeup(final Lock lock, final Condition cond, final long delay) {
-        if(lock == null || cond == null)throw new NullPointerException();
+        if (lock == null || cond == null) throw new NullPointerException();
 
         Runnable notifier = new Runnable() {
             public void run() {
@@ -95,5 +95,18 @@ public class TestUtil {
         TestThread t = new TestThread(notifier);
         t.start();
         return t;
+    }
+
+    public static void someCalculation(long iterations) {
+        double pi = PI(iterations);
+        if (pi <= 0)
+            System.out.println("Benchmark exited with unrealistic value " + pi);
+    }
+
+    public static double PI(long i) {
+        double total = 0.0;
+        for (long j = 1; j <= i; j += 4)
+            total += 1.0 / j - 1.0 / (j + 2);
+        return 4 * total;
     }
 }

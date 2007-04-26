@@ -34,6 +34,12 @@ public abstract class ConcurrentTestCase extends TestCase {
     //when to teardown this test.
     public final Set<Thread> threadList = Collections.synchronizedSet(new HashSet<Thread>());
 
+    public ConcurrentTestCase(){}
+
+    public ConcurrentTestCase(String fixture){
+        super(fixture);
+    }
+
     public void registerThread(Thread t){
         if(t == null)throw new NullPointerException();
         threadList.add(t);

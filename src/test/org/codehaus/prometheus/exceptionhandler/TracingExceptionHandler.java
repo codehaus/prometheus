@@ -7,45 +7,57 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
  * @author Peter Veentjer.
  */
-public class TracingExceptionHandler implements ExceptionHandler{
+public class TracingExceptionHandler implements ExceptionHandler {
 
-    private List<Exception> list = Collections.synchronizedList(new LinkedList());
+    private List<Exception> exceptionList = Collections.synchronizedList(new LinkedList());
 
     public int getCount(Class exceptionClass) {
         int count = 0;
-        for(Throwable t: list){
-            if(exceptionClass.isInstance(t)){
+        for (Throwable t : exceptionList) {
+            if (exceptionClass.isInstance(t)) {
                 count++;
             }
         }
         return count;
     }
 
-    public int getCount(){
-        return list.size();
+    public int getCount() {
+        return exceptionList.size();
     }
 
-    public void assertCount(Class exceptionClass, int expectedCount){
-        TestCase.assertEquals(expectedCount,getCount(exceptionClass));
+    public void assertCount(Class exceptionClass, int expectedCount) {
+        TestCase.assertEquals(expectedCount, getCount(exceptionClass));
     }
 
-    public void assertCount(int expectedCount){
-        TestCase.assertEquals(expectedCount,list.size());
+    /**
+     * Prints the tacktraces of all thrown exceptions.
+     */
+    public void printStacktraces() {
+        if(exceptionList.isEmpty())
+            return;
+
+        System.out.println(String.format("==================== stacktraces: %d ==================",exceptionList.size()));
+        for (Exception ex : exceptionList)
+            ex.printStackTrace();
+        System.out.println("================== end stacktraces ==================");
     }
 
-    public void assertNoErrors(){
+    public void assertCount(int expectedCount) {
+        TestCase.assertEquals(expectedCount, exceptionList.size());
+    }
+
+    public void assertNoErrors() {
         assertCount(0);
     }
 
-    public void assertCountAndNoOthers(Class exceptionClass, int expectedCount){
+    public void assertCountAndNoOthers(Class exceptionClass, int expectedCount) {
         assertCount(expectedCount);
-        TestCase.assertEquals(expectedCount,getCount(exceptionClass));
+        TestCase.assertEquals(expectedCount, getCount(exceptionClass));
     }
 
     public void handle(Exception ex) {
-        list.add(ex);
+        exceptionList.add(ex);
     }
 }

@@ -5,11 +5,12 @@
     <property name="version.main"           value="0.1"/>
     <property name="name.main"              value="prometheus"/>
     <property name="name.testsupport"       value="prometheus-testsupport"/>
-    
+
     <property name="src"                    value="src"/>
     <property name="src.main"               value="${src}/main"/>
     <property name="src.test"               value="${src}/test"/>
     <property name="src.testsupport"        value="${src}/testsupport"/>
+    <property name="src.stresstest"         value="${src}/stresstest"/>
     <property name="lib"                    value="lib"/>
     <property name="lib.provided"           value="${lib}/provided"/>
     <property name="lib.support"            value="${lib}/support"/>
@@ -24,9 +25,9 @@
     <property name="unitreports"            value="${target}/junit-reports"/>
 
     <path id="classpath.provided">
-          <fileset dir="${lib.provided}">
-              <include name="**/*.jar"/>
-          </fileset>
+        <fileset dir="${lib.provided}">
+            <include name="**/*.jar"/>
+        </fileset>
     </path>
 
     <path id="classpath.support">
@@ -38,7 +39,7 @@
     <target name="clean"
             description="Removes all generated files">
 
-        <delete dir="${target}"/>        
+        <delete dir="${target}"/>
     </target>
 
     <target name="init">
@@ -57,9 +58,27 @@
                source="1.5">
             <classpath>
                 <path refid="classpath.provided"/>
-			</classpath>
-         </javac>
+            </classpath>
+        </javac>
     </target>
+
+
+    <target name="compile.test"
+            description="Compiles the sources of the tests"
+            depends="compile.main,compile.testsupport">
+
+        <mkdir dir="${classes.tests}"/>
+
+        <javac debug="on" source="1.5" srcdir="${src.test}" destdir="${classes.tests}">
+            <classpath>
+                <pathelement path="${classes.main}/"/>
+                <pathelement path="${classes.testsupport}/"/>
+                <path refid="classpath.provided"/>
+                <path refid="classpath.support"/>
+            </classpath>
+        </javac>
+    </target>
+
 
     <target name="compile.testsupport"
             description="Compiles the sources of testsupport"
@@ -79,9 +98,9 @@
         </javac>
     </target>
 
-    <target  name="compile.all"
-             description="Compiles all sources"
-             depends="compile.main,compile.testsupport"/>
+    <target name="compile.all"
+            description="Compiles all sources"
+            depends="compile.main,compile.testsupport,compile.test"/>
 
     <target name="javadoc.main"
             description="Generates Javadoc for the main package"
@@ -117,13 +136,13 @@
                  version="true"
                  windowtitle="Prometheus Testsupport"
                  private="false">
-                <!--classpath refid="compile.classpath"/ -->
-            </javadoc>
+            <!--classpath refid="compile.classpath"/ -->
+        </javadoc>
     </target>
 
     <target name="javadoc.all"
             depends="javadoc.main,javadoc.testsupport"
-           description="Generates Javadoc for all packages"/>
+            description="Generates Javadoc for all packages"/>
 
     <target name="jar.main"
             depends="compile.main"
@@ -133,7 +152,7 @@
 
         <jar jarfile="${target}/${name.main}-${version.main}.jar"
              basedir="${classes.main}"/>
-   </target>
+    </target>
 
     <target name="jar.testsupport"
             depends="compile.testsupport"
@@ -153,36 +172,62 @@
             depends="clean,jar.all,test.main,javadoc.all"
             description="Makes the binary distribution">
 
-            <zip file="${target}/${name.main}-${version.main}.zip" >
-                <zipfileset file="License.html"
-                            prefix="${name.main}-${version.main}"/>
-                <zipfileset file="license.css"
-                            prefix="${name.main}-${version.main}"/>
-                <zipfileset file="${target}/${name.main}-${version.main}.jar"
-                            prefix="${name.main}-${version.main}"/>
-                <zipfileset file="${target}/${name.testsupport}-${version.main}.jar"
-                            prefix="${name.main}-${version.main}"/>
-                <zipfileset dir="${lib}"
-                            prefix="${name.main}-${version.main}/lib"/>
-                <zipfileset dir="${javadoc.main}"
-                            prefix="${name.main}-${version.main}/doc/api-main"/>
-                <zipfileset dir="${doc}"
-                            prefix="${name.main}-${version.main}/doc"/>
-                <zipfileset dir="${javadoc.testsupport}"
-                            prefix="${name.main}-${version.main}/doc/api-testsupport"/>
-            </zip>
+        <zip file="${target}/${name.main}-${version.main}.zip">
+            <zipfileset file="License.html"
+                        prefix="${name.main}-${version.main}"/>
+            <zipfileset file="license.css"
+                        prefix="${name.main}-${version.main}"/>
+            <zipfileset file="${target}/${name.main}-${version.main}.jar"
+                        prefix="${name.main}-${version.main}"/>
+            <zipfileset file="${target}/${name.testsupport}-${version.main}.jar"
+                        prefix="${name.main}-${version.main}"/>
+            <zipfileset dir="${lib}"
+                        prefix="${name.main}-${version.main}/lib"/>
+            <zipfileset dir="${javadoc.main}"
+                        prefix="${name.main}-${version.main}/doc/api-main"/>
+            <zipfileset dir="${doc}"
+                        prefix="${name.main}-${version.main}/doc"/>
+            <zipfileset dir="${javadoc.testsupport}"
+                        prefix="${name.main}-${version.main}/doc/api-testsupport"/>
+        </zip>
     </target>
 
     <target name="test.main"
-            description="Executes all tests"
-            depends="compile.main">
+            description="Executes standard tests"
+            depends="compile.main,compile.test">
 
-        <mkdir dir="${classes.tests}"/>
+        <mkdir dir="${unitreports}"/>
 
-        <javac debug="on" source="1.5" srcdir="${src.test}" destdir="${classes.tests}">
+        <junit haltonfailure="no" fork="on" printsummary="on">
             <classpath>
                 <pathelement path="${classes.main}/"/>
                 <pathelement path="${classes.testsupport}/"/>
+                <pathelement path="${classes.tests}/"/>
+                <path refid="classpath.provided"/>
+                <path refid="classpath.support"/>
+            </classpath>
+            <jvmarg value="-ea"/>
+            <formatter type="plain"/>
+            <batchtest todir="${unitreports}">
+                <fileset dir="${src.test}">
+                    <include name="**/*Test.java"/>
+                    <exclude name="**/*AbstractTest.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="test.stress"
+            description="Executes the stress tests"
+            depends="compile.main,compile.test">
+
+        <mkdir dir="${classes.tests}"/>
+
+        <javac debug="on" source="1.5" srcdir="${src.stresstest}" destdir="${classes.tests}">
+            <classpath>
+                <pathelement path="${classes.main}/"/>
+                <pathelement path="${classes.testsupport}/"/>
+                <pathelement path="${classes.tests}/"/>
                 <path refid="classpath.provided"/>
                 <path refid="classpath.support"/>
             </classpath>
@@ -194,19 +239,22 @@
             <classpath>
                 <pathelement path="${classes.main}/"/>
                 <pathelement path="${classes.testsupport}/"/>
-                <pathelement path="${classes.tests}/"/>                
+                <pathelement path="${classes.tests}/"/>
                 <path refid="classpath.provided"/>
                 <path refid="classpath.support"/>
             </classpath>
             <jvmarg value="-ea"/>
             <formatter type="plain"/>
             <batchtest todir="${unitreports}">
-                <fileset dir="${src.test}">
+                <fileset dir="${src.stresstest}">
                     <include name="**/*Test.java"/>
-                    <exclude name="**/*AbstractTest.java"/>                    
+                    <exclude name="**/*AbstractTest.java"/>
                 </fileset>
             </batchtest>
         </junit>
     </target>
 
+    <target name="test.all"
+            description="Runs all the tests"
+            depends="test.main,test.stress"/>
 </project>
