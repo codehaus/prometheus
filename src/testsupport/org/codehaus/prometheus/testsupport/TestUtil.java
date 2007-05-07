@@ -22,17 +22,27 @@ import java.util.concurrent.locks.Lock;
  */
 public class TestUtil {
 
+    public static int randomInt(int maxvalue){
+        Random r = new Random();
+        return r.nextInt(maxvalue+1);
+    }
+
+    public static long randomLong(long maxvalue){
+        Random r = new Random();
+        return Math.abs(r.nextLong() % maxvalue);
+    }
+
     public static void sleepRandomMs(long maxSleepMs) {
         sleepRandom(maxSleepMs, TimeUnit.MILLISECONDS);
     }
 
     public static void sleepRandom(long maxSleep, TimeUnit unit) {
-        Random r = new Random();
-        long sleepNs = Math.abs(r.nextInt()) % maxSleep;
+        long sleepNs = randomLong(maxSleep);
 
         long ms = unit.toMillis(sleepNs);
-        int ns = (int) (unit.toNanos(sleepNs) % (1000 * 1000));
+        int ns = (int) (unit.toNanos(sleepNs) % TimeUnit.MILLISECONDS.toNanos(1));
         try {
+        //    System.out.println("ms "+ms+" ns "+ns);
             Thread.sleep(ms, ns);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -99,10 +109,11 @@ public class TestUtil {
 
     public static void someCalculation(long iterations) {
         double pi = PI(iterations);
-        if (pi <= 0)
+        if (pi <= -1)
             System.out.println("Benchmark exited with unrealistic value " + pi);
     }
 
+    //never returns a value smaller than 0
     public static double PI(long i) {
         double total = 0.0;
         for (long j = 1; j <= i; j += 4)

@@ -3,18 +3,26 @@ package org.codehaus.prometheus.channels;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Created by IntelliJ IDEA.
- * User: alarmnummer
- * Date: Apr 1, 2007
- * Time: 7:43:28 PM
- * To change this template use File | Settings | File Templates.
+ *
+ *
+ * @author Peter Veentjer.
  */
 public class BufferedChannel<E> implements InputChannel<E>,OutputChannel<E>{
     private final BlockingQueue<E> queue;
 
+    public BufferedChannel(){
+        this(new LinkedBlockingQueue<E>());
+    }
+
+    public BufferedChannel(int capacity){
+        this(new LinkedBlockingQueue<E>(capacity));
+    }
+
     public BufferedChannel(BlockingQueue<E> queue){
+        if(queue == null)throw new NullPointerException();
         this.queue = queue;
     }
 

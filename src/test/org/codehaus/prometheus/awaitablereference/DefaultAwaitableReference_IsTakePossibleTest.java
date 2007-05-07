@@ -11,16 +11,30 @@ public class DefaultAwaitableReference_IsTakePossibleTest extends DefaultAwaitab
         Integer ref = 10;
 
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
-        assertTrue(awaitableRef.isTakePossible());
+        assertTakeIsPossible();
 
-        //check that a take doesn't influence
-        TakeThread thread = scheduleTake();
-        joinAll(thread);
-        assertTrue(awaitableRef.isTakePossible());
+        //taking an item also doesn't influence
+        take();
+        assertTakeIsPossible();
     }
 
     public void testNoItemAvailable() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
+        assertTakeIsNotPossible();
+    }
+
+    private void assertTakeIsPossible() {
+        assertTrue(awaitableRef.isTakePossible());
+    }
+
+    private void take() {
+        TakeThread thread = scheduleTake();
+        
+        joinAll(thread);
+        thread.assertIsTerminatedWithoutThrowing();
+    }
+
+    private void assertTakeIsNotPossible() {
         assertFalse(awaitableRef.isTakePossible());
     }
 }

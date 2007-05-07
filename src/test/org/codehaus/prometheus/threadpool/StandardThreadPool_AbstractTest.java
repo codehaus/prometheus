@@ -35,22 +35,25 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     }
 
     /**
-     * Places the given number of job on the taskqueue. Each job is a SleepingRunnable
-     * (can be interrupted) that works for an eon.
+     * Ensure that all workers are working
      *
-     * @param jobcount
+     * @param delayMs the duration of the task
      * @throws InterruptedException
      */
-    public void letWorkersWork(int jobcount, long delayMs) {
-        if (jobcount < 0) throw new IllegalArgumentException();
-
+    public void ensureNoIdleWorkers(long delayMs) {
         try {
-            for (int k = 0; k < jobcount; k++)
+            for (int k = 0; k < threadpool.getDesiredPoolSize(); k++)
                 taskQueue.put(new SleepingRunnable(delayMs));
         } catch (InterruptedException ex) {
             fail("unexpected interrupted exception");
         }
     }
+
+    //all workers are going to execute a task that takes an eon to complete
+    public void ensureNoIdleWorkers(){
+        ensureNoIdleWorkers(DELAY_EON_MS);
+    }
+
 
     public void setUp() throws Exception {
         super.setUp();
@@ -71,7 +74,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     public void newShuttingdownThreadpool(int poolsize, long runningTimeMs) {
         newStartedThreadpool(poolsize);
 
-        letWorkersWork(poolsize, runningTimeMs);
+        ensureNoIdleWorkers(runningTimeMs);
         //give workers time to start executing the task.
         sleepMs(DELAY_SMALL_MS);
         //make sure that all workers are executing a job.
@@ -116,6 +119,8 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
 
     public void assertIsShutdown() {
         assertEquals(ThreadPoolState.shutdown, threadpool.getState());
+        assertEquals(0, threadpool.getActualPoolSize());
+        //todo:check that threads in threadpool have terminated
     }
 
     public void assertIsShuttingdown() {
@@ -137,6 +142,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
             return;
 
         TestThread t = new TestThread() {
+            @Override
             protected void runInternal() throws Exception {
                 threadpool.shutdownNow();
                 threadpool.awaitShutdown();
@@ -197,24 +203,28 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
             this.poolsize = poolsize;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             threadpool.setDesiredPoolsize(poolsize);
         }
     }
 
     public class StartThread extends TestThread {
+        @Override
         protected void runInternal() {
             threadpool.start();
         }
     }
 
     public class ShutdownNowThread extends TestThread {
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             threadpool.shutdownNow();
         }
     }
 
     public class ShutdownThread extends TestThread {
+        @Override
         protected void runInternal() {
             threadpool.shutdown();
         }
@@ -227,6 +237,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
             this.workerJob = workerJob;
         }
 
+        @Override
         protected void runInternal() throws Exception {
             threadpool.setWorkerJob(workerJob);
         }
@@ -239,12 +250,14 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
             this.timeoutMs = timeoutMs;
         }
 
+        @Override
         public void runInternal() throws TimeoutException, InterruptedException {
             threadpool.tryAwaitShutdown(timeoutMs, TimeUnit.MILLISECONDS);
         }
     }
 
     public class AwaitShutdownThread extends TestThread {
+        @Override
         protected void runInternal() throws InterruptedException {
             threadpool.awaitShutdown();
         }

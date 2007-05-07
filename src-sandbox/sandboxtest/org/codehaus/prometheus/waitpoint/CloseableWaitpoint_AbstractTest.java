@@ -108,6 +108,7 @@ public abstract class CloseableWaitpoint_AbstractTest extends ConcurrentTestCase
             this.unit = unit;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             foundRemainingTimeoutNs = waitpoint.tryPass(timeout, unit);
         }
@@ -123,12 +124,14 @@ public abstract class CloseableWaitpoint_AbstractTest extends ConcurrentTestCase
     }
 
     public class PassThread extends TestThread {
+        @Override
         protected void runInternal() throws InterruptedException {
             waitpoint.pass();
         }
     }
 
     public class OpenThread extends TestThread {
+        @Override
         public void runInternal() throws Exception {
             waitpoint.open();
         }
@@ -138,6 +141,7 @@ public abstract class CloseableWaitpoint_AbstractTest extends ConcurrentTestCase
 
         private Boolean success;
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             success = waitpoint.tryPass();
         }

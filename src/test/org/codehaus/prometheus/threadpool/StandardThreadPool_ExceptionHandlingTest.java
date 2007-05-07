@@ -33,7 +33,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         for(int k=0;k<errorcount;k++)        
             taskQueue.add(new ThrowingRunnable());
 
-        sleepMs(DELAY_MEDIUM_MS);
+        giveOthersAChance();
         assertActualPoolsize(poolsize);
         assertIsStarted();
         threadPoolExceptionHandler.assertCount(errorcount);
@@ -49,7 +49,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         shutdownThread.assertIsTerminatedWithoutThrowing();
 
         //make sure that no exception has been thrown.
-        sleepMs(DELAY_MEDIUM_MS);
+        giveOthersAChance();
         threadPoolExceptionHandler.assertCount(0);
     }
 

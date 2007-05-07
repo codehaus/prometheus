@@ -143,12 +143,13 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
     class ExecuteThread extends TestThread {
         private volatile Object foundReturnValue;
 
+        @Override
         protected void runInternal() {
             foundReturnValue = section.execute();
         }
 
         public void assertSuccess(Object expectedReturnValue){
-            assertIsTerminated();
+            assertIsTerminatedWithoutThrowing();
             assertSame(expectedReturnValue, foundReturnValue);
         }
     }

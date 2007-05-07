@@ -5,13 +5,6 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.testsupport.DummyRunnable;
-import org.codehaus.prometheus.testsupport.NonInterruptableSleepingRunnable;
-
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 /**
  * Unittests the {@link ThreadPoolBlockingExecutor#shutdown()} method.
  *
@@ -20,63 +13,74 @@ import java.util.concurrent.TimeoutException;
 public class ThreadPoolBlockingExecutor_ShutdownTest extends ThreadPoolBlockingExecutor_AbstractTest {
 
     public void testNotStarted() {
-        newUnstartedBlockingExecutor(1,1);
-        executor.shutdown();
+        newUnstartedBlockingExecutor(1, 10);
+
+        shutdown();
+
         assertIsShutdown();
+        threadFactory.assertNoThreadsCreated();
     }
 
-    public void testRunningWithoutRunningTask() {
-        newStartedBlockingExecutor(1,1);
-        executor.shutdown();
-        Thread.yield();
+    public void testRunning_noWorkersNoUnprocessedWork() {
+        newStartedBlockingExecutor(1, 0);
+
+        shutdown();
         assertIsShutdown();
+        threadFactory.assertNoThreadsCreated();
     }
 
-    public void testRunningWithRunningTask() {
-        newStartedBlockingExecutor(1,1,new NonInterruptableSleepingRunnable(500));
-        executor.shutdown();
-        Thread.yield();
+    public void testRunning_workersAreIdle() {
+        int poolsize = 10;
+        newStartedBlockingExecutor(0, poolsize);
+
+        shutdown();
+
+        giveOthersAChance();
+        assertIsShutdown();
+        threadFactory.assertCreatedCount(poolsize);
+    }
+
+    public void testRunning_workersAreNotIdle() {
+        int poolsize = 10;
+        newStartedBlockingExecutor(0, poolsize);
+
+        //let all workers work for ever
+        executeEonTask(poolsize);
+
+        giveOthersAChance();
+
+        shutdown();
+
+        //check all invariants
         assertIsShuttingDown();
-
-        sleepMs(510);
-        assertIsShutdown();
+        threadFactory.assertCreatedCount(poolsize);
+        threadFactory.assertAllThreadsAlive();
     }
 
     public void testShutdownWhileShuttingDown() {
-        newShuttingDownBlockingExecutor(1000);
-        executor.shutdown();
-        Thread.yield();
+        newShuttingDownBlockingExecutor(DELAY_EON_MS);
+
+        shutdown();
+
         assertIsShuttingDown();
-        assertWontAcceptNewTasks();
+        threadFactory.assertCreatedCount(1);
+        threadFactory.assertAllThreadsAlive();
     }
 
     public void testShutdownWhileShutdown() {
-        newShutdownBlockingExecutor(1,1);
-        executor.shutdown();
+        newShutdownBlockingExecutor(1, 5);
+        int oldPoolsize = threadFactory.getThreadCount();
+
+        shutdown();
+
         assertIsShutdown();
-        assertWontAcceptNewTasks();
+        threadFactory.assertCreatedCount(oldPoolsize);
     }
 
-    public void assertWontAcceptNewTasks() {
-        try {
-            try {
-                executor.execute(new DummyRunnable());
-                fail();
-            } catch (RejectedExecutionException ex) {
-                assertTrue(true);
-            }
-
-            try {
-                executor.tryExecute(new DummyRunnable(), 1, TimeUnit.MILLISECONDS);
-                fail();
-            } catch (RejectedExecutionException ex) {
-                assertTrue(true);
-            }
-        } catch (InterruptedException e) {
-            fail();
-        } catch (TimeoutException ex) {
-            fail();
-        }
+    private void shutdown() {
+        ShutdownThread shutdownThread = scheduleShutdown();
+        joinAll(shutdownThread);
+        shutdownThread.assertIsTerminatedWithoutThrowing();
     }
 }
 

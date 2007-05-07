@@ -77,12 +77,12 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         awaitableRef = new DefaultAwaitableReference<Integer>();
         TimedTryTakeThread takeThread = scheduleTryTake(DELAY_SMALL_MS);
 
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         takeThread.assertIsStarted();
 
         PutThread putThread = schedulePut(ref);
-        joinAll(putThread,takeThread);
 
+        joinAll(putThread,takeThread);
         takeThread.assertSuccess(ref);
         assertHasReference(ref);
     }
@@ -92,7 +92,6 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         TimedTryTakeThread taker = scheduleTryTake(DELAY_SMALL_MS);
 
         joinAll(taker);
-
         taker.assertIsTimedOut();
         assertHasReference(null);
     }
@@ -100,7 +99,8 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
     public void testInterruptedWhileWaiting() throws TimeoutException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
         TimedTryTakeThread taker = scheduleTryTake(DELAY_SMALL_MS);
-        sleepMs(DELAY_TINY_MS);
+
+        giveOthersAChance();
         taker.assertIsStarted();
 
         taker.interrupt();
@@ -112,7 +112,8 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
     public void testSpuriousWakeup() throws TimeoutException, InterruptedException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
         TimedTryTakeThread taker = scheduleTryTake(DELAY_SMALL_MS);
-        sleepMs(DELAY_TINY_MS);
+
+        giveOthersAChance();
         taker.assertIsStarted();
 
         Thread spurious = scheduleSpuriousWakeup();
@@ -121,8 +122,8 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
 
         Integer ref = 20;
         PutThread putter = schedulePut(ref);
-        joinAll(putter,taker);
 
+        joinAll(putter,taker);
         taker.assertSuccess(ref);
         assertHasReference(ref);
     }

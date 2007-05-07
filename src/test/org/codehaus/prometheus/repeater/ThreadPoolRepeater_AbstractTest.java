@@ -112,12 +112,12 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertIsShuttingdown();
     }
 
-    public void tearDown() throws Exception{
+    public void tearDown() throws Exception {
         super.tearDown();
 
         if (repeater != null) {
             repeater.shutdownNow();
-            repeater.tryAwaitShutdown(5,TimeUnit.SECONDS);
+            repeater.tryAwaitShutdown(5, TimeUnit.SECONDS);
         }
     }
 
@@ -167,6 +167,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
             this.task = task;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             repeater.repeat(task);
         }
@@ -188,6 +189,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
             this.task = task;
         }
 
+        @Override
         public void runInternal() {
             success = repeater.tryRepeat(task);
         }
@@ -221,6 +223,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
             this.unit = unit;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             repeater.tryRepeat(task, timeout, unit);
         }

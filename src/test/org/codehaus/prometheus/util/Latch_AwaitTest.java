@@ -10,7 +10,7 @@ package org.codehaus.prometheus.util;
  *
  * @author Peter Veentjer.
  */
-public class Latch_awaitTest extends Latch_AbstractTest {
+public class Latch_AwaitTest extends Latch_AbstractTest {
 
     public void testAlreadyOpen_startUninterrupted() {
         testAlreadyOpen(false);
@@ -22,10 +22,11 @@ public class Latch_awaitTest extends Latch_AbstractTest {
 
     public void testAlreadyOpen(boolean startInterrupted) {
         newOpenLatch();
+
         AwaitThread awaitThread = scheduleAwait(startInterrupted);
 
         joinAll(awaitThread);
-        awaitThread.assertIsTerminated();
+        awaitThread.assertIsTerminatedWithoutThrowing();
         awaitThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
     }
 
@@ -41,13 +42,14 @@ public class Latch_awaitTest extends Latch_AbstractTest {
         newClosedLatch();
         AwaitThread awaitThread = scheduleAwait(START_UNINTERRUPTED);
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         awaitThread.assertIsStarted();
 
         //now open the latch, and check if the awaitthread was successful.
         OpenThread openThread = scheduleOpen();
+
         joinAll(awaitThread, openThread);
-        awaitThread.assertIsTerminated();
+        awaitThread.assertIsTerminatedWithoutThrowing();
         awaitThread.assertIsTerminatedWithInterruptStatus(false);
     }
 
@@ -55,11 +57,12 @@ public class Latch_awaitTest extends Latch_AbstractTest {
         newClosedLatch();
         AwaitThread awaitThread = scheduleAwait(START_UNINTERRUPTED);
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         awaitThread.assertIsStarted();
 
         awaitThread.interrupt();
-        sleepMs(DELAY_SMALL_MS);
+
+        giveOthersAChance();
         awaitThread.assertIsInterruptedByException();
     }
 
@@ -67,16 +70,19 @@ public class Latch_awaitTest extends Latch_AbstractTest {
         newClosedLatch();
         AwaitThread awaitThread = scheduleAwait(START_UNINTERRUPTED);
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         awaitThread.assertIsStarted();
 
         Thread spuriousThread = scheduleSpuriousWakeup();
-        joinAllAndSleepMs(DELAY_SMALL_MS,spuriousThread);
+
+        joinAll(spuriousThread);
+        giveOthersAChance();
         awaitThread.assertIsStarted();
 
         OpenThread openThread = scheduleOpen();
+
         joinAll(awaitThread, openThread);
-        awaitThread.assertIsTerminated();
+        awaitThread.assertIsTerminatedWithoutThrowing();
         awaitThread.assertIsTerminatedWithInterruptStatus(false);
     }
 }

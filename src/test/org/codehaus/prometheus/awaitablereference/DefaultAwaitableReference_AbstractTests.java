@@ -105,6 +105,7 @@ public abstract class DefaultAwaitableReference_AbstractTests extends Concurrent
             this.newRef = newRef;            
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             foundOldRef = awaitableRef.put(newRef);
         }
@@ -119,6 +120,7 @@ public abstract class DefaultAwaitableReference_AbstractTests extends Concurrent
 
         private volatile Integer foundTakenRef;
 
+        @Override
         protected void runInternal() throws InterruptedException {
             foundTakenRef = awaitableRef.take();
         }
@@ -142,6 +144,7 @@ public abstract class DefaultAwaitableReference_AbstractTests extends Concurrent
             this.ref = ref;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             foundRef = awaitableRef.tryPut(ref, timeout, timeoutUnit);
         }
@@ -163,6 +166,7 @@ public abstract class DefaultAwaitableReference_AbstractTests extends Concurrent
             this.unit = unit;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             foundTakenRef = awaitableRef.tryTake(timeout, unit);
         }
@@ -176,6 +180,7 @@ public abstract class DefaultAwaitableReference_AbstractTests extends Concurrent
     public class TryTakeThread extends TestThread {
         private volatile Integer foundRef;
 
+        @Override
         public void runInternal() {
             foundRef = awaitableRef.tryTake();
         }

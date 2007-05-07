@@ -15,7 +15,7 @@ public class NullInputChannel<E> implements InputChannel<E>{
     }
 
     public E poll() {
-        return null;
+         return null;
     }
 
     public E poll(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {

@@ -5,56 +5,72 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.testsupport.NonInterruptableSleepingRunnable;
-import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.testsupport.TracingThreadFactory;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.*;
 
+/**
+ * @author Peter Veentjer
+ */
 public abstract class ThreadPoolBlockingExecutor_AbstractTest extends ConcurrentTestCase {
 
     public volatile ThreadPoolBlockingExecutor executor;
+    public volatile TracingThreadFactory threadFactory;
 
     public void tearDown() {
         if (executor != null)
             executor.shutdown();
     }
 
+    public ThreadPoolBlockingExecutor getExecutor() {
+        return executor;
+    }
+
+    public TracingThreadFactory getThreadFactory() {
+        return threadFactory;
+    }
+
     public void newStartedBlockingExecutor(int queuesize, int poolsize) {
-        newUnstartedBlockingExecutor(queuesize,poolsize);
+        newUnstartedBlockingExecutor(queuesize, poolsize);
         executor.start();
     }
 
     public void newStartedBlockingExecutor() {
-       newShutdownBlockingExecutor(1,1);
+        newShutdownBlockingExecutor(1, 1);
     }
 
-
-    public void newStartedBlockingExecutor(int queuesize, int poolsize,Runnable initialTask) {
-        newStartedBlockingExecutor(queuesize,poolsize);
+    public void newStartedBlockingExecutor(int queuesize, int poolsize, Runnable initialTask) {
+        newStartedBlockingExecutor(queuesize, poolsize);
         try {
             executor.execute(initialTask);
-            Thread.yield();
+            giveOthersAChance();
         } catch (InterruptedException e) {
             fail();
         }
     }
 
     public void newUnstartedBlockingExecutor(int queuesize, int poolsize) {
+        BlockingQueue<Runnable> queue = queuesize == 0 ? new SynchronousQueue() : new LinkedBlockingQueue();
+        threadFactory = new TracingThreadFactory(new StandardThreadFactory());
         executor = new ThreadPoolBlockingExecutor(
-                        new StandardThreadFactory(),
-                        poolsize,
-                        new LinkedBlockingQueue<Runnable>(queuesize));
+                threadFactory,
+                poolsize,
+                queue);
     }
 
-    public void newShutdownBlockingExecutor(int queuesize,int poolsize) {
-        newUnstartedBlockingExecutor(queuesize,poolsize);
+    public void newShutdownBlockingExecutor(int queuesize, int poolsize) {
+        newUnstartedBlockingExecutor(queuesize, poolsize);
         executor.shutdown();
     }
 
     public void newShuttingDownBlockingExecutor(long timeMs) {
-        newStartedBlockingExecutor(1,1,new NonInterruptableSleepingRunnable(timeMs));
+        newStartedBlockingExecutor(1, 1, new SleepingRunnable(timeMs));
         executor.shutdown();
     }
 
@@ -80,15 +96,17 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
     public void assertIsShutdown() {
         assertEquals(BlockingExecutorServiceState.Shutdown, executor.getState());
+        threadFactory.assertThreadsHaveTerminated();
+        assertWorkQueueIsEmpty();
     }
 
-    public void assertWorkQueueIsEmpty(){
+    public void assertWorkQueueIsEmpty() {
         assertTrue(executor.getWorkQueue().isEmpty());
     }
 
     public void assertTasksOnWorkQueue(Runnable... expected) {
         BlockingQueue workQueue = executor.getWorkQueue();
-        Runnable[] foundTasks = (Runnable[]) workQueue.toArray();
+        Runnable[] foundTasks = (Runnable[]) workQueue.toArray(new Runnable[]{});
         assertEquals(expected.length, foundTasks.length);
         for (int k = 0; k < expected.length; k++) {
             Runnable foundTask = foundTasks[k];
@@ -97,25 +115,66 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         }
     }
 
+    public void executeEonTask(int count) {
+        for (int k = 0; k < count; k++)
+            executeEonTask();
+    }
+
+    public SleepingRunnable executeEonTask() {
+        SleepingRunnable sleepingRunnable = new SleepingRunnable(DELAY_EON_MS);
+        try {
+            executor.execute(sleepingRunnable);
+        } catch (InterruptedException ex) {
+            fail();
+        }
+        return sleepingRunnable;
+    }
+
+
     public TryAwaitShutdownThread scheduleTryAwaitShutdown(long delayMs) {
-        TryAwaitShutdownThread t = new TryAwaitShutdownThread(delayMs, TimeUnit.MILLISECONDS);
+        TryAwaitShutdownThread t = new TryAwaitShutdownThread(delayMs);
         t.start();
         return t;
     }
 
-    public AwaitShutdownThread scheduleAwaitShutdown(){
-       AwaitShutdownThread t = new AwaitShutdownThread();
+    public TryExecuteThread scheduleTryExecute(Runnable task, long timeoutMs) {
+        TryExecuteThread t = new TryExecuteThread(task, timeoutMs);
         t.start();
         return t;
     }
 
-    public ShutdownThread scheduleShutdown(){
+    public TryExecuteThread scheduleDelayedTryExecute(Runnable task, long delayMs, long timeoutMs) {
+        TryExecuteThread t = new TryExecuteThread(task, timeoutMs);
+        t.setDelayMs(delayMs);
+        t.start();
+        return t;
+    }
+
+    public AwaitShutdownThread scheduleAwaitShutdown() {
+        AwaitShutdownThread t = new AwaitShutdownThread();
+        t.start();
+        return t;
+    }
+
+    public StartThread scheduleStart() {
+        StartThread t = new StartThread();
+        t.start();
+        return t;
+    }
+
+    public ShutdownThread scheduleShutdown() {
         ShutdownThread t = new ShutdownThread();
         t.start();
         return t;
     }
 
-    public ExecuteThread scheduleExecute(Runnable task, boolean startInterrupted){
+    public ShutdownNowThread scheduleShutdownNow() {
+        ShutdownNowThread t = new ShutdownNowThread();
+        t.start();
+        return t;
+    }
+
+    public ExecuteThread scheduleExecute(Runnable task, boolean startInterrupted) {
         ExecuteThread t = new ExecuteThread(task);
         t.setStartInterrupted(startInterrupted);
         t.start();
@@ -129,22 +188,22 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
             this.task = task;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException {
             executor.execute(task);
         }
     }
 
     public class TryAwaitShutdownThread extends TestThread {
-        private final long timeout;
-        private final TimeUnit timeoutUnit;
+        private final long timeoutMs;
 
-        public TryAwaitShutdownThread(long timeout, TimeUnit timeoutUnit) {
-            this.timeout = timeout;
-            this.timeoutUnit = timeoutUnit;
+        public TryAwaitShutdownThread(long timeoutMs) {
+            this.timeoutMs = timeoutMs;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
-            executor.tryAwaitShutdown(timeout, timeoutUnit);
+            executor.tryAwaitShutdown(timeoutMs, TimeUnit.MILLISECONDS);
         }
 
         public void assertSuccess() {
@@ -153,15 +212,69 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public class ShutdownThread extends TestThread {
-        protected void runInternal() throws InterruptedException, TimeoutException {
-           executor.shutdown();
+
+        @Override
+        protected void runInternal() {
+            executor.shutdown();
+        }
+    }
+
+    public class ShutdownNowThread extends TestThread {
+        private List<Runnable> foundTask;
+
+        @Override
+        protected void runInternal() throws Exception {
+            foundTask = executor.shutdownNow();
+        }
+
+        public void assertSuccess(Runnable... expectedTasks) {
+            assertIsTerminatedWithoutThrowing();
+            List<Runnable> list = Arrays.asList(expectedTasks);
+            assertEquals(list, foundTask);
         }
     }
 
     public class AwaitShutdownThread extends TestThread {
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             executor.awaitShutdown();
+        }
+    }
+
+    public class StartThread extends TestThread {
+        @Override
+        protected void runInternal() throws InterruptedException, TimeoutException {
+            executor.start();
+        }
+    }
+
+
+    public class TryExecuteThread extends TestThread {
+
+        private final Runnable task;
+        private final long timeoutMs;
+        private volatile Boolean rejected;
+
+        public TryExecuteThread(Runnable task, long timeoutMs) {
+            this.task = task;
+            this.timeoutMs = timeoutMs;
+        }
+
+        @Override
+        protected void runInternal() throws InterruptedException, TimeoutException {
+            executor.tryExecute(task, timeoutMs, TimeUnit.MILLISECONDS);
+            rejected = false;
+        }
+
+        public void assertIsSuccess() {
+            assertIsTerminated();
+            assertEquals(Boolean.FALSE, rejected);
+        }
+
+        public void assertIsRejected() {
+            assertIsTerminated();
+            assertEquals(Boolean.TRUE, rejected);
         }
     }
 }

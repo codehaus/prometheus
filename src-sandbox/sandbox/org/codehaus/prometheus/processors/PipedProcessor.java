@@ -13,9 +13,9 @@ public class PipedProcessor<E, F> implements Processor {
     private final PipedProcess<E, F> process;
     private final InputChannel<E> input;
     private final OutputChannel<F> output;
-    private final ProcessEventDispatcher eventDispatcher = null;
-    private volatile InputChannel<ProcessorEvent> incomingEventChannel = new NullInputChannel<ProcessorEvent>();
-    private volatile OutputChannel<ProcessorEvent> outgoingEventChannel = new NullOutputChannel<ProcessorEvent>();
+    private final EventDispatcher eventDispatcher = null;
+    private volatile InputChannel<Event> incomingEventChannel = new NullInputChannel<Event>();
+    private volatile OutputChannel<Event> outgoingEventChannel = new NullOutputChannel<Event>();
     //todo: sequence stuff.
 
     public PipedProcessor(PipedProcess<E, F> process, InputChannel<E> input, OutputChannel<F> output) {
@@ -37,12 +37,12 @@ public class PipedProcessor<E, F> implements Processor {
         return output;
     }
 
-    public void setIncomingEventChannel(InputChannel<ProcessorEvent> incomingEventChannel) {
+    public void setIncomingEventChannel(InputChannel<Event> incomingEventChannel) {
         this.incomingEventChannel = incomingEventChannel;
     }
 
     public boolean processOneMsg() throws Exception {
-        ProcessorEvent event = incomingEventChannel.poll();
+        Event event = incomingEventChannel.poll();
         if (event == null) {
             E input = this.input.take();
             F result = process.process(input);

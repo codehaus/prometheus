@@ -10,14 +10,14 @@ package org.codehaus.prometheus.awaitablereference;
  *
  * @author Peter Veentjer.
  */
-public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference_AbstractTests{
+public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference_AbstractTests {
 
-    public void testStartInterrupted(){
+    public void testStartInterrupted() {
         Integer oldRef = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
         Integer newRef = 20;
-        PutThread putThread = schedulePut(newRef,START_INTERRUPTED);
+        PutThread putThread = schedulePut(newRef, START_INTERRUPTED);
 
         joinAll(putThread);
         putThread.assertSuccess(oldRef);
@@ -32,26 +32,30 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
         TakeThread taker2 = scheduleTake();
 
         //make sure the takes are waiting
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         taker1.assertIsStarted();
         taker2.assertIsStarted();
 
         //first enter a null value
-        Integer firstNewRef = null;
-        PutThread putter = schedulePut(firstNewRef);
-        joinAll(putter);
-        putter.assertSuccess(oldRef);
+        put(null, oldRef);
         taker1.assertIsStarted();
         taker2.assertIsStarted();
         assertHasReference(null);
 
         //now enter a non null value
         Integer secondNewRef = 2;
-        putter = schedulePut(secondNewRef);
+        put(secondNewRef, null);
+        PutThread putter = schedulePut(secondNewRef);
         joinAll(putter, taker1, taker2);
         assertHasReference(secondNewRef);
 
         taker1.assertSuccess(secondNewRef);
         taker2.assertSuccess(secondNewRef);
+    }
+
+    private void put(Integer newRef, Integer expectedReturnedRef) {
+        PutThread putter = schedulePut(newRef);
+        joinAll(putter);
+        putter.assertSuccess(expectedReturnedRef);
     }
 }

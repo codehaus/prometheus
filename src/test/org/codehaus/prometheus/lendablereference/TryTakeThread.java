@@ -16,6 +16,7 @@ public class TryTakeThread<E> extends TestThread {
         this.lendableRef = lendableRef;
     }
 
+    @Override
     protected void runInternal() {
         foundRef = lendableRef.tryTake();
     }

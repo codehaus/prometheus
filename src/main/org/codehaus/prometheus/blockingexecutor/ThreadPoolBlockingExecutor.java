@@ -123,7 +123,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
 
     public List<Runnable> shutdownNow() {
         //the shutdown action is atomic.
-        ThreadPoolState previousState = threadPool.shutdown();
+        ThreadPoolState previousState = threadPool.shutdownNow();
 
         //at most once the previous state can be started
         if (previousState != ThreadPoolState.started) {
@@ -134,7 +134,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
             return Collections.EMPTY_LIST;
         }
 
-        //this is the first call to the shutdownNow method.
+        //this is the first call to the shutdownNow method, so return the unprocessed tasks
         return drainWorkQueue();
     }
 

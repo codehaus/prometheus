@@ -24,6 +24,7 @@ public class PutThread<E> extends TestThread {
         this.newRef = newRef;
     }
 
+    @Override
     protected void runInternal() throws InterruptedException, TimeoutException {
         replacedRef = lendableRef.put(newRef);
     }

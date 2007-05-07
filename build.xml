@@ -11,6 +11,7 @@
     <property name="src.test"               value="${src}/test"/>
     <property name="src.testsupport"        value="${src}/testsupport"/>
     <property name="src.stresstest"         value="${src}/stresstest"/>
+    <property name="src.sandbox"            value="src-sandbox/sandbox"/>
     <property name="lib"                    value="lib"/>
     <property name="lib.provided"           value="${lib}/provided"/>
     <property name="lib.support"            value="${lib}/support"/>
@@ -22,6 +23,7 @@
     <property name="classes.main"           value="${target}/classes.main"/>
     <property name="classes.testsupport"    value="${target}/classes.testsupport"/>
     <property name="classes.tests"          value="${target}/classes.test"/>
+    <property name="classes.sandbox"        value="${target}/classes.sandbox"/>
     <property name="unitreports"            value="${target}/junit-reports"/>
 
     <path id="classpath.provided">
@@ -38,7 +40,6 @@
 
     <target name="clean"
             description="Removes all generated files">
-
         <delete dir="${target}"/>
     </target>
 
@@ -62,6 +63,22 @@
         </javac>
     </target>
 
+    <target name="compile.sandbox"
+            description="Compiles the sources of the sandbox package"
+            depends="compile.main">
+
+        <mkdir dir="${classes.sandbox}"/>
+
+        <javac debug="on"
+               srcdir="${src.sandbox}"
+               destdir="${classes.sandbox}"
+               source="1.5">
+            <classpath>
+                <path refid="classpath.provided"/>
+                <pathelement path="${classes.main}/"/>
+            </classpath>
+        </javac>
+    </target>
 
     <target name="compile.test"
             description="Compiles the sources of the tests"
@@ -78,7 +95,6 @@
             </classpath>
         </javac>
     </target>
-
 
     <target name="compile.testsupport"
             description="Compiles the sources of testsupport"
@@ -100,7 +116,7 @@
 
     <target name="compile.all"
             description="Compiles all sources"
-            depends="compile.main,compile.testsupport,compile.test"/>
+            depends="compile.main,compile.testsupport,compile.test,compile.sandbox"/>
 
     <target name="javadoc.main"
             description="Generates Javadoc for the main package"
@@ -164,8 +180,18 @@
              basedir="${classes.testsupport}"/>
     </target>
 
+    <target name="jar.sandbox"
+            depends="compile.sandbox"
+            description="Builds the jar for the sandbox module">
+
+        <mkdir dir="${target}"/>
+
+        <jar jarfile="${target}/${name.main}-sandbox-${version.main}.jar"
+             basedir="${classes.sandbox}"/>
+    </target>
+
     <target name="jar.all"
-            depends="jar.main,jar.testsupport"
+            depends="jar.main,jar.sandbox,jar.testsupport"
             description="build all jars"/>
 
     <target name="dist.bin"
@@ -198,7 +224,7 @@
 
         <mkdir dir="${unitreports}"/>
 
-        <junit haltonfailure="no" fork="on" printsummary="on">
+        <junit haltonfailure="yes" fork="on" printsummary="on" filtertrace="off">
             <classpath>
                 <pathelement path="${classes.main}/"/>
                 <pathelement path="${classes.testsupport}/"/>

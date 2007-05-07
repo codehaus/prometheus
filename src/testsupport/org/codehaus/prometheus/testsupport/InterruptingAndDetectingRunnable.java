@@ -18,6 +18,7 @@ public class InterruptingAndDetectingRunnable extends TestRunnable {
 
     private volatile boolean interruptfound = false;
 
+    @Override
     public void runInternal() {
         detectInterruptStatus();
         setInterruptStatus();

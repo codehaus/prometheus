@@ -69,6 +69,7 @@ public class ConcurrencyUtil_SleepTest extends ConcurrentTestCase {
             this.periodUnit = periodUnit;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             ConcurrencyUtil.sleep(period, periodUnit);
         }

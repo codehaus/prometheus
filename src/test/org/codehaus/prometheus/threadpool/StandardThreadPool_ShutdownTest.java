@@ -10,10 +10,19 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
     public void testWhileUnstarted() {
         newUnstartedThreadPool(10);
 
-        ShutdownThread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
+        shutdown();
 
-        shutdownThread.assertIsTerminatedWithoutThrowing();
+        assertIsShutdown();
+        threadPoolThreadFactory.assertCreatedCount(0);
+    }
+
+    public void testWhileRunningButEmptyPool() {
+        newStartedThreadpool(0);
+
+        shutdown();
+
+        sleepMs(DELAY_SMALL_MS);
+
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(0);
     }
@@ -22,85 +31,64 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
-        ShutdownThread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
+        shutdown();
 
         sleepMs(DELAY_SMALL_MS);
+
         assertIsShutdown();
-        assertEquals(0, threadpool.getActualPoolSize());
         threadPoolThreadFactory.assertCreatedCount(poolsize);
     }
 
-    public void testNonIdleWorkerIsNotInterrupted() {
+    public void testNonIdleWorkerAreNotInterrupted() {
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
-        letWorkersWork(poolsize,DELAY_EON_MS);
+        ensureNoIdleWorkers(DELAY_EON_MS);
         //give workers time to start executing the task.
         sleepMs(DELAY_SMALL_MS);
         //make sure that all workers are executing a job.
         assertTrue(taskQueue.isEmpty());
 
-        ShutdownThread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
+        shutdown();
 
         sleepMs(DELAY_SMALL_MS);
-        assertIsShuttingdown();
 
-        assertEquals(poolsize, threadpool.getActualPoolSize());
+        assertIsShuttingdown();
+        assertActualPoolsize(poolsize);
         threadPoolThreadFactory.assertCreatedCount(poolsize);
     }
 
-    public void testWhileRunningButEmptyPool() {
-        newStartedThreadpool(0);
-
-        ShutdownThread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
-
-        sleepMs(DELAY_SMALL_MS);
-
-        assertIsShutdown();
-        assertEquals(0, threadpool.getActualPoolSize());
-        threadPoolThreadFactory.assertCreatedCount(0);
-    }
-
-    public void testWhileShuttingDown_allWorkersAreInterrupted() {
+    public void testWhileShuttingDown_workersAreNotInterrupted() {
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
-        letWorkersWork(poolsize,DELAY_EON_MS);
+        ensureNoIdleWorkers(DELAY_EON_MS);
         //give workers time to start executing the task.
         sleepMs(DELAY_SMALL_MS);
         //make sure that all workers are executing a job.
         assertTrue(taskQueue.isEmpty());
 
-        //shut down the threadpool
-        ShutdownThread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
+        shutdown();
+
+        sleepMs(DELAY_SMALL_MS);
+
         assertIsShuttingdown();
-        sleepMs(DELAY_SMALL_MS);
-
-        //give the shutdown now command
-        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
-        joinAll(shutdownNowThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
-
-        //check that all workers have terminated.
-        sleepMs(DELAY_SMALL_MS);
-        assertIsShutdown();
-        assertEquals(0, threadpool.getActualPoolSize());
         threadPoolThreadFactory.assertCreatedCount(poolsize);
     }
 
     public void testWhileShutdown() {
         newShutdownThreadpool();
 
+        shutdown();
+
+        assertIsShutdown();
+    }
+
+
+    private ShutdownThread shutdown() {
         ShutdownThread shutdownThread = scheduleShutdown();
         joinAll(shutdownThread);
-
         shutdownThread.assertIsTerminatedWithoutThrowing();
-        assertIsShutdown();
+        return shutdownThread;
     }
 }

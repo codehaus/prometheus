@@ -27,6 +27,7 @@ public class LendThread<E> extends TestThread {
         this.takebackRef = takebackRef;
     }
 
+    @Override
     public void runInternal() {
         lendState = LendState.waitingfortake;
         try {

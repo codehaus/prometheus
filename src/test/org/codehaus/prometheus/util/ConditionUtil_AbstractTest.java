@@ -49,6 +49,7 @@ public abstract class ConditionUtil_AbstractTest extends ConcurrentTestCase {
             this.lock = lock;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             lock.lock();
             try {
@@ -77,6 +78,7 @@ public abstract class ConditionUtil_AbstractTest extends ConcurrentTestCase {
             this.timeoutNs = timeoutNs;
         }
 
+        @Override
         protected void runInternal() throws TimeoutException {
             lock.lock();
             try {

@@ -36,6 +36,7 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
         final Integer ref = 10;
         lendableRef = new RelaxedLendableReference(ref);
         TestThread thread = new TestThread(){
+            @Override
             protected void runInternal() throws InterruptedException, TimeoutException {
                 Integer ref = lendableRef.take();
                 sleepMs(DELAY_SMALL_MS);

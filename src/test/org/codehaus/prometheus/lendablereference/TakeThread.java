@@ -32,6 +32,7 @@ public class TakeThread<E> extends TestThread {
         this.lendableRef = lendableRef;
     }
 
+    @Override
     public void runInternal() {
         state = BlockingState.waiting;
 

@@ -1,28 +1,32 @@
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TestUtil;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
+import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.threadpool.StandardThreadPool;
+import org.codehaus.prometheus.util.StandardThreadFactory;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.TimeUnit;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * Stress tests the execution of tasks in the {@link ThreadPoolBlockingExecutor}. It isn't
+ * means as a performance test.
+ *
  * Improvements:
- * -make the queue bounded
  * -test with different the number of thread in the threadpool
  */
-public class ThreadPoolBlockingExecutorStressTest extends ConcurrentTestCase {
+public class ThreadPoolBlockingExecutor_ExecuteStressTest extends ConcurrentTestCase {
     private volatile ThreadPoolBlockingExecutor executor;
     private volatile AtomicInteger executedCount;
     private volatile List<TaskProducer> workerList;
     private volatile TracingExceptionHandler exceptionHandler;
 
     public void setUp() {
-        executor = new ThreadPoolBlockingExecutor(10);
+        ThreadFactory factory = new StandardThreadFactory(Thread.MIN_PRIORITY, "test");
+        executor = new ThreadPoolBlockingExecutor(new StandardThreadPool(10, factory), new LinkedBlockingQueue<Runnable>(50));
         executor.start();
         exceptionHandler = new TracingExceptionHandler();
         executor.setExceptionHandler(exceptionHandler);
@@ -50,9 +54,9 @@ public class ThreadPoolBlockingExecutorStressTest extends ConcurrentTestCase {
         stressTest(100, 10);
     }
 
-    //public void test_5() throws InterruptedException {
-    //    stressTest(100, 1000);
-    //}
+    public void test_5() throws InterruptedException {
+        stressTest(100, 1000);
+    }
 
     public void stressTest(int producerCount, int repeatCount) throws InterruptedException {
         placeWork(producerCount, repeatCount);
@@ -63,7 +67,8 @@ public class ThreadPoolBlockingExecutorStressTest extends ConcurrentTestCase {
     private void assertOk(int producerCount, int repeatCount) {
         int expectedCount = producerCount * repeatCount;
         assertEquals(expectedCount, executedCount.intValue());
-        exceptionHandler.assertNoErrors();
+        exceptionHandler.printStacktraces();
+        exceptionHandler.assertNoErrors();        
     }
 
     private void placeWork(int producerCount, int repeatCount) {
@@ -90,31 +95,11 @@ public class ThreadPoolBlockingExecutorStressTest extends ConcurrentTestCase {
     }
 
     public TaskProducer scheduleWorker(int count) {
-        TaskProducer thread = new TaskProducer(count);
+        TaskProducer thread = new TaskProducer(count,executor);
         workerList.add(thread);
         thread.start();
         return thread;
     }
 
-    class TaskProducer extends TestThread {
-        private final int taskCount;
 
-        public TaskProducer(int taskCount) {
-            this.taskCount = taskCount;
-        }
-
-        protected void runInternal() throws Exception {
-            for (int k = 0; k < taskCount; k++) {
-                executor.execute(new Task());
-                TestUtil.sleepRandom(20, TimeUnit.MILLISECONDS);
-            }
-        }
-    }
-
-    public class Task implements Runnable {
-        public void run() {
-            executedCount.incrementAndGet();
-            TestUtil.sleepRandom(20, TimeUnit.MILLISECONDS);
-        }
-    }
 }

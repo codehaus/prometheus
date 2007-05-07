@@ -29,11 +29,11 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
         latch.open();
     }
 
-    public void assertLatchOpen(){
+    public void assertIsOpen(){
         assertTrue(latch.isOpen());
     }
 
-    public void assertLatchClosed(){
+    public void assertIsClosed(){
         assertFalse(latch.isOpen());
     }
 
@@ -55,6 +55,7 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
     }
 
     public class OpenWithoutLockingThread extends TestThread {
+        @Override
         public void runInternal() {
             latch.openWithoutLocking();
         }
@@ -84,6 +85,7 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
     public class TryAwaitThread extends TestThread {
         private volatile boolean success;
 
+        @Override
         public void runInternal() {
             success = latch.tryAwait();
         }
@@ -100,12 +102,14 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
     }
 
     public class AwaitThread extends TestThread {
+        @Override
         protected void runInternal() throws InterruptedException {
             latch.await();
         }
     }
 
     public class OpenThread extends TestThread {
+        @Override
         public void runInternal() {
             latch.open();
         }
@@ -118,6 +122,7 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
             this.timeoutMs = timeoutMs;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             latch.tryAwait(timeoutMs, TimeUnit.MILLISECONDS);
         }

@@ -34,22 +34,34 @@ public abstract class ConcurrentTestCase extends TestCase {
     //when to teardown this test.
     public final Set<Thread> threadList = Collections.synchronizedSet(new HashSet<Thread>());
 
-    public ConcurrentTestCase(){}
+    public ConcurrentTestCase() {
+    }
 
-    public ConcurrentTestCase(String fixture){
+    public ConcurrentTestCase(String fixture) {
         super(fixture);
     }
 
-    public void registerThread(Thread t){
-        if(t == null)throw new NullPointerException();
+    public void registerThread(Thread t) {
+        if (t == null) throw new NullPointerException();
         threadList.add(t);
     }
 
+    public void giveOthersAChance() {
+        giveOthersAChance(DELAY_SMALL_MS);
+    }
+
+    public void giveOthersAChance(long ms) {
+        sleepMs(ms);
+        Thread.yield();//operation increased the chance of context switches, but it is allowed to be seen as a no-op
+    }
+
+    @Override
     public void setUp() throws Exception {
         stopwatch = new Stopwatch();
     }
 
-    public void tearDown()throws Exception{
+    @Override
+    public void tearDown() throws Exception {
         threadList.clear();
     }
 
@@ -89,9 +101,9 @@ public abstract class ConcurrentTestCase extends TestCase {
 
     /**
      * Joins on all threads and sleeps for a cetain amount of time. For more
-     * information see {@link #joinAll(Thread[])} and {@link #sleepMs(long)} 
+     * information see {@link #joinAll(Thread[])} and {@link #sleepMs(long)}
      *
-     * @param delayMs the number of milliseconds to sleep.
+     * @param delayMs the number of milliseconds to giveOthersAChance.
      * @param threads the threads to join on.
      */
     public void joinAllAndSleepMs(long delayMs, Thread... threads) {
@@ -101,10 +113,10 @@ public abstract class ConcurrentTestCase extends TestCase {
     /**
      * Sleeps a certain number of milliseconds. If the calling thread is interrupted,
      * the test fails.
-     *
+     * <p/>
      * Only the thread that runs the testcase should call this method.
      *
-     * @param ms the number of milliseconds to sleep.
+     * @param ms the number of milliseconds to giveOthersAChance.
      */
     public void sleepMs(long ms) {
         sleep(ms, TimeUnit.MILLISECONDS);
@@ -113,11 +125,11 @@ public abstract class ConcurrentTestCase extends TestCase {
     /**
      * Sleeps a certain amount of time. If the calling thread is interrupted, the test
      * fails.
-     *
+     * <p/>
      * Only the thread that runs this testcase should call this method.
      *
-     * @param period the period to sleep. If the number is equal or smaller than zero, no
-     *        sleeping is done.
+     * @param period the period to giveOthersAChance. If the number is equal or smaller than zero, no
+     *               sleeping is done.
      * @param unit   the timeunit of period
      * @throws NullPointerException if unit is null.
      */
@@ -133,7 +145,7 @@ public abstract class ConcurrentTestCase extends TestCase {
         try {
             Thread.sleep(ms, ns);
         } catch (InterruptedException e) {
-            fail("sleep was interrupted");
+            fail("giveOthersAChance was interrupted");
         }
     }
 }

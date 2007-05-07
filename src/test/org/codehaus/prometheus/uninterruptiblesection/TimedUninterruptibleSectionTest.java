@@ -209,17 +209,17 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
         private volatile Object foundReturnValue;
         private final long timeoutMs;
 
-
         public TimedExecuteThread(long timeoutMs) {
             this.timeoutMs = timeoutMs;
         }
 
+        @Override
         protected void runInternal() throws TimeoutException {
             foundReturnValue = section.tryExecute(timeoutMs, TimeUnit.MILLISECONDS);
         }
 
         public void assertSuccess(Object expectedReturnValue) {
-            assertIsTerminated();
+            assertIsTerminatedWithoutThrowing();
             assertSame(expectedReturnValue, foundReturnValue);
         }
     }

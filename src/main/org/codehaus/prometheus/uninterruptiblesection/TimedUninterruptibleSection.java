@@ -45,7 +45,7 @@ public abstract class TimedUninterruptibleSection<E> {
      * @throws TimeoutException     if the call times out.
      * @throws NullPointerException if unit is <tt>null</tt>.
      */
-    public E tryExecute(long timeout, TimeUnit unit) throws TimeoutException {
+    public final E tryExecute(long timeout, TimeUnit unit) throws TimeoutException {
         long timeoutNs = ConcurrencyUtil.toUsableNanos(timeout, unit);
 
         boolean restoreInterrupt = Thread.interrupted();
@@ -70,11 +70,14 @@ public abstract class TimedUninterruptibleSection<E> {
 
     /**
      * Tries to execute the uninterruptible section with a 0 timeout.
+     * A TimeoutException needs to be thrown to indicate a timeout occurred because it
+     * can't be expressed in the return value. A null as return value is valid for
+     * {@link #tryExecute(long,java.util.concurrent.TimeUnit)}
      *
      * @return the value returned from the interruptible section.
      * @throws TimeoutException if the call times out.
      */
-    public E tryExecute() throws TimeoutException {
+    public final E tryExecute() throws TimeoutException {
         return tryExecute(0, TimeUnit.NANOSECONDS);
     }
 }

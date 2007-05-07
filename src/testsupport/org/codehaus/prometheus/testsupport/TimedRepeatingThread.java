@@ -25,6 +25,7 @@ public class TimedRepeatingThread extends TestThread {
         this.task = task;
     }
 
+    @Override
     public void runInternal() {
         long startTimeNs = System.nanoTime();
         do {

@@ -20,6 +20,7 @@ public abstract class BlockingRunnable extends TestRunnable {
 
     protected abstract void runBlockingInternal() throws TimeoutException, InterruptedException;
 
+    @Override
     public final void runInternal() {
         state = BlockingState.waiting;
         try {
@@ -32,10 +33,14 @@ public abstract class BlockingRunnable extends TestRunnable {
         }
     }
 
+    public void assertIsNew(){
+        TestCase.assertNull(state);
+    }
+
     /**
      * Asserts the the call is waiting (is blocked).
      */
-    public void assertCallIsWaiting() {
+    public void assertIsStarted() {
         assertState(BlockingState.waiting);
     }
 
@@ -43,21 +48,21 @@ public abstract class BlockingRunnable extends TestRunnable {
      * Asserts that the call has finished successfully
      * (so without a RuntimeException).
      */
-    public void assertCallIsFinised() {
+    public void assertIsFinised() {
         assertState(BlockingState.finished);
     }
 
     /**
      * Asserts that the call was interrupted.
      */
-    public void assertCallIsInterrupted() {
+    public void assertIsInterrupted() {
         assertState(BlockingState.interrupted);
     }
 
     /**
      * Asserts that the call received a timeout.
      */
-    public void assertCalledIsTimedout() {
+    public void assertIsTimedout() {
         assertState(BlockingState.timeout);
     }
 

@@ -5,7 +5,6 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
 
@@ -17,15 +16,10 @@ public class ThreadPoolRepeaterStressTest {
         TestSuite suite = new TestSuite();
         suite.addTestSuite(SetPoolSizeStessTest.class);
         suite.addTestSuite(ShutdownStressTest.class);
-        suite.addTestSuite(RepeatStressTest.class);
         return suite;
     }
 
 
-    //goal of this test is to stress the tryRepeat functions
-    public static class RepeatStressTest extends TestCase {
-        public void testDummy(){}
-    }
 
     //goal of this test is to see if errors occur when shutting down a repeater.
     //a lot of threads are going to call methods on the repeater. Some

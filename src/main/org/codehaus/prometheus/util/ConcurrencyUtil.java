@@ -120,10 +120,10 @@ public class ConcurrencyUtil {
      * Lets the calling thread sleepMs for a certain period. If the period is equal or smaller than
      * zero, no sleeping is done. This call can be interrupted.
      * <p/>
-     * This method makes use of {@link Thread#sleep(long,int)}. At the moment there is no sleep
+     * This method makes use of {@link Thread#sleep(long,int)}. At the moment there is no giveOthersAChance
      * method in the JRE that accepts a period with a unit.
      *
-     * @param period the period to sleep
+     * @param period the period to giveOthersAChance
      * @param unit   a <tt>TimeUnit</tt> determining how to interpret the <tt>period</tt> parameter.
      * @throws InterruptedException if the calling thread is interrupted while sleeping.
      * @throws NullPointerException if unit is <tt>null</tt>.

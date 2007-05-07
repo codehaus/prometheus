@@ -6,17 +6,14 @@
 package org.codehaus.prometheus.blockingexecutor.jmx;
 
 import junit.framework.TestCase;
-import static org.easymock.EasyMock.*;
-import org.codehaus.prometheus.blockingexecutor.BlockingExecutorService;
 import org.codehaus.prometheus.blockingexecutor.BlockingExecutor;
 
 /**
- * The BlockingExecutorServiceMBeanImplTest unittests the
- * {@link BlockingExecutorServiceMBeanImpl}.
+ * Unittests the {@link ThreadPoolBlockingExecutorMBean}.
  *
  * @author Peter Veentjer.
  */
-public class BlockingExecutorServiceMBeanImplTest extends TestCase {
+public class BlockingThreadPoolBlockingExecutorMBeanImplTest extends TestCase {
     private BlockingExecutor executorMock;
 
     public void testDummy(){}

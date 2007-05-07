@@ -9,8 +9,8 @@ public class WellProcessor<E> implements Processor{
 
     private final WellProcess<E> process;
     private final OutputChannel outputChannel;
-    private volatile InputChannel<ProcessorEvent> incomingEventChannel = new NullInputChannel();
-    private volatile OutputChannel<ProcessorEvent> outgoingEventChannel = new NullOutputChannel();
+    private volatile InputChannel<Event> incomingEventChannel = new NullInputChannel();
+    private volatile OutputChannel<Event> outgoingEventChannel = new NullOutputChannel();
 
     public WellProcessor(WellProcess<E> process, OutputChannel outputChannel) {
         this.process = process;
@@ -21,19 +21,19 @@ public class WellProcessor<E> implements Processor{
         return process;
     }
 
-    public InputChannel<ProcessorEvent> getIncomingEventChannel() {
+    public InputChannel<Event> getIncomingEventChannel() {
         return incomingEventChannel;
     }
 
-    public void setIncomingEventChannel(InputChannel<ProcessorEvent> incomingEventChannel) {
+    public void setIncomingEventChannel(InputChannel<Event> incomingEventChannel) {
         this.incomingEventChannel = incomingEventChannel;
     }
 
-    public OutputChannel<ProcessorEvent> getOutgoingEventChannel() {
+    public OutputChannel<Event> getOutgoingEventChannel() {
         return outgoingEventChannel;
     }
 
-    public void setOutgoingEventChannel(OutputChannel<ProcessorEvent> outgoingEventChannel) {
+    public void setOutgoingEventChannel(OutputChannel<Event> outgoingEventChannel) {
         this.outgoingEventChannel = outgoingEventChannel;
     }
 
@@ -42,12 +42,12 @@ public class WellProcessor<E> implements Processor{
     }
 
     public boolean processOneMsg() throws Exception {
-        ProcessorEvent event = incomingEventChannel.poll();
+        Event event = incomingEventChannel.poll();
         if(event == null){
             E msg = process.process();
             outputChannel.put(msg);
         }else{
-           // ProcessEventDispatcher.dispatch(process,event);
+           // EventDispatcher.dispatch(process,event);
         }
         return true;
     }

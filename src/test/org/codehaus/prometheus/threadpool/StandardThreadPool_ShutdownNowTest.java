@@ -7,71 +7,74 @@ package org.codehaus.prometheus.threadpool;
  */
 public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_AbstractTest {
 
-    public void testWhileUnstarted(){
+    public void testWhileUnstarted() {
         newUnstartedThreadPool(10);
 
-        ShutdownNowThread shutdownThread = scheduleShutdownNow();
-        joinAll(shutdownThread);
+        shutdownNow();
 
-        sleepMs(DELAY_SMALL_MS);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
-        assertIsShutdown();        
+        assertIsShutdown();
+        threadPoolThreadFactory.assertNoThreadsCreated();
     }
 
-    public void testWhileRunningAndEmptyPool(){
+    public void testWhileRunningAndEmptyPool() {
         newStartedThreadpool(0);
 
-        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
-        joinAll(shutdownNowThread);
+        shutdownNow();
 
-        shutdownNowThread.assertIsTerminatedWithoutThrowing();
-        sleepMs(DELAY_SMALL_MS);
         assertIsShutdown();
+        threadPoolThreadFactory.assertNoThreadsCreated();
     }
 
-    public void testIdleWorkersAreInterrupted(){
-        newStartedThreadpool(10);
+    public void testIdleWorkersAreInterrupted() {
+        int poolsize = 10;
+        newStartedThreadpool(poolsize);
 
-        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
-        joinAll(shutdownNowThread);
+        shutdownNow();
 
-        shutdownNowThread.assertIsTerminatedWithoutThrowing();
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         assertIsShutdown();
+        threadPoolThreadFactory.assertCreatedCount(poolsize);
     }
 
     public void testNonIdleWorkersAreInterrupted() throws InterruptedException {
-        int poolsize = 10;
+        int poolsize = 3;
         newStartedThreadpool(poolsize);
-        letWorkersWork(poolsize,DELAY_EON_MS);
+        ensureNoIdleWorkers();
 
-        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
-        joinAll(shutdownNowThread);
+        giveOthersAChance();
+        shutdownNow();
 
-        shutdownNowThread.assertIsTerminatedWithoutThrowing();
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance(DELAY_MEDIUM_MS);
         assertIsShutdown();
+        threadPoolThreadFactory.assertCreatedCount(poolsize);
     }
 
 
-    public void testWhileShuttingDown(){
-        newShuttingdownThreadpool(10,DELAY_EON_MS);
+    public void testWhileShuttingDown() {
+        int poolsize = 3;
+        newShuttingdownThreadpool(poolsize, DELAY_EON_MS);
 
-        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
-        joinAll(shutdownNowThread);
+        shutdownNow();
 
-        shutdownNowThread.assertIsTerminatedWithoutThrowing();
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         assertIsShutdown();
+        threadPoolThreadFactory.assertCreatedCount(poolsize);
     }
 
-    public void testWhileShutdown(){
+    public void testWhileShutdown() {
         newShutdownThreadpool();
+        int oldpoolsize = threadpool.getActualPoolSize();
 
-        ShutdownNowThread shutdownThread = scheduleShutdownNow();
-        joinAll(shutdownThread);
+        shutdownNow();
 
         assertIsShutdown();
-        shutdownThread.assertIsTerminated();
+        threadPoolThreadFactory.assertCreatedCount(oldpoolsize);
+    }
+
+    private void shutdownNow() {
+        ShutdownNowThread shutdownThread = scheduleShutdownNow();
+
+        joinAll(shutdownThread);
+        shutdownThread.assertIsTerminatedWithoutThrowing();
     }
 }

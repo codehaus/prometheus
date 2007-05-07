@@ -20,15 +20,12 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
     public void assertShutdownTerminatesWaiters(){
         AwaitShutdownThread awaitThread1 = scheduleAwaitShutdown();
         AwaitShutdownThread awaitThread2 = scheduleAwaitShutdown();
-        sleepMs(DELAY_TINY_MS);
 
+        giveOthersAChance();
         awaitThread1.assertIsStarted();
         awaitThread2.assertIsStarted();
 
-        //call the shutdown.
-        ShutdownThread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
+        shutdown();
 
         //check that the awaiting threads shutdown
         joinAll(awaitThread1,awaitThread2);
@@ -38,13 +35,13 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
     }
 
     public void testWhileShuttingdown(){
-        newShuttingdownThreadpool(3,DELAY_MEDIUM_MS);
+        newShuttingdownThreadpool(3,DELAY_LONG_MS);
 
         AwaitShutdownThread awaitThread1 = scheduleAwaitShutdown();
         AwaitShutdownThread awaitThread2 = scheduleAwaitShutdown();
-        sleepMs(DELAY_TINY_MS);
 
         //check that the await wasn't successful immediately.
+        giveOthersAChance();
         awaitThread1.assertIsStarted();
         awaitThread2.assertIsStarted();
 
@@ -60,9 +57,9 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
 
         AwaitShutdownThread awaitThread1 = scheduleAwaitShutdown();
         AwaitShutdownThread awaitThread2 = scheduleAwaitShutdown();
-        sleepMs(DELAY_TINY_MS);
 
         //check that the await wasn't successful immediately.
+        giveOthersAChance();
         awaitThread1.assertIsStarted();
         awaitThread2.assertIsStarted();
 
@@ -80,10 +77,16 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
 
         AwaitShutdownThread awaitThread1 = scheduleAwaitShutdown();
         AwaitShutdownThread awaitThread2 = scheduleAwaitShutdown();
-        sleepMs(DELAY_TINY_MS);
+        joinAll(awaitThread1,awaitThread2);
 
         awaitThread1.assertIsTerminatedWithoutThrowing();
         awaitThread2.assertIsTerminatedWithoutThrowing();
         assertIsShutdown();
+    }
+
+    private void shutdown() {
+        ShutdownThread shutdownThread = scheduleShutdown();
+        joinAll(shutdownThread);
+        shutdownThread.assertIsTerminatedWithoutThrowing();
     }
 }

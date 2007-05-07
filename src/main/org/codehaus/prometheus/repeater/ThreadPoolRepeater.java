@@ -99,7 +99,7 @@ import java.util.concurrent.locks.Lock;
 public class ThreadPoolRepeater implements RepeaterService {
 
     public static LendableReference<Repeatable> createDefaultLendableReference(Repeatable repeatable) {
-        return new StrictLendableReference(repeatable);
+        return new StrictLendableReference<Repeatable>(repeatable);
     }
 
     public static LendableReference<Repeatable> createDefaultLendableReference(boolean strict, Repeatable repeatable) {

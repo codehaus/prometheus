@@ -367,7 +367,17 @@
     <option name="cycleTableSpecificationString" value="231,448,195,198,187,201,196,195" />
     <option name="shortCycleTableSpecificationString" value="" />
   </component>
-  <component name="libraryTable" />
+  <component name="libraryTable">
+    <library name="lib">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/lib/provided/log4j-1.2.13.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/support/easymock-2.2.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/support/junit-4.3.1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+  </component>
   <component name="uidesigner-configuration" />
 </project>
 

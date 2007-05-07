@@ -10,7 +10,7 @@ package org.codehaus.prometheus.util;
  *
  * @author Peter Veentjer.
  */
-public class Latch_openWithoutLockingTest extends Latch_AbstractTest {
+public class Latch_OpenWithoutLockingTest extends Latch_AbstractTest {
 
     public void testOpen_notLockOwner_startUninterrupted(){
         testOpen_notLockOwner(START_UNINTERRUPTED);
@@ -25,7 +25,7 @@ public class Latch_openWithoutLockingTest extends Latch_AbstractTest {
 
         OpenWithoutLockingThread openThread = scheduleOpenWithoutLocking(startInterrupted);
         joinAll(openThread);
-        assertLatchOpen();
+        assertIsOpen();
         openThread.assertIsTerminatedWithoutThrowing();
     }
 
@@ -56,7 +56,7 @@ public class Latch_openWithoutLockingTest extends Latch_AbstractTest {
         joinAll(openThread);
         openThread.assertIsTerminatedWithThrowing(IllegalMonitorStateException.class);
         openThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
-        assertLatchClosed();
+        assertIsClosed();
     }
 
     //=====================================================

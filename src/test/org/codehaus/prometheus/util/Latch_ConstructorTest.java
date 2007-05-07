@@ -16,8 +16,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Latch_ConstructorTest extends Latch_AbstractTest {
 
     public void test_noArg(){
-        Latch latch = new Latch();
-        assertFalse(latch.isOpen());
+        latch = new Latch();
+
+        assertIsClosed();
         assertNotNull(latch.getOpenCondition());
         assertTrue(latch.getMainLock() instanceof ReentrantLock);
         ReentrantLock lock = (ReentrantLock)latch.getMainLock();
@@ -33,8 +34,9 @@ public class Latch_ConstructorTest extends Latch_AbstractTest {
         }
 
         Lock lock = new ReentrantLock();
-        Latch latch = new Latch(lock);
-        assertFalse(latch.isOpen());
+        latch = new Latch(lock);
+
+        assertIsOpen();
         assertSame(lock, latch.getMainLock());
         assertNotNull(latch.getOpenCondition());
     }

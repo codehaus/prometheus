@@ -16,6 +16,8 @@ import java.util.concurrent.TimeoutException;
  */
 public class NoOpWaitpoint implements Waitpoint{
 
+    public final static NoOpWaitpoint INSTANCE = new NoOpWaitpoint();
+
     public void pass(){
     }
 
@@ -31,10 +33,10 @@ public class NoOpWaitpoint implements Waitpoint{
     }
 
     public long tryPass(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new RuntimeException("not implemented yet");
     }
 
     public long tryPassUninterruptibly(long timeout, TimeUnit unit) throws TimeoutException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new RuntimeException("not implemented yet");
     }
 }

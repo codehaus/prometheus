@@ -135,6 +135,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
             setDelay(delay,unit);
         }
 
+        @Override
         public void runInternal() {
             lendableRef.getNoTakersCondition().signalAll();
             lendableRef.getRefAvailableCondition().signalAll();
@@ -151,6 +152,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
             this.timeoutUnit = timeoutUnit;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             foundTakenRef = lendableRef.tryTake(timeout, timeoutUnit);
         }
@@ -171,6 +173,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
             this.ref = ref;
         }
 
+        @Override
         public void runInternal() {
             for (int k = 0; k < count; k++)
                 lendableRef.takeback(ref);

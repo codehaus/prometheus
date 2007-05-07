@@ -37,7 +37,11 @@ public class StandardThreadFactory implements ThreadFactory {
      * created ThreadGroup.
      */
     public StandardThreadFactory() {
-        this(Thread.NORM_PRIORITY, Integer.toString(poolNumber.getAndIncrement()));
+        this(Thread.NORM_PRIORITY, createName());
+    }
+
+    private static String createName() {
+        return Integer.toString(poolNumber.getAndIncrement());
     }
 
     /**
@@ -48,6 +52,10 @@ public class StandardThreadFactory implements ThreadFactory {
      */
     public StandardThreadFactory(String groupName) {
         this(Thread.NORM_PRIORITY, groupName);
+    }
+
+    public StandardThreadFactory(int priority) {
+        this(priority, createName());
     }
 
     /**
@@ -110,7 +118,7 @@ public class StandardThreadFactory implements ThreadFactory {
      * otherwise.
      *
      * @return true if this StandardThreadFactory is producing deamon threads, false
-     * otherwise.
+     *         otherwise.
      */
     public boolean isProducingDaemons() {
         return daemon;
@@ -156,6 +164,6 @@ public class StandardThreadFactory implements ThreadFactory {
         Thread thread = new Thread(threadGroup, runnable, threadName);
         thread.setDaemon(daemon);
         thread.setPriority(priority);
-		return thread;
-	}
+        return thread;
+    }
 }

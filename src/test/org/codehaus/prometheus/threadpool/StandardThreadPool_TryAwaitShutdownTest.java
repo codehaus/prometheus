@@ -34,13 +34,14 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
 
         TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_EON_MS);
         TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_EON_MS);
-        //delay for a moment and check that the awaitThread is still running.
-        sleepMs(DELAY_TINY_MS);
+                
+        giveOthersAChance();
         awaitThread1.assertIsStarted();
         awaitThread2.assertIsStarted();
 
         //now shutdown and see that the awaitThread has terminated.
         ShutdownThread shutdownThread = scheduleShutdown();
+
         joinAll(shutdownThread,awaitThread1,awaitThread2);
         shutdownThread.assertIsTerminatedWithoutThrowing();
         awaitThread1.assertIsTerminatedWithoutThrowing();
@@ -50,7 +51,7 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
     }
 
     public void testWhileShuttingDown(){
-        newShuttingdownThreadpool(10,DELAY_MEDIUM_MS);
+        newShuttingdownThreadpool(10,2*DELAY_MEDIUM_MS);
         assertShutdownNotifiesWaiters();
     }
 
@@ -68,9 +69,9 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
 
         TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_MEDIUM_MS);
         TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_MEDIUM_MS);
-        sleepMs(DELAY_TINY_MS);
 
         //check that the await wasn't successful immediately.
+        giveOthersAChance(DELAY_TINY_MS);
         awaitThread1.assertIsStarted();
         awaitThread2.assertIsStarted();
 
@@ -85,9 +86,9 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
 
         TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_EON_MS);
         TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_EON_MS);
-        sleepMs(DELAY_TINY_MS);
 
         //check that the await wasn't successful immediately.
+        giveOthersAChance();
         awaitThread1.assertIsStarted();
         awaitThread2.assertIsStarted();
 

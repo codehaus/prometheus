@@ -90,20 +90,19 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
 
         //make sure the task is waiting.
         sleepMs(DELAY_SMALL_MS);
-        task.assertCallIsWaiting();
+        task.assertIsStarted();
 
         //now shutdown the repeater, this should interrupt the placement of the task
         repeater.shutdownNow();
-        Thread.yield();
         sleepMs(DELAY_SMALL_MS);
-        task.assertCallIsInterrupted();
+        task.assertIsInterrupted();
 
         //wait till the repeater has completely shut down.
         repeater.awaitShutdown();
         stopwatch.stop();
 
         Thread.yield();
-        task.assertCallIsInterrupted();
+        task.assertIsInterrupted();
         //if the threads were not interrupted, the elapsed time should be around 10 seconds and not 1.
         stopwatch.assertElapsedSmallerThanMs(1000);
     }

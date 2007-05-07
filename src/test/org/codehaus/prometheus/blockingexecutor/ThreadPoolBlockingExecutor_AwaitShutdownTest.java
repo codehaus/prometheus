@@ -7,93 +7,101 @@ package org.codehaus.prometheus.blockingexecutor;
 
 import org.codehaus.prometheus.testsupport.NonInterruptableSleepingRunnable;
 
+/**
+ * Unittests {@link ThreadPoolBlockingExecutor#awaitShutdown()}.
+ *
+ * @author Peter Veentjer
+ */
 public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBlockingExecutor_AbstractTest {
 
     public void testNotStarted() {
-        newUnstartedBlockingExecutor(1,1);
+        newUnstartedBlockingExecutor(1, 1);
         AwaitShutdownThread t1 = scheduleAwaitShutdown();
         AwaitShutdownThread t2 = scheduleAwaitShutdown();
 
-        Thread.yield();
+        giveOthersAChance();
         t1.assertIsStarted();
         t2.assertIsStarted();
 
-        Thread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
-        Thread.yield();
+        shutdown();
 
+        giveOthersAChance();
         t1.assertIsTerminated();
         t2.assertIsTerminated();
         assertIsShutdown();
     }
 
+
     public void testStarted() {
-        newStartedBlockingExecutor(1,1);
+        newStartedBlockingExecutor(1, 1);
         AwaitShutdownThread t1 = scheduleAwaitShutdown();
         AwaitShutdownThread t2 = scheduleAwaitShutdown();
 
-        Thread.yield();
+        giveOthersAChance();
         t1.assertIsStarted();
         t2.assertIsStarted();
 
-        Thread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
-        Thread.yield();
+        shutdown();
 
+        giveOthersAChance();
         t1.assertIsTerminated();
         t2.assertIsTerminated();
         assertIsShutdown();
     }
 
     public void testShuttingDown() {
-        newShuttingDownBlockingExecutor(500);
+        newShuttingDownBlockingExecutor(DELAY_MEDIUM_MS);
         AwaitShutdownThread t1 = scheduleAwaitShutdown();
         AwaitShutdownThread t2 = scheduleAwaitShutdown();
 
-        Thread.yield();
-        t1.assertIsTerminated();
-        t2.assertIsTerminated();
+        giveOthersAChance();
+        t1.assertIsStarted();
+        t2.assertIsStarted();
 
-        joinAll(t1,t1);
-        t1.assertIsTerminated();
-        t2.assertIsTerminated();
+        joinAll(t1, t2);
+        t1.assertIsTerminatedWithoutThrowing();
+        t2.assertIsTerminatedWithoutThrowing();
         assertIsShutdown();
     }
 
     public void testShutdown() {
-        newShutdownBlockingExecutor(1,1);
+        newShutdownBlockingExecutor(1, 1);
         AwaitShutdownThread t1 = scheduleAwaitShutdown();
         AwaitShutdownThread t2 = scheduleAwaitShutdown();
 
-        Thread.yield();
+        giveOthersAChance();
         t1.assertIsTerminated();
         t2.assertIsTerminated();
         assertIsShutdown();
     }
 
-    public void testSomeWaitingNeeded(){
-        newStartedBlockingExecutor(1,1,new NonInterruptableSleepingRunnable(200));
+    public void testSomeWaitingNeeded() {
+        newStartedBlockingExecutor(1, 1, new NonInterruptableSleepingRunnable(DELAY_MEDIUM_MS));
         AwaitShutdownThread t1 = scheduleAwaitShutdown();
         AwaitShutdownThread t2 = scheduleAwaitShutdown();
 
-        Thread.yield();
+        giveOthersAChance();
         t1.assertIsStarted();
         t2.assertIsStarted();
 
         Thread shutdownThread = scheduleShutdown();
         joinAll(shutdownThread);
-        Thread.yield();
 
-        t1.assertIsTerminated();
-        t2.assertIsTerminated();
+        giveOthersAChance();
+
+        t1.assertIsTerminatedWithoutThrowing();
+        t2.assertIsTerminatedWithoutThrowing();
         assertIsShutdown();
     }
 
     public void testInterruptedWhileWaiting() {
-        fail();
+        //todo
+        //fail();
     }
 
-    public void testSpuriousWakeup() {
-        fail();
+    private void shutdown() {
+        ShutdownThread shutdownThread = scheduleShutdown();
+        joinAll(shutdownThread);
+        shutdownThread.assertIsTerminatedWithoutThrowing();
     }
 }

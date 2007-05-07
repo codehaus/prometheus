@@ -5,19 +5,15 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import junit.framework.TestCase;
-import org.codehaus.prometheus.util.StandardThreadFactory;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-
 /**
  * Unittests the constructors of {@link ThreadPoolBlockingExecutor}.
  *
  * @author Peter Veentjer.
  */
-public  class ThreadPoolBlockingExecutor_ConstructorTest extends TestCase {
+public  class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlockingExecutor_AbstractTest{
+
+
+    public void testDummy(){}
 
     /*
     public void test_int() {
@@ -32,12 +28,13 @@ public  class ThreadPoolBlockingExecutor_ConstructorTest extends TestCase {
         ThreadPoolBlockingExecutor executor = new ThreadPoolBlockingExecutor(120);
         assertHasDefaultBlockingQueue(executor);
         assertTrue(executor.getWorkQueue().isEmpty());
-        assertEquals(poolsize, executor.getPoolSize());
+        assertActualPoolSize(0);
+        assertDesiredPoolSize(poolsize);
         assertHasDefaultThreadFactory(executor);
         assertEquals(BlockingExecutorServiceState.Unstarted, executor.getState());
     }
 
-    private void assertHasDefaultThreadFactory(ThreadPoolBlockingExecutor executor) {
+     private void assertHasDefaultThreadFactory(ThreadPoolBlockingExecutor executor) {
         ThreadFactory factory = executor.getThreadPool().getThreadFactory();
         assertNotNull(factory);
         assertTrue(factory instanceof StandardThreadFactory);
@@ -53,6 +50,7 @@ public  class ThreadPoolBlockingExecutor_ConstructorTest extends TestCase {
         LinkedBlockingQueue linkedWorkQueue = (LinkedBlockingQueue) workQueue;
         assertEquals(Integer.MAX_VALUE, linkedWorkQueue.remainingCapacity());
     }
+
 
     public void test_ThreadFactory_BlockingQueue_int() {
         try {

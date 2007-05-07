@@ -12,14 +12,12 @@ package org.codehaus.prometheus.awaitablereference;
  */
 public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReference_AbstractTests{
 
-    //this test also tests the interrupt functionality, so this doesn't need
-    //to be tested anymore.
     public void testWaitingTillEndOfTime() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
         TakeThread taker = scheduleTake();
-        sleepMs(DELAY_SMALL_MS);
 
+        giveOthersAChance();
         taker.assertIsStarted();
         assertHasReference(null);
     }
@@ -28,11 +26,12 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         awaitableRef = new DefaultAwaitableReference<Integer>();
         TakeThread taker = scheduleTake();
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         taker.assertIsStarted();
         assertHasReference(null);
 
         taker.interrupt();
+
         joinAll(taker);
         taker.assertIsInterruptedByException();
         assertHasReference(null);
@@ -54,8 +53,8 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
 
         TakeThread taker = scheduleTake(startInterrupted);
         joinAll(taker);
-
         taker.assertSuccess(ref);
+
         taker.assertIsTerminatedWithInterruptStatus(startInterrupted);
         assertHasReference(ref);
     }
@@ -78,7 +77,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         Integer newRef = 10;
         TakeThread takeThread1 = scheduleTake(false);
         TakeThread takeThread2 = scheduleTake(false);
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
 
@@ -97,13 +96,14 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         Integer newRef = 10;
         TakeThread takeThread1 = scheduleTake();
         TakeThread takeThread2 = scheduleTake();
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
 
-
         Thread spurious = scheduleSpuriousWakeup();
-        joinAllAndSleepMs(DELAY_SMALL_MS, spurious);
+        joinAll(spurious);
+
+        giveOthersAChance();
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
 

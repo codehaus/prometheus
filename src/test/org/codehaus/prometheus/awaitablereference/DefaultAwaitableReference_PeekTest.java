@@ -10,8 +10,17 @@ public class DefaultAwaitableReference_PeekTest extends DefaultAwaitableReferenc
         assertNull(awaitableRef.peek());
 
         Integer newRef = 20;
-        Thread putThread = schedulePut(newRef);
-        joinAll(putThread);
+
+        put(newRef);
         assertSame(newRef,awaitableRef.peek());
+
+        put(null);
+        assertNull(awaitableRef.peek());
+    }
+
+    private void put(Integer newRef) {
+        PutThread putThread = schedulePut(newRef);
+        joinAll(putThread);
+        putThread.assertIsTerminatedWithoutThrowing();
     }
 }

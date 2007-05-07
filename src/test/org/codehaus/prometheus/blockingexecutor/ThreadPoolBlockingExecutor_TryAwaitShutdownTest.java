@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Unittests the {@link ThreadPoolBlockingExecutor#tryAwaitShutdown(long, TimeUnit)} method.
+ * Unittests the {@link ThreadPoolBlockingExecutor#tryAwaitShutdown(long,TimeUnit)} method.
  *
  * @author Peter Veentjer.
  */
@@ -39,35 +39,66 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
     }
 
     public void testTooMuchWaiting() {
-        newStartedBlockingExecutor(1,1,new SleepingRunnable(500));
+        newStartedBlockingExecutor(1, 1, new SleepingRunnable(DELAY_EON_MS));
 
-        TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(100);
-        joinAll(awaitThread);
+        TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_MEDIUM_MS);
+        TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_MEDIUM_MS);
+        joinAll(awaitThread1, awaitThread2);
 
-        awaitThread.assertIsTimedOut();
+        awaitThread1.assertIsTimedOut();
+        awaitThread2.assertIsTimedOut();
         assertIsRunning();
     }
 
-    public void testSomeWaitingNeeded(){
-        newStartedBlockingExecutor(1,1,new SleepingRunnable(DELAY_SMALL_MS));
-        executor.shutdownNow();
-        fail();
-    }
-
     public void testNotStarted() {
-        fail();
+        newUnstartedBlockingExecutor(10, 10);
+        assertShutdownNowNotifiesWaiters();
     }
 
-    public void testStarted() {
-        fail();
+    private void assertShutdownNowNotifiesWaiters() {
+        TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_EON_MS);
+        TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_EON_MS);
+
+        giveOthersAChance();
+        awaitThread1.assertIsStarted();
+        awaitThread2.assertIsStarted();
+
+        ShutdownNowThread shutdownThread = scheduleShutdownNow();
+        joinAll(shutdownThread);
+        giveOthersAChance();
+
+        shutdownThread.assertIsTerminatedWithoutThrowing();
+        awaitThread1.assertIsTerminatedWithoutThrowing();
+        awaitThread2.assertIsTerminatedWithoutThrowing();
+        assertIsShutdown();
     }
+
+    //todo: test with shutdown & test with shutdownnow
+
+    public void testStarted_noWorkers() {
+        newStartedBlockingExecutor(1, 0);
+        assertShutdownNowNotifiesWaiters();
+    }
+
+    public void testStarted_IdleWorkers() {
+        newStartedBlockingExecutor(1, 10);
+        assertShutdownNowNotifiesWaiters();
+    }
+
+    public void testStarted_nonIdleWorkers() {
+        int poolsize = 10;
+        newStartedBlockingExecutor(1, poolsize);
+        executeEonTask(poolsize);
+
+        assertShutdownNowNotifiesWaiters();
+    }
+
 
     public void testShuttingDown() {
-        fail();
     }
 
     public void testShutdown() throws InterruptedException {
-        newShutdownBlockingExecutor(1,1);
+        newShutdownBlockingExecutor(1, 1);
 
         TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(0);
         joinAll(awaitThread);
@@ -77,11 +108,6 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
     }
 
     public void testInterruptedWhileWaiting() {
-        fail();
-    }
-
-    public void testSpuriousWakeup() {
-        fail();
     }
 }
 

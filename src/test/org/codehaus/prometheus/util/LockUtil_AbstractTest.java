@@ -41,6 +41,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
 
     public void assertLockAvailable() throws InterruptedException {
         TestThread t = new TestThread() {
+            @Override
             public void runInternal() throws InterruptedException, TimeoutException {
                 lock.tryLock(10, TimeUnit.MILLISECONDS);
             }
@@ -53,6 +54,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
 
     public void assertLockUnavailable() throws InterruptedException {
         TestThread t = new TestThread() {
+            @Override
             public void runInternal() throws InterruptedException {
                 lock.lockInterruptibly();
             }
@@ -79,6 +81,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
             this.timeoutMs = timeoutMs;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             foundTimeoutNs = LockUtil.tryLockNanos(lock, TimeUnit.MILLISECONDS.toNanos(timeoutMs));
         }
@@ -109,6 +112,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
             this.durationMs = durationMs;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             lock.lock();
             try {
@@ -126,6 +130,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
             this.timeoutMs = timeoutMs;
         }
 
+        @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             LockUtil.tryLockNanosProtected(lock, TimeUnit.MILLISECONDS.toNanos(timeoutMs));
         }

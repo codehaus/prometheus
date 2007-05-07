@@ -13,7 +13,7 @@ import org.codehaus.prometheus.testsupport.SleepingRunnable;
  *
  * @author Peter Veentjer.
  */
-public class ThreadPoolRepeater_AwaitForShutdownTest extends ThreadPoolRepeater_AbstractTest {
+public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_AbstractTest {
 
     public void testNotStarted_strict() throws InterruptedException {
         testNotStarted(true);

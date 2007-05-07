@@ -32,10 +32,9 @@ public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPo
         //try to set another job after the first has been set, should succeed.
         WorkerJob secondJob = new DummyWorkerJob();
         setThread = scheduleSetDefaultWorkerJob(secondJob);
-        joinAll(setThread);
 
+        joinAll(setThread);
         setThread.assertIsTerminatedWithoutThrowing();
-        //make sure that the threadpool hasn't started.
         assertIsUnstarted();
         assertSame(secondJob, threadpool.getDefaultWorkerJob());        
     }

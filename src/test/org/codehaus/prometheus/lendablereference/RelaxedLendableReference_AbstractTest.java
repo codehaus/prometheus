@@ -45,10 +45,12 @@ public abstract class RelaxedLendableReference_AbstractTest<E> extends Concurren
 
     public class TakebackAndResetThread extends TestThread{
         private final E ref;
+
         public TakebackAndResetThread(E ref) {
             this.ref = ref;
         }
 
+        @Override               
         protected void runInternal() throws InterruptedException, TimeoutException {
             lendableRef.takebackAndReset(ref);
         }

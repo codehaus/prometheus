@@ -5,7 +5,6 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.DummyRunnable;
 
@@ -90,7 +89,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
     }
 
     public void testExecuteWhileShuttingDown() {
-        newShuttingDownBlockingExecutor(1000);
+        newShuttingDownBlockingExecutor(DELAY_EON_MS);
         assertExecuteIsRejected();
     }
 
@@ -109,48 +108,5 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
         executeThread.assertIsTerminatedWithThrowing(RejectedExecutionException.class);
         assertEquals(oldState, executeThread.getState());
         task.assertNotExecuted();
-    }
-
-    public TryExecuteThread scheduleTryExecute(Runnable task, long timeoutMs) {
-        TryExecuteThread t = new TryExecuteThread(task, timeoutMs, TimeUnit.MILLISECONDS);
-        t.start();
-        return t;
-    }
-
-    public TryExecuteThread scheduleDelayedTryExecute(Runnable task, long delayMs, long timeoutMs) {
-        TryExecuteThread t = new TryExecuteThread(task, timeoutMs, TimeUnit.MILLISECONDS);
-        t.setDelayMs(delayMs);
-        t.start();
-        return t;
-    }
-
-
-    public class TryExecuteThread extends TestThread {
-
-        private final Runnable task;
-        private final long timeout;
-        private final TimeUnit timeoutUnit;
-        private volatile Boolean rejected;
-
-        public TryExecuteThread(Runnable task, long timeout, TimeUnit timeoutUnit) {
-            this.task = task;
-            this.timeout = timeout;
-            this.timeoutUnit = timeoutUnit;
-        }
-
-        protected void runInternal() throws InterruptedException, TimeoutException {
-            executor.tryExecute(task, timeout, timeoutUnit);
-            rejected = false;
-        }
-
-        public void assertIsSuccess() {
-            assertIsTerminated();
-            assertEquals(Boolean.FALSE, rejected);
-        }
-
-        public void assertIsRejected() {
-            assertIsTerminated();
-            assertEquals(Boolean.TRUE, rejected);
-        }
     }
 }

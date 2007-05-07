@@ -79,12 +79,26 @@ public class TracingThreadFactory implements ThreadFactory {
      * Asserts that all threads created by the target ThreadFactory have terminated.
      */
     public void assertThreadsHaveTerminated(){
-        throw new RuntimeException("not implemented yet");
+        //todo: also picks up unstarted ones
+        for(Thread thread:threadList){
+            TestCase.assertTrue(!thread.isAlive());
+        }
     }
 
     public Thread newThread(Runnable r) {
         Thread t = targetFactory.newThread(r);
         threadList.add(t);
         return t;
+    }
+
+    public void assertNoThreadsCreated() {
+        assertCreatedCount(0);
+    }
+
+    public void assertAllThreadsAlive() {
+        for(Thread thread:threadList){
+            TestCase.assertTrue(thread.isAlive());
+        }
+
     }
 }

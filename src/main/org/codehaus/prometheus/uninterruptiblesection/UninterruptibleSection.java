@@ -101,9 +101,9 @@ public abstract class UninterruptibleSection<E> {
      * If the {@link #originalsection()} throws a RuntimeException, this exception is
      * propagated.
      *
-     * @return the return value from the interruptible section.
+     * @return the return value from {@link #originalsection()} 
      */
-    public E execute() {
+    public final E execute() {
         boolean restoreInterrupt = Thread.interrupted();
         try {
             while (true) {

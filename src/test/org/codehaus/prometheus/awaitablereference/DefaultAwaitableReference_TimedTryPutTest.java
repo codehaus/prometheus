@@ -13,7 +13,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Peter Veentjer.
  */
-public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableReference_AbstractTests{
+public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableReference_AbstractTests {
 
     public void testArguments() throws TimeoutException, InterruptedException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
@@ -39,12 +39,10 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
     public void testStartInterrupted() {
         Integer oldRef = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
-
         Integer newRef = 20;
-        PutThread putThread = schedulePut(newRef,START_INTERRUPTED);
 
-        joinAll(putThread);
-        putThread.assertSuccess(oldRef);
+        put(newRef, oldRef);
+
         assertHasReference(newRef);
     }
 
@@ -59,14 +57,12 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
     public void testNotReturnedValueDoesntBlockTryPut(long timeout) {
         Integer oldRef = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
-        TakeThread taker = scheduleTake();
-        joinAll(taker);
+
+        take();
 
         Integer newRef = 20;
-        TimedTryPutThread putter = scheduleTryPut(newRef, timeout);
-        joinAll(putter);
+        put(timeout, newRef, oldRef);
 
-        putter.assertSuccess(oldRef);
         assertHasReference(newRef);
     }
 
@@ -82,10 +78,25 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         awaitableRef = new DefaultAwaitableReference<Integer>(originalRef);
 
         Integer newRef = 20;
-        TimedTryPutThread putter = scheduleTryPut(newRef, DELAY_SMALL_MS);
-
-        joinAll(putter);
-        putter.assertSuccess(originalRef);
+        put(DELAY_SMALL_MS, newRef,originalRef);
         assertHasReference(newRef);
+    }
+
+    private void put(Integer newRef, Integer oldRef) {
+        PutThread putThread = schedulePut(newRef, START_INTERRUPTED);
+        joinAll(putThread);
+        putThread.assertSuccess(oldRef);
+    }
+
+    private void put(long timeout, Integer newRef, Integer oldRef) {
+        TimedTryPutThread putter = scheduleTryPut(newRef, timeout);
+        joinAll(putter);
+        putter.assertSuccess(oldRef);
+    }
+
+    private void take() {
+        TakeThread taker = scheduleTake();
+        joinAll(taker);
+        taker.assertIsTerminatedWithoutThrowing();
     }
 }
