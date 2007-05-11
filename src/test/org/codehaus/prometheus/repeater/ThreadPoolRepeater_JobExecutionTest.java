@@ -107,7 +107,7 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
         Repeatable repeatable = new RepeatableRunnable(task);
         RepeatThread repeatThread = scheduleRepeat(repeatable);
         joinAll(repeatThread);
-        repeatThread.assertIsTerminated();
+        repeatThread.assertIsTerminatedWithoutThrowing();
 
         //give the task some time to execute 
         sleepMs(DELAY_SMALL_MS);

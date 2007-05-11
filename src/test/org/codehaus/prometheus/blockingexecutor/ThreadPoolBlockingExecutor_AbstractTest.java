@@ -212,7 +212,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         }
 
         public void assertSuccess() {
-            assertIsTerminated();
+            assertIsTerminatedWithoutThrowing();
         }
     }
 
@@ -259,7 +259,6 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
         private final Runnable task;
         private final long timeoutMs;
-        private volatile Boolean rejected;
 
         public TryExecuteThread(Runnable task, long timeoutMs) {
             this.task = task;
@@ -269,17 +268,14 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             executor.tryExecute(task, timeoutMs, TimeUnit.MILLISECONDS);
-            rejected = false;
         }
 
         public void assertIsSuccess() {
-            assertIsTerminated();
-            assertEquals(Boolean.FALSE, rejected);
+            assertIsTerminatedWithoutThrowing();
         }
 
         public void assertIsRejected() {
-            assertIsTerminated();
-            assertEquals(Boolean.TRUE, rejected);
+            assertIsTerminatedWithThrowing(RejectedExecutionException.class);
         }
     }
 }

@@ -22,7 +22,7 @@ public class TryTakeThread<E> extends TestThread {
     }
 
     public void assertSuccess(E expectedRef){
-        assertIsTerminated();
+        assertIsTerminatedWithoutThrowing();
         TestCase.assertEquals(expectedRef,foundRef);
     }
 }

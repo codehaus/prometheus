@@ -61,7 +61,7 @@ public abstract class ConditionUtil_AbstractTest extends ConcurrentTestCase {
 
 
         public void assertIsSuccess(long expectedRemainingTimeoutNs) {
-            assertIsTerminated();
+            assertIsTerminatedWithoutThrowing();
             assertTrue(expectedRemainingTimeoutNs < foundRemainingTimeoutNs);
         }
     }
@@ -89,7 +89,7 @@ public abstract class ConditionUtil_AbstractTest extends ConcurrentTestCase {
         }
 
         public void assertSuccess() {
-            assertIsTerminated();
+            assertIsTerminatedWithoutThrowing();
         }
     }
 }

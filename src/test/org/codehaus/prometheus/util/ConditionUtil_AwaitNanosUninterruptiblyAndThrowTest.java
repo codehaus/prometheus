@@ -106,7 +106,6 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
         sleepMs(DELAY_TINY_MS);
         Thread signalThread = TestUtil.scheduleSignallAll(lock,condition);        
         joinAll(t,signalThread);
-        t.assertIsTerminated();
         t.assertSuccess();
         t.assertIsTerminatedWithInterruptStatus();
     }

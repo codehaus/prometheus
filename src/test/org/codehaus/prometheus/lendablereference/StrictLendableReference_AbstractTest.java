@@ -158,7 +158,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         }
 
         public void assertSuccess(E expectedTakeRef) {
-            assertIsTerminated();
+            assertIsTerminatedWithoutThrowing();
             assertSame(expectedTakeRef, foundTakenRef);
         }
     }

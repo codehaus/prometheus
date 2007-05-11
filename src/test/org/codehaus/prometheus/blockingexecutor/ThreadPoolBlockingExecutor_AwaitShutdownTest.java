@@ -16,93 +16,107 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
 
     public void testNotStarted() {
         newUnstartedBlockingExecutor(1, 1);
-        AwaitShutdownThread t1 = scheduleAwaitShutdown();
-        AwaitShutdownThread t2 = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter1Thread = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter2Thread = scheduleAwaitShutdown();
 
+        //make sure that all waiters are waiting
         giveOthersAChance();
-        t1.assertIsStarted();
-        t2.assertIsStarted();
+        waiter1Thread.assertIsStarted();
+        waiter2Thread.assertIsStarted();
 
         shutdown();
 
+        //make sure that all waiters have terminated without problems
         giveOthersAChance();
-        t1.assertIsTerminated();
-        t2.assertIsTerminated();
+        waiter1Thread.assertIsTerminatedWithoutThrowing();
+        waiter2Thread.assertIsTerminatedWithoutThrowing();
         assertIsShutdown();
     }
 
 
     public void testStarted() {
         newStartedBlockingExecutor(1, 1);
-        AwaitShutdownThread t1 = scheduleAwaitShutdown();
-        AwaitShutdownThread t2 = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter1Thread = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter2Thread = scheduleAwaitShutdown();
 
+        //make sure that all waiters are waiting
         giveOthersAChance();
-        t1.assertIsStarted();
-        t2.assertIsStarted();
+        waiter1Thread.assertIsStarted();
+        waiter2Thread.assertIsStarted();
 
         shutdown();
 
+        //make sure that all waiters have terminated without problems
         giveOthersAChance();
-        t1.assertIsTerminated();
-        t2.assertIsTerminated();
+        waiter1Thread.assertIsTerminatedWithoutThrowing();
+        waiter2Thread.assertIsTerminatedWithoutThrowing();
         assertIsShutdown();
     }
 
     public void testShuttingDown() {
         newShuttingDownBlockingExecutor(DELAY_MEDIUM_MS);
-        AwaitShutdownThread t1 = scheduleAwaitShutdown();
-        AwaitShutdownThread t2 = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter1Thread = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter2Thread = scheduleAwaitShutdown();
 
+        //make sure that all waiters are waiting
         giveOthersAChance();
-        t1.assertIsStarted();
-        t2.assertIsStarted();
+        waiter1Thread.assertIsStarted();
+        waiter2Thread.assertIsStarted();
 
-        joinAll(t1, t2);
-        t1.assertIsTerminatedWithoutThrowing();
-        t2.assertIsTerminatedWithoutThrowing();
+        //wait for the waiters to complete
+        joinAll(waiter1Thread, waiter2Thread);
+        waiter1Thread.assertIsTerminatedWithoutThrowing();
+        waiter2Thread.assertIsTerminatedWithoutThrowing();
         assertIsShutdown();
     }
 
     public void testShutdown() {
         newShutdownBlockingExecutor(1, 1);
-        AwaitShutdownThread t1 = scheduleAwaitShutdown();
-        AwaitShutdownThread t2 = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter1Thread = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter2Thread = scheduleAwaitShutdown();
 
+        //make sure all waiters finish without problems
         giveOthersAChance();
-        t1.assertIsTerminated();
-        t2.assertIsTerminated();
+        waiter1Thread.assertIsTerminatedWithoutThrowing();
+        waiter2Thread.assertIsTerminatedWithoutThrowing();
         assertIsShutdown();
     }
 
     public void testSomeWaitingNeeded() {
         newStartedBlockingExecutor(1, 1, new NonInterruptableSleepingRunnable(DELAY_LONG_MS));
-        AwaitShutdownThread t1 = scheduleAwaitShutdown();
-        AwaitShutdownThread t2 = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter1Thread = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter2Thread = scheduleAwaitShutdown();
 
+        //make sure that all waiters are waiting
         giveOthersAChance();
-        t1.assertIsStarted();
-        t2.assertIsStarted();
+        waiter1Thread.assertIsStarted();
+        waiter2Thread.assertIsStarted();
 
         Thread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread,t1,t2);
-        
-        t1.assertIsTerminatedWithoutThrowing();
-        t2.assertIsTerminatedWithoutThrowing();
+
+        //wait for the shutdown to complete and make sure that the waiters have completed
+        joinAll(shutdownThread,waiter1Thread,waiter2Thread);
+        waiter1Thread.assertIsTerminatedWithoutThrowing();
+        waiter2Thread.assertIsTerminatedWithoutThrowing();
         assertIsShutdown();
     }
 
     public void testInterruptedWhileWaiting() {
         newShuttingDownBlockingExecutor(DELAY_EON_MS);
 
-        AwaitShutdownThread awaitThread = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter1Thread = scheduleAwaitShutdown();
+        AwaitShutdownThread waiter2Thread = scheduleAwaitShutdown();
 
+        //make sure that all waiters are waiting
         giveOthersAChance();
-        awaitThread.assertIsStarted();
+        waiter1Thread.assertIsStarted();
+        waiter2Thread.assertIsStarted();
 
-        awaitThread.interrupt();
-        joinAll(awaitThread);        
-        awaitThread.assertIsInterruptedByException();
+        //interrupt waiter1 and make sure that it is terminated and waiter2 is still waiting
+        waiter1Thread.interrupt();
+        giveOthersAChance();
+        waiter1Thread.assertIsInterruptedByException();
+        waiter2Thread.assertIsStarted();                
     }
 
     private void shutdown() {

@@ -27,7 +27,7 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
 
         TakebackAndResetThread takebackThread = scheduleTakebackAndReset(ref);
         joinAll(takebackThread);
-        takebackThread.assertIsTerminated();
+        takebackThread.assertIsTerminatedWithoutThrowing();
 
         assertHasRef(null);
     }
@@ -45,7 +45,7 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
         };
         thread.start();
         joinAll(thread);
-        thread.assertIsTerminated();
+        thread.assertIsTerminatedWithoutThrowing();
         assertHasRef(null);
     }
 
@@ -59,7 +59,7 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
             Integer replaceRef = 20+k;
             TakebackAndResetThread takebackThread = scheduleTakebackAndReset(replaceRef);
             joinAll(takebackThread);
-            takebackThread.assertIsTerminated();
+            takebackThread.assertIsTerminatedWithoutThrowing();
             assertHasRef(null);
         }
     }

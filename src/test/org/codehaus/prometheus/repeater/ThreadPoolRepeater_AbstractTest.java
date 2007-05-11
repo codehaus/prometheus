@@ -238,7 +238,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         }
 
         public void assertSuccess() {
-            assertIsTerminated();
+            assertIsTerminatedWithoutThrowing();
         }
     }
 

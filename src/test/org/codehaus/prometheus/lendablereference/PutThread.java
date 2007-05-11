@@ -29,7 +29,7 @@ public class PutThread<E> extends TestThread {
         replacedRef = lendableRef.put(newRef);
     }
     public void assertSuccess(E expectedReplacedRef){
-        assertIsTerminated();
+        assertIsTerminatedWithoutThrowing();
         assertSame(expectedReplacedRef,replacedRef);
     }
 }

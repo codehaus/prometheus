@@ -93,6 +93,7 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
         assertShutdownNowNotifiesWaiters();
     }
 
+    //todo:
     public void testShuttingDown() {        
     }
 
@@ -106,6 +107,7 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
         assertIsShutdown();
     }
 
+    //todo
     public void testInterruptedWhileWaiting() {
     }
 }
