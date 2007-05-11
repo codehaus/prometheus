@@ -17,6 +17,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
 
         TakeThread taker = scheduleTake();
 
+        //make sure that the taker is waiting
         giveOthersAChance();
         taker.assertIsStarted();
         assertHasReference(null);
@@ -26,12 +27,14 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         awaitableRef = new DefaultAwaitableReference<Integer>();
         TakeThread taker = scheduleTake();
 
+        //make sure that the taker is waiting
         giveOthersAChance();
         taker.assertIsStarted();
         assertHasReference(null);
 
         taker.interrupt();
 
+        //make sure that the taker is interrupted
         joinAll(taker);
         taker.assertIsInterruptedByException();
         assertHasReference(null);
@@ -52,9 +55,10 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
 
         TakeThread taker = scheduleTake(startInterrupted);
+
+        //make sure take has completed
         joinAll(taker);
         taker.assertSuccess(ref);
-
         taker.assertIsTerminatedWithInterruptStatus(startInterrupted);
         assertHasReference(ref);
     }
@@ -66,6 +70,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
 
         TakeThread takeThread = scheduleTake(true);
+
         joinAll(takeThread);
         takeThread.assertIsInterruptedByException();
         assertHasReference(ref);
@@ -77,11 +82,16 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         Integer newRef = 10;
         TakeThread takeThread1 = scheduleTake(false);
         TakeThread takeThread2 = scheduleTake(false);
+
+        //check that the takers are waiting
         giveOthersAChance();
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
 
+        //now place an item
         PutThread putThread = schedulePut(newRef);
+
+        //and check that the takers have completed
         joinAll(putThread, takeThread1, takeThread2);
         takeThread1.assertSuccess(newRef);
         takeThread2.assertSuccess(newRef);
@@ -96,6 +106,8 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         Integer newRef = 10;
         TakeThread takeThread1 = scheduleTake();
         TakeThread takeThread2 = scheduleTake();
+
+        //check that the takers are waiting
         giveOthersAChance();
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
@@ -103,10 +115,12 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         Thread spurious = scheduleSpuriousWakeup();
         joinAll(spurious);
 
+        //check that the takers still are waiting
         giveOthersAChance();
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
 
+        //put an item, and make sure that the takers have completed.
         PutThread putter = schedulePut(newRef);
         joinAll(putter, takeThread1, takeThread2);
         takeThread1.assertSuccess(newRef);

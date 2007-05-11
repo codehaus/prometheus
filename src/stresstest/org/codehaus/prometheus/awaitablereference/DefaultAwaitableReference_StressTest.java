@@ -17,7 +17,12 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadFactory;
 
-public class DefaultAwaitableReferenceStressTest {
+/**
+ * A stresstest for the DefaultAwaitableReference.
+ *
+ * @author Peer Veentjer.
+ */
+public class DefaultAwaitableReference_StressTest {
 
     public static TestSuite suite() {
         TestSuite suite = new TestSuite();

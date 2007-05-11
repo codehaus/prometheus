@@ -7,20 +7,17 @@ public class DefaultAwaitableReference_PeekTest extends DefaultAwaitableReferenc
 
     public void test(){
         awaitableRef = new DefaultAwaitableReference<Integer>();
+
+        //check that the initial null value is seen
         assertNull(awaitableRef.peek());
+       
+        //check when a new value is set, the new value is seen
+        Integer ref = 20;
+        put(ref,null);
+        assertSame(ref,awaitableRef.peek());
 
-        Integer newRef = 20;
-
-        put(newRef);
-        assertSame(newRef,awaitableRef.peek());
-
-        put(null);
+        //check if restored to null, the null value is seen
+        put(null,ref);
         assertNull(awaitableRef.peek());
-    }
-
-    private void put(Integer newRef) {
-        PutThread putThread = schedulePut(newRef);
-        joinAll(putThread);
-        putThread.assertIsTerminatedWithoutThrowing();
     }
 }

@@ -96,6 +96,18 @@ public abstract class DefaultAwaitableReference_AbstractTests extends Concurrent
         return t;
     }
 
+    public void put(Integer newRef, Integer expectedReturnedRef) {
+        PutThread putter = schedulePut(newRef);
+        joinAll(putter);
+        putter.assertSuccess(expectedReturnedRef);
+    }
+
+    public void take(Integer expectedTakenRef) {
+        TakeThread taker = scheduleTake();
+        joinAll(taker);
+        taker.assertSuccess(expectedTakenRef);
+    }
+
     public class PutThread extends TestThread {
 
         private final Integer newRef;

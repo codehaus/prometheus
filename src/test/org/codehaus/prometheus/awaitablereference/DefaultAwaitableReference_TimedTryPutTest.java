@@ -58,7 +58,7 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         Integer oldRef = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
-        take();
+        take(oldRef);
 
         Integer newRef = 20;
         put(timeout, newRef, oldRef);
@@ -82,21 +82,9 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         assertHasReference(newRef);
     }
 
-    private void put(Integer newRef, Integer oldRef) {
-        PutThread putThread = schedulePut(newRef, START_INTERRUPTED);
-        joinAll(putThread);
-        putThread.assertSuccess(oldRef);
-    }
-
     private void put(long timeout, Integer newRef, Integer oldRef) {
         TimedTryPutThread putter = scheduleTryPut(newRef, timeout);
         joinAll(putter);
         putter.assertSuccess(oldRef);
-    }
-
-    private void take() {
-        TakeThread taker = scheduleTake();
-        joinAll(taker);
-        taker.assertIsTerminatedWithoutThrowing();
     }
 }

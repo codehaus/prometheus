@@ -36,26 +36,18 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
         taker1.assertIsStarted();
         taker2.assertIsStarted();
 
-        //first enter a null value
+        //first put a null value and make sure the takers are still waiting
         put(null, oldRef);
         taker1.assertIsStarted();
         taker2.assertIsStarted();
         assertHasReference(null);
 
-        //now enter a non null value
+        //now enter a non null value and make sure that the takers have completed
         Integer secondNewRef = 2;
         put(secondNewRef, null);
-        PutThread putter = schedulePut(secondNewRef);
-        joinAll(putter, taker1, taker2);
+        joinAll(taker1, taker2);
         assertHasReference(secondNewRef);
-
         taker1.assertSuccess(secondNewRef);
         taker2.assertSuccess(secondNewRef);
-    }
-
-    private void put(Integer newRef, Integer expectedReturnedRef) {
-        PutThread putter = schedulePut(newRef);
-        joinAll(putter);
-        putter.assertSuccess(expectedReturnedRef);
     }
 }
