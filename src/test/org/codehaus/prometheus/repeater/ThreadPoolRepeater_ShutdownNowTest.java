@@ -16,17 +16,11 @@ import org.codehaus.prometheus.testsupport.SleepingRunnable;
  */
 public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_AbstractTest {
 
-    public void testShutdownIsBlocked() {
-        fail();
-    }
-
-    public void testJobExecutingRepeater() {
-        newRunningStrictRepeater();
-    }
-
     public void testNotStarted() {
         newUnstartedStrictRepeater();
-        repeater.shutdownNow();
+
+        shutdownNow();
+
         assertIsShutdown();
     }
 
@@ -38,14 +32,15 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
     }
 
-    public void testDelayedShutdown() {
+    public void testShutdownNowCantForceNonInterruptibleTaskToEnd() {
         NonInterruptableSleepingRunnable task = new NonInterruptableSleepingRunnable(DELAY_SMALL_MS);
         newRunningStrictRepeater(new RepeatableRunnable(task));
 
-        repeater.shutdownNow();
+        shutdownNow();
         assertIsShuttingdown();
 
-        sleepMs(2 * DELAY_SMALL_MS);
+        assertIsShuttingdown();
+        awaitShutdown();
         assertIsShutdown();
     }
 
@@ -56,9 +51,8 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
     }
 
     public void testStartedEmptyPool() {
-        repeater = new ThreadPoolRepeater(0);
-        repeater.start();
-        repeater.shutdownNow();
+        newRunningRepeater(true,0);
+        shutdownNow();
         assertIsShutdown();
         assertActualPoolSize(0);
     }
@@ -89,16 +83,16 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         newRunningStrictRepeater(new RepeatableRunnable(task));
 
         //make sure the task is waiting.
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         task.assertIsStarted();
 
         //now shutdown the repeater, this should interrupt the placement of the task
-        repeater.shutdownNow();
-        sleepMs(DELAY_SMALL_MS);
+        shutdownNow();
+
+        giveOthersAChance();
         task.assertIsInterrupted();
 
-        //wait till the repeater has completely shut down.
-        repeater.awaitShutdown();
+        awaitShutdown();
         stopwatch.stop();
 
         Thread.yield();
@@ -107,11 +101,22 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         stopwatch.assertElapsedSmallerThanMs(1000);
     }
 
+    private void shutdownNow() {
+        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
+        joinAll(shutdownNowThread);
+        shutdownNowThread.assertIsTerminatedWithoutThrowing();
+    }
+
+    private void awaitShutdown() {
+        AwaitShutdownThread awaitShutdownThread = scheduleAwaitShutdown();
+        joinAll(awaitShutdownThread);
+        awaitShutdownThread.assertIsTerminatedWithoutThrowing();
+    }
+
     public void assertShutdownHappens() {
-        repeater.shutdownNow();
-        //this should give the repeater enough time to
-        //let the worker thread shut down.
-        sleepMs(DELAY_SMALL_MS);
+        shutdownNow();
+
+        awaitShutdown();
 
         assertIsShutdown();
     }

@@ -53,7 +53,6 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         lendableRef = new StrictLendableReference<Integer>();
         Integer ref = 10;
 
-
         PutThread<Integer> putThread = schedulePut(ref);
         joinAll(putThread);
         putThread.assertSuccess(null);
@@ -75,7 +74,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         assertHasRef(oldRef);
 
         //return the old reference
-        put(oldRef,newRef);
+        takeback(oldRef);
 
         //now wait for the completion of the lend and the put
         //and check if the put has taken place
@@ -117,9 +116,9 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         Integer ref = 10;
         Integer newRef = 20;
         lendableRef = new StrictLendableReference<Integer>(ref);
-        Thread lendThread = scheduleLend(ref,2* DELAY_SMALL_MS);
-        PutThread<Integer> putThread = schedulePut(newRef);
+        take();
 
+        PutThread<Integer> putThread = schedulePut(newRef);
         //make sure that the put is waiting
         giveOthersAChance();
         putThread.assertIsStarted();
@@ -130,17 +129,18 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         putThread.assertIsStarted();
         assertHasRef(ref);
 
+        takeback(ref);
+                
         //new let the lend and the put complete.
-        joinAll(lendThread, putThread);
+        joinAll(putThread);
         putThread.assertSuccess(ref);
         assertHasRef(newRef);
     }
 
-
-    private void put(Integer ref, Integer oldRef) {
-        PutThread putThread = schedulePut(ref);
-        joinAll(putThread);
-        putThread.assertSuccess(oldRef);
+    private void takeback(Integer ref){
+        TakeBackThread t = scheduleTakeBack(ref);
+        joinAll(t);
+        t.assertSuccess();
     }
 
     private void take() {

@@ -6,7 +6,6 @@
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
-import org.codehaus.prometheus.testsupport.DummyRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
 
 import java.util.concurrent.RejectedExecutionException;
@@ -34,7 +33,7 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
         Repeatable repeatable = new RepeatableRunnable(task);
 
         repeater.repeat(repeatable);
-        giveWorkersTimeToRun();
+        giveOthersAChance();
 
         assertIsRunning();
         assertHasRepeatable(repeatable);
@@ -56,7 +55,7 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
         Repeatable repeatable = new RepeatableRunnable(task);
 
         repeater.repeat(repeatable);
-        giveWorkersTimeToRun();
+        giveOthersAChance();
 
         assertIsRunning();
         assertHasRepeatable(repeatable);

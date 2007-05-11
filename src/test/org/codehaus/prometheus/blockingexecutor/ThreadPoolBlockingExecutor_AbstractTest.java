@@ -24,8 +24,9 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     public volatile TracingThreadFactory threadFactory;
 
     public void tearDown() {
-        if (executor != null)
+        if (executor != null){
             executor.shutdown();
+        }
     }
 
     public ThreadPoolBlockingExecutor getExecutor() {
@@ -113,6 +114,10 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
             Runnable expectedTask = expected[k];
             assertSame(expectedTask, foundTask);
         }
+    }
+
+    public void keepAllWorkersBusyWithEONTask(){
+        executeEonTask(executor.getDesiredPoolSize());
     }
 
     public void executeEonTask(int count) {

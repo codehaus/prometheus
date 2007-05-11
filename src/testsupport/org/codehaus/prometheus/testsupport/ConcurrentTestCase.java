@@ -47,7 +47,7 @@ public abstract class ConcurrentTestCase extends TestCase {
     }
 
     public void giveOthersAChance() {
-        giveOthersAChance(DELAY_SMALL_MS);
+        giveOthersAChance(DELAY_TINY_MS);
     }
 
     public void giveOthersAChance(long ms) {
@@ -149,3 +149,4 @@ public abstract class ConcurrentTestCase extends TestCase {
         }
     }
 }
+

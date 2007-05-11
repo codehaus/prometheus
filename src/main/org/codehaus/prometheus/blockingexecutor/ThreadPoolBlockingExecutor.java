@@ -5,18 +5,20 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.util.StandardThreadFactory;
-import org.codehaus.prometheus.util.ConcurrencyUtil;
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
+import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPoolState;
 import org.codehaus.prometheus.threadpool.WorkerJob;
-import org.codehaus.prometheus.threadpool.StandardThreadPool;
+import org.codehaus.prometheus.util.StandardThreadFactory;
+import org.codehaus.prometheus.util.ConcurrencyUtil;
 
-import java.util.*;
+import static java.lang.String.format;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
-import static java.lang.String.format;
 
 /**
  * An implementation of an {@link BlockingExecutorService} that uses a {@link ThreadPool} for thread
@@ -177,10 +179,11 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
     }
 
     public void tryExecute(Runnable task, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
-        if (unit == null) throw new NullPointerException();
+        if (task == null || unit == null) throw new NullPointerException();
+
+        ConcurrencyUtil.ensureNoTimeout(timeout);
 
         assertPoolIsStarted();
-        ConcurrencyUtil.ensureNoTimeout(timeout);
         if (!workQueue.offer(task, timeout, unit))
             throw new TimeoutException();
         ensureTaskHandeled(task);

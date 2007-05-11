@@ -123,3 +123,6 @@ like putUninterruptibly.
 -methods that use a timeout (also a 0 timeout), prefix them with try.
 
 
+
+idea improvement test:
+the long calculation could used to stress a cpu, could contain yields to increase the number of context switches.

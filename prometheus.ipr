@@ -371,8 +371,8 @@
     <library name="lib">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/lib/provided/log4j-1.2.13.jar!/" />
-        <root url="jar://$PROJECT_DIR$/lib/support/easymock-2.2.jar!/" />
-        <root url="jar://$PROJECT_DIR$/lib/support/junit-4.3.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/support/easymock/easymock-2.2.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/support/junit/junit-4.3.1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

@@ -12,8 +12,15 @@ package org.codehaus.prometheus.blockingexecutor;
  */
 public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExecutor_AbstractTest {
 
-    public void testStartWhileNotStarted() {
-        int poolsize = 10;
+    public void testUnstarted_emptyPool(){
+        testUnstarted(0);
+    }
+
+    public void testUnstarted_nonEmptyPool(){
+        testUnstarted(5);
+    }
+
+    public void testUnstarted(int poolsize) {
         newStartedBlockingExecutor(1,poolsize);
 
         start();
@@ -24,7 +31,7 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
         threadFactory.assertAllThreadsAlive();
     }
 
-    public void testStartWhileStarted() {
+    public void testStarted() {
         int poolsize = 10;
         newStartedBlockingExecutor(1,poolsize);
 
@@ -34,12 +41,6 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
         assertActualPoolSize(poolsize);
         threadFactory.assertCreatedCount(poolsize);
         threadFactory.assertAllThreadsAlive();
-    }
-
-    private void start() {
-        StartThread startThread = scheduleStart();
-        joinAll(startThread);
-        startThread.assertIsTerminatedWithoutThrowing();
     }
 
     public void testStartWhileShuttingDown() {
@@ -63,4 +64,12 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
         assertEquals(oldState,executor.getState());
         assertActualPoolSize(oldpoolsize);
     }
+
+    private void start() {
+        StartThread startThread = scheduleStart();
+        joinAll(startThread);
+        startThread.assertIsTerminatedWithoutThrowing();
+    }
+
+
 }

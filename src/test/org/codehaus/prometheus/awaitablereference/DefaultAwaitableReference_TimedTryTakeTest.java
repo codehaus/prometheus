@@ -75,7 +75,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
     public void testSomeWaitingNeeded() throws TimeoutException, InterruptedException {
         Integer ref = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        TimedTryTakeThread takeThread = scheduleTryTake(DELAY_SMALL_MS);
+        TimedTryTakeThread takeThread = scheduleTryTake(DELAY_EON_MS);
 
         giveOthersAChance();
         takeThread.assertIsStarted();
@@ -98,7 +98,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
 
     public void testInterruptedWhileWaiting() throws TimeoutException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        TimedTryTakeThread taker = scheduleTryTake(DELAY_SMALL_MS);
+        TimedTryTakeThread taker = scheduleTryTake(DELAY_EON_MS);
 
         giveOthersAChance();
         taker.assertIsStarted();
@@ -111,7 +111,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
 
     public void testSpuriousWakeup() throws TimeoutException, InterruptedException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        TimedTryTakeThread taker = scheduleTryTake(DELAY_SMALL_MS);
+        TimedTryTakeThread taker = scheduleTryTake(DELAY_EON_MS);
 
         giveOthersAChance();
         taker.assertIsStarted();

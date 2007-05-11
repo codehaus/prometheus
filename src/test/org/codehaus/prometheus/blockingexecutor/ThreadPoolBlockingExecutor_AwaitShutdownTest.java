@@ -76,7 +76,7 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
     }
 
     public void testSomeWaitingNeeded() {
-        newStartedBlockingExecutor(1, 1, new NonInterruptableSleepingRunnable(DELAY_MEDIUM_MS));
+        newStartedBlockingExecutor(1, 1, new NonInterruptableSleepingRunnable(DELAY_LONG_MS));
         AwaitShutdownThread t1 = scheduleAwaitShutdown();
         AwaitShutdownThread t2 = scheduleAwaitShutdown();
 
@@ -85,18 +85,24 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
         t2.assertIsStarted();
 
         Thread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
-
-        giveOthersAChance();
-
+        joinAll(shutdownThread,t1,t2);
+        
         t1.assertIsTerminatedWithoutThrowing();
         t2.assertIsTerminatedWithoutThrowing();
         assertIsShutdown();
     }
 
     public void testInterruptedWhileWaiting() {
-        //todo
-        //fail();
+        newShuttingDownBlockingExecutor(DELAY_EON_MS);
+
+        AwaitShutdownThread awaitThread = scheduleAwaitShutdown();
+
+        giveOthersAChance();
+        awaitThread.assertIsStarted();
+
+        awaitThread.interrupt();
+        joinAll(awaitThread);        
+        awaitThread.assertIsInterruptedByException();
     }
 
     private void shutdown() {

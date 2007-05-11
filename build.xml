@@ -17,7 +17,10 @@
     <property name="lib.support"            value="${lib}/support"/>
     <property name="doc"                    value="doc"/>
 
+
     <property name="target"                 value="target"/>
+    <property name="metrics"                value="${target}/metrics"/>
+    <property name="checkstyle"             value="${target}/checkstyle"/>
     <property name="javadoc.main"           value="${target}/javadoc.main"/>
     <property name="javadoc.testsupport"    value="${target}/javadoc.testsupport"/>
     <property name="classes.main"           value="${target}/classes.main"/>
@@ -38,13 +41,24 @@
         </fileset>
     </path>
 
-    <target name="clean"
-            description="Removes all generated files">
-        <delete dir="${target}"/>
-    </target>
+    <taskdef name="javancss"
+             classname="javancss.JavancssAntTask"
+             classpathref="classpath.support"/>
+
+    <taskdef resource="checkstyletask.properties"
+             classpathref="classpath.support"/>
+
+    <!-- taskdef name="jdepend"
+             classname="org.apache.tools.ant.taskdefs.optional.jdepend.JDependTask"
+             classpathref="classpath.support"/ -->
 
     <target name="init">
         <tstamp/>
+    </target>
+
+    <target name="clean"
+            description="Removes all generated files">
+        <delete dir="${target}"/>
     </target>
 
     <target name="compile.main"
@@ -283,4 +297,63 @@
     <target name="test.all"
             description="Runs all the tests"
             depends="test.main,test.stress"/>
+
+
+    <target name="metrics.main"
+            depends="compile.main"
+            description="Creates metrics report for the main module">
+
+        <mkdir dir="${metrics}"/>
+
+        <!-- jdepend format="xml" outputfile="${metrics}/jdepend-report.xml">
+            <exclude name="java.*"/>
+            <exclude name="javax.*"/>
+            <classespath>
+                <path refid="classpath.provided"/>
+                <pathelement path="${classes.main}/"/>
+            </classespath>
+        </jdepend>
+
+        <style  basedir="docs"
+                destdir="docs"
+                includes="${metrics}/jdepend-report.xml"
+                style="${ant.home}/etc/jdepend.xsl" /> -->
+
+
+        <javancss   srcdir="${src.main}"
+                    includes="**/*.java"
+                    generateReport="true"
+                    outputfile="${metrics}/javancss_main.xml"
+                    format="xml"/>
+
+        <xslt  basedir="${metrics}"
+               includes="javancss_main.xml"
+                destdir="${metrics}"
+                extension=".html"
+                style="lib/support/javancss/javancss2html.xsl"/>
+     </target>
+
+    <target name="checkstyle.main"
+            depends="compile.main"
+            description="Creates a checkstyle report for the main module">
+
+        <mkdir dir="${checkstyle}"/>
+        
+        <checkstyle config="sun_checks.xml" failOnViolation="false">
+            <fileset dir="${src.main}"
+                     includes="**/*.java"/>
+
+            <!-- Location of cache-file. Something that is project specific -->
+            <property key="checkstyle.cache.file"
+                      file="${checkstyle}/cachefile"/>
+            <formatter type="xml"
+                       toFile="${checkstyle}/checkstyle_errors.xml"/>
+        </checkstyle>
+
+        <xslt style="lib/support/checkstyle/checkstyle-frames-errors.xsl"
+              in="${checkstyle}/checkstyle_errors.xml"
+              out="${checkstyle}/checkstyle_report.html">
+            <param name="output.dir" expression="${checkstyle}"/>
+        </xslt>
+    </target>
 </project>

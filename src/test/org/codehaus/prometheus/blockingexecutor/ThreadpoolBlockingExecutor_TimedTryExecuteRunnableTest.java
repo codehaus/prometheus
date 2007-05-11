@@ -7,6 +7,7 @@ package org.codehaus.prometheus.blockingexecutor;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.DummyRunnable;
+import org.codehaus.prometheus.testsupport.SleepingRunnable;
 
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -25,14 +26,12 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
             executor.tryExecute(null, 1, TimeUnit.SECONDS);
             fail();
         } catch (NullPointerException ex) {
-            assertTrue(true);
         }
 
         try {
             executor.tryExecute(new DummyRunnable(), 1, null);
             fail();
         } catch (NullPointerException ex) {
-            assertTrue(true);
         }
     }
 
@@ -42,41 +41,69 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
             executor.tryExecute(new DummyRunnable(), -1, TimeUnit.SECONDS);
             fail();
         } catch (TimeoutException ex) {
-            assertTrue(true);
         }
     }
 
     public void testTimeout() {
-        fail();
+        newStartedBlockingExecutor(0,0);
+
+        CountingRunnable task = new CountingRunnable();
+        TryExecuteThread executeThread = scheduleTryExecute(task,DELAY_SMALL_MS);
+        joinAll(executeThread);
+
+        executeThread.assertIsTimedOut();
+        task.assertNotExecuted();
     }
 
     public void testInterruptedWhileWaiting() {
-        newStartedBlockingExecutor();
+        newStartedBlockingExecutor(0,0);
         CountingRunnable task = new CountingRunnable();
 
-        TryExecuteThread executeThread = scheduleDelayedTryExecute(task,1000, 100);
+        TryExecuteThread executeThread = scheduleTryExecute(task,DELAY_EON_MS);
+
+        giveOthersAChance();
+        executeThread.assertIsStarted();
+
         executeThread.interrupt();
         joinAll(executeThread);
-
         executeThread.assertIsInterruptedByException();
 
-        sleepMs(100);
-        task.assertExecutedOnce();
-        assertDesiredPoolSize(1);
-        assertActualPoolSize(1);
+        sleepMs(DELAY_MEDIUM_MS);
+        task.assertNotExecuted();
         assertIsRunning();
     }
 
-    public void testSuccess() {
-        newStartedBlockingExecutor();
+    public void testSomeWaitingNeeded(){
+        newStartedBlockingExecutor(0,1);
+
+        SleepingRunnable sleepingRunnable = new SleepingRunnable(DELAY_MEDIUM_MS);
+        ExecuteThread executeThread = scheduleExecute(sleepingRunnable,START_UNINTERRUPTED);
+        joinAll(executeThread);
+        executeThread.assertIsTerminatedWithoutThrowing();
+
+        CountingRunnable task = new CountingRunnable();
+        TryExecuteThread tryExecuteThread = scheduleTryExecute(task,DELAY_EON_MS);
+        giveOthersAChance();
+        tryExecuteThread.assertIsStarted();
+
+        joinAll(tryExecuteThread);
+        tryExecuteThread.assertIsSuccess();
+
+        sleepMs(DELAY_MEDIUM_MS);
+        task.assertExecutedOnce();
+        assertIsRunning();
+    }
+
+    public void testNoWaitingNeeded() {
+        newStartedBlockingExecutor(0,1);
         CountingRunnable task = new CountingRunnable();
 
-        TryExecuteThread executeThread = scheduleTryExecute(task, 100);
+        TryExecuteThread executeThread = scheduleTryExecute(task, 0);
         joinAll(executeThread);
 
         executeThread.assertIsSuccess();
 
-        sleepMs(100);
+        sleepMs(DELAY_MEDIUM_MS);
         task.assertExecutedOnce();
         assertDesiredPoolSize(1);
         assertActualPoolSize(1);
@@ -106,7 +133,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
         joinAll(executeThread);
 
         executeThread.assertIsTerminatedWithThrowing(RejectedExecutionException.class);
-        assertEquals(oldState, executeThread.getState());
+        assertEquals(oldState, executor.getState());
         task.assertNotExecuted();
     }
 }

@@ -14,7 +14,6 @@ import org.codehaus.prometheus.testsupport.SleepingRunnable;
  */
 public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlockingExecutor_AbstractTest {
 
-
     public void testUnstarted() {
         newUnstartedBlockingExecutor(1, 1);
 

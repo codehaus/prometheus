@@ -93,8 +93,7 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
         assertShutdownNowNotifiesWaiters();
     }
 
-
-    public void testShuttingDown() {
+    public void testShuttingDown() {        
     }
 
     public void testShutdown() throws InterruptedException {

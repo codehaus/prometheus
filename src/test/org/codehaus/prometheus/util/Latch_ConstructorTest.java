@@ -36,7 +36,7 @@ public class Latch_ConstructorTest extends Latch_AbstractTest {
         Lock lock = new ReentrantLock();
         latch = new Latch(lock);
 
-        assertIsOpen();
+        assertIsClosed();
         assertSame(lock, latch.getMainLock());
         assertNotNull(latch.getOpenCondition());
     }
