@@ -5,9 +5,9 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.lendablereference.LendableReference;
-import org.codehaus.prometheus.lendablereference.RelaxedLendableReference;
-import org.codehaus.prometheus.lendablereference.StrictLendableReference;
+import org.codehaus.prometheus.references.LendableReference;
+import org.codehaus.prometheus.references.RelaxedLendableReference;
+import org.codehaus.prometheus.references.StrictLendableReference;
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPoolState;
@@ -41,7 +41,7 @@ import java.util.concurrent.locks.Lock;
  * ThreadPoolRepeater this is possible. This is implemented by using different LendableReferences:
  * <ol>
  * <li><b>strict ThreadPoolRepeater</b> is realized by using a {@link StrictLendableReference}</li>
- * <li><b>relaxed ThreadPoolRepeater</b> is realized by using a {@link RelaxedLendableReference}</li>
+ * <li><b>relaxed ThreadPoolRepeater</b> is realized by using a {@link org.codehaus.prometheus.references.RelaxedLendableReference}</li>
  * </ol>
  * The consequence of a strict ThreadPoolRepeater, is that there is more lock contention when the
  * task is often changed. If prometheus execution of different tasks is not an issue, a relaxed
