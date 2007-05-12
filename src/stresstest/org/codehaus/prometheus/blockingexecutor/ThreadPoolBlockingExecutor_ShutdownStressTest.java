@@ -81,7 +81,6 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
 
         private void assertOk() {
             assertEquals(placedCount.intValue(), executedCount.intValue());
-            System.out.println("placedCount: " + placedCount);
             exceptionHandler.printStacktraces();
             exceptionHandler.assertNoErrors();
         }

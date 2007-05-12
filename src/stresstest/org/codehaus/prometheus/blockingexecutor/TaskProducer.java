@@ -16,10 +16,8 @@ public class TaskProducer extends TestThread {
 
     @Override
     protected void runInternal() throws Exception {
-        System.out.println("tASK PROCEUDER");
         for (int k = 0; k < taskCount; k++) {
             executor.execute(new Task());
-            System.out.println("task produced");
             TestUtil.sleepRandom(20, TimeUnit.MILLISECONDS);
         }
     }

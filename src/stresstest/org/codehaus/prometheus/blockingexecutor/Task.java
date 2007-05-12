@@ -23,12 +23,8 @@ public class Task implements Runnable {
     }
 
     public void run() {
-        System.out.println("task executed count: "+count);
         count.incrementAndGet();
-        System.out.println("1");
         TestUtil.sleepRandom(20, TimeUnit.MILLISECONDS);
-        System.out.println("2");
         TestUtil.someCalculation(100000);
-        System.out.println("3");
     }
 }

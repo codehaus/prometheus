@@ -100,7 +100,6 @@ public class ThreadPoolBlockingExecutor_ChangePoolsizeStressTest {
             for (int k = 0; k < nrchanges; k++) {
 
                 int poolsize = TestUtil.randomInt(maxpoolsize);
-                System.out.println("size:"+poolsize);
                 executor.setDesiredPoolSize(poolsize);
                 TestUtil.sleepMs(100);
             }

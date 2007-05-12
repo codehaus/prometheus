@@ -57,7 +57,6 @@ public class ThreadPoolRepeater_RepeatStressTest {
             exceptionHandler.printStacktraces();
             exceptionHandler.assertNoErrors();
             //task.assertCount(executionCount);
-            System.out.println("count: "+task.getCurrentExecutionCount());
         }
     }
 

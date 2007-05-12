@@ -3,7 +3,7 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.awaitablereference;
+package org.codehaus.prometheus.references;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
