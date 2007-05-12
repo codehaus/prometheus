@@ -3,7 +3,10 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
+
+import org.codehaus.prometheus.references.StrictLendableReference;
+import org.codehaus.prometheus.references.StrictLendableReference_AbstractTest;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

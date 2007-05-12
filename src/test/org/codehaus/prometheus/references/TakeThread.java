@@ -3,11 +3,12 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
 
 import static junit.framework.TestCase.*;
 import org.codehaus.prometheus.testsupport.BlockingState;
 import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.references.LendableReference;
 
 /**
  * The TakeThread is a thread that tries to tryTake an item
@@ -44,7 +45,7 @@ public class TakeThread<E> extends TestThread {
         }
     }
 
-    public E getFoundRef() {
+    public E getTakenRef() {
         return foundRef;
     }
 

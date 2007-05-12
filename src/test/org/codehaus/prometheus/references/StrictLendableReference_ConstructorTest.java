@@ -3,13 +3,15 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
+
+import org.codehaus.prometheus.references.StrictLendableReference;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Unittests the constructors of the {@link StrictLendableReference}.
+ * Unittests the constructors of the {@link org.codehaus.prometheus.references.StrictLendableReference}.
  *
  * Peter Veentjer.
  */

@@ -3,12 +3,14 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.references.RelaxedLendableReference;
+import org.codehaus.prometheus.references.TimedTryPutThread;
+import org.codehaus.prometheus.references.TakeThread;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public abstract class RelaxedLendableReference_AbstractTest<E> extends ConcurrentTestCase {
@@ -32,7 +34,7 @@ public abstract class RelaxedLendableReference_AbstractTest<E> extends Concurren
     }
 
     public TimedTryPutThread scheduleTryPut(E ref, long timeoutMs){
-        TimedTryPutThread t = new TimedTryPutThread(lendableRef,ref,timeoutMs,TimeUnit.MILLISECONDS);
+        TimedTryPutThread t = new TimedTryPutThread(lendableRef,ref,timeoutMs);
         t.start();
         return t;
     }

@@ -3,11 +3,13 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
 
 import junit.framework.TestCase;
 import org.codehaus.prometheus.util.ConcurrencyUtil;
 import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.references.LendableReference;
+import org.codehaus.prometheus.references.IllegalTakebackException;
 
 import java.util.concurrent.TimeUnit;
 

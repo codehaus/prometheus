@@ -3,7 +3,7 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
@@ -40,6 +40,34 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         assertSame(expectedRef, lendableRef.peek());
     }
 
+    public PutThread test_pendingPut(E newRef) {
+        PutThread putThread = schedulePut(newRef);
+        giveOthersAChance();
+        putThread.assertIsStarted();
+        return putThread;
+    }
+
+    public void test_takeback(E ref) {
+        TakeBackThread<E> t = scheduleTakeBack(ref);
+        joinAll(t);
+        t.assertSuccess();
+    }
+
+    public void tested_put(E newRef, E expectedOldRef) {
+        PutThread<E> putThread = schedulePut(newRef);
+        joinAll(putThread);
+        putThread.assertSuccess(expectedOldRef);
+        assertHasRef(newRef);
+    }
+
+    public E tested_take(E expectedTakenRef) {
+        TakeThread<E> takeThread = scheduleTake();
+        joinAll(takeThread);
+        takeThread.assertSuccess(expectedTakenRef);
+        assertHasRef(expectedTakenRef);
+        return takeThread.getTakenRef();
+    }
+
     public TakeThread<E> scheduleTake() {
         TakeThread<E> t = new TakeThread<E>(lendableRef);
         t.start();
@@ -54,8 +82,8 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
     }
 
 
-    public TakeBackThread<E> scheduleTakeBack(E badRef) {
-        TakeBackThread<E> thread = new TakeBackThread<E>(lendableRef, badRef);
+    public TakeBackThread<E> scheduleTakeBack(E ref) {
+        TakeBackThread<E> thread = new TakeBackThread<E>(lendableRef, ref);
         thread.start();
         return thread;
     }
@@ -95,7 +123,13 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
     }
 
     public TimedTryTakeThread scheduleTimedTryTake(long timeoutMs) {
-        TimedTryTakeThread t = new TimedTryTakeThread(timeoutMs, TimeUnit.MILLISECONDS);
+        TimedTryTakeThread t = new TimedTryTakeThread(timeoutMs);
+        t.start();
+        return t;
+    }
+
+    public TakebackAndResetThread<E> scheduleTakebackAndReset(E ref) {
+        TakebackAndResetThread<E> t = new TakebackAndResetThread<E>(lendableRef, ref);
         t.start();
         return t;
     }
@@ -114,7 +148,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
 
 
     public TimedTryPutThread<E> scheduleTimedTryPut(E ref, long timeoutMs) {
-        TimedTryPutThread<E> t = new TimedTryPutThread<E>(lendableRef, ref, timeoutMs, TimeUnit.MILLISECONDS);
+        TimedTryPutThread<E> t = new TimedTryPutThread<E>(lendableRef, ref, timeoutMs);
         t.start();
         return t;
     }
@@ -132,7 +166,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         }
 
         public SpuriousWakeupsThread(long delay, TimeUnit unit) {
-            setDelay(delay,unit);
+            setDelay(delay, unit);
         }
 
         @Override
@@ -144,17 +178,15 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
 
     public class TimedTryTakeThread extends TestThread {
         private final long timeout;
-        private final TimeUnit timeoutUnit;
         private volatile E foundTakenRef;
 
-        public TimedTryTakeThread(long timeout, TimeUnit timeoutUnit) {
-            this.timeout = timeout;
-            this.timeoutUnit = timeoutUnit;
+        public TimedTryTakeThread(long timeoutMs) {
+            this.timeout = timeoutMs;
         }
 
         @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
-            foundTakenRef = lendableRef.tryTake(timeout, timeoutUnit);
+            foundTakenRef = lendableRef.tryTake(timeout, TimeUnit.MILLISECONDS);
         }
 
         public void assertSuccess(E expectedTakeRef) {
@@ -166,7 +198,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
     class MultipleTakeBackThread extends TestThread {
         private final int count;
         private final E ref;
-        private boolean success = false;
+        private boolean completed = false;
 
         public MultipleTakeBackThread(int count, E ref) {
             this.count = count;
@@ -177,12 +209,12 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         public void runInternal() {
             for (int k = 0; k < count; k++)
                 lendableRef.takeback(ref);
-            success = true;
+            completed = true;
         }
 
         public void assertSuccess() {
             assertIsTerminatedWithoutThrowing();
-            assertTrue(success);
+            assertTrue(completed);
         }
     }
 }

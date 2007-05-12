@@ -1,6 +1,8 @@
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.references.RelaxedLendableReference;
+import org.codehaus.prometheus.references.TakeThread;
 
 import java.util.concurrent.TimeoutException;
 
@@ -25,9 +27,9 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
         TakeThread takeThread = scheduleTake();
         joinAll(takeThread);
 
-        TakebackAndResetThread takebackThread = scheduleTakebackAndReset(ref);
-        joinAll(takebackThread);
-        takebackThread.assertIsTerminatedWithoutThrowing();
+        TakebackAndResetThread takebackAndResetThread = scheduleTakebackAndReset(ref);
+        joinAll(takebackAndResetThread);
+        takebackAndResetThread.assertIsTerminatedWithoutThrowing();
 
         assertHasRef(null);
     }
@@ -57,9 +59,9 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
 
         for (int k = 0; k < 10; k++) {
             Integer replaceRef = 20+k;
-            TakebackAndResetThread takebackThread = scheduleTakebackAndReset(replaceRef);
-            joinAll(takebackThread);
-            takebackThread.assertIsTerminatedWithoutThrowing();
+            TakebackAndResetThread takebackAndResetThread = scheduleTakebackAndReset(replaceRef);
+            joinAll(takebackAndResetThread);
+            takebackAndResetThread.assertIsTerminatedWithoutThrowing();
             assertHasRef(null);
         }
     }

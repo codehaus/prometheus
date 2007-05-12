@@ -3,14 +3,16 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
+
+import org.codehaus.prometheus.references.StrictLendableReference_AbstractTest;
 
 /**
- * Unittests the {@link StrictLendableReference#tryTake()} method.
+ * Unittests the {@link org.codehaus.prometheus.references.StrictLendableReference#tryTake()} method.
  *
  * Peter Veentjer.
  */
-public class StrictLendableReference_TryTakeTest extends StrictLendableReference_AbstractTest<Integer>{
+public class StrictLendableReference_TryTakeTest extends StrictLendableReference_AbstractTest<Integer> {
 
     public void testRefAvailable_startInterrupted(){
         testRefAvailable(true);

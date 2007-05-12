@@ -3,7 +3,10 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
+
+import org.codehaus.prometheus.references.StrictLendableReference;
+import org.codehaus.prometheus.references.TakeThread;
 
 /**
  * Unittests the {@link StrictLendableReference#put(Object)} method. 
@@ -11,6 +14,12 @@ package org.codehaus.prometheus.lendablereference;
  * @author Peter Veentjer.
  */
 public class StrictLendableReference_PutTest extends StrictLendableReference_AbstractTest<Integer> {
+
+    //==========================================================
+    // The first test deals with starting interrupted. If the thread
+    // has interruptstatus, and that thread executes a put, it
+    // receives an InterruptedException.
+    //==========================================================
 
     public void testStartInterrupted(){
         Integer oldRef = 10;
@@ -24,15 +33,18 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         assertHasRef(oldRef);
     }
 
-    /*
+    //==========================================================
+    //all tests below start uninterrupted    
+    //==========================================================
+
     public void testPutNull() throws InterruptedException {
         lendableRef = new StrictLendableReference<Integer>();
         TakeThread takeThread1 = scheduleTake();
         TakeThread takeThread2 = scheduleTake();
 
-        //putUninterruptibly null and make sure that the takers are still waiting
+        //put null and make sure that the takers are still waiting
         giveOthersAChance();
-        put(null,null);
+        tested_put(null,null);
 
         giveOthersAChance();
         takeThread1.assertIsStarted();
@@ -41,13 +53,13 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         //putUninterruptibly new value and make sure that the takers have
         //taken the expected value.
         Integer newRef = 1;
-        putThread = schedulePut(newRef);
-
+        PutThread putThread = schedulePut(newRef);
         joinAll(putThread, takeThread1, takeThread2);
         takeThread1.assertSuccess(newRef);
         takeThread2.assertSuccess(newRef);
+        putThread.assertSuccess(null);
         assertHasRef(newRef);
-    } */
+    }
  
     public void testNoWaiting() {
         lendableRef = new StrictLendableReference<Integer>();
@@ -66,7 +78,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         lendableRef = new StrictLendableReference<Integer>(oldRef);
 
         //take a reference so that the put is going to block
-        take();
+        tested_take(oldRef);
 
         PutThread<Integer> putThread = schedulePut(newRef);
         giveOthersAChance();
@@ -74,7 +86,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         assertHasRef(oldRef);
 
         //return the old reference
-        takeback(oldRef);
+        test_takeback(oldRef);
 
         //now wait for the completion of the lend and the put
         //and check if the put has taken place
@@ -97,7 +109,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         lendableRef = new StrictLendableReference<Integer>(oldRef);
 
         //take a reference so the put is going to block
-        take();
+        tested_take(oldRef);
 
         PutThread<Integer> putThread = schedulePut(newRef);
         //make sure that the put is still waiting
@@ -113,39 +125,29 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
     }
 
     public void testSpuriousWakeup() {
-        Integer ref = 10;
-        Integer newRef = 20;
-        lendableRef = new StrictLendableReference<Integer>(ref);
-        take();
+        Integer takenref = 10;
+        Integer putref = 20;
+        lendableRef = new StrictLendableReference<Integer>(takenref);
+        tested_take(takenref);
 
-        PutThread<Integer> putThread = schedulePut(newRef);
+        PutThread<Integer> putThread = schedulePut(putref);
         //make sure that the put is waiting
         giveOthersAChance();
         putThread.assertIsStarted();
 
         //do a spurious wakeup and make sure that the put is still waiting
         Thread spurious = scheduleSpuriousWakeups();
-        joinAllAndSleepMs(DELAY_TINY_MS, spurious);
-        putThread.assertIsStarted();
-        assertHasRef(ref);
 
-        takeback(ref);
+        joinAll(spurious);
+        giveOthersAChance();
+        putThread.assertIsStarted();
+        assertHasRef(takenref);
+
+        test_takeback(takenref);
                 
         //new let the lend and the put complete.
         joinAll(putThread);
-        putThread.assertSuccess(ref);
-        assertHasRef(newRef);
-    }
-
-    private void takeback(Integer ref){
-        TakeBackThread t = scheduleTakeBack(ref);
-        joinAll(t);
-        t.assertSuccess();
-    }
-
-    private void take() {
-        TakeThread<Integer> takeThread = scheduleTake();
-        joinAll(takeThread);
-        takeThread.assertIsTerminatedWithoutThrowing();
+        putThread.assertSuccess(takenref);
+        assertHasRef(putref);
     }
 }

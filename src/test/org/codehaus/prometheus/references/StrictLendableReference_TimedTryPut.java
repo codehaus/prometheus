@@ -3,7 +3,7 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -142,7 +142,7 @@ public class StrictLendableReference_TimedTryPut extends StrictLendableReference
         tryPutThread.assertIsStarted();
 
         //take the item back and make sure that tryPut went ok.
-        TakeBackThread takebackThread = scheduleTakeBack(originalRef);        
+        TakeBackThread takebackThread = scheduleTakeBack(originalRef);
         joinAll(takebackThread, tryPutThread);
         tryPutThread.assertSuccess(originalRef);
         assertHasRef(newRef);

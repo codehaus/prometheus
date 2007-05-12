@@ -3,8 +3,18 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
 
+import org.codehaus.prometheus.references.RelaxedLendableReference;
+
+/**
+ * todo: this tests executes the operations on the junitthread and this could lead to
+ * problems like not detecting liveness problems for example because the test won't fail (or
+ * stall)
+ *
+ *
+ * @author Peter Veentjer
+ */
 public class RelaxedLendableReference_TakebackTest extends RelaxedLendableReference_AbstractTest<Integer> {
 
     public void testTakeBackNull() {

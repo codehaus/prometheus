@@ -1,4 +1,6 @@
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
+
+import org.codehaus.prometheus.references.StrictLendableReference;
 
 public class StrictLendableReference_IsTakePossibleTest extends StrictLendableReference_AbstractTest<Integer> {
 

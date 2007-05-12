@@ -3,10 +3,11 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
 
 import static junit.framework.TestCase.assertSame;
 import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.references.LendableReference;
 
 import java.util.concurrent.TimeoutException;
 

@@ -3,7 +3,11 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.lendablereference;
+package org.codehaus.prometheus.references;
+
+import org.codehaus.prometheus.references.StrictLendableReference;
+import org.codehaus.prometheus.references.TakeThread;
+import org.codehaus.prometheus.references.TakeBackThread;
 
 /**
  * Unittests the {@link StrictLendableReference#takeback(Object)} method.
