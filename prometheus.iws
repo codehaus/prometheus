@@ -27,19 +27,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/awaitablereference/DefaultAwaitableReference_AbstractTests.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/awaitablereference/DefaultAwaitableReference_TimedTryPutTest.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TimedTryPutTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TimedTryPutTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prometheus.iws" afterPath="$PROJECT_DIR$/prometheus.iws" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TakeTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TakeTest.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/awaitablereference/DefaultAwaitableReference_TimedTryTakeTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/awaitablereference/DefaultAwaitableReference_IsTakePossibleTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/awaitablereference/DefaultAwaitableReference_ConstructorTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/awaitablereference/DefaultAwaitableReference_PeekTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/awaitablereference/DefaultAwaitableReference_TakeTest.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_PutTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_PutTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TimedTryTakeTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TimedTryTakeTest.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/awaitablereference/DefaultAwaitableReference_PutTest.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TryTakeTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TryTakeTest.java" />
     </list>
     <list name="Failed commit: Default" comment="- improved the threadpool, better behaving while shutting down&#10;- improved the repeater so it makes use the threadpool improvement&#10;- improved the blockingexecutor so it makes use of the threadpool improvements" />
     <list name="Failed commit: Default (3)" comment="" />
@@ -235,10 +224,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DefaultAwaitableReference_TakeTest.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="DefaultAwaitableReference_TakeTest.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TakeTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="125" column="8" selection-start="4207" selection-end="4207" vertical-scroll-proportion="0.74788135">
+            <state line="56" column="12" selection-start="1780" selection-end="1780" vertical-scroll-proportion="0.80190676">
               <folding />
             </state>
           </provider>
@@ -266,7 +255,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DefaultAwaitableReference_AbstractTests.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="DefaultAwaitableReference_AbstractTests.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_AbstractTests.java">
           <provider selected="true" editor-type-id="text-editor">
             <state line="22" column="22" selection-start="752" selection-end="752" vertical-scroll-proportion="0.19809322">
@@ -1378,13 +1367,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TakeTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="125" column="8" selection-start="4207" selection-end="4207" vertical-scroll-proportion="0.74788135">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_PutTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="84" column="8" selection-start="2590" selection-end="2590" vertical-scroll-proportion="0.80190676">
@@ -1418,6 +1400,13 @@
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_AbstractTests.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="22" column="22" selection-start="752" selection-end="752" vertical-scroll-proportion="0.19809322">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TakeTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="56" column="12" selection-start="1780" selection-end="1780" vertical-scroll-proportion="0.80190676">
           <folding />
         </state>
       </provider>

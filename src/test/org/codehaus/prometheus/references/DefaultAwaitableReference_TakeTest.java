@@ -5,8 +5,6 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.DefaultAwaitableReference;
-
 /**
  * The Take_Test unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#take()} method.
  *
@@ -56,7 +54,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         Integer ref = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
 
-        org.codehaus.prometheus.references.TakeThread taker = scheduleTake(startInterrupted);
+        TakeThread taker = scheduleTake(startInterrupted);
 
         //make sure take has completed
         joinAll(taker);
