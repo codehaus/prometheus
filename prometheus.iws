@@ -27,22 +27,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_ExceptionHandlingTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_ExceptionHandlingTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_ConstructorTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_ConstructorTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor_AbstractTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor_AbstractTest.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/threadpool/StandardThreadpoolStressTest.java" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/threadpool/StandardThreadpool_StressTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/threadpool/StandardThreadpool_StressTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/util/StandardThreadFactory_ConstructorTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/util/StandardThreadFactory_ConstructorTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/ThreadPoolRepeater.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/ThreadPoolRepeater.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/CountingRepeatableTest.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_ConstructorTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_ConstructorTest.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/ThreadPoolRepeaterStressTest.java" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/ThreadPoolRepeater_StressTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor_ConstructorTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor_ConstructorTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/ThreadPoolRepeater_StressTest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prometheus.iws" afterPath="$PROJECT_DIR$/prometheus.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_SetDesiredPoolSizeTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_SetDesiredPoolSizeTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/StandardThreadPool.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/StandardThreadPool.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/lendablereference" afterPath="" />
     </list>
     <list name="Failed commit: Default" comment="- improved the threadpool, better behaving while shutting down&#10;- improved the repeater so it makes use the threadpool improvement&#10;- improved the blockingexecutor so it makes use of the threadpool improvements" />
     <list name="Failed commit: Default (3)" comment="" />
@@ -1169,7 +1155,7 @@
     <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
     <option name="FILE_HISTORY_DIALOG_COMMENTS_SPLITTER_PROPORTION" value="0.8" />
     <option name="FILE_HISTORY_DIALOG_SPLITTER_PROPORTION" value="0.5" />
-    <option name="ERROR_OCCURED" value="true" />
+    <option name="ERROR_OCCURED" value="false" />
     <option name="ACTIVE_VCS_NAME" value="svn" />
     <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
