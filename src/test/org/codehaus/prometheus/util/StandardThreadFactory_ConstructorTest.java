@@ -6,7 +6,6 @@
 package org.codehaus.prometheus.util;
 
 import junit.framework.TestCase;
-import org.codehaus.prometheus.util.StandardThreadFactory;
 
 public class StandardThreadFactory_ConstructorTest extends TestCase {
 
@@ -17,6 +16,7 @@ public class StandardThreadFactory_ConstructorTest extends TestCase {
     }
 
     public void test_String() {
+        //null for threadgroupname is allowed
         new StandardThreadFactory(null);
 
         String name = "somename";
@@ -30,6 +30,30 @@ public class StandardThreadFactory_ConstructorTest extends TestCase {
     }
 
     public void test_int_String() {
+        try{
+            new StandardThreadFactory(Thread.MIN_PRIORITY-1,"foo");
+            fail();
+        }catch(IllegalArgumentException ex){            
+        }
+
+        try{
+            new StandardThreadFactory(Thread.MAX_PRIORITY+1,"foo");
+            fail();
+        }catch(IllegalArgumentException ex){
+        }
+
+        //null for threadgroupname is allowed
+        new StandardThreadFactory(Thread.MIN_PRIORITY,(String)null);
+
+        String name = "somename";
+        int priority = Thread.NORM_PRIORITY;
+        StandardThreadFactory factory = new StandardThreadFactory(priority,name);
+        assertEquals(priority, factory.getPriority());
+        assertNotNull(factory.getThreadGroup());
+        assertEquals(name, factory.getThreadGroup().getName());
+        assertEquals(Thread.currentThread().getThreadGroup(), factory.getThreadGroup().getParent());
+        assertEquals(Thread.MAX_PRIORITY, factory.getThreadGroup().getMaxPriority());
+        assertFalse(factory.isProducingDaemons());
     }
 
     public void test_int_ThreadGroup() {

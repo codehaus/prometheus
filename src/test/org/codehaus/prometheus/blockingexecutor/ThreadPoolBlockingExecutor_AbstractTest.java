@@ -68,8 +68,8 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         BlockingQueue<Runnable> queue = queuesize == 0 ? new SynchronousQueue() : new LinkedBlockingQueue();
         threadFactory = new TracingThreadFactory(new StandardThreadFactory());
         executor = new ThreadPoolBlockingExecutor(
-                threadFactory,
                 poolsize,
+                threadFactory,
                 queue);
     }
 
@@ -105,7 +105,11 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
     public void assertIsShutdown() {
         assertEquals(BlockingExecutorServiceState.Shutdown, executor.getState());
-        threadFactory.assertThreadsHaveTerminated();
+
+        //it could be that no reference to the threadfactory was assigned
+        if(threadFactory!=null)
+            threadFactory.assertThreadsHaveTerminated();
+        
         assertActualPoolSize(0);
         assertWorkQueueIsEmpty();
     }

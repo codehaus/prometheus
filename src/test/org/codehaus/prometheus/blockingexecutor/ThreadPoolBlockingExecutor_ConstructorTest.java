@@ -5,17 +5,23 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
+import org.codehaus.prometheus.threadpool.StandardThreadPool;
+import org.codehaus.prometheus.util.StandardThreadFactory;
+import org.codehaus.prometheus.testsupport.TracingThreadFactory;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+
 /**
  * Unittests the constructors of {@link ThreadPoolBlockingExecutor}.
  *
  * @author Peter Veentjer.
  */
-public  class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlockingExecutor_AbstractTest{
+public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlockingExecutor_AbstractTest {
 
+    //================ ThreadPoolBlockingExecutor(int) =========================
 
-    public void testDummy(){}
-
-    /*
     public void test_int() {
         try {
             new ThreadPoolBlockingExecutor(-1);
@@ -24,26 +30,70 @@ public  class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlock
             assertTrue(true);
         }
 
-        int poolsize = 120;
-        ThreadPoolBlockingExecutor executor = new ThreadPoolBlockingExecutor(120);
-        assertHasDefaultBlockingQueue(executor);
+        test_int(0);
+        test_int(10);
+    }
+
+    private void test_int(int poolsize) {
+        executor = new ThreadPoolBlockingExecutor(poolsize);
+
+        assertIsUnstarted();
+        assertHasDefaultBlockingQueue();
         assertTrue(executor.getWorkQueue().isEmpty());
         assertActualPoolSize(0);
         assertDesiredPoolSize(poolsize);
-        assertHasDefaultThreadFactory(executor);
-        assertEquals(BlockingExecutorServiceState.Unstarted, executor.getState());
+        assertHasDefaultThreadPool();
     }
 
-     private void assertHasDefaultThreadFactory(ThreadPoolBlockingExecutor executor) {
-        ThreadFactory factory = executor.getThreadPool().getThreadFactory();
-        assertNotNull(factory);
+    //================ ThreadPoolBlockingExecutor(int) =========================
+
+
+    public void test_int_ThreadFactory_BlockingQueue() {
+        try {
+            new ThreadPoolBlockingExecutor(1, null, new LinkedBlockingQueue<Runnable>());
+            fail();
+        } catch (NullPointerException ex) {
+        }
+
+        try {
+            new ThreadPoolBlockingExecutor(1, new StandardThreadFactory(), null);
+            fail();
+        } catch (NullPointerException ex) {
+        }
+
+        try {
+            new ThreadPoolBlockingExecutor(-1,new StandardThreadFactory(), new LinkedBlockingQueue());
+            fail();
+        } catch (IllegalArgumentException ex) {
+        }
+
+        BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>();
+        threadFactory = new TracingThreadFactory();
+        int poolsize = 10;
+        executor = new ThreadPoolBlockingExecutor(poolsize,threadFactory, workQueue);
+
+        assertIsUnstarted();
+        assertSame(workQueue, executor.getWorkQueue());
+        //assertHasThreadFactory(factory);
+        assertNotNull(executor.getThreadPool() instanceof StandardThreadPool);
+        StandardThreadPool pool = (StandardThreadPool)executor.getThreadPool();
+        assertSame(threadFactory,pool.getThreadFactory());
+        assertActualPoolSize(0);
+        assertDesiredPoolSize(poolsize);
+        assertTrue(executor.getWorkQueue().isEmpty());
+        threadFactory.assertNoThreadsCreated();
+    }
+
+    private void assertHasDefaultThreadPool() {
+        assertTrue(executor.getThreadPool() instanceof StandardThreadPool);
+        ThreadFactory factory = ((StandardThreadPool) executor.getThreadPool()).getThreadFactory();
         assertTrue(factory instanceof StandardThreadFactory);
-        StandardThreadFactory stdFactory = (StandardThreadFactory)factory;
+        StandardThreadFactory stdFactory = (StandardThreadFactory) factory;
         assertFalse(stdFactory.isProducingDaemons());
-        assertEquals(Thread.NORM_PRIORITY,stdFactory.getPriority());        
+        assertEquals(Thread.NORM_PRIORITY, stdFactory.getPriority());
     }
 
-    private void assertHasDefaultBlockingQueue(ThreadPoolBlockingExecutor executor) {
+    private void assertHasDefaultBlockingQueue() {
         assertNotNull(executor.getWorkQueue());
         BlockingQueue<Runnable> workQueue = executor.getWorkQueue();
         assertTrue(workQueue instanceof LinkedBlockingQueue);
@@ -51,37 +101,4 @@ public  class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlock
         assertEquals(Integer.MAX_VALUE, linkedWorkQueue.remainingCapacity());
     }
 
-
-    public void test_ThreadFactory_BlockingQueue_int() {
-        try {
-            new ThreadPoolBlockingExecutor(null, new LinkedBlockingQueue<Runnable>(), 1);
-            fail("NullPointerException expected");
-        } catch (NullPointerException ex) {
-            assertTrue(true);
-        }
-
-        try {
-            new ThreadPoolBlockingExecutor(new StandardThreadFactory(), null, 1);
-            fail("NullPointerException expected");
-        } catch (NullPointerException ex) {
-            assertTrue(true);
-        }
-
-        try {
-            new ThreadPoolBlockingExecutor(new StandardThreadFactory(), new LinkedBlockingQueue(), -1);
-            fail("IllegalArgumentException expected");
-        } catch (IllegalArgumentException ex) {
-            assertTrue(true);
-        }
-
-        BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>();
-        ThreadFactory factory = new StandardThreadFactory();
-        int poolsize = 10;
-        ThreadPoolBlockingExecutor executor = new ThreadPoolBlockingExecutor(factory, workQueue, poolsize);
-        assertSame(workQueue, executor.getWorkQueue());
-        assertSame(poolsize, executor.getPoolSize());
-        assertTrue(executor.getWorkQueue().isEmpty());
-        assertSame(factory, executor.getThreadFactory());
-        assertEquals(BlockingExecutorServiceState.Unstarted, executor.getState());
-    } */
 }

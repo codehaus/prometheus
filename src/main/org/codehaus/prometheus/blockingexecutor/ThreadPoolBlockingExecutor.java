@@ -76,7 +76,13 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         this(createDefaultThreadPool(poolsize), createDefaultWorkQueue());
     }
 
-    public ThreadPoolBlockingExecutor(ThreadFactory factory, int poolsize, BlockingQueue<Runnable> workQueue) {
+    /**
+     *
+     * @param poolsize
+     * @param factory
+     * @param workQueue
+     */
+    public ThreadPoolBlockingExecutor(int poolsize,ThreadFactory factory, BlockingQueue<Runnable> workQueue) {
         this(createDefaultThreadPool(factory, poolsize), workQueue);
     }
 

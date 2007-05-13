@@ -15,11 +15,8 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
     public void testSetNullExceptionHandler() {
         newStartedThreadpool();
 
-        try {
-            threadpool.setExceptionHandler(null);
-            fail();
-        } catch (NullPointerException e) {
-        }
+        threadpool.setExceptionHandler(null);
+        assertTrue(threadpool.getExceptionHandler() instanceof NullExceptionHandler);
     }
 
     //every time the task is executed, an exception is thrown.

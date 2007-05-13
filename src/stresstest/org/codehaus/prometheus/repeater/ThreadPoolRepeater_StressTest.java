@@ -10,7 +10,7 @@ import org.codehaus.prometheus.testsupport.SleepingRunnable;
 
 import java.util.Random;
 
-public class ThreadPoolRepeaterStressTest {
+public class ThreadPoolRepeater_StressTest {
 
     public static TestSuite suite() {
         TestSuite suite = new TestSuite();

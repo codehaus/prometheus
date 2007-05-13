@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * The default implementation of the {@link ThreadPool} interface.
  * <p/>
+ *
  * @author Peter Veentjer.
  */
 public class StandardThreadPool implements ThreadPool {
@@ -50,26 +51,32 @@ public class StandardThreadPool implements ThreadPool {
      * @throws NullPointerException if factory is <tt>null</tt>.
      */
     public StandardThreadPool(ThreadFactory factory) {
-        this(null, factory);
+        this(0, null, factory);
     }
 
     public StandardThreadPool(int poolsize, ThreadFactory threadFactory) {
-        this(null, threadFactory);
-        setDesiredPoolsize(poolsize);
+        this(poolsize, null, threadFactory);
     }
 
     /**
      * Creates a new StandardThreadPool with the given {@link ThreadFactory} and
      * workerJob.
      *
-     * @param workerJob
+     * @param workerJob the job that should be executed. The value is allowed to be null, but needs to be
+     *                  set before started.          
      * @param factory   the ThreadFactory that is used to fill the pool.
      * @throws NullPointerException if workerJob or factory is <tt>null</tt>.
      */
     public StandardThreadPool(WorkerJob workerJob, ThreadFactory factory) {
+        this(0, workerJob, factory);
+    }
+
+    public StandardThreadPool(int poolsize, WorkerJob workerJob, ThreadFactory factory) {
+        if (poolsize < 0) throw new IllegalArgumentException();
         if (factory == null) throw new NullPointerException();
         this.defaultWorkerJob = workerJob;
         this.threadFactory = factory;
+        this.desiredPoolsize = poolsize;
     }
 
     public ExceptionHandler getExceptionHandler() {
@@ -77,8 +84,7 @@ public class StandardThreadPool implements ThreadPool {
     }
 
     public void setExceptionHandler(ExceptionHandler handler) {
-        if (handler == null) throw new NullPointerException();
-        this.exceptionHandler = handler;
+        this.exceptionHandler = handler == null ? NullExceptionHandler.INSTANCE : handler;
     }
 
     public WorkerJob getDefaultWorkerJob() {
@@ -457,14 +463,14 @@ public class StandardThreadPool implements ThreadPool {
                         break;
                 } catch (InterruptedException ex) {
                     //ignore it. If the worker was interrupted while getting work for shutdown,
-                    //just keep trying untill null is returned.
+                    //just keep trying untill nul is returned.
                 } catch (Exception ex) {
                     //todo: needs to be handled
                 }
 
-                //if work was retrieved, execute it. If null was returned we would not come here.
+                //if work was retrieved, execute it.
                 if (work != null)
-                    runWork(work);
+                    runWork(work);                                
             }
         }
 

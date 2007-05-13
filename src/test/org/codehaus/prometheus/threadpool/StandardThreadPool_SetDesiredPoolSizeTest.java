@@ -127,6 +127,4 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         joinAll(setSizeThread);
         setSizeThread.assertIsTerminatedWithoutThrowing();
     }
-
-
 }

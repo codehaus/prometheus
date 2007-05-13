@@ -41,7 +41,7 @@ import java.util.concurrent.locks.Lock;
  * ThreadPoolRepeater this is possible. This is implemented by using different LendableReferences:
  * <ol>
  * <li><b>strict ThreadPoolRepeater</b> is realized by using a {@link StrictLendableReference}</li>
- * <li><b>relaxed ThreadPoolRepeater</b> is realized by using a {@link org.codehaus.prometheus.references.RelaxedLendableReference}</li>
+ * <li><b>relaxed ThreadPoolRepeater</b> is realized by using a {@link RelaxedLendableReference}</li>
  * </ol>
  * The consequence of a strict ThreadPoolRepeater, is that there is more lock contention when the
  * task is often changed. If prometheus execution of different tasks is not an issue, a relaxed
@@ -120,14 +120,39 @@ public class ThreadPoolRepeater implements RepeaterService {
     private final LendableReference<Repeatable> lendableRef;
     private final ThreadPool threadPool;
 
+    /**
+     * Creates a new strict and unstarted ThreadPoolRepeater with the given poolsize and a
+     * {@link org.codehaus.prometheus.util.StandardThreadFactory#StandardThreadFactory()}.
+     *
+     * @param poolsize the desired number of worker-threads in the threadpool.
+     * @throws IllegalArgumentException if poolsize smaller than 0
+     */
     public ThreadPoolRepeater(int poolsize) {
         this(createDefaultThreadpool(poolsize), createDefaultLendableReference(null));
     }
 
+    /**
+     * Creates a new strict and unstarted ThreadPoolRepeater with the given poolsize and
+     * task to repeat. It uses a {@link StandardThreadPool#StandardThreadPool()} as threadfactory.
+     *
+     * @param task the task that should be repeater (is allowed to be null).
+     * @param poolsize the desired number of worker-threads in the threadpool.
+     * @throws IllegalArgumentException if poolsize smaller than 0.
+     */
     public ThreadPoolRepeater(Repeatable task, int poolsize) {
         this(createDefaultThreadpool(poolsize), createDefaultLendableReference(task));
     }
 
+    /**
+     * Creates a new unstarted ThreadPoolRepeater with the given task, poolsize and ThreadFactory.
+     *
+     * @param strict if repeater is strict or relaxed.
+     * @param task the task to repeat (is allowed to be null).
+     * @param poolsize the desired number of worker-threads in the threadpool.
+     * @param threadFactory the ThreadFactory used to fill the threadpool.
+     * @throws NullPointerException if threadFactory is null.
+     * @throws IllegalArgumentException if poolsize smaller than 0.
+     */
     public ThreadPoolRepeater(boolean strict, Repeatable task, int poolsize, ThreadFactory threadFactory) {
         this(createDefaultThreadpool(poolsize, threadFactory), createDefaultLendableReference(strict, task));
     }
@@ -139,10 +164,21 @@ public class ThreadPoolRepeater implements RepeaterService {
         this.lendableRef = lendableRef;
     }
 
+    /**
+     * Returns the LendableReference this ThreadPoolRepeater uses to store the reference to the 
+     * current task.
+     *
+     * @return the LendableReference this ThreadPoolRepeater uses.
+     */
     public LendableReference<Repeatable> getLendableRef() {
         return lendableRef;
     }
 
+    /**
+     * Returns the ThreadPool this ThreadPoolRepeater uses.
+     *
+     * @return the ThreadPool this ThreadPoolRepeater uses.
+     */
     public ThreadPool getThreadPool() {
         return threadPool;
     }

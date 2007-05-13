@@ -5,14 +5,19 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.util.StandardThreadFactory;
 import org.codehaus.prometheus.references.LendableReference;
 import org.codehaus.prometheus.references.RelaxedLendableReference;
 import org.codehaus.prometheus.references.StrictLendableReference;
+import org.codehaus.prometheus.testsupport.TracingThreadFactory;
+import org.codehaus.prometheus.threadpool.StandardThreadPool;
+import org.codehaus.prometheus.threadpool.ThreadPool;
+import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.concurrent.ThreadFactory;
 
 public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_AbstractTest {
+
+    //================= ThreadPoolRepeater(int) ===========================
 
     public void test_int() {
         try {
@@ -25,21 +30,16 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         int poolsize = 10;
         repeater = new ThreadPoolRepeater(poolsize);
 
-        assertEquals(RepeaterServiceState.Unstarted, repeater.getState());
-        assertEquals(poolsize, repeater.getDesiredPoolSize());
-        assertEquals(0,repeater.getActualPoolSize());
-        assertEquals(0, repeater.getActualPoolSize());
-        assertHasDefaultLendableReference(repeater);
-        assertHasDefaultThreadFactory(repeater);
+        assertIsUnstarted();
+        assertActualPoolSize(0);
+        assertDesiredPoolSize(poolsize);
+        assertHasDefaultLendableReference();
+        assertHasDefaultThreadPool();
         assertIsStrict(true);
         assertHasRepeatable(null);
     }
 
-    public void assertHasDefaultThreadFactory(ThreadPoolRepeater repeater) {
-        //assertNotNull(repeater.getThreadPool());
-        //assertNotNull(repeater.getThreadPool().get);
-        //assertTrue(repeater.getThreadFactory() instanceof StandardThreadFactory);
-    }
+    //================== ThreadPoolRepeater(runnable,int) ====================
 
     public void test_Runnable_int() {
         try {
@@ -49,8 +49,13 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
             assertTrue(true);
         }
 
-        DummyRepeatable task = new DummyRepeatable();
-        int poolsize = 10;
+        test_Runnable_int(0, new DummyRepeatable());
+        test_Runnable_int(0, null);
+        test_Runnable_int(10, new DummyRepeatable());
+        test_Runnable_int(10, null);
+    }
+
+    private void test_Runnable_int(int poolsize, DummyRepeatable task) {
         repeater = new ThreadPoolRepeater(task, poolsize);
 
         assertIsUnstarted();
@@ -58,47 +63,73 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
         assertHasRepeatable(task);
         assertIsStrict(true);
-        assertHasDefaultLendableReference(repeater);
+        assertHasDefaultLendableReference();
+        assertHasDefaultThreadPool();
     }
+
+    //============= ThreadPoolRepeater(boolean,Repeatable,int,ThreadFactory =========
 
     public void test_boolean_Repeatable_int_ThreadFactory() {
-        //try {
-         //   new ThreadPoolRepeater(true, new DummyRepeatable(), -1, new StandardThreadFactory());
-         //   fail();
-        //} catch (IllegalArgumentException ex) {
-        //    assertTrue(true);
-        //}
+        try {
+            new ThreadPoolRepeater(true, new DummyRepeatable(), -1, new StandardThreadFactory());
+            fail();
+        } catch (IllegalArgumentException ex) {
+        }
 
-        //try {
-         //   new ThreadPoolRepeater(true, new DummyRepeatable(), 1, null);
-        //    fail();
-        //} catch (NullPointerException ex) {
-        //    assertTrue(true);
-        //}
+        try {
+            new ThreadPoolRepeater(true, new DummyRepeatable(), 1, null);
+            fail();
+        } catch (NullPointerException ex) {
+        }
 
-        boolean strict = true;
-        DummyRepeatable task = new DummyRepeatable();
+        test_boolean_Repeatable_int_ThreadFactory(true, new DummyRepeatable(), 0);
+        test_boolean_Repeatable_int_ThreadFactory(false, null, 10);
+    }
+
+    private void test_boolean_Repeatable_int_ThreadFactory(boolean strict, DummyRepeatable task, int poolsize) {
+        TracingThreadFactory threadFactory = new TracingThreadFactory();
+        repeater = new ThreadPoolRepeater(strict, task, poolsize, threadFactory);
+
+        assertIsUnstarted();
+        assertDesiredPoolSize(poolsize);
+        assertActualPoolSize(0);
+        assertHasRepeatable(task);
+        assertIsStrict(strict);
+
+        assertTrue(repeater.getThreadPool() instanceof StandardThreadPool);
+        StandardThreadPool threadpool = (StandardThreadPool) repeater.getThreadPool();
+        assertSame(threadFactory, threadpool.getThreadFactory());
+        threadFactory.assertNoThreadsCreated();
+    }
+
+    //================ ThreadPoolRepeater(ThreadPool, LendableReference)  ==========
+
+    public void test_ThreadFactory_LendableRefeference_Runnable_int() {
+        try {
+            new ThreadPoolRepeater(new StandardThreadPool(), null);
+            fail("NullPointerException expected");
+        } catch (NullPointerException foundThrowable) {
+        }
+
+        try {
+            new ThreadPoolRepeater(null, new StrictLendableReference<Repeatable>());
+            fail("NullPointerException expected");
+        } catch (NullPointerException foundThrowable) {
+        }
+
+        LendableReference<Repeatable> lendableRef = new StrictLendableReference<Repeatable>();
         int poolsize = 10;
-        ThreadFactory threadFactory = new StandardThreadFactory();
-        construct(strict, task, poolsize, threadFactory);
+        ThreadPool threadPool = new StandardThreadPool(poolsize);
+        repeater = new ThreadPoolRepeater(threadPool,lendableRef);
 
-        strict = false;
-        task = null;
-        poolsize = 20;
-        threadFactory = new StandardThreadFactory();
-        construct(strict, task, poolsize, threadFactory);
+        assertIsUnstarted();
+        assertDesiredPoolSize(poolsize);
+        assertActualPoolSize(0);
+        assertSame(lendableRef, repeater.getLendableRef());
+        assertSame(threadPool,repeater.getThreadPool());
     }
 
-    private void construct(boolean strict, DummyRepeatable task, int poolsize, ThreadFactory threadFactory) {
-        //repeater = new ThreadPoolRepeater(strict, task, poolsize, threadFactory);
-
-        //assertIsUnstarted();
-        //assertDesiredPoolSize(poolsize);
-        //assertActualPoolSize(0);
-        //assertHasRepeatable(task);
-        //assertSame(threadFactory, repeater.getThreadFactory());
-        //assertIsStrict(strict);
-    }
+    //========================= asserts =======================
 
     private void assertIsStrict(boolean strict) {
         LendableReference ref = repeater.getLendableRef();
@@ -111,47 +142,24 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         }
     }
 
-
-    private void assertHasDefaultLendableReference(ThreadPoolRepeater repeater) {
+    private void assertHasDefaultLendableReference() {
         LendableReference ref = repeater.getLendableRef();
         assertNotNull(ref);
         assertTrue(ref instanceof StrictLendableReference);
     }
 
-    public void test_ThreadFactory_LendableRefeference_Runnable_int() {
-        
 
-        //todo
-        //try {
-        //    new ThreadPoolRepeater(null,new RelaxedLendableReference(), null, 1);
-        //    fail("NullPointerException expected");
-        //} catch (NullPointerException foundThrowable) {
-        //    assertTrue(true);
-        //       }
-//
-        //      try {
-        //        new ThreadPoolRepeater(new StandardThreadFactory(), null, null, 1);
-        //      fail("NullPointerException expected");
-        //  } catch (NullPointerException foundThrowable) {
-        //      assertTrue(true);
-        //  }
-//
-        //    try {
-        //          new ThreadPoolRepeater(new StandardThreadFactory(), new StrictLendableReference(), null, -1);
-        //      fail("IllegalArgumentException expected");
-        //} catch (IllegalArgumentException foundThrowable) {
-        //     assertTrue(true);
-        //}
+    public void assertHasDefaultThreadPool() {
+        assertTrue(repeater.getThreadPool() instanceof StandardThreadPool);
+        StandardThreadPool stdThreadPool = (StandardThreadPool) repeater.getThreadPool();
+        assertHasDefaultThreadFactory(stdThreadPool);
+    }
 
-        //ThreadFactory factory = new StandardThreadFactory();
-        //LendableReference lendableRef = new StrictLendableReference();
-        //int poolsize = 100;
-        //Lock lock = new ReentrantLock();
-        //repeater = new ThreadPoolRepeater(factory, lock,lendableRef, poolsize);
-
-        //assertIsUnstarted();
-        //assertDesiredPoolSize(poolsize);
-        //assertActualPoolSize(0);
-        //assertSame(lendableRef, repeater.getLendableRef());
+    private void assertHasDefaultThreadFactory(StandardThreadPool stdThreadPool) {
+        ThreadFactory factory = stdThreadPool.getThreadFactory();
+        assertTrue(factory instanceof StandardThreadFactory);
+        StandardThreadFactory stdThreadFactory = (StandardThreadFactory) factory;
+        assertEquals(Thread.NORM_PRIORITY, stdThreadFactory.getPriority());
+        assertFalse(stdThreadFactory.isProducingDaemons());
     }
 }
