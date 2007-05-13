@@ -5,9 +5,6 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.DefaultAwaitableReference;
-import org.codehaus.prometheus.references.DefaultAwaitableReference_AbstractTests;
-
 /**
  * Unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#tryTake()} method.
  *
@@ -27,7 +24,7 @@ public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableRefer
         Integer ref = 20;
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
 
-        org.codehaus.prometheus.references.TryTakeThread t = scheduleTryTake(startInterrupted);
+        TryTakeThread t = scheduleTryTake(startInterrupted);
 
         joinAll(t);
         t.assertSuccess(ref);
@@ -47,7 +44,7 @@ public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableRefer
     public void testNoReferenceAvailable(boolean startInterrupted){
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
-        org.codehaus.prometheus.references.TryTakeThread t = scheduleTryTake();
+        TryTakeThread t = scheduleTryTake();
 
         joinAll(t);
         t.assertSuccess(null);

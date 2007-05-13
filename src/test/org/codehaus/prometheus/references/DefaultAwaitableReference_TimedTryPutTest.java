@@ -5,10 +5,9 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.testsupport.InterruptedTrueFalse;
-import org.codehaus.prometheus.testsupport.InterruptedTrue;
 import org.codehaus.prometheus.testsupport.InterruptedFalse;
-import org.codehaus.prometheus.references.DefaultAwaitableReference;
+import org.codehaus.prometheus.testsupport.InterruptedTrue;
+import org.codehaus.prometheus.testsupport.InterruptedTrueFalse;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -94,7 +93,7 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
     }
 
     private void put(long timeout, Integer newRef, Integer oldRef) {
-        org.codehaus.prometheus.references.TimedTryPutThread putter = scheduleTryPut(newRef, timeout);
+        TimedTryPutThread putter = scheduleTryPut(newRef, timeout);
         joinAll(putter);
         putter.assertSuccess(oldRef);
     }

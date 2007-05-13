@@ -5,8 +5,6 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.DefaultAwaitableReference;
-
 /**
  * Unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#put(Object)} method.
  *
@@ -29,7 +27,7 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
         Integer newRef = 20;
-        org.codehaus.prometheus.references.PutThread putThread = schedulePut(newRef, startInterrupted);
+        PutThread putThread = schedulePut(newRef, startInterrupted);
 
         joinAll(putThread);
         putThread.assertSuccess(oldRef);
@@ -43,8 +41,8 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
         Integer oldRef = null;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
-        org.codehaus.prometheus.references.TakeThread taker1 = scheduleTake();
-        org.codehaus.prometheus.references.TakeThread taker2 = scheduleTake();
+        TakeThread taker1 = scheduleTake();
+        TakeThread taker2 = scheduleTake();
 
         //make sure the takes are waiting
         giveOthersAChance();
@@ -84,7 +82,7 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
         take(oldRef);
 
         Integer newRef = 20;
-        org.codehaus.prometheus.references.PutThread putThread = schedulePut(newRef,startInterrupted);
+        PutThread putThread = schedulePut(newRef,startInterrupted);
 
         joinAll(putThread);
         putThread.assertSuccess(oldRef);

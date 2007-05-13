@@ -5,10 +5,9 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.testsupport.InterruptedTrueFalse;
-import org.codehaus.prometheus.testsupport.InterruptedTrue;
 import org.codehaus.prometheus.testsupport.InterruptedFalse;
-import org.codehaus.prometheus.references.DefaultAwaitableReference;
+import org.codehaus.prometheus.testsupport.InterruptedTrue;
+import org.codehaus.prometheus.testsupport.InterruptedTrueFalse;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -91,7 +90,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         giveOthersAChance();
         takeThread.assertIsStarted();
 
-        org.codehaus.prometheus.references.PutThread putThread = schedulePut(ref);
+        PutThread putThread = schedulePut(ref);
 
         joinAll(putThread,takeThread);
         takeThread.assertSuccess(ref);
@@ -135,7 +134,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         taker.assertIsStarted();
 
         Integer ref = 20;
-        org.codehaus.prometheus.references.PutThread putter = schedulePut(ref);
+        PutThread putter = schedulePut(ref);
 
         joinAll(putter,taker);
         taker.assertSuccess(ref);

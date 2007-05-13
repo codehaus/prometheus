@@ -17,7 +17,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
     public void testWaitingTillEndOfTime() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
-        org.codehaus.prometheus.references.TakeThread taker = scheduleTake();
+        TakeThread taker = scheduleTake();
 
         //make sure that the taker is waiting
         giveOthersAChance();
@@ -27,7 +27,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
 
     public void testInterruptedWhileWaiting() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        org.codehaus.prometheus.references.TakeThread taker = scheduleTake();
+        TakeThread taker = scheduleTake();
 
         //make sure that the taker is waiting
         giveOthersAChance();
@@ -71,7 +71,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         Integer ref = null;
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
 
-        org.codehaus.prometheus.references.TakeThread takeThread = scheduleTake(START_INTERRUPTED);
+        TakeThread takeThread = scheduleTake(START_INTERRUPTED);
 
         joinAll(takeThread);
         takeThread.assertIsInterruptedByException();
@@ -82,8 +82,8 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
         Integer newRef = 10;
-        org.codehaus.prometheus.references.TakeThread takeThread1 = scheduleTake(START_UNINTERRUPTED);
-        org.codehaus.prometheus.references.TakeThread takeThread2 = scheduleTake(START_UNINTERRUPTED);
+        TakeThread takeThread1 = scheduleTake(START_UNINTERRUPTED);
+        TakeThread takeThread2 = scheduleTake(START_UNINTERRUPTED);
 
         //check that the takers are waiting
         giveOthersAChance();
@@ -91,7 +91,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         takeThread2.assertIsStarted();
 
         //now place an item
-        org.codehaus.prometheus.references.PutThread putThread = schedulePut(newRef);
+        PutThread putThread = schedulePut(newRef);
 
         //and check that the takers have completed
         joinAll(putThread, takeThread1, takeThread2);
@@ -106,8 +106,8 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
         Integer newRef = 10;
-        org.codehaus.prometheus.references.TakeThread takeThread1 = scheduleTake();
-        org.codehaus.prometheus.references.TakeThread takeThread2 = scheduleTake();
+        TakeThread takeThread1 = scheduleTake();
+        TakeThread takeThread2 = scheduleTake();
 
         //check that the takers are waiting
         giveOthersAChance();
@@ -123,7 +123,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         takeThread2.assertIsStarted();
 
         //put an item, and make sure that the takers have completed.
-        org.codehaus.prometheus.references.PutThread putter = schedulePut(newRef);
+        PutThread putter = schedulePut(newRef);
         joinAll(putter, takeThread1, takeThread2);
         takeThread1.assertSuccess(newRef);
         takeThread2.assertSuccess(newRef);
