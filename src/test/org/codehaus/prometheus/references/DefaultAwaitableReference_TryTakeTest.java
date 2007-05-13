@@ -6,7 +6,7 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.references.DefaultAwaitableReference;
-import org.codehaus.prometheus.awaitablereference.DefaultAwaitableReference_AbstractTests;
+import org.codehaus.prometheus.references.DefaultAwaitableReference_AbstractTests;
 
 /**
  * Unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#tryTake()} method.
