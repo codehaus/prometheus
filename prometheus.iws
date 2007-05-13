@@ -27,7 +27,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/testsupport" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/lendablereference/package.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/lendablereference/LendableReference.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/lendablereference/RelaxedLendableReference.java" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prometheus.iws" afterPath="$PROJECT_DIR$/prometheus.iws" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/lendablereference/IllegalTakebackException.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/lendablereference/StrictLendableReference.java" afterPath="" />
     </list>
     <list name="Failed commit: Default" comment="- improved the threadpool, better behaving while shutting down&#10;- improved the repeater so it makes use the threadpool improvement&#10;- improved the blockingexecutor so it makes use of the threadpool improvements" />
     <list name="Failed commit: Default (3)" comment="" />
@@ -188,7 +193,7 @@
       <file leaf-file-name="DefaultAwaitableReference_ConstructorTest.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_ConstructorTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="13" selection-start="513" selection-end="513" vertical-scroll-proportion="0.25211865">
+            <state line="18" column="13" selection-start="513" selection-end="513" vertical-scroll-proportion="0.24236253">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -199,7 +204,7 @@
       <file leaf-file-name="DefaultAwaitableReference_IsTakePossibleTest.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_IsTakePossibleTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="13" selection-start="277" selection-end="277" vertical-scroll-proportion="0.16207626">
+            <state line="9" column="13" selection-start="277" selection-end="277" vertical-scroll-proportion="0.15580449">
               <folding />
             </state>
           </provider>
@@ -208,16 +213,7 @@
       <file leaf-file-name="DefaultAwaitableReference_PeekTest.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_PeekTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="13" selection-start="302" selection-end="302" vertical-scroll-proportion="0.12605932">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DefaultAwaitableReference_PutTest.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_PutTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="84" column="8" selection-start="2590" selection-end="2590" vertical-scroll-proportion="0.80190676">
+            <state line="8" column="13" selection-start="302" selection-end="302" vertical-scroll-proportion="0.121181265">
               <folding />
             </state>
           </provider>
@@ -226,30 +222,8 @@
       <file leaf-file-name="DefaultAwaitableReference_TakeTest.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TakeTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="56" column="12" selection-start="1780" selection-end="1780" vertical-scroll-proportion="0.80190676">
+            <state line="56" column="12" selection-start="1780" selection-end="1780" vertical-scroll-proportion="0.77087575">
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DefaultAwaitableReference_TimedTryPutTest.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TimedTryPutTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="95" column="8" selection-start="2793" selection-end="2793" vertical-scroll-proportion="0.80190676">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DefaultAwaitableReference_TimedTryTakeTest.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TimedTryTakeTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="136" column="8" selection-start="4637" selection-end="4637" vertical-scroll-proportion="0.8379237">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -257,25 +231,7 @@
       <file leaf-file-name="DefaultAwaitableReference_AbstractTests.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_AbstractTests.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="22" selection-start="752" selection-end="752" vertical-scroll-proportion="0.19809322">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DefaultAwaitableReference_TryTakeTest.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TryTakeTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="46" column="8" selection-start="1384" selection-end="1384" vertical-scroll-proportion="0.75635594">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LendThread.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/LendThread.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="13" selection-start="485" selection-end="485" vertical-scroll-proportion="0.090042375">
+            <state line="22" column="22" selection-start="752" selection-end="752" vertical-scroll-proportion="0.1904277">
               <folding />
             </state>
           </provider>
@@ -499,6 +455,32 @@
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/test" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/test/org/codehaus/prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/test/org/codehaus/prometheus/references" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
           <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
@@ -578,32 +560,6 @@
         </PATH_ELEMENT>
         <PATH_ELEMENT>
           <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus/references" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus/lendablereference" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
       </PATH>
@@ -1121,7 +1077,7 @@
     <option name="PERFORM_EDIT_IN_BACKGROUND" value="true" />
     <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="-moved to other package (and dealing with subversion/idea problems)" />
+    <option name="LAST_COMMIT_MESSAGE" value="-removed unused directories" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
@@ -1144,6 +1100,7 @@
     <MESSAGE value="- improved unittests&#10;- joined lendablereference/awaitablereference in same package" />
     <MESSAGE value="Failed commit: Default (3)" />
     <MESSAGE value="-moved to other package (and dealing with subversion/idea problems)" />
+    <MESSAGE value="-removed unused directories" />
   </component>
   <component name="VssConfiguration">
     <option name="CLIENT_PATH" value="" />
@@ -1195,41 +1152,6 @@
     <option name="myLastEditedConfigurable" value="Default" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/util/LockUtil_AbstractTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="22" selection-start="354" selection-end="354" vertical-scroll-proportion="0.06924643">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/util/StandardThreadFactory_ConstructorTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="76" selection-start="1699" selection-end="1699" vertical-scroll-proportion="0.7383475">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/StrictLendableReference_TakebackAndResetTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="11" selection-start="1837" selection-end="1837" vertical-scroll-proportion="0.9184322">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/TryTakeThread.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="13" selection-start="264" selection-end="264" vertical-scroll-proportion="0.088265836">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/LendState.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="12" selection-start="174" selection-end="174" vertical-scroll-proportion="0.0529595">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/LendThread.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="15" column="13" selection-start="485" selection-end="485" vertical-scroll-proportion="0.090042375">
@@ -1271,21 +1193,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_PeekTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="13" selection-start="302" selection-end="302" vertical-scroll-proportion="0.12605932">
+        <state line="8" column="13" selection-start="302" selection-end="302" vertical-scroll-proportion="0.121181265">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_IsTakePossibleTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="13" selection-start="277" selection-end="277" vertical-scroll-proportion="0.16207626">
+        <state line="9" column="13" selection-start="277" selection-end="277" vertical-scroll-proportion="0.15580449">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_ConstructorTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="13" selection-start="513" selection-end="513" vertical-scroll-proportion="0.25211865">
+        <state line="18" column="13" selection-start="513" selection-end="513" vertical-scroll-proportion="0.24236253">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1294,14 +1216,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_AbstractTests.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="22" selection-start="752" selection-end="752" vertical-scroll-proportion="0.19809322">
+        <state line="22" column="22" selection-start="752" selection-end="752" vertical-scroll-proportion="0.1904277">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TakeTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="12" selection-start="1780" selection-end="1780" vertical-scroll-proportion="0.80190676">
+        <state line="56" column="12" selection-start="1780" selection-end="1780" vertical-scroll-proportion="0.77087575">
           <folding />
         </state>
       </provider>
