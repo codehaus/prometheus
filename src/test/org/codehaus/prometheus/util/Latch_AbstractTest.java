@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.util;
 
-import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.testsupport.TestUtil;
 
 import java.util.concurrent.TimeUnit;
@@ -29,16 +29,24 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
         latch.open();
     }
 
-    public void assertIsOpen(){
+    public void assertIsOpen() {
         assertTrue(latch.isOpen());
     }
 
-    public void assertIsClosed(){
+    public void assertIsClosed() {
         assertFalse(latch.isOpen());
     }
 
     public Thread scheduleSpuriousWakeup() {
         return TestUtil.scheduleSpuriousWakeup(latch.getMainLock(), latch.getOpenCondition(), 0);
+    }
+
+    public void open() {
+        //open the latch, and check that the awaitThread has finished successfully.
+        OpenThread openThread = scheduleOpen();
+        joinAll(openThread);
+        openThread.assertIsTerminatedWithoutThrowing();
+        assertIsOpen();
     }
 
     public OpenThread scheduleOpen() {
@@ -47,7 +55,7 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
         return t;
     }
 
-    public OpenWithoutLockingThread scheduleOpenWithoutLocking(boolean startInterrupted){
+    public OpenWithoutLockingThread scheduleOpenWithoutLocking(boolean startInterrupted) {
         OpenWithoutLockingThread t = new OpenWithoutLockingThread();
         t.setStartInterrupted(startInterrupted);
         t.start();
@@ -61,13 +69,13 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
         }
     }
 
-    public TimedTryAwaitThread scheduleTimedTryAwait(boolean startInterrupted, long timeoutMs){
+    public TimedTryAwaitThread scheduleTimedTryAwait(boolean startInterrupted, long timeoutMs) {
         TimedTryAwaitThread t = new TimedTryAwaitThread(timeoutMs);
         t.setStartInterrupted(startInterrupted);
         t.start();
         return t;
     }
-   
+
     public AwaitThread scheduleAwait(boolean startInterrupted) {
         AwaitThread t = new AwaitThread();
         t.setStartInterrupted(startInterrupted);
@@ -75,7 +83,7 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
         return t;
     }
 
-    public TryAwaitThread scheduleTryAwait(boolean startInterrupted){
+    public TryAwaitThread scheduleTryAwait(boolean startInterrupted) {
         TryAwaitThread t = new TryAwaitThread();
         t.setStartInterrupted(startInterrupted);
         t.start();
@@ -90,12 +98,12 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
             success = latch.tryAwait();
         }
 
-        public void assertSuccess(){
+        public void assertSuccess() {
             assertIsTerminatedWithoutThrowing();
             assertTrue(success);
         }
 
-        public void assertFailure(){
+        public void assertFailure() {
             assertIsTerminatedWithoutThrowing();
             assertFalse(success);
         }
@@ -118,7 +126,7 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
     public class TimedTryAwaitThread extends TestThread {
         private volatile long timeoutMs;
 
-        public TimedTryAwaitThread(long timeoutMs){
+        public TimedTryAwaitThread(long timeoutMs) {
             this.timeoutMs = timeoutMs;
         }
 

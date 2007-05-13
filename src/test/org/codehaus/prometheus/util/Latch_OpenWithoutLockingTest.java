@@ -27,14 +27,10 @@ public class Latch_OpenWithoutLockingTest extends Latch_AbstractTest {
         joinAll(openThread);
         assertIsOpen();
         openThread.assertIsTerminatedWithoutThrowing();
+        openThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
     }
 
     //=====================================
-
-    public void testAlreadyOpen_lockHold() {
-    //    fail();
-        //todo
-    }
 
     //=====================================
     //if the latch is closed, we need to signall, this should fail if the
@@ -61,8 +57,7 @@ public class Latch_OpenWithoutLockingTest extends Latch_AbstractTest {
 
     //=====================================================
 
-    public void testClosed() {
-      //  fail();
-        //todo
+    public void testClosed_LockOwner(){
+        
     }
 }

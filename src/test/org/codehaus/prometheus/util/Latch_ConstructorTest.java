@@ -19,7 +19,11 @@ public class Latch_ConstructorTest extends Latch_AbstractTest {
         latch = new Latch();
 
         assertIsClosed();
+        assertHasDefaultLock();
         assertNotNull(latch.getOpenCondition());
+    }
+
+    private void assertHasDefaultLock() {
         assertTrue(latch.getMainLock() instanceof ReentrantLock);
         ReentrantLock lock = (ReentrantLock)latch.getMainLock();
         assertFalse(lock.isFair());

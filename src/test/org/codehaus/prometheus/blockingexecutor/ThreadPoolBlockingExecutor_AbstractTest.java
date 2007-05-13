@@ -25,7 +25,15 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
     public void tearDown() {
         if (executor != null){
-            executor.shutdown();
+            ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
+            joinAll(shutdownNowThread);
+            shutdownNowThread.assertIsTerminatedWithoutThrowing();
+
+            AwaitShutdownThread awaitThread = scheduleAwaitShutdown();
+            joinAll(awaitThread);
+            awaitThread.assertIsTerminatedWithoutThrowing();            
+
+            assertIsShutdown();
         }
     }
 
@@ -98,6 +106,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     public void assertIsShutdown() {
         assertEquals(BlockingExecutorServiceState.Shutdown, executor.getState());
         threadFactory.assertThreadsHaveTerminated();
+        assertActualPoolSize(0);
         assertWorkQueueIsEmpty();
     }
 
@@ -248,6 +257,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public class StartThread extends TestThread {
+
         @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
             executor.start();

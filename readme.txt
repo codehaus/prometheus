@@ -123,6 +123,8 @@ like putUninterruptibly.
 -methods that use a timeout (also a 0 timeout), prefix them with try.
 
 
+improvement test:
+unfair/fair functionality needs to be tested with the StrictLendableReference
 
 idea improvement test:
 the long calculation could used to stress a cpu, could contain yields to increase the number of context switches.

@@ -21,11 +21,9 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
         Runnable r = new Runnable() {
             public void run() {
                 lock.lock();
-                System.out.println("locked");
                 try{
                     sleepMs(durationMs);
                 }finally{
-                    System.out.println("unlocked");
                     lock.unlock();
                 }
             }

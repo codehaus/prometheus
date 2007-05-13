@@ -61,15 +61,15 @@ public class Latch_TimedTryAwaitTest extends Latch_AbstractTest {
 
     public void testWaitingNeeded_startUninterrupted() {
         newClosedLatch();
-        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, DELAY_LONG_MS);
+        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, DELAY_EON_MS);
 
         //make sure the awaitThread is waiting.
         giveOthersAChance();
         awaitThread.assertIsStarted();
 
-        //open the latch, and check that the awaitThread has finished successfully. 
-        OpenThread openThread = scheduleOpen();
-        joinAll(openThread, awaitThread);
+        open();
+        
+        joinAll(awaitThread);
         awaitThread.assertIsTerminatedWithoutThrowing();
         awaitThread.assertIsTerminatedWithInterruptStatus(false);
     }
@@ -81,27 +81,25 @@ public class Latch_TimedTryAwaitTest extends Latch_AbstractTest {
         //let the awaitThread complete, and check that is has timed out.
         joinAll(awaitThread);
         awaitThread.assertIsTimedOut();
-        awaitThread.assertIsTerminatedWithInterruptStatus(false);
     }
 
     public void testInterruptedWhileWaiting() {
         newClosedLatch();
-        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, DELAY_LONG_MS);
+        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, DELAY_EON_MS);
 
         //make sure the awaitThread is waiting.
         giveOthersAChance();
         awaitThread.assertIsStarted();
 
-        //interrupt the awaitThread 
+        //interrupt the awaitThread and make sure it is terminated 
         awaitThread.interrupt();
-
         joinAll(awaitThread);
         awaitThread.assertIsInterruptedByException();
     }
 
     public void testSpuriousWakeups() {
         newClosedLatch();
-        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, DELAY_LONG_MS);
+        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, DELAY_EON_MS);
 
         //make sure the awaitThread is waiting.
         giveOthersAChance();
@@ -114,9 +112,8 @@ public class Latch_TimedTryAwaitTest extends Latch_AbstractTest {
         awaitThread.assertIsStarted();
                 
         //open the latch, and check that the awaitThread has finished successfully.
-        OpenThread openThread = scheduleOpen();
-        joinAll(openThread, awaitThread);
-        awaitThread.assertIsTerminatedWithoutThrowing();
-        awaitThread.assertIsTerminatedWithInterruptStatus(false);
+        open();        
+        joinAll(awaitThread);
+        awaitThread.assertIsTerminatedWithoutThrowing();        
     }
 }

@@ -97,7 +97,9 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
     public void testShuttingDown() {        
     }
 
-    public void testShutdown() throws InterruptedException {
+
+    //todo: interrupted/uninterrupted test
+    public void testShutdown(boolean startInterrupted) throws InterruptedException {
         newShutdownBlockingExecutor(1, 1);
 
         TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(0);

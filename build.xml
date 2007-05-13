@@ -238,7 +238,7 @@
 
         <mkdir dir="${unitreports}"/>
 
-        <junit haltonfailure="yes" fork="on" printsummary="on" filtertrace="off">
+        <junit haltonfailure="no" fork="on" printsummary="on" filtertrace="off">
             <classpath>
                 <pathelement path="${classes.main}/"/>
                 <pathelement path="${classes.testsupport}/"/>
@@ -248,6 +248,7 @@
             </classpath>
             <jvmarg value="-ea"/>
             <formatter type="plain"/>
+            <formatter type="xml"/>
             <batchtest todir="${unitreports}">
                 <fileset dir="${src.test}">
                     <include name="**/*Test.java"/>
@@ -255,6 +256,13 @@
                 </fileset>
             </batchtest>
         </junit>
+
+        <junitreport todir="${unitreports}">
+            <fileset dir="${unitreports}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${unitreports}/html"/>
+        </junitreport>               
     </target>
 
     <target name="test.stress"

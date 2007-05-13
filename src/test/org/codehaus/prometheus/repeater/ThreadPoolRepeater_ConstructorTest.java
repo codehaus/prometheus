@@ -6,9 +6,9 @@
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.util.StandardThreadFactory;
-import org.codehaus.prometheus.lendablereference.LendableReference;
-import org.codehaus.prometheus.lendablereference.RelaxedLendableReference;
-import org.codehaus.prometheus.lendablereference.StrictLendableReference;
+import org.codehaus.prometheus.references.LendableReference;
+import org.codehaus.prometheus.references.RelaxedLendableReference;
+import org.codehaus.prometheus.references.StrictLendableReference;
 
 import java.util.concurrent.ThreadFactory;
 

@@ -8,7 +8,7 @@ package org.codehaus.prometheus.closeable;
 /**
  * A Closeable represents a structure that can be opened and closed. A possible usage would be to
  * open/close a {@link java.util.concurrent.BlockingQueue} so that no items can be added or removed.
- * It also could be used to open/close a {@link org.codehaus.prometheus.lendablereference.LendableReference}
+ * It also could be used to open/close a {@link org.codehaus.prometheus.references.LendableReference}
  * so no references can be lend.
  * <p/>
  * todo: what about open/close failures?<p/>

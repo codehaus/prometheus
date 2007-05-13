@@ -6,6 +6,7 @@
 package org.codehaus.prometheus.lendablereference;
 
 import org.codehaus.prometheus.waitpoint.Waitsection;
+import org.codehaus.prometheus.references.LendableReference;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

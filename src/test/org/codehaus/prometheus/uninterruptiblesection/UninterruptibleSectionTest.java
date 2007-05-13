@@ -18,6 +18,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
     private volatile UninterruptibleSection section;
     private volatile Latch latch;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         latch = new Latch();

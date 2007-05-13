@@ -47,8 +47,6 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
 
         public boolean execute() {
             int count = this.count.incrementAndGet();
-            System.out.println("count: "+count);
-            
             return count<maxCount;
         }
 

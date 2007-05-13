@@ -6,12 +6,13 @@
 package org.codehaus.prometheus.lendablereference;
 
 import org.codehaus.prometheus.waitpoint.Waitpoint;
+import org.codehaus.prometheus.references.LendableReference;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A LendableReference decorator. It decorates a target {@link LendableReference} and lets all takes
+ * A LendableReference decorator. It decorates a target {@link org.codehaus.prometheus.references.LendableReference} and lets all takes
  * wait, this is done by using a {@link Waitpoint}. This structure can be used to control the taking
  * of references; for example:
  * <ol>
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeoutException;
  * a LendableReference with a limit on the number of lend references. this can only be done with an 
  * enter/exit-waitpoint.
  *
- * @see org.codehaus.prometheus.awaitablereference.AwaitableReferenceWithWaitingTakes
+ * @see org.codehaus.prometheus.references.AwaitableReferenceWithWaitingTakes
  * @author Peter Veentjer.
  */
 public class LendableReferenceWithWaitingTakes<E,W extends Waitpoint> implements LendableReference<E> {

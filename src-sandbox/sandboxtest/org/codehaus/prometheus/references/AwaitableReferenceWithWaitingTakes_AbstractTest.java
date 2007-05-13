@@ -3,7 +3,7 @@
  *
  * This program is made available under the terms of the MIT License.
  */
-package org.codehaus.prometheus.awaitablereference;
+package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.waitpoint.CloseableWaitpoint;

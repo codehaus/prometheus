@@ -30,6 +30,8 @@ public class Latch_AwaitTest extends Latch_AbstractTest {
         awaitThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
     }
 
+    //============== some waiting needed =========================
+
     public void testNotOpen_startInterrupted() {
         newClosedLatch();
         AwaitThread awaitThread = scheduleAwait(START_INTERRUPTED);
