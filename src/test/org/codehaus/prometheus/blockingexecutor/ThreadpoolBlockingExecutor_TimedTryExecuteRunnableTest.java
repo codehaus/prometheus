@@ -68,7 +68,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
         joinAll(executeThread);
         executeThread.assertIsInterruptedByException();
 
-        sleepMs(DELAY_MEDIUM_MS);
+        giveOthersAChance();
         task.assertNotExecuted();
         assertIsRunning();
     }
@@ -103,7 +103,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
 
         executeThread.assertIsSuccess();
 
-        sleepMs(DELAY_MEDIUM_MS);
+        giveOthersAChance();
         task.assertExecutedOnce();
         assertDesiredPoolSize(1);
         assertActualPoolSize(1);

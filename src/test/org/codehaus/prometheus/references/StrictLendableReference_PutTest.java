@@ -86,7 +86,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         assertHasRef(oldRef);
 
         //return the old reference
-        test_takeback(oldRef);
+        tested_takeback(oldRef);
 
         //now wait for the completion of the lend and the put
         //and check if the put has taken place
@@ -143,7 +143,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         putThread.assertIsStarted();
         assertHasRef(takenref);
 
-        test_takeback(takenref);
+        tested_takeback(takenref);
                 
         //new let the lend and the put complete.
         joinAll(putThread);

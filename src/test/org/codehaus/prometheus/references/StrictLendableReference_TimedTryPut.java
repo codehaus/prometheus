@@ -54,9 +54,9 @@ public class StrictLendableReference_TimedTryPut extends StrictLendableReference
         lendableRef = new StrictLendableReference<Integer>();
         Integer ref = 10;
 
+        //a put with a nul timeout should complete without problems
         TimedTryPutThread tryPutThread = scheduleTimedTryPut(ref,0);
         joinAll(tryPutThread);
-
         assertHasRef(ref);
         tryPutThread.assertSuccess(null);
         assertLendCount(0);
@@ -66,21 +66,20 @@ public class StrictLendableReference_TimedTryPut extends StrictLendableReference
         Integer originalRef = 10;
         Integer newRef = 20;
         lendableRef = new StrictLendableReference<Integer>(originalRef);
-        TakeThread takeThread = scheduleTake();
 
-        joinAll(takeThread);
-        takeThread.assertSuccess(originalRef);
+        //first execute a take
+        tested_take(originalRef);
 
+        //now do a put, it should block because something is taken
         TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, DELAY_LONG_MS);
-
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryPutThread.assertIsStarted();
         assertHasRef(originalRef);
         assertLendCount(1);
 
-        TakeBackThread takeBackThread = scheduleTakeBack(originalRef);
+        //now bring the item back and check that the put now is able to complete
+        TakeBackThread takeBackThread = scheduleTakeback(originalRef);
         joinAll(tryPutThread,takeBackThread);
-
         tryPutThread.assertSuccess(originalRef);
         assertHasRef(newRef);
         assertLendCount(0);
@@ -90,12 +89,13 @@ public class StrictLendableReference_TimedTryPut extends StrictLendableReference
         Integer originalRef = 10;
         Integer newRef = 20;
         lendableRef = new StrictLendableReference<Integer>(originalRef);
-        TakeThread takeThread = scheduleTake();
-        joinAll(takeThread);
 
+        //do a take
+        tested_take(originalRef);
+
+        //a timed put is going to timeout because a value is taken 
         TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, DELAY_TINY_MS);
         joinAll(tryPutThread);
-
         tryPutThread.assertIsTimedOut();
         assertHasRef(originalRef);
         assertLendCount(1);
@@ -104,18 +104,20 @@ public class StrictLendableReference_TimedTryPut extends StrictLendableReference
     public void testInterruptedWhileWaiting() {
         Integer originalRef = 10;
         lendableRef = new StrictLendableReference<Integer>(originalRef);
-        Thread takeThread = scheduleTake();
-        joinAll(takeThread);
 
+        //do a take
+        tested_take(originalRef);
+
+        //do a put and make sure that it is waiting because a value is taken
         Integer newRef = 20;
         TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, DELAY_LONG_MS);
-        sleepMs(DELAY_TINY_MS);
-
+        giveOthersAChance();
         tryPutThread.assertIsStarted();
         assertHasRef(originalRef);
 
+        //now interrupt the put and make sure that it is interrupted
         tryPutThread.interrupt();
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryPutThread.assertIsInterruptedByException();
         assertHasRef(originalRef);
         assertLendCount(1);
@@ -130,7 +132,7 @@ public class StrictLendableReference_TimedTryPut extends StrictLendableReference
 
         //the tryPut is waiting         
         TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, DELAY_LONG_MS);
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryPutThread.assertIsStarted();
 
         //do some spurious wakeups.
@@ -138,13 +140,14 @@ public class StrictLendableReference_TimedTryPut extends StrictLendableReference
         joinAll(spuriousThread);
 
         //make sure it is still waiting
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryPutThread.assertIsStarted();
 
         //take the item back and make sure that tryPut went ok.
-        TakeBackThread takebackThread = scheduleTakeBack(originalRef);
+        TakeBackThread takebackThread = scheduleTakeback(originalRef);
         joinAll(takebackThread, tryPutThread);
         tryPutThread.assertSuccess(originalRef);
+        takebackThread.assertSuccess();
         assertHasRef(newRef);
         assertLendCount(0);
     }

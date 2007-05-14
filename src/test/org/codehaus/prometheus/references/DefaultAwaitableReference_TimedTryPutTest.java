@@ -48,7 +48,7 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
         Integer newRef = 20;
 
-        put(newRef, oldRef);
+        tested_put(newRef, oldRef);
 
         assertHasReference(newRef);
     }
@@ -66,7 +66,7 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         Integer oldRef = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
-        take(oldRef);
+        tested_take(oldRef);
 
         Integer newRef = 20;
         put(timeout, newRef, oldRef);

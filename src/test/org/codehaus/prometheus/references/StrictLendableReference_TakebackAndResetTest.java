@@ -1,8 +1,5 @@
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.StrictLendableReference;
-import org.codehaus.prometheus.references.TakebackAndResetThread;
-
 /**
  * Unittests {@link org.codehaus.prometheus.references.StrictLendableReference#takebackAndReset(Object)}.
  *
@@ -20,7 +17,7 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
         tested_take(ref);
 
         Integer newRef = 20;
-        PutThread putThread = test_pendingPut(newRef);
+        PutThread putThread = tested_pendingPut(newRef);
 
         //make sure that a null-takeback leads to a NullPointerException
         TakebackAndResetThread<Integer> takebackAndResetThread = scheduleTakebackAndReset(null);
@@ -89,7 +86,7 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
 
         //do a pending put
         Integer newRef = 20;
-        PutThread putThread = test_pendingPut(newRef);
+        PutThread putThread = tested_pendingPut(newRef);
 
         //do the takeback
         TakebackAndResetThread takebackAndResetThread = scheduleTakebackAndReset(ref);

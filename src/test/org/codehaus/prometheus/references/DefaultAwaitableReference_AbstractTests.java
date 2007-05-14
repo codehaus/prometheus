@@ -9,7 +9,6 @@ import junit.framework.TestCase;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.testsupport.TestUtil;
-import org.codehaus.prometheus.references.DefaultAwaitableReference;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -97,13 +96,13 @@ public abstract class DefaultAwaitableReference_AbstractTests extends Concurrent
         return t;
     }
 
-    public void put(Integer newRef, Integer expectedReturnedRef) {
+    public void tested_put(Integer newRef, Integer expectedReturnedRef) {
         PutThread putter = schedulePut(newRef);
         joinAll(putter);
         putter.assertSuccess(expectedReturnedRef);
     }
 
-    public void put(Integer newRef, Integer expectedReturnedRef, boolean startInterrupted) {
+    public void tested_put(Integer newRef, Integer expectedReturnedRef, boolean startInterrupted) {
         PutThread putter = schedulePut(newRef, startInterrupted);
         joinAll(putter);
         putter.assertSuccess(expectedReturnedRef);
@@ -111,7 +110,7 @@ public abstract class DefaultAwaitableReference_AbstractTests extends Concurrent
     }
 
 
-    public void take(Integer expectedTakenRef) {
+    public void tested_take(Integer expectedTakenRef) {
         TakeThread taker = scheduleTake();
         joinAll(taker);
         taker.assertSuccess(expectedTakenRef);

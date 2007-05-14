@@ -24,8 +24,8 @@ public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableRefer
         Integer ref = 20;
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
 
+        //do a timed take and make sure it completes with the expected reference
         TryTakeThread t = scheduleTryTake(startInterrupted);
-
         joinAll(t);
         t.assertSuccess(ref);
         t.assertIsTerminatedWithInterruptStatus(startInterrupted);
@@ -44,8 +44,8 @@ public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableRefer
     public void testNoReferenceAvailable(boolean startInterrupted){
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
+        //do a trytake and make sure it completes without a reference
         TryTakeThread t = scheduleTryTake();
-
         joinAll(t);
         t.assertSuccess(null);
         t.assertIsTerminatedWithInterruptStatus(startInterrupted);

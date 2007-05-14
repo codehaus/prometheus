@@ -37,7 +37,9 @@ public class ThreadPoolRepeater_RepeatStressTest {
             this.executionCount = executionCount;
         }
 
-        public void setUp(){
+        public void setUp() throws Exception {
+            super.setUp();
+            
             ThreadPool pool = new StandardThreadPool(poolsize,new StandardThreadFactory(Thread.MIN_PRIORITY));
             repeater = new ThreadPoolRepeater(
                     pool,

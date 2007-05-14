@@ -20,8 +20,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
 
     public void assertPutWaits(E ref) {
         PutThread<E> putter = schedulePut(ref);
-        sleepMs(DELAY_SMALL_MS);
-
+        giveOthersAChance();
         putter.assertIsStarted();
     }
 
@@ -40,15 +39,15 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         assertSame(expectedRef, lendableRef.peek());
     }
 
-    public PutThread test_pendingPut(E newRef) {
+    public PutThread tested_pendingPut(E newRef) {
         PutThread putThread = schedulePut(newRef);
         giveOthersAChance();
         putThread.assertIsStarted();
         return putThread;
     }
 
-    public void test_takeback(E ref) {
-        TakeBackThread<E> t = scheduleTakeBack(ref);
+    public void tested_takeback(E ref) {
+        TakeBackThread<E> t = scheduleTakeback(ref);
         joinAll(t);
         t.assertSuccess();
     }
@@ -69,9 +68,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
     }
 
     public TakeThread<E> scheduleTake() {
-        TakeThread<E> t = new TakeThread<E>(lendableRef);
-        t.start();
-        return t;
+        return scheduleTake(START_UNINTERRUPTED);
     }
 
     public TakeThread<E> scheduleTake(boolean startInterrupted) {
@@ -81,8 +78,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         return t;
     }
 
-
-    public TakeBackThread<E> scheduleTakeBack(E ref) {
+    public TakeBackThread<E> scheduleTakeback(E ref) {
         TakeBackThread<E> thread = new TakeBackThread<E>(lendableRef, ref);
         thread.start();
         return thread;
@@ -91,13 +87,6 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
     public LendThread<E> scheduleLend(E takebackRef, long lendPeriodMs) {
         LendThread<E> t = new LendThread<E>(
                 lendableRef, takebackRef, lendPeriodMs, TimeUnit.MILLISECONDS);
-        t.start();
-        return t;
-    }
-
-    public PutThread<E> scheduleDelayedPut(E ref, long delayMs) {
-        PutThread<E> t = new PutThread<E>(lendableRef, ref);
-        t.setDelayMs(delayMs);
         t.start();
         return t;
     }
@@ -115,9 +104,8 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         return t;
     }
 
-
-    public MultipleTakeBackThread scheduleMultipleTakebacks(int count, E ref) {
-        MultipleTakeBackThread t = new MultipleTakeBackThread(count, ref);
+    public MultipleTakebackThread scheduleMultipleTakebacks(int count, E ref) {
+        MultipleTakebackThread t = new MultipleTakebackThread(count, ref);
         t.start();
         return t;
     }
@@ -140,12 +128,11 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         return t;
     }
 
-    public Thread scheduleDelayedSpuriousWakeups() {
-        SpuriousWakeupsThread t = new SpuriousWakeupsThread(0, TimeUnit.MILLISECONDS);
+    public SpuriousWakeupsThread scheduleDelayedSpuriousWakeups() {
+        SpuriousWakeupsThread t = new SpuriousWakeupsThread();
         t.start();
         return t;
     }
-
 
     public TimedTryPutThread<E> scheduleTimedTryPut(E ref, long timeoutMs) {
         TimedTryPutThread<E> t = new TimedTryPutThread<E>(lendableRef, ref, timeoutMs);
@@ -154,7 +141,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
     }
 
     public TryTakeThread<E> scheduleTryTake(boolean startInterrupted) {
-        TryTakeThread<E> t = new TryTakeThread(lendableRef);
+        TryTakeThread<E> t = new TryTakeThread<E>(lendableRef);
         t.setStartInterrupted(startInterrupted);
         t.start();
         return t;
@@ -195,12 +182,12 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         }
     }
 
-    class MultipleTakeBackThread extends TestThread {
+    public class MultipleTakebackThread extends TestThread {
         private final int count;
         private final E ref;
         private boolean completed = false;
 
-        public MultipleTakeBackThread(int count, E ref) {
+        public MultipleTakebackThread(int count, E ref) {
             this.count = count;
             this.ref = ref;
         }

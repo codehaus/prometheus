@@ -130,7 +130,8 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         taker.assertIsStarted();
 
         Thread spurious = scheduleSpuriousWakeup();
-        joinAllAndSleepMs(DELAY_TINY_MS,spurious);
+        joinAll(spurious);
+        giveOthersAChance();
         taker.assertIsStarted();
 
         Integer ref = 20;

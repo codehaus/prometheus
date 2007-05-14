@@ -6,19 +6,20 @@
 package org.codehaus.prometheus.references;
 
 import junit.framework.TestCase;
-import org.codehaus.prometheus.references.DefaultAwaitableReference;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Unittests the constructors of the {@link org.codehaus.prometheus.references.DefaultAwaitableReference}.
+ * Unittests the constructors of the {@link DefaultAwaitableReference}.
  *
  * @author Peter Veentjer.
  */
 public class DefaultAwaitableReference_ConstructorTest extends TestCase {
 
     private DefaultAwaitableReference<Integer> awaitableRef;
+
+    //=========== DefaultAwaitableReference() ==================
 
     public void test_noArg() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
@@ -31,6 +32,8 @@ public class DefaultAwaitableReference_ConstructorTest extends TestCase {
     private void hasDefaultMainLock() {
         assertTrue(awaitableRef.getMainLock() instanceof ReentrantLock);
     }
+
+    //=========== DefaultAwaitableReference(E) ==================
 
     public void test_E_valueIsNull() {
         awaitableRef = new DefaultAwaitableReference<Integer>((Integer) null);
@@ -53,6 +56,8 @@ public class DefaultAwaitableReference_ConstructorTest extends TestCase {
         assertNotNull(awaitableRef.getReferenceAvailableCondition());
     }
 
+    //=========== DefaultAwaitableReference(Lock) ==================
+
     public void test_Lock_lockIsNull() {
         try {
             new DefaultAwaitableReference<Integer>((Lock) null);
@@ -70,6 +75,8 @@ public class DefaultAwaitableReference_ConstructorTest extends TestCase {
         assertEquals(lock, awaitableRef.getMainLock());
         assertNotNull(awaitableRef.getReferenceAvailableCondition());
     }
+
+    //=========== DefaultAwaitableReference(E, Lock) ==================
 
     public void test_E_Lock_lockIsNull() {
         try {

@@ -1,7 +1,5 @@
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.DefaultAwaitableReference;
-
 /**
  * Unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#isTakePossible()} method.
  *
@@ -16,7 +14,7 @@ public class DefaultAwaitableReference_IsTakePossibleTest extends DefaultAwaitab
         assertTakeIsPossible();
 
         //if an item is taken, it doesn't influence the isTakePossible
-        take(ref);
+        tested_take(ref);
         assertTakeIsPossible();
     }
    

@@ -32,7 +32,9 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
             fail();
         } catch (TimeoutException e) {
             assertTrue(true);
-        }        
+        } finally{
+            lock.unlock();
+        }
     }
 
     //===========================================================
@@ -51,7 +53,7 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
         long timeoutNs = millisToNanos(DELAY_MEDIUM_MS);
         AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock,condition,timeoutNs,interrupted);
 
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         t.assertIsStarted();
 
         Thread signalThread = TestUtil.scheduleSignallAll(lock,condition);
@@ -99,11 +101,11 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
 
         AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock,condition,timeoutNs,interrupted);
 
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         t.assertIsStarted();
 
         t.interrupt();
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         Thread signalThread = TestUtil.scheduleSignallAll(lock,condition);        
         joinAll(t,signalThread);
         t.assertSuccess();

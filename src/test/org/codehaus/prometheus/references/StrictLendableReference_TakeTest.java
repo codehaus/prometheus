@@ -5,8 +5,11 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.StrictLendableReference;
-import org.codehaus.prometheus.references.TakeThread;
+import org.codehaus.prometheus.testsupport.TestThread;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Unittests the {@link StrictLendableReference#take()} method.
@@ -18,61 +21,61 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
     public void testNoWaitingNeeded() throws InterruptedException {
         Integer originalRef = 10;
         lendableRef = new StrictLendableReference<Integer>(originalRef);
+
+        //do a take and make sure it completes
         TakeThread<Integer> takeThread = scheduleTake();
         joinAll(takeThread);
-
         takeThread.assertSuccess(originalRef);
         assertHasRef(originalRef);
         assertLendCount(1);
-        assertPutWaits(1);
+        assertPutWaits(originalRef + 1);
     }
 
     public void testSomeWaitingNeeded() throws InterruptedException {
         lendableRef = new StrictLendableReference<Integer>();
-        TakeThread<Integer> takeThread1 = scheduleTake();
-        TakeThread<Integer> takeThread2 = scheduleTake();
 
         //check that the takes are waiting
-        sleepMs(DELAY_SMALL_MS);
+        TakeThread<Integer> takeThread1 = scheduleTake();
+        TakeThread<Integer> takeThread2 = scheduleTake();
+        giveOthersAChance();
         assertLendCount(0);
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
 
         //place a new value, and check that the takes were successful.
-        Integer newRef = 10;
-        Thread putThread = schedulePut(newRef);
-        joinAll(putThread,takeThread1,takeThread2);
-        
-        takeThread1.assertSuccess(newRef);
-        takeThread2.assertSuccess(newRef);
-        assertHasRef(newRef);
+        Integer ref = 10;
+        tested_put(ref, null);
+        joinAll(takeThread1, takeThread2);
+        takeThread1.assertSuccess(ref);
+        takeThread2.assertSuccess(ref);
+        assertHasRef(ref);
         assertLendCount(2);
-        assertPutWaits(1);
+        assertPutWaits(ref + 1);
     }
 
-    public void testStartWithInterruptedStatus(){
+    public void testStartWithInterruptedStatus() {
         Integer ref = 10;
         lendableRef = new StrictLendableReference<Integer>(ref);
+
+        //do a take with interruptstatus, and check that the call is interrupted
         TakeThread<Integer> takeThread1 = scheduleTake(START_INTERRUPTED);
         joinAll(takeThread1);
-
         takeThread1.assertInterrupted();
         assertLendCount(0);
         assertHasRef(ref);
     }
 
-    public void testInterruptedWhileWaiting(){
+    public void testInterruptedWhileWaiting() {
         lendableRef = new StrictLendableReference<Integer>();
-        TakeThread takeThread = scheduleTake();
 
-        //make sure that the take is waiting
-        sleepMs(DELAY_TINY_MS);
+        //do a take, and check that it is waiting
+        TakeThread takeThread = scheduleTake();
+        giveOthersAChance();
         takeThread.assertIsStarted();
 
         //interrupt the take
         takeThread.interrupt();
         joinAll(takeThread);
-
         takeThread.assertInterrupted();
         assertHasRef(null);
         assertPutIsPossible(1);
@@ -86,49 +89,89 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
     public void testWaitingTillEndOfTime() {
         lendableRef = new StrictLendableReference<Integer>();
         TakeThread taker = scheduleTake();
-
-        sleepMs(500);
-
+        giveOthersAChance();
         taker.assertIsStarted();
+
         assertHasRef(null);
         assertLendCount(0);
-
-        taker.interruptAndJoin();
-        assertPutIsPossible(1);
     }
 
-    public void testMultipleTakesFromSingleThread() throws InterruptedException {
+    public void testMultipleTakesFromDifferentThreads() throws InterruptedException {
         Integer ref = 10;
         lendableRef = new StrictLendableReference<Integer>(ref);
 
-        Integer ref1 = lendableRef.take();
+        //take it the first time
+        tested_take(ref);
         assertLendCount(1);
-        assertSame(ref,ref1);
+        assertHasRef(ref);
 
-        Integer ref2 = lendableRef.take();
+        //take it the second time
+        tested_take(ref);
         assertLendCount(2);
-        assertSame(ref,ref2);
+        assertHasRef(ref);
 
-        Integer ref3 = lendableRef.take();
+        //take it the third time
+        tested_take(ref);
         assertLendCount(3);
-        assertSame(ref,ref3);
+        assertHasRef(ref);
     }
 
+    public void testMultipleTakesFromSingleThread() {
+        final Integer ref = 10;
+        lendableRef = new StrictLendableReference<Integer>(ref);
+
+        int takecount = 10;
+        MultipleTakeThread multitakeThread = scheduleMultipleTake(takecount);
+        joinAll(multitakeThread);
+        multitakeThread.assertSuccess(ref);
+        assertLendCount(takecount);
+        assertHasRef(ref);
+    }
+
+    public MultipleTakeThread scheduleMultipleTake(int count){
+        MultipleTakeThread t = new MultipleTakeThread(count);
+        t.start();
+        return t;
+    }
+
+    class MultipleTakeThread extends TestThread {
+        private final List<Integer> refList = new LinkedList<Integer>();
+        private final int count;
+
+        public MultipleTakeThread(int count) {
+            this.count = count;
+        }
+
+        @Override
+        protected void runInternal() throws InterruptedException, TimeoutException {
+            for (int k = 0; k < count; k++)
+                refList.add(lendableRef.take());
+        }
+
+        public void assertSuccess(Integer expectedRef) {
+            assertIsTerminatedWithoutThrowing();
+            assertEquals(count,refList.size());
+            for(Integer ref: refList){
+                assertSame(expectedRef,ref);
+            }
+        }
+    }
+    
     //spurious needs to be done from thread that has a readlock
     public void testSpuriousWakeup() throws InterruptedException {
         lendableRef = new StrictLendableReference<Integer>();
+
+        //do takes and make sure they are blocking (because no value is available)
         TakeThread<Integer> takeThread1 = scheduleTake();
         TakeThread<Integer> takeThread2 = scheduleTake();
-
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
 
+        //do a spurious wakeup and see that nothing has changed
         Thread spuriousThread = scheduleDelayedSpuriousWakeups();
         joinAll(spuriousThread);
-
-        //check if the takers are still waiting and the ref is not changed
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
         assertHasRef(null);
@@ -137,7 +180,7 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         //check if the takers are notified if a new value is placed.
         Integer newRef = 20;
         Thread putThread = schedulePut(newRef);
-        joinAll(putThread,takeThread1,takeThread2);
+        joinAll(putThread, takeThread1, takeThread2);
         takeThread1.assertSuccess(newRef);
         takeThread2.assertSuccess(newRef);
         assertHasRef(newRef);

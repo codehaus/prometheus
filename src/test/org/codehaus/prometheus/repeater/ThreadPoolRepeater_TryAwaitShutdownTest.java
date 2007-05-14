@@ -84,7 +84,7 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
         newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_MEDIUM_MS)));
 
         TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(DELAY_LONG_MS);
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         awaitThread.assertIsStarted();
 
         awaitThread.interrupt();

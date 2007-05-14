@@ -21,6 +21,7 @@
     <property name="target"                 value="target"/>
     <property name="metrics"                value="${target}/metrics"/>
     <property name="checkstyle"             value="${target}/checkstyle"/>
+    <property name="findbugs"               value="${target}/findbugs"/>
     <property name="javadoc.main"           value="${target}/javadoc.main"/>
     <property name="javadoc.testsupport"    value="${target}/javadoc.testsupport"/>
     <property name="classes.main"           value="${target}/classes.main"/>
@@ -47,6 +48,10 @@
 
     <taskdef resource="checkstyletask.properties"
              classpathref="classpath.support"/>
+
+    <taskdef name="findbugs"
+             classpathref="classpath.support"
+             classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
 
     <!-- taskdef name="jdepend"
              classname="org.apache.tools.ant.taskdefs.optional.jdepend.JDependTask"
@@ -363,5 +368,26 @@
               out="${checkstyle}/checkstyle_report.html">
             <param name="output.dir" expression="${checkstyle}"/>
         </xslt>
+    </target>
+
+    <target name="findbugs.main"
+            depends="compile.main"
+            description="Creates a findbugs report for the main module">
+
+        <mkdir dir="${findbugs}"/>
+
+         <findbugs home="${findbugs.home}"
+              output="xml"
+              outputFile="bcel-fb.xml" >
+            <auxClasspath path="${basedir}/lib/Regex.jar" />
+            <sourcePath path="${basedir}/src/java" />
+            <class location="${basedir}/bin/bcel.jar" />
+        </findbugs>
+
+        <!-- xslt style="lib/support/checkstyle/checkstyle-frames-errors.xsl"
+              in="${checkstyle}/checkstyle_errors.xml"
+              out="${checkstyle}/checkstyle_report.html">
+            <param name="output.dir" expression="${checkstyle}"/>
+        </xslt -->
     </target>
 </project>

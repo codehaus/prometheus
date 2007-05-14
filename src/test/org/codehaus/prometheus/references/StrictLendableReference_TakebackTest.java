@@ -5,10 +5,6 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.StrictLendableReference;
-import org.codehaus.prometheus.references.TakeThread;
-import org.codehaus.prometheus.references.TakeBackThread;
-
 /**
  * Unittests the {@link StrictLendableReference#takeback(Object)} method.
  *
@@ -46,7 +42,7 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         TakeThread taker = scheduleTake();
         joinAll(taker);
 
-        TakeBackThread takeBack = scheduleTakeBack(originalRef);
+        TakeBackThread takeBack = scheduleTakeback(originalRef);
         joinAll(takeBack);
 
         takeBack.assertSuccess();
@@ -64,7 +60,7 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         TakeThread takeThread3 = scheduleTake();
         joinAll(takeThread1,takeThread2,takeThread3);
 
-        MultipleTakeBackThread takebackThread = scheduleMultipleTakebacks(3,orignalRef);
+        MultipleTakebackThread takebackThread = scheduleMultipleTakebacks(3,orignalRef);
         joinAll(takebackThread);
 
         takebackThread.assertSuccess();
@@ -76,7 +72,7 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         Integer originalRef = 10;
         lendableRef = new StrictLendableReference<Integer>(originalRef);
 
-        TakeBackThread takeBack = scheduleTakeBack(originalRef);
+        TakeBackThread takeBack = scheduleTakeback(originalRef);
         joinAll(takeBack);
 
         takeBack.assertTakeBackException();
@@ -100,7 +96,7 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         lendableRef = new StrictLendableReference<Integer>(originalRef);
 
         LendThread<Integer> lender = scheduleLend( takebackRef, DELAY_MEDIUM_MS);
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         lender.assertIsTaken(originalRef);
 
         joinAll(lender);

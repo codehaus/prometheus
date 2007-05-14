@@ -76,7 +76,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
 
     public void testShuttingDown() throws TimeoutException, InterruptedException {
         newShuttingdownRepeater(DELAY_MEDIUM_MS);
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
 
         Repeatable originalTask = repeater.getLendableRef().peek();
         CountingRunnable task = new CountingRunnable();
@@ -93,7 +93,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         newRunningStrictRepeater(originalRepeatable);
 
         TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(new DummyRepeatable(), DELAY_MEDIUM_MS);
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryRepeatThread.assertIsStarted();
 
         //interrupt the thread 
@@ -132,20 +132,20 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         assertIsRunning();
         assertHasRepeatable(repeatable);
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
                 
         task.assertExecutedOnceOrMore();
     }
 
     public void testStarted_someWaitingNeeded() {
         newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_MEDIUM_MS)));
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
 
         CountingRunnable task = new CountingRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
         TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(repeatable, DELAY_LONG_MS);
 
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryRepeatThread.assertIsStarted();
 
         joinAll(tryRepeatThread);

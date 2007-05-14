@@ -15,23 +15,23 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
     public void testWaitingTillEndOfTime() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
+        //do a take and make sure that the take is waiting
         TakeThread taker = scheduleTake();
-
-        //make sure that the taker is waiting
-        giveOthersAChance();
+        sleepMs(DELAY_LONG_MS);
         taker.assertIsStarted();
         assertHasReference(null);
     }
 
     public void testInterruptedWhileWaiting() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        TakeThread taker = scheduleTake();
 
-        //make sure that the taker is waiting
+        //do a take and make sure it is waiting
+        TakeThread taker = scheduleTake();
         giveOthersAChance();
         taker.assertIsStarted();
         assertHasReference(null);
 
+        //now interrupt the take
         taker.interrupt();
 
         //make sure that the taker is interrupted
@@ -54,9 +54,8 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         Integer ref = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
 
+        //do a take and make sure it completes
         TakeThread taker = scheduleTake(startInterrupted);
-
-        //make sure take has completed
         joinAll(taker);
         taker.assertSuccess(ref);
         taker.assertIsTerminatedWithInterruptStatus(startInterrupted);
@@ -69,8 +68,8 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         Integer ref = null;
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
 
+        //do a take and make sure it was interrupted
         TakeThread takeThread = scheduleTake(START_INTERRUPTED);
-
         joinAll(takeThread);
         takeThread.assertIsInterruptedByException();
         assertHasReference(ref);
@@ -88,10 +87,10 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
 
-        //now place an item
+        //do a put and
         PutThread putThread = schedulePut(newRef);
+        tested_put(newRef,null);
 
-        //and check that the takers have completed
         joinAll(putThread, takeThread1, takeThread2);
         takeThread1.assertSuccess(newRef);
         takeThread2.assertSuccess(newRef);

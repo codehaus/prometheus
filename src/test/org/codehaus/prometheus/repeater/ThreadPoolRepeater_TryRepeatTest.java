@@ -39,7 +39,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
         assertActualPoolSize(1);
         assertIsRunning();
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         task.assertExecutedOnceOrMore();
     }
 
@@ -68,7 +68,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
         assertHasRepeatable(originalRepeatable);
         assertActualPoolSize(1);
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         task.assertNotExecuted();
     }
 
@@ -95,7 +95,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
         assertHasRepeatable(repeatable);
         assertActualPoolSize(1);
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         task.assertExecutedOnceOrMore();
     }
 

@@ -1,4 +1,4 @@
-package org.codehaus.prometheus.blockingexecutor;
+package org.codehaus.prometheus.blockingexecutor;        
 
 import junit.framework.TestSuite;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
@@ -25,7 +25,7 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
 
     public static TestSuite suite() {
         TestSuite suite = new TestSuite();
-        for (int k = 0; k < 100; k++) {
+        for (int k = 0; k < 10; k++) {
             suite.addTest(new ShutdownTest(1, 1, 10, 10));
             suite.addTest(new ShutdownTest(10, 10, 10, 10));
             suite.addTest(new ShutdownTest(10, 1000, 50, 50));
@@ -56,7 +56,10 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
             this.workcount = workcount;
         }
 
-        public void setUp() {
+        @Override
+        public void setUp() throws Exception {
+            super.setUp();
+
             ThreadFactory factory = new StandardThreadFactory(Thread.MIN_PRIORITY, "test");
             executor = new ThreadPoolBlockingExecutor(
                     new StandardThreadPool(poolsize, factory),
@@ -69,7 +72,8 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
             workerList = new LinkedList<TaskProducer>();
         }
 
-        public void tearDown() {
+        public void tearDown() throws Exception {
+            super.tearDown();
             executor.shutdownNow();
         }
 

@@ -23,7 +23,9 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     public volatile ThreadPoolBlockingExecutor executor;
     public volatile TracingThreadFactory threadFactory;
 
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        super.tearDown();
+        
         if (executor != null){
             ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
             joinAll(shutdownNowThread);

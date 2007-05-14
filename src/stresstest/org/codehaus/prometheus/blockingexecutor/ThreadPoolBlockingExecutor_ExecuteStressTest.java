@@ -24,7 +24,10 @@ public class ThreadPoolBlockingExecutor_ExecuteStressTest extends ConcurrentTest
     private volatile List<TaskProducer> workerList;
     private volatile TracingExceptionHandler exceptionHandler;
 
-    public void setUp() {
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        
         ThreadFactory factory = new StandardThreadFactory(Thread.MIN_PRIORITY, "test");
         executor = new ThreadPoolBlockingExecutor(new StandardThreadPool(10, factory), new LinkedBlockingQueue<Runnable>(50));
         executor.start();
@@ -34,7 +37,10 @@ public class ThreadPoolBlockingExecutor_ExecuteStressTest extends ConcurrentTest
         workerList = new LinkedList<TaskProducer>();
     }
 
-    public void tearDown() {
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        
         executor.shutdownNow();
     }
 
@@ -55,7 +61,7 @@ public class ThreadPoolBlockingExecutor_ExecuteStressTest extends ConcurrentTest
     }
 
     public void test_5() throws InterruptedException {
-        stressTest(100, 1000);
+        stressTest(50, 50);
     }
 
     public void stressTest(int producerCount, int repeatCount) throws InterruptedException {

@@ -48,7 +48,7 @@ public class ConditionUtil_TimedAwaitAndThrowTest extends ConditionUtil_Abstract
         Condition cond = lock.newCondition();
         AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock,cond, DELAY_LONG_MS);
 
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         awaitThread.assertIsStarted();
 
         awaitThread.interrupt();
@@ -61,7 +61,7 @@ public class ConditionUtil_TimedAwaitAndThrowTest extends ConditionUtil_Abstract
         Condition cond = lock.newCondition();
         AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock,cond, DELAY_LONG_MS);
 
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         awaitThread.assertIsStarted();
 
         Thread signalAllThread = scheduleSignallAll(lock,cond);

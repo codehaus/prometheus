@@ -32,7 +32,7 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
         FooRepeatable repeatable = new FooRepeatable(poolsize);
         scheduleRepeat(repeatable);
 
-        sleepMs(DELAY_MEDIUM_MS);
+        giveOthersAChance();
         repeatable.assertRunCount(poolsize,2*poolsize);
     }
 
@@ -107,8 +107,7 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
         joinAll(repeatThread);
         repeatThread.assertIsTerminatedWithoutThrowing();
 
-        //give the task some time to execute 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         task.assertExecutedOnceOrMore();
         assertHasRepeatable(repeatable);
         assertIsRunning();

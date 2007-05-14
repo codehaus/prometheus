@@ -52,7 +52,7 @@ public abstract class ConcurrentTestCase extends TestCase {
 
     public void giveOthersAChance(long ms) {
         sleepMs(ms);
-        Thread.yield();//operation increased the chance of context switches, but it is allowed to be seen as a no-op
+        Thread.yield();//operation increases the chance of context switches, but it is allowed to be seen as a no-op
     }
 
     @Override
@@ -76,10 +76,18 @@ public abstract class ConcurrentTestCase extends TestCase {
      * @param threads the threads to join on.
      */
     public void joinAll(Thread... threads) {
+        joinAll(2 * DELAY_LONG_MS,threads);
+    }
+
+    public void joinAll(long delayMs, Thread... threads) {
         for (int k = 0; k < threads.length; k++) {
             Thread t = threads[k];
             try {
-                t.join(2 * DELAY_LONG_MS);
+                long startNs = System.nanoTime();
+                t.join(delayMs);
+                long endNs = System.nanoTime();
+                delayMs -= TimeUnit.NANOSECONDS.toMillis(endNs - startNs);
+
                 if (t.isAlive()) {
                     fail(String.format("thread #%s is still running", k));
                 }

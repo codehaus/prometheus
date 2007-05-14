@@ -7,9 +7,6 @@ package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.references.RelaxedLendableReference;
-import org.codehaus.prometheus.references.TimedTryPutThread;
-import org.codehaus.prometheus.references.TakeThread;
 
 import java.util.concurrent.TimeoutException;
 
@@ -29,6 +26,12 @@ public abstract class RelaxedLendableReference_AbstractTest<E> extends Concurren
 
     public TakeThread scheduleTake(){
         TakeThread t = new TakeThread(lendableRef);
+        t.start();
+        return t;
+    }
+
+    public TakeBackThread scheduleTakeBack(E ref){
+        TakeBackThread t = new TakeBackThread(lendableRef,ref);
         t.start();
         return t;
     }

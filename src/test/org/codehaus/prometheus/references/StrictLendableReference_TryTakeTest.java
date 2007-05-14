@@ -5,8 +5,6 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.StrictLendableReference_AbstractTest;
-
 /**
  * Unittests the {@link org.codehaus.prometheus.references.StrictLendableReference#tryTake()} method.
  *
@@ -25,17 +23,17 @@ public class StrictLendableReference_TryTakeTest extends StrictLendableReference
     public void testRefAvailable(boolean startInterrupted){
         Integer ref = 10;
         lendableRef = new StrictLendableReference<Integer>(ref);
+
         //using two thread also tests that takes don't exclude each other.
         TryTakeThread<Integer> t1 = scheduleTryTake(startInterrupted);
         TryTakeThread<Integer> t2 = scheduleTryTake(startInterrupted);
         joinAll(t1,t2);
-
-        assertHasRef(ref);
-        assertLendCount(2);        
         t1.assertSuccess(ref);
         t1.assertSuccess(ref);
         t1.assertIsTerminatedWithInterruptStatus(startInterrupted);
         t2.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        assertHasRef(ref);
+        assertLendCount(2);
     }
 
     //======== some waiting needed =======================
@@ -51,12 +49,12 @@ public class StrictLendableReference_TryTakeTest extends StrictLendableReference
     public void testNoRefAvailable(boolean startInterrupted){
         lendableRef = new StrictLendableReference<Integer>();
 
+        //do a take and make sure it completes
         TryTakeThread<Integer> t = scheduleTryTake(startInterrupted);
         joinAll(t);
-
-        assertHasRef(null);
-        assertLendCount(0);
         t.assertSuccess(null);
         t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        assertHasRef(null);
+        assertLendCount(0);
     }
 }

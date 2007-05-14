@@ -45,7 +45,7 @@ public class LockUtil_TryLockNanosTest extends LockUtil_AbstractTest {
 
         TryLockThread tryLock = scheduleTryLock(DELAY_LONG_MS,START_UNINTERRUPTED);
 
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryLock.assertIsStarted();
 
         joinAll(tryLock);

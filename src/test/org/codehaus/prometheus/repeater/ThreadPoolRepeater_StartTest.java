@@ -28,7 +28,7 @@ public class ThreadPoolRepeater_StartTest extends ThreadPoolRepeater_AbstractTes
         newUnstartedRepeater(task);
 
         repeater.start();
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
 
         assertIsRunning();
         assertActualPoolSize(1);
@@ -57,7 +57,7 @@ public class ThreadPoolRepeater_StartTest extends ThreadPoolRepeater_AbstractTes
         repeater.start();
         assertIsRunning();
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         task.assertNotExecuted();
         assertActualPoolSize(0);
     }

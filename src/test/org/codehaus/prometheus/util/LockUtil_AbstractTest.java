@@ -32,8 +32,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
         Thread t = new Thread(r);
         t.start();
 
-        //give other thread time to runWork
-        Thread.yield();
+        giveOthersAChance();
         return t;
     }
 
@@ -41,7 +40,8 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
         TestThread t = new TestThread() {
             @Override
             public void runInternal() throws InterruptedException, TimeoutException {
-                lock.tryLock(10, TimeUnit.MILLISECONDS);
+                if(!lock.tryLock(DELAY_MEDIUM_MS, TimeUnit.MILLISECONDS))
+                    throw new TimeoutException();
             }
         };
 
@@ -59,7 +59,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
         };
 
         t.start();
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
         t.assertIsStarted();
     }
 

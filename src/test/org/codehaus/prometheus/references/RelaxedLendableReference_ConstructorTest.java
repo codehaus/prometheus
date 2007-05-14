@@ -5,12 +5,18 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.RelaxedLendableReference;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Unittests the {@link org.codehaus.prometheus.references.RelaxedLendableReference} constructor
+ *
+ * @author Peter Veentjer
+ */
 public class RelaxedLendableReference_ConstructorTest extends RelaxedLendableReference_AbstractTest {
+
+    //================ RelaxedLendableReference() =====================
+
     public void testNoArg() {
         lendableRef = new RelaxedLendableReference<Integer>();
         assertNull(lendableRef.peek());
@@ -23,6 +29,8 @@ public class RelaxedLendableReference_ConstructorTest extends RelaxedLendableRef
         ReentrantLock reLock = (ReentrantLock) lock;
         assertFalse(reLock.isFair());
     }
+
+    //================ RelaxedLendableReference(Lock) =====================
 
     public void test_Lock() {
         try {
@@ -38,18 +46,22 @@ public class RelaxedLendableReference_ConstructorTest extends RelaxedLendableRef
         assertNull(lendableRef.peek());
     }
 
-    public void test_Reference() {
-        test_Reference(null);
-        test_Reference(10);
+    //================ RelaxedLendableReference(E) =====================
+
+    public void test_E() {
+        test_E(null);
+        test_E(10);
     }
 
-    private <E> void test_Reference(E ref) {
+    private <E> void test_E(E ref) {
         lendableRef = new RelaxedLendableReference<E>(ref);
         assertDefaultLock(lendableRef.getMainLock());
         assertSame(ref, lendableRef.peek());
     }
 
-    public void test_Lock_Reference() {
+    //================ RelaxedLendableReference(Lock,E) =====================
+
+    public void test_Reference_E() {
         try {
             new RelaxedLendableReference(10, null);
             fail("NullPointerException expected");
@@ -57,11 +69,11 @@ public class RelaxedLendableReference_ConstructorTest extends RelaxedLendableRef
             assertTrue(true);
         }
 
-        test_Lock_Reference(new ReentrantLock(), null);
-        test_Lock_Reference(new ReentrantLock(), 10);
+        test_Lock_E(new ReentrantLock(), null);
+        test_Lock_E(new ReentrantLock(), 10);
     }
 
-    private <E> void test_Lock_Reference(Lock lock, E ref) {
+    private <E> void test_Lock_E(Lock lock, E ref) {
         lendableRef = new RelaxedLendableReference<E>(ref, lock);
         assertSame(ref, lendableRef.peek());
         assertSame(lock, lendableRef.getMainLock());

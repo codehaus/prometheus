@@ -31,10 +31,10 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
     public void testSomeWaitingNeeded()throws InterruptedException{
         lock = new ReentrantLock();
         Thread lockAndUnlockThread = scheduleLockAndUnlock(DELAY_SMALL_MS);
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
 
         TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(DELAY_MEDIUM_MS);
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryLockThread.assertIsStarted();
 
         joinAll(lockAndUnlockThread,tryLockThread);
@@ -53,10 +53,10 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
     public void testInterruptedWhileWaiting(){
         lock = new ReentrantLock();
         Thread lockAndUnlockThread = scheduleLockAndUnlock(DELAY_SMALL_MS);
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
 
         TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(DELAY_LONG_MS);
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryLockThread.assertIsStarted();
 
         tryLockThread.interrupt();

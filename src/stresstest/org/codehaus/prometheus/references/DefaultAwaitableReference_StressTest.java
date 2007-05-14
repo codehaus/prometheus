@@ -107,7 +107,7 @@ public class DefaultAwaitableReference_StressTest {
                         new Runnable() {
                             public void run() {
                                 try {
-                                    Long i = awaitableRef.take();
+                                    awaitableRef.take();
                                     TestUtil.sleepRandomMs(100);
                                 } catch (InterruptedException e) {
                                     Thread.currentThread().interrupt();
