@@ -62,7 +62,7 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         }
 
         try {
-            new ThreadPoolBlockingExecutor(-1,new StandardThreadFactory(), new LinkedBlockingQueue());
+            new ThreadPoolBlockingExecutor(-1,new StandardThreadFactory(), new LinkedBlockingQueue<Runnable>());
             fail();
         } catch (IllegalArgumentException ex) {
         }

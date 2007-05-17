@@ -373,15 +373,13 @@
         <root url="jar://$PROJECT_DIR$/lib/provided/log4j-1.2.13.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/support/easymock/easymock-2.2.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/support/junit/junit-4.3.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/support/easymock/easymockclassextension.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/support/easymock/cglib-nodep-2.1_3.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
     </library>
   </component>
-  <component name="uidesigner-configuration">
-    <option name="INSTRUMENT_CLASSES" value="true" />
-    <option name="COPY_FORMS_RUNTIME_TO_OUTPUT" value="true" />
-    <option name="DEFAULT_LAYOUT_MANAGER" value="GridLayoutManager" />
-  </component>
+  <component name="uidesigner-configuration" />
 </project>
 

@@ -6,7 +6,7 @@
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
-import org.codehaus.prometheus.testsupport.InterruptingAndDetectingRunnable;
+import org.codehaus.prometheus.testsupport.DetectingAndInterruptingRunnable;
 import org.codehaus.prometheus.testsupport.ThrowingRunnable;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,27 +21,24 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_AbstractTest {
 
-//    public void testExecutionSetsInterruptedStatus() {
- //       fail();
- //   }
-
     public void testFalseStopsRepeater(){
         int poolsize = 10;
         newRunningRepeater(true,poolsize);
 
-        FooRepeatable repeatable = new FooRepeatable(poolsize);
-        scheduleRepeat(repeatable);
+        CountingRepeatable repeatable = new CountingRepeatable(poolsize);
+        tested_repeat(repeatable);
 
         giveOthersAChance();
         repeatable.assertRunCount(poolsize,2*poolsize);
     }
 
-    public class FooRepeatable implements Repeatable{
+    //todo: name stinks: it also is not clear what this repeatable should do and should test
+    public class CountingRepeatable implements Repeatable{
 
         private final AtomicInteger count = new AtomicInteger();
         private final int maxCount;
 
-        public FooRepeatable(int maxCount){
+        public CountingRepeatable(int maxCount){
             this.maxCount = maxCount;
         }
 
@@ -56,14 +53,13 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
         }
     }
 
-
     public void testSuccess() throws InterruptedException {
         newRunningRepeater(false,10);
 
         CountingRunnable task = new CountingRunnable();
-        repeater.repeat(new RepeatableRunnable(task));
+        tested_repeat(task);
 
-        sleepMs(DELAY_SMALL_MS);
+        sleepMs(DELAY_LONG_MS);
         task.assertExecutedMoreThanOnce();
     }
 
@@ -90,34 +86,39 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
         };
     }
 */
+    //=============== testRunningTaskCausesRuntimeException =============================
+
+    //with a strict repeater
     public void testRunningTaskCausesRuntimeException_strict() throws InterruptedException {
         testRunningTaskCausesRuntimeException(true);
     }
 
+    //with a relaxed repeater
     public void testRunningTaskCausesRuntimeException_relaxed() throws InterruptedException {
         testRunningTaskCausesRuntimeException(false);
     }
 
     public void testRunningTaskCausesRuntimeException(boolean strict) throws InterruptedException {
-        newRunningRepeater(strict);
+        newRunningRepeater(strict,1);
 
         ThrowingRunnable task = new ThrowingRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
-        RepeatThread repeatThread = scheduleRepeat(repeatable);
-        joinAll(repeatThread);
-        repeatThread.assertIsTerminatedWithoutThrowing();
+        tested_repeat(repeatable);
 
         giveOthersAChance();
         task.assertExecutedOnceOrMore();
         assertHasRepeatable(repeatable);
         assertIsRunning();
     }
-    //===============================
 
+    //============ unsetofinterruptstatus ======================================
+
+    //with a strict repeater
     public void testUnsetOfInterruptStatus_strict() throws InterruptedException {
         testUnsetOfInterruptStatus(true);
     }
 
+    //with a relaxed repeater
     public void testUnsetOfInterruptStatus_relaxed() throws InterruptedException {
         testUnsetOfInterruptStatus(false);
     }
@@ -127,11 +128,15 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
      * be removed before the next task.
      */
     public void testUnsetOfInterruptStatus(boolean strict) throws InterruptedException {
-        InterruptingAndDetectingRunnable detector = new InterruptingAndDetectingRunnable();
-        newRunningRepeater(strict, new RepeatableRunnable(detector));
-        //give the runnable some time to runWork.
-        sleepMs(DELAY_SMALL_MS);
+        DetectingAndInterruptingRunnable detector = new DetectingAndInterruptingRunnable();
 
+        newRunningRepeater(strict, new RepeatableRunnable(detector));
+
+        //give the runnable some time to runWork.
+        giveOthersAChance();
+
+        //this test could fail because the interrupt status could be set from the outside.
+        //But till so far I haven't had any problems. 
         detector.assertNoInterruptFound();
     }
 

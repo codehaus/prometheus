@@ -19,9 +19,14 @@ import org.codehaus.prometheus.repeater.RepeaterServiceState;
 public interface ThreadPoolRepeaterMBean {
 
     /**
-     * see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#shutdownNow()}
+     * See {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#shutdown()}
      */
     void shutdown();
+
+    /**
+     * See {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#shutdownNow()}
+     */
+    void shutdownNow();
 
     /**
      * see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#start()}
@@ -29,21 +34,21 @@ public interface ThreadPoolRepeaterMBean {
     void start();
 
     /**
-     * see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#getState()}.
+     * See {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#getState()}.
      *
      * @return the state.
      */
     RepeaterServiceState getState();
 
     /**
-     * see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#getDesiredPoolSize()}
+     * See {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#getDesiredPoolSize()}
      *
      * @return the poolsize.
      */
     int getDesiredPoolSize();
 
     /**
-     * see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#setDesiredPoolSize(int)}
+     * See {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#setDesiredPoolSize(int)}
      *
      * @param poolsize the new poolsize
      * @throws IllegalArgumentException if poolsize is smaller than 0.
@@ -51,7 +56,7 @@ public interface ThreadPoolRepeaterMBean {
     void setDesiredPoolSize(int poolsize);
 
     /**
-     *  see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#getActualPoolSize()}.
+     * See {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#getActualPoolSize()}.
      *
      * @return the actual poolsize.
      */

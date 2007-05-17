@@ -29,6 +29,13 @@ public interface ThreadPoolBlockingExecutorMBean {
 
     /**
      * For more information see
+     * {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor#shutdownNow()}.
+     * The reason that the unexecuted tasks are not returned, it that they don't need to be serializable.
+     */
+    void shutdownNow();
+
+    /**
+     * For more information see
      * {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor#getActualPoolSize()}
      *
      * @return the actual number of threads in the pool.

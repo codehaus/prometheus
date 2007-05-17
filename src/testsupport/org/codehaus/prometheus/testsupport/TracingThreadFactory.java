@@ -81,7 +81,7 @@ public class TracingThreadFactory implements ThreadFactory {
     public void assertThreadsHaveTerminated(){
         //todo: also picks up unstarted ones
         for(Thread thread:threadList){
-            TestCase.assertTrue(!thread.isAlive());
+            TestCase.assertFalse(String.format("Thread '%s' is still alive",thread),thread.isAlive());
         }
     }
 

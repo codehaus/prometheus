@@ -14,7 +14,7 @@ import junit.framework.TestCase;
  *
  * @author Peter Veentjer.
  */
-public class InterruptingAndDetectingRunnable extends TestRunnable {
+public class DetectingAndInterruptingRunnable extends TestRunnable {
 
     private volatile boolean interruptfound = false;
 

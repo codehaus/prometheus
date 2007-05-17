@@ -10,7 +10,6 @@ import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPoolState;
 import org.codehaus.prometheus.threadpool.WorkerJob;
-import org.codehaus.prometheus.util.StandardThreadFactory;
 import org.codehaus.prometheus.util.ConcurrencyUtil;
 
 import static java.lang.String.format;
@@ -46,10 +45,6 @@ import java.util.concurrent.locks.Lock;
  * @author Peter Veentjer.
  */
 public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
-
-    public static ThreadFactory createDefaultThreadFactory() {
-        return new StandardThreadFactory();
-    }
 
     public static ThreadPool createDefaultThreadPool(ThreadFactory threadFactory, int poolsize) {
         return new StandardThreadPool(poolsize, threadFactory);

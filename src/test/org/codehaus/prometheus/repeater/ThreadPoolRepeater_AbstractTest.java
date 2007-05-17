@@ -124,6 +124,16 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         repeater.shutdownNow();
         assertIsShuttingdown();
     }
+
+    public void tested_repeat(Runnable task){
+        tested_repeat((Repeatable)new RepeatableRunnable(task));
+    }
+
+    public void tested_repeat(Repeatable task){
+        RepeatThread repeatThread = scheduleRepeat(task);
+        joinAll(repeatThread);
+    }
+
     public void assertIsUnstarted() {
         assertEquals(RepeaterServiceState.Unstarted, repeater.getState());
     }

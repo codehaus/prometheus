@@ -28,6 +28,14 @@ public class ThreadPoolBlockingExecutorMBeanImpl implements ThreadPoolBlockingEx
         this.executor = executor;
     }
 
+    public ThreadPoolBlockingExecutor getExecutor() {
+        return executor;
+    }
+
+    public void shutdownNow() {
+        executor.shutdownNow();
+    }
+
     public void shutdown() {
         executor.shutdown();
     }

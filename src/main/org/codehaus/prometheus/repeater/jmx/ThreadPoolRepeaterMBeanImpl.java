@@ -38,6 +38,10 @@ public class ThreadPoolRepeaterMBeanImpl implements ThreadPoolRepeaterMBean {
     }
 
     public void shutdown() {
+        repeater.shutdown();
+    }
+
+    public void shutdownNow() {
         repeater.shutdownNow();
     }
 

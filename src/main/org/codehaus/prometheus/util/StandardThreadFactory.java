@@ -26,6 +26,10 @@ public class StandardThreadFactory implements ThreadFactory {
 
     private static final AtomicInteger poolNumber = new AtomicInteger(1);
 
+    private static String createThreadGroupName() {
+        return Integer.toString(poolNumber.getAndIncrement());
+    }
+
     private final ThreadGroup threadGroup;
     private final AtomicInteger _threadNumber = new AtomicInteger(1);
     private final String namePrefix;
@@ -37,11 +41,7 @@ public class StandardThreadFactory implements ThreadFactory {
      * created ThreadGroup.
      */
     public StandardThreadFactory() {
-        this(Thread.NORM_PRIORITY, createName());
-    }
-
-    private static String createName() {
-        return Integer.toString(poolNumber.getAndIncrement());
+        this(Thread.NORM_PRIORITY, createThreadGroupName());
     }
 
     /**
@@ -55,7 +55,7 @@ public class StandardThreadFactory implements ThreadFactory {
     }
 
     public StandardThreadFactory(int priority) {
-        this(priority, createName());
+        this(priority, createThreadGroupName());
     }
 
     /**

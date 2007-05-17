@@ -131,10 +131,6 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         }
     }
 
-    public void keepAllWorkersBusyWithEONTask(){
-        executeEonTask(executor.getDesiredPoolSize());
-    }
-
     public void executeEonTask(int count) {
         for (int k = 0; k < count; k++)
             executeEonTask();
@@ -150,7 +146,6 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         return sleepingRunnable;
     }
 
-
     public TryAwaitShutdownThread scheduleTryAwaitShutdown(long delayMs) {
         TryAwaitShutdownThread t = new TryAwaitShutdownThread(delayMs);
         t.start();
@@ -159,13 +154,6 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
     public TryExecuteThread scheduleTryExecute(Runnable task, long timeoutMs) {
         TryExecuteThread t = new TryExecuteThread(task, timeoutMs);
-        t.start();
-        return t;
-    }
-
-    public TryExecuteThread scheduleDelayedTryExecute(Runnable task, long delayMs, long timeoutMs) {
-        TryExecuteThread t = new TryExecuteThread(task, timeoutMs);
-        t.setDelayMs(delayMs);
         t.start();
         return t;
     }
@@ -240,7 +228,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public class ShutdownNowThread extends TestThread {
-        private List<Runnable> foundTask;
+        private volatile List<Runnable> foundTask;
 
         @Override
         protected void runInternal() throws Exception {

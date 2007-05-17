@@ -9,7 +9,6 @@ import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.DummyRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
 
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -132,7 +131,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
         TryExecuteThread executeThread = scheduleTryExecute(task, DELAY_SMALL_MS);
         joinAll(executeThread);
 
-        executeThread.assertIsTerminatedWithThrowing(RejectedExecutionException.class);
+        executeThread.assertIsRejected();
         assertEquals(oldState, executor.getState());
         task.assertNotExecuted();
     }
