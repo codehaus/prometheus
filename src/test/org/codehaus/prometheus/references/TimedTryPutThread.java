@@ -7,10 +7,9 @@ package org.codehaus.prometheus.references;
 
 import static junit.framework.Assert.assertSame;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.references.LendableReference;
 
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class TimedTryPutThread<E> extends TestThread {
 
@@ -28,10 +27,6 @@ public class TimedTryPutThread<E> extends TestThread {
     @Override
     protected void runInternal() throws InterruptedException, TimeoutException {
         foundRef = lendableRef.tryPut(ref, timeoutMs, TimeUnit.MILLISECONDS);
-    }
-
-    public E getFoundRef() {
-        return foundRef;
     }
 
     public void assertSuccess(E expectedReplacement) {

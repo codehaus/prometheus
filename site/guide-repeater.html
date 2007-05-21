@@ -1,47 +1,42 @@
-<html>
-<body>
-<h1>AwaitableReference</h1>
-The AwaitableReference is a synchronization structure that makes it easy to wait on the availability of
-a reference. I guess this is not something that needs to be done often, but I use this synchronization structure
-within Prometheus.
+<h1>Repeater guide</h1>
 
+<h2>Repeating tasks with the Repeater</h2>
+The Repeater, and the default implementation ThreadPoolRepeater, can be used for the repeated execution
+of a task. The Executor is better suited for executing a task once and altough it can be modified by
+using a work queue that keeps giving out the same task, I don't think it is the right abstraction. 
+
+Example:
 <pre>
-
-</pre>
-
-<h1>LendableReference</h1>
-
-<h1>Latch</h1>
-A Latch is a single shot mechanism (after is has been opened, it never can be closed again) threads can wait on. As
-long as the Latch is closed, threads block (unless they are interrupted or a timeout occurs). As soon as it opens,
-all waiting threads can proceed. After the Latch has been opened, all threads that want to pass the Latch pass it
-without waiting. Latches are very useful for waiting on state changes that are final, like waiting on the shutdown of a
-Repeater.
-
-<h1>Creating threads with the StandardThreadFactory</h1>
-The new concurrency library found in Java 5 and higher (and also in the backport for 1.4) already has a factory
-interface for creating thread. The strange thing is that there is no customizable implementation of that interface.
-That is why I added it to Prometheus: StandardThreadFactory. All kinds of properties can be set, most important ones is
-priorities (make sure that batch threads, have a low priority).
-
-<h1>Repeating tasks with the Repeater</h1>
-The Repeater and especially the ThreadPoolRepeater can be used for repeated execution of a task. The Executor
-(and the ThreadPoolExecutor) are better suited for executing a task once.
-
-How to use it:
-<pre>
-public class SomeRunnable implements Runnable{
-    public void run(){
+public class SomeRepeatable implements Repeatable{
+    public boolean run(){
         System.out.println("Hello");
+        return true;
     }
 }
 
+Repeatable task new RepeatableRunnable(new SomeRunnable();
 ThreadPoolRepeater repeater = new ThreadPoolRepeater(1);
-repeater.repeat(new RepeatableRunnable(new SomeRunnable());
+repeater.repeat(task);
 </pre>
 
+<h2>Repeating a Runnable</h2>
+In some cases it is easier to use a Runnable instead of a Repeatable. That is why an adapter is created:
+the RepeatableRunnable. It can be extended and the Repeatable.run() method needs to be overriden, or
+a Runnable can be injected.
+
+Example:
+<pre>
+Runnable runnable = new SomeRunnable();
+Repeatable task = new RepeatableRunnable(runnable);
+repeater.repeat(task);        
+</pre>
+
+The reason why this adapter is created is because a lot of functionality already is available for
+Runnables, eg the MethodInvokingRunnable from the Spring framework (Spring is my framework of choice).
+
 <h2>Stopping a Repeater</h2>
-A Repeater can be stopped by placing a null task in the repeater, or let the Repeatable return false. A different
+A Repeater can be stopped by placing a null task in the repeater, or let the Repeatable return false (it also
+sets the task to null). A different
 way to stop a Repeater is to shut it down by calling the shutdown method. The difference between the shutdown and
 placing a null task (or let the repeatable return false) is that the first one is final. So once a Repeater has
 shut down, it can't be actived again. In one of the next releases of Prometheus I'm going to add pauzing functionality.
@@ -52,9 +47,10 @@ with a CloseableWaitpoint.
 The ThreadPoolRepeater has a pool of threads where all threads are running the same task concurrently. The poolsize
 can be set in the constructor, but it also can be set after creation. This can be done with the 'setPoolSize' method.
 
-<h3>Using a Repeater to set up a assembly line</h3>
+<h3>Using a Repeater to set up assemblylines</h3>
 Repeaters are very handy if you want to set up a processing assembly line (production line, pipes/filters) for example...
 
+Example:        
 <pre>
 BlockingQueue queue1 = new LinkedBlockingQueue();
 BlockingQueue queue2 = new LinkedBlockingQueue();
@@ -131,7 +127,7 @@ things:
 </ol>
 The problem is that while you have a cpu burst, no io is being performed. And while you are having a cpu burst, no io
 is being performed. The advantage of an assembly lines is that the processes are not synchronous: each process can run
-as fast as it can, so if a process is doing io, others could do cpu. 
+as fast as it can, so if a process is doing io, others could do cpu.
 
 <h2>JMX and Repeaters</h2>
 The ThreadPoolRepeater has a JMX MBean, that makes it possible to control a ThreadPoolRepeater by JMX.
@@ -150,39 +146,21 @@ by using different types of LendableReferences. A StrictLendableReference makes 
 RelaxedLendableReference makes a relaxed Repeater possible.
 
 <h2>Exception handling</h2>
+<p>
 Exception handling often is something that could be improved. Especially when you are working with threads yourself
 and are responsible for the calls in the top of the callstack, good exception handling could be a real life saver.
-At the moment exception handling can be added by using a exception handling repeatable that decorates another
-repeatable:
+The ThreadPoolRepeater uses an ExceptionHandler to report exceptions. After the worker uses the exception handler, it
+returns to the pool so it can be used for the following execution. For the rare situations that the thread needs to
+shutdown after it reports an error, a repeatable decorator could be created that returns false as soon as it throws
+an exception.
+</p>
 
-<pre>
-public class ExceptionHandlingRepeatable implements Repeatable{
-    private final Repeatable;
+<p>
+Standard all exceptions are handled with the PrintStreamExceptionHandler that logs all exceptions to the
+System.out. Next to the this exceptionhandler there also is one for Log4J: Log4jExceptionHandler.
+</p>
 
-    public ExceptionHandlingRepeatable(Repeatable repeatable){
-        this.repeatable = repeatable;
-    }
 
-    public boolean handle(Exception ex){
-        ... do your logic (in most cases just logging)
-        ... and return true if you want to run another time
-        ... and return false if you want this repeatable to stop
-    }
-
-    public boolean execute()throws InterruptedException{
-        try{
-            return repeatable.execute();
-        }catch(InterruptedException ex){
-            //let interrupted exceptions pass 
-            throw ex;
-        }catch(Exception ex){
-            return handle(ex);
-        }
-    }
-}
-</pre>
-A default exception handler will be added in Prometheus in one of the next releases. This is probably going to be
-integrated into the repeater to prevent 
 
 <h3>Future improvements</h3>
 Setting up factory lines always gives me a kick, but I know it can be complex. That is why I'm working on some components
@@ -200,14 +178,3 @@ and hook it up to a Repeater, and even this can be simplified by using some sort
 Another improvement is the introduction of channels (Takeable and Puttable from Doug Lea). BlockingQueue's have too
 many responsibilities: placement of items, taking of items, storage of items. With channels these responsibilities
 are divided.
-
-<h1>Uninterruptible sections</h1>
-
-<h2>Waitpoints</h2>
-
-<h2>Pauzing a ThreadPoolExecutor</h2>
-Waitpoints can be used for all kinds of things like closing/openen structures, throttling.
-Waitpoint is an abstraction for waiting behaviour.
-
-</body>
-</html>

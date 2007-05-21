@@ -10,7 +10,7 @@ package org.codehaus.prometheus.repeater;
  *
  * @author Peter Veentjer.
  */
-public class ThreadPoolRepeater_GetActualPoolSize extends ThreadPoolRepeater_AbstractTest {
+public class ThreadPoolRepeater_GetActualPoolSizeTest extends ThreadPoolRepeater_AbstractTest {
 
     //=========== unstarted =============
 

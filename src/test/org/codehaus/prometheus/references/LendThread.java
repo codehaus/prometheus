@@ -6,10 +6,8 @@
 package org.codehaus.prometheus.references;
 
 import junit.framework.TestCase;
-import org.codehaus.prometheus.util.ConcurrencyUtil;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.references.LendableReference;
-import org.codehaus.prometheus.references.IllegalTakebackException;
+import org.codehaus.prometheus.util.ConcurrencyUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -43,11 +41,6 @@ public class LendThread<E> extends TestThread {
         }catch(IllegalTakebackException e){
             lendState = LendState.incorrectref;
         }
-    }
-
-    public void assertIsWaitingForTake(){
-        assertIsTerminatedWithoutThrowing();
-        TestCase.assertEquals(LendState.waitingfortake,lendState);
     }
 
     public void assertIsIncorrectRef(){

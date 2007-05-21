@@ -1,0 +1,59 @@
+<h1>TestSupport guide</h1>
+Documentation is going to be added before the 0.1 release.
+
+<h2>Test the state a thread is in</h2>
+<p>
+    Explain why the Thread.getState() can't be used (JCiP).
+</p>
+
+<h2>Tests for the termination of a Thread</h2>
+<p>
+    There are various methods that can be used for asserting that the thread is finished:
+</p>
+<ol>
+    <li>assertIsTerminated</li>
+    <li>assertIsTerminatedWithoutThrowing</li>
+    <li>assertIsTerminatedWithException</li>
+    <li>etc</li>
+</ol>
+
+<h2>Test that a Thread is blocking</h2>
+<p>
+    There is no way to detect of a thread is blocking within the JVM. The Thread.getState can't be trusted
+    for providing the actual state the thread is in. The only thing that can be done is to ask the thread
+    if it is still running by calling the assertIsStarted().
+</p>
+
+<h2>Test if exception is thrown</h2>
+<p>
+    If you want to check if a thread has terminated, but no exception was thrown, use the following:
+<pre>
+    TestThread t = ...;
+    t.assertTerminatedWithoutThrowing()
+    </pre>
+
+If you want to check if a specific exception was thrown, you can use the following:
+<pre>
+    TestThread t = ...;
+    t.assertTerminatedWithException(RejectedExecutionException.class)
+    </pre>
+
+If have a reference to the exception, you can also use the following assert statement:
+<pre>
+        Exception ex = ....;
+        TestThread t = ...;
+        t.assertTerminatedWithException()
+    </pre>
+</p>
+
+<h2>Test for interruption</h2>
+<p>
+    You can test if a thread is terminated with an InterruptedException by calling
+    Thread.assertIsInterruptedByException(). If you want to check the the interrupt flag
+    is set, you can call the 
+</p>
+
+<h2>Keeping track of created threads</h2>
+<p>
+    TracingThreadFactory.
+</p>

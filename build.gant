@@ -27,6 +27,8 @@ dir_javadoc_testsupport         = "$dir_javadoc/testsupport"
 dir_unitreports                 = "$dir_target/junit-reports"
 dir_clover                      = "$dir_target/clover"
 
+dir_site                        = "$dir_target/site"
+
 clover_home                     = System.getenv ( ).'CLOVER_HOME'
 
 //================ paths ==================================================
@@ -71,6 +73,9 @@ task ( 'clean' : 'Removes all generated files'){
     Ant.delete(dir : dir_target)
     println( dir_clover )
 }
+
+//================ compile ==================================================
+
 
 task ( compile_main : 'Compiles the main package' ) {
     println('executing compile_main')
@@ -126,17 +131,20 @@ task ( compile_stresstest : 'Compiles the stress tests' ) {
 
 task (compile_all : 'Compiles all sources '){
     println('executing compile_all')
-    depends(compile_main)
-    depends(compile_testsupport)
-    depends(compile_test)
-    depends(compile_stresstest)
+    depends( compile_main )
+    depends( compile_testsupport )
+    depends( compile_test )
+    depends( compile_stresstest )
 }
+
+//================ test ==================================================
+
 
 task(test_main : 'Tests the main package'){
     depends( compile_test )
     println('executing the main tests')
     Ant.mkdir ( dir : dir_unitreports )
-    Ant.junit ( printsummary : 'yes' ) {
+    Ant.junit ( printsummary : 'yes', haltonfailure : 'true') {
         formatter ( type : 'plain' )
         batchtest ( fork : 'yes' , todir : dir_unitreports ) {
             fileset (
@@ -160,9 +168,9 @@ task(test_stress : 'Runs the stress tests'){
     Ant.mkdir ( dir : dir_unitreports )
     Ant.junit ( printsummary : 'yes' ) {
         formatter ( type : 'plain' )
-        batchtest ( fork : 'yes' , dir_todir : unitreports ) {
+        batchtest ( fork : 'yes' , todir : dir_unitreports ) {
             fileset (
-                dir : classes_stresstest , includes : '**/*Test.class', excludes : '**/*AbstractTest.class'
+                dir : dir_classes_stresstest , includes : '**/*Test.class', excludes : '**/*AbstractTest.class'
             )
         }
         classpath {
@@ -170,7 +178,7 @@ task(test_stress : 'Runs the stress tests'){
             path ( refid : 'classpath_support' )
             pathelement ( location : dir_classes_main )
             pathelement ( location : dir_classes_testsupport )
-            pathelement ( location : dir_classes_stress )
+            pathelement ( location : dir_classes_stresstest )
             pathelement ( location : dir_classes_test )
         }
     }
@@ -181,6 +189,8 @@ task( test_all : 'Runs all tests' ){
     depends( test_main )
     depends( test_stress )
 }
+
+//================ jar ==================================================
 
 task( jar_main : 'Creates the jar for the main module' ){
     depends( compile_main )
@@ -204,34 +214,36 @@ task( jar_all : 'Creates all jars' ){
     depends( jar_testsupport )
 }
 
-task( build_dist : 'Builds the complete distribution' ){
-    println( 'Builds the complete distribution' )
-    //todo: failonerror should be true
-    depends( clean )
-    depends( compile_main )
-    depends( test_main )
-    depends( compile_testsupport )
-    depends( test_testsupport )
-    depends( test_stress )
-    depends( javadoc_all )
-    depends( jar_main )
-    depends( jar_testsupport )        
-}
+
+//====================== javadoc ==========================
 
 task( javadoc_main : 'Generates Javadoc for the main module'){
-    println( 'Generates Javadoc for the main module')
+    println( 'Generate Javadoc for the main module')
     depends( compile_main )
 
     Ant.delete( dir : dir_javadoc_main )
     Ant.mkdir( dir : dir_javadoc_main )
-    Ant.javadoc( sourcepath : dir_src_main, destdir : dir_javadoc_main, packagenames : 'org.codehaus.prometheus',
-                 author : 'true', use : 'true', version : 'true', windowtitle : 'Prometheus')
+    Ant.javadoc( sourcepath : dir_src_main, destdir : dir_javadoc_main, packagenames : 'org.codehaus.prometheus.*',
+                 author : 'true', use : 'true', version : 'true', windowtitle : 'Prometheus', 'private' : 'false')
+}
+
+task( javadoc_testsupport : 'Generates Javadoc for the testsupport module'){
+    println( 'Generate Javadoc for the testsupport module')
+    depends( compile_testsupport )
+
+    Ant.delete( dir : dir_javadoc_testsupport )
+    Ant.mkdir( dir : dir_javadoc_testsupport )
+    Ant.javadoc( sourcepath : dir_src_testsupport, destdir : dir_javadoc_testsupport, packagenames : 'org.codehaus.prometheus.*',
+                 author : 'true', use : 'true', version : 'true', windowtitle : 'Prometheus TestSupport', 'private' : 'false')
 }
 
 task( javadoc_all : 'Generates Javadoc for all modules'){
-    println( 'Generates Javadoc for all modules' )
+    println( 'Generate Javadoc for all modules' )
     depends( javadoc_main )
+    depends( javadoc_testsupport )
 }
+
+//====================== clover ==========================
 
 task( clover_activate : 'Activates Clover test coverage'){
     Ant.mkdir( dir : "$dir_clover/db/" )
@@ -253,7 +265,7 @@ task( clover_html : 'Generates a Clover HTML test coverage report'){
     Ant.delete( dir: "$dir_clover/htmlreport/" )
     Ant.mkdir( dir: "$dir_clover/htmlreport/" )
     Ant.'clover-report'(){
-        current( outfile: "$dir_clover/htmlreport/clover_html"){
+        current( outfile: "$dir_clover/htmlreport"){
             format( type: 'html' )
         }
     }
@@ -264,12 +276,57 @@ task( clover_swing : 'Shows a Swing-based Clover test coverage report'){
     Ant.'clover-view'()
 }
 
-task ( clover_report : 'Generates a clover report'){
+task ( clover_report : 'Generates a clover report (also builds and tests)'){
     Ant.delete(dir: dir_classes)
     depends( clover_activate )
     depends( test_main )
-    depends( clover_html)
+    depends( clover_html )
 }
 
+task (site_generate : 'Generates the Prometheus site'){
+    Ant.delete( dir: dir_site )
+    Ant.mkdir( dir: dir_site )
+    Ant.copy( file: 'site/style.css', todir: dir_site)
+    Ant.copy( file: 'site/index.html', todir: dir_site)
+
+    def engine = new GroovyScriptEngine(".")
+    def value = engine.run("menu.groovy", new Binding())
+
+    depends( clover_report )
+    Ant.copy(todir: "$dir_site/clover"){
+        fileset(dir: "$dir_clover/htmlreport")
+    }
+
+    depends( javadoc_main )
+    Ant.copy(todir: "$dir_site/javadoc/main"){
+        fileset(dir: dir_javadoc_main)
+    }
+
+    depends( javadoc_testsupport )
+    Ant.copy(todir: "$dir_site/javadoc/testsupport"){
+        fileset(dir: dir_javadoc_testsupport)
+    }
+}
+
+task (site_update : 'Updates the prometheus website on the internet'){
+    depends( site_generate )
+    Ant.copy(todir: "/mnt/prometheus"){
+        fileset(dir: dir_site)
+    }
+}
 
 //todo: test code moet niet getest worden (alhoewel het wel handig is om dead code terug te vinden)
+
+task( build_dist : 'Builds the complete distribution' ){
+    println( 'Builds the complete distribution' )
+    //todo: failonerror should be true
+    depends( clean )
+    depends( compile_main )
+    depends( test_main )
+    depends( compile_testsupport )
+    depends( test_testsupport )
+    depends( test_stress )
+    depends( javadoc_all )
+    depends( jar_main )
+    depends( jar_testsupport )
+}

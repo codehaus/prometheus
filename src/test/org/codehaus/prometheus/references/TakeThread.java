@@ -5,10 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
-import static junit.framework.TestCase.*;
-import org.codehaus.prometheus.testsupport.BlockingState;
+import static junit.framework.TestCase.assertSame;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.references.LendableReference;
 
 /**
  * The TakeThread is a thread that tries to tryTake an item
@@ -18,49 +16,24 @@ import org.codehaus.prometheus.references.LendableReference;
  */
 public class TakeThread<E> extends TestThread {
 
-    public static <E> TakeThread<E> createStarted(LendableReference<E> lendableRef) {
-        TakeThread<E> taker1 = new TakeThread<E>(lendableRef);
-        taker1.start();
-        return taker1;
-    }
-
     private final LendableReference<E> lendableRef;
-    private volatile BlockingState state;
     private volatile E foundRef;
 
     public TakeThread(LendableReference<E> lendableRef) {
-        if(lendableRef == null)throw new NullPointerException();
         this.lendableRef = lendableRef;
     }
 
     @Override
-    public void runInternal() {
-        state = BlockingState.waiting;
-
-        try{
-            foundRef = lendableRef.take();
-            state = BlockingState.finished;
-        }catch(InterruptedException ex){
-            state = BlockingState.interrupted;
-        }
+    public void runInternal() throws InterruptedException {
+        foundRef = lendableRef.take();
     }
 
     public E getTakenRef() {
         return foundRef;
     }
 
-    public BlockingState getBlockingState(){
-        return state;
-    }
-
-    public void assertInterrupted(){
+    public void assertSuccess(E expected) {
         assertIsTerminatedWithoutThrowing();
-        assertEquals(BlockingState.interrupted,state);
-    }
-
-    public void assertSuccess(E expected){
-        assertIsTerminatedWithoutThrowing();
-        assertEquals(BlockingState.finished,state);
-        assertSame(expected,foundRef);
+        assertSame(expected, foundRef);
     }
 }

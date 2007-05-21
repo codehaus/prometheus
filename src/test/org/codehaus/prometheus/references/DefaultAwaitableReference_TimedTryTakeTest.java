@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Peter Veentjer.
  */
-public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitableReference_AbstractTests{
+public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitableReference_AbstractTest {
 
     @InterruptedTrueFalse
     public void testArguments() throws TimeoutException, InterruptedException {

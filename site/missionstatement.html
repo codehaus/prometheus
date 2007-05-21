@@ -1,18 +1,13 @@
-<html>
-<body>
 <h1>Mission statement</h1>
 <ol>
      <li>
         provide higher order concurrency structures if possible, to prevent using lower order structures like mutexes
-        and semaphores. It doesn't mean these structures are bad, but often a higher abstraction can reduce concurrency
-        control related complexity much better.
+        and semaphores. It doesn't mean these structures are bad, but especially with multi-threaded code, a higher
+        abstraction can reduce concurrency control related complexity much better.
     </li>
     <li>
         promote externalization of threading. Integration of threading in objects makes them hard to test, hard to
         reuse, hard to modify and often the quality is something that can be improved. In most cases it is better to
-        externalize the threading completely or let a few specialized components deal with it.
+        externalize the threading completely and let a few specialized structures deal with it.
     </li>    
 </ol>
-
-</body>
-</html>

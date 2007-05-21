@@ -3,7 +3,7 @@ package org.codehaus.prometheus.references;
 /**
  * Unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#peek()} method.
  */
-public class DefaultAwaitableReference_PeekTest extends DefaultAwaitableReference_AbstractTests{
+public class DefaultAwaitableReference_PeekTest extends DefaultAwaitableReference_AbstractTest {
 
     public void test(){
         awaitableRef = new DefaultAwaitableReference<Integer>();

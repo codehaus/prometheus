@@ -297,25 +297,6 @@ public class StandardThreadPool implements ThreadPool {
         shutdownLatch.tryAwait(timeout, unit);
     }
 
-    public void pauze() {
-        mainLock.lock();
-        try {
-            switch (state) {
-                case unstarted:
-                    throw new RuntimeException("not implemented");
-                case started:
-                    throw new RuntimeException("not implemented");
-                case shuttingdown:
-                case shutdown:
-                    throw new IllegalStateException("");
-                default:
-                    throw new RuntimeException("unhandled state:" + state);
-            }
-        } finally {
-            mainLock.unlock();
-        }
-    }
-
     public ThreadFactory getThreadFactory() {
         return threadFactory;
     }

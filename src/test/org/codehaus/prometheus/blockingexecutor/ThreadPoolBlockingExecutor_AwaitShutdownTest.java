@@ -95,7 +95,7 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
         Thread shutdownThread = scheduleShutdown();
 
         //wait for the shutdown to complete and make sure that the waiters have completed
-        joinAll(shutdownThread,waiter1Thread,waiter2Thread);
+        joinAll(shutdownThread, waiter1Thread, waiter2Thread);
         waiter1Thread.assertIsTerminatedWithoutThrowing();
         waiter2Thread.assertIsTerminatedWithoutThrowing();
         assertIsShutdown();
@@ -104,19 +104,18 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
     public void testInterruptedWhileWaiting() {
         newShuttingDownBlockingExecutor(DELAY_EON_MS);
 
+        //make sure that all waiters are waiting
         AwaitShutdownThread waiter1Thread = scheduleAwaitShutdown();
         AwaitShutdownThread waiter2Thread = scheduleAwaitShutdown();
-
-        //make sure that all waiters are waiting
         giveOthersAChance();
         waiter1Thread.assertIsStarted();
         waiter2Thread.assertIsStarted();
 
         //interrupt waiter1 and make sure that it is terminated and waiter2 is still waiting
         waiter1Thread.interrupt();
-        giveOthersAChance();
+        giveOthersAChance(DELAY_MEDIUM_MS);        
         waiter1Thread.assertIsInterruptedByException();
-        waiter2Thread.assertIsStarted();                
+        waiter2Thread.assertIsStarted();
     }
 
     private void shutdown() {

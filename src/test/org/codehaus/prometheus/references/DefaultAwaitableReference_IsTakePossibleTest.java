@@ -5,7 +5,7 @@ package org.codehaus.prometheus.references;
  *
  * @author Peter Veentjer.
  */
-public class DefaultAwaitableReference_IsTakePossibleTest extends DefaultAwaitableReference_AbstractTests {
+public class DefaultAwaitableReference_IsTakePossibleTest extends DefaultAwaitableReference_AbstractTest {
 
     public void testItemAvailable() {
         Integer ref = 10;

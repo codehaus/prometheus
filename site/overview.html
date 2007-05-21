@@ -1,0 +1,167 @@
+<h2>Overview</h2>
+
+<p>
+    Prometheus is a concurrency library for Java 5 and higher and will be released under the
+    MIT license. The main goal of the project is to provide higher level concurrency control abstractions to
+    reduce concurrency control related complexity. Prometheus relies on the java.util.concurrent library
+    that is introduced in Java 5 and tries to make use of this package where possible.
+</p>
+
+<h3>First release</h3>
+<p>
+    No release is made yet, but an initial release can be expected in 1 or 2 months. At the moment
+    I'm working on finishing the first release, but there are some aspects that need to improved: documentation,
+    testing (especially stress-tests/long running tests to detect race problems, liveness problems and performance
+    problems). So if you
+    are interrested in the project regularly check this site, or watch my <a
+        href="http://pveentjer.wordpress.com">blog</a>
+
+    (a news rss feed will be added in the near future).
+<p/>
+<p>
+    The following features are planned for the first release:
+</p>
+
+<ul>
+    <li>
+        <b>AwaitableReference</b>: a synchronization abstraction that makes
+        it easy to pass references from one thread to another or block if no
+        reference is available.
+    </li>
+    <li>
+        <b>LendableReference</b>: a synchronization abstraction that extends
+        the AwaitableReference and adds the concept of taking back items.
+        This provides a way to control which references are lend: if a LendableReference
+        is strict, it doesn't allow different references to be lend at any given moment. If
+        a new reference is set, the call blocks until all lend references are returned. The
+        opposite of the strict version is the relaxed LendableReference: it doesn't care
+        if different references are lend at any given moment, so placing a new item
+        can be done without long blocking.
+    </li>
+
+    <li>
+        <b>Repeater</b>: a threadpool structure that is responsible for
+        repeating tasks. An <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/Executor.html">Executor</a>
+        is great for executing a task once, but a Repeater provides a better abstraction for repeatedly executing tasks.
+    </li>
+    <li>
+        <b>BlockingExecutor</b>: a threadpool structure like the
+        <a href="http://java.sun.com/j2se/1.6.0/docs/api/java/util/concurrent/Executor.html">Executor</a>
+
+        but provides more control on blocking and timeout behaviour.
+    </li>
+    <li>
+        <b>ConditionUtil &amp; LockUtil</b>: contain various functions for
+        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/locks/Lock.html">Lock</a>
+
+        and <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/locks/Condition.html">Condition</a>
+        instances.
+    </li>
+    <li>
+        <b>UninterruptibleSection</b>: provides a way to do interruptible
+        calls in locations where you can't deal with interrupts.
+    </li>
+
+    <li>
+        <b>Latch</b>: a synchronization abstraction that provides a single
+        shot waiting mechanism. It can be used to wait for a final state change to
+        occur, like the complete shutdown of a Repeater for example.
+    </li>
+    <li>
+        <b>JMX</b>: MBeans for various structures so they can be controlled
+        in a serverside environment.
+    </li>
+    <li>
+        <b>Test support</b>: a set of classes/interfaces and utilities to
+        test multi-threaded code.
+    </li>
+
+</ul>
+
+<h3>Future features</h3>
+
+<p>
+    A lot of functionality has been removed from the first version, to prevent
+    delaying an initial release indefinitely, and moved to a later version. But a lot of nice
+    features (the best ones imho) are planned:
+</p>
+<ul>
+    <li>
+        <b>Channels</b>: a data exchange abstraction. A <a
+            href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/BlockingQueue.html">BlockingQueue</a>
+        can be quite troublesome when you are working with producer/consumer
+        solutions because they have many responsibilities:
+        <ol>
+            <li>placement of items (put/offer methods)</li>
+            <li>storage of items (it extends the <a
+                    href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html">Collection</a> interface)
+            </li>
+
+            <li>retrieval of items (take, poll methods)</li>
+        </ol>
+        That makes BlockingQueues hard to customize (like routing, filtering and multicasting)
+        and that is why these aspects are seperated with Channels:
+        <ol>
+            <li>the OutputChannel is responsible for placement of items</li>
+            <li>the InputChannel is responsible for retrieval of items</li>
+        </ol>
+        In most cases these are the only aspects you are interrested in. With channels you can create very complex
+        systems and customizable systems without integrating this complexity into components. JMS also is a data
+        exchange abstraction, but it is meant for inter virtual machine communication and not intra virtual machine
+        communication and this makes it a less atrictive if you just need to exchange data between threads. The
+        original concurrency library Doug Lea created, contained a similar structure:
+        <a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/Takable.java">Takable</a> and
+        <a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/Puttable.java">Puttable</a> but
+        unfortunately they were integrated into the BlockingQueue.
+    </li>
+
+    <li>
+        <b>Processes &amp; Processors</b>: provide a 'framework' for setting up assembly lines ('pipes
+        and filters'). And can be used to set up applications that need to process large amounts of data
+        like batch applications. The main goal is to seperate 2 aspects:
+        <ol>
+            <li>the actual processing of messages (in most cases some form of transformation)</li>
+            <li>connecting and running processes (synchronous or asynchronous)</li>
+        </ol>
+        Often these 2 aspects are integrated and form a monolithic piece of code
+        that prevents asynchronous execution of processes which in turn prevents all kinds
+        of techniques from being used; for example multi-threading. By seperating these aspects, one
+        can wire up the same processes in a different manner and this makes a system
+        much more flexible.
+    </li>
+    <li>
+        <b>Waitpoint</b>: an abstraction for blocking behaviour. By injecting
+        different waitpoints one is able to customize the blocking behaviour of
+        various components. One of the usages would be a BlockingQueue that
+        is able to throttle the intake of items, or is able to pauze the taking
+        of items. This could be used to make an Executor pause for example.
+    </li>
+    <li>
+        <b>Waitsections</b>: extend the concept of Waitpoints. Waitpoints don't have any with, you either
+        in front of a waitpoint, or you have passed it. With a Waitsection there is a period a thread is
+        inside the waitpoint.
+    </li>
+    <li>
+        <b>Deadlock save calls</b>: writing deadlock free code can be very complicated (almost impossible)
+        but deadlocks can be prevented. Deadlock detection is not obligated by the JVM, but another solution
+        is to limit the amount of time for waiting on a resource (like a Lock). But adding timeouts to calls
+        can be quite cumbersome: you don't want to administrate the timeout with every call. That is why I'm
+        going to introduce 'save' calls: call that use a timeout but don't require you to deal with the administration.
+        A threadlocal is used to store the timeout, this value can be set at the beginning of the callstack, and
+        will decrease each time some sort of locking occurs.
+    </li>
+</ul>
+
+<h3>Recommended literature</h3>
+<p>
+
+    Concurrency control is a very complex subject and good preparation is advisible. And although this library
+    tries to reduce complexity, I think it is important that you know what you are doing. Two Java books that
+    really helped me a lot are the following classics:
+</p>
+<ol>
+    <li><a href="http://www.amazon.com/Concurrent-Programming-Java-Principles-Addison-Wesley/dp/0321256174">Concurrent
+        Programming in Java</a></li>
+    <li><a href="http://www.amazon.com/Java-Concurrency-Practice-Brian-Goetz/dp/0321349601">Java Concurrency in
+        Practice</a></li>
+</ol>

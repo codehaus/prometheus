@@ -93,40 +93,64 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
         assertShutdownNowNotifiesWaiters();
     }
 
-    //todo:
-    public void testShuttingDown() {
-    }
-
-
-    public void testShutdown_startInterrupted(){
-        testShutdown(START_INTERRUPTED);
-    }
-
-    public void testShutdown_startUninterrupted(){
-        testShutdown(START_UNINTERRUPTED);
-    }
-
-    public void testShutdown(boolean startInterrupted){
-        newShutdownBlockingExecutor(1, 1);
-
-        TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(0);
-        joinAll(awaitThread);
-
-        awaitThread.assertSuccess();
-        awaitThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
-        assertIsShutdown();
-    }
-
     public void testInterruptedWhileWaiting() {
         newStartedBlockingExecutor();
-
+     
         TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(DELAY_EON_MS);
         giveOthersAChance();
+        assertIsRunning();
         awaitThread.assertIsStarted();
 
         awaitThread.interrupt();
         giveOthersAChance();
         awaitThread.assertIsInterruptedByException();
+        assertIsRunning();
+    }
+
+    //================ shutting down ============================
+
+    public void testShuttingDown_startInterrupted() {
+        newShuttingDownBlockingExecutor(DELAY_LONG_MS);
+
+        TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(DELAY_EON_MS, START_INTERRUPTED);
+        giveOthersAChance();
+        awaitThread.assertIsInterruptedByException();
+        assertIsShuttingDown();
+    }
+
+    public void testShuttingDown_startUninterrupted() {
+        newShuttingDownBlockingExecutor(DELAY_LONG_MS);
+
+        TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(DELAY_EON_MS, START_UNINTERRUPTED);
+        giveOthersAChance();
+        awaitThread.assertIsStarted();
+        assertIsShuttingDown();
+
+        joinAll(awaitThread);
+        awaitThread.assertSuccess();
+        awaitThread.assertIsTerminatedWithInterruptStatus(false);
+        assertIsShutdown();
+    }
+
+    //================ shutdown  ==================================
+
+    public void testShutdown_startInterrupted() {
+        testShutdown(START_INTERRUPTED);
+    }
+
+    public void testShutdown_startUninterrupted() {
+        testShutdown(START_UNINTERRUPTED);
+    }
+
+    public void testShutdown(boolean startInterrupted) {
+        newShutdownBlockingExecutor(1, 1);
+
+        TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(0, startInterrupted);
+        joinAll(awaitThread);
+
+        awaitThread.assertSuccess();
+        awaitThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        assertIsShutdown();
     }
 }
 

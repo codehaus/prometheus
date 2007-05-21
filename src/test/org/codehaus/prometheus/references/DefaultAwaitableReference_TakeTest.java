@@ -10,7 +10,7 @@ package org.codehaus.prometheus.references;
  *
  * @author Peter Veentjer.
  */
-public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReference_AbstractTests{
+public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReference_AbstractTest {
 
     public void testWaitingTillEndOfTime() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
@@ -78,20 +78,17 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
     public void testSomeWaitingNeeded_startUninterrupted() throws InterruptedException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
-        Integer newRef = 10;
+        //do takes and make sure that they are waiting        
         TakeThread takeThread1 = scheduleTake(START_UNINTERRUPTED);
         TakeThread takeThread2 = scheduleTake(START_UNINTERRUPTED);
-
-        //check that the takers are waiting
         giveOthersAChance();
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();
 
-        //do a put and
-        PutThread putThread = schedulePut(newRef);
+        //do a put and check that the takes completed
+        Integer newRef = 10;
         tested_put(newRef,null);
-
-        joinAll(putThread, takeThread1, takeThread2);
+        joinAll(takeThread1, takeThread2);
         takeThread1.assertSuccess(newRef);
         takeThread2.assertSuccess(newRef);
         assertHasReference(newRef);

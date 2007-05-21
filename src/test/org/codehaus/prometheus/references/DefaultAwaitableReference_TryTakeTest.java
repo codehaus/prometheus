@@ -10,14 +10,14 @@ package org.codehaus.prometheus.references;
  *
  * @author Peter Veentjer.
  */
-public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableReference_AbstractTests {
+public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableReference_AbstractTest {
 
     public void testReferenceAvailable_startInterrupted(){
-        testReferenceAvailable(true);
+        testReferenceAvailable(START_INTERRUPTED);
     }
 
     public void testReferenceAvailable_startUninterrupted(){
-        testReferenceAvailable(false);
+        testReferenceAvailable(START_UNINTERRUPTED);
     }
 
     public void testReferenceAvailable(boolean startInterrupted){
@@ -34,18 +34,18 @@ public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableRefer
     //=======================================================
 
     public void testNoReferenceAvailable_startInterrupted(){
-        testReferenceAvailable(true);
+        testNoReferenceAvailable(START_INTERRUPTED);
     }
 
     public void testNoReferenceAvailable_startUninterrupted(){
-        testReferenceAvailable(false);
+        testNoReferenceAvailable(START_UNINTERRUPTED);
     }
 
     public void testNoReferenceAvailable(boolean startInterrupted){
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
         //do a trytake and make sure it completes without a reference
-        TryTakeThread t = scheduleTryTake();
+        TryTakeThread t = scheduleTryTake(startInterrupted);
         joinAll(t);
         t.assertSuccess(null);
         t.assertIsTerminatedWithInterruptStatus(startInterrupted);

@@ -25,15 +25,15 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
     public void tearDown() throws Exception {
         super.tearDown();
-        
-        if (executor != null){
+
+        if (executor != null) {
             ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
             joinAll(shutdownNowThread);
             shutdownNowThread.assertIsTerminatedWithoutThrowing();
 
             AwaitShutdownThread awaitThread = scheduleAwaitShutdown();
             joinAll(awaitThread);
-            awaitThread.assertIsTerminatedWithoutThrowing();            
+            awaitThread.assertIsTerminatedWithoutThrowing();
 
             assertIsShutdown();
         }
@@ -53,7 +53,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public void newStartedBlockingExecutor() {
-        newShutdownBlockingExecutor(1, 1);
+        newStartedBlockingExecutor(1,0);
     }
 
     public void newStartedBlockingExecutor(int queuesize, int poolsize, Runnable initialTask) {
@@ -109,9 +109,9 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         assertEquals(BlockingExecutorServiceState.Shutdown, executor.getState());
 
         //it could be that no reference to the threadfactory was assigned
-        if(threadFactory!=null)
+        if (threadFactory != null)
             threadFactory.assertThreadsHaveTerminated();
-        
+
         assertActualPoolSize(0);
         assertWorkQueueIsEmpty();
     }
@@ -146,8 +146,15 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         return sleepingRunnable;
     }
 
-    public TryAwaitShutdownThread scheduleTryAwaitShutdown(long delayMs) {
-        TryAwaitShutdownThread t = new TryAwaitShutdownThread(delayMs);
+    public TryAwaitShutdownThread scheduleTryAwaitShutdown(long timeoutMs) {
+        TryAwaitShutdownThread t = new TryAwaitShutdownThread(timeoutMs);
+        t.start();
+        return t;
+    }
+
+    public TryAwaitShutdownThread scheduleTryAwaitShutdown(long timeoutMs, boolean startInterrupted) {
+        TryAwaitShutdownThread t = new TryAwaitShutdownThread(timeoutMs);
+        t.setStartInterrupted(startInterrupted);
         t.start();
         return t;
     }

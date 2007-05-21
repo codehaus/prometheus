@@ -60,7 +60,7 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         //do a take with interruptstatus, and check that the call is interrupted
         TakeThread<Integer> takeThread1 = scheduleTake(START_INTERRUPTED);
         joinAll(takeThread1);
-        takeThread1.assertInterrupted();
+        takeThread1.assertIsInterruptedByException();
         assertLendCount(0);
         assertHasRef(ref);
     }
@@ -76,14 +76,16 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         //interrupt the take
         takeThread.interrupt();
         joinAll(takeThread);
-        takeThread.assertInterrupted();
+        takeThread.assertIsInterruptedByException();
         assertHasRef(null);
-        assertPutIsPossible(1);
+        assertPutIsPossible(1,null);
         assertLendCount(0);
     }
 
-    private void assertPutIsPossible(Integer i) {
-        //todo
+    private void assertPutIsPossible(Integer newRef, Integer oldRef) {
+        TimedTryPutThread timedTryPutThread = scheduleTimedTryPut(newRef,0);
+        joinAll(timedTryPutThread);
+        timedTryPutThread.assertSuccess(oldRef);
     }
 
     public void testWaitingTillEndOfTime() {
@@ -169,8 +171,10 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         takeThread2.assertIsStarted();
 
         //do a spurious wakeup and see that nothing has changed
-        Thread spuriousThread = scheduleDelayedSpuriousWakeups();
+        TestThread spuriousThread = scheduleSpuriousWakeups();
         joinAll(spuriousThread);
+        spuriousThread.assertIsTerminatedWithoutThrowing();
+
         giveOthersAChance();
         takeThread1.assertIsStarted();
         takeThread2.assertIsStarted();

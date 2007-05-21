@@ -38,13 +38,14 @@ public class Log4JExceptionHandler implements ExceptionHandler {
     }
 
     public void setPriority(Priority priority) {
-        if(priority == null)throw new NullPointerException();
+        if (priority == null) throw new NullPointerException();
         this.priority = priority;
     }
 
     public void handle(Exception ex) {
         if (!logger.isEnabledFor(priority))
             return;
+
         logger.log(priority, ex.getMessage(), ex);
     }
 }

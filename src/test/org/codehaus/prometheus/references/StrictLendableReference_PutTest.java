@@ -5,8 +5,7 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.StrictLendableReference;
-import org.codehaus.prometheus.references.TakeThread;
+import org.codehaus.prometheus.testsupport.TestThread;
 
 /**
  * Unittests the {@link StrictLendableReference#put(Object)} method. 
@@ -135,10 +134,11 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         giveOthersAChance();
         putThread.assertIsStarted();
 
-        //do a spurious wakeup and make sure that the put is still waiting
-        Thread spurious = scheduleSpuriousWakeups();
+        //do a spuriousThread wakeup and make sure that the put is still waiting
+        TestThread spuriousThread = scheduleSpuriousWakeups();
+        joinAll(spuriousThread);
+        spuriousThread.assertIsTerminatedWithoutThrowing();
 
-        joinAll(spurious);
         giveOthersAChance();
         putThread.assertIsStarted();
         assertHasRef(takenref);

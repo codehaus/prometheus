@@ -19,7 +19,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Peter Veentjer.
  */
-public abstract class DefaultAwaitableReference_AbstractTests extends ConcurrentTestCase {
+public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentTestCase {
 
     public volatile DefaultAwaitableReference<Integer> awaitableRef;
 
@@ -83,12 +83,6 @@ public abstract class DefaultAwaitableReference_AbstractTests extends Concurrent
         return t;
     }
 
-    public TryTakeThread scheduleTryTake() {
-        TryTakeThread t = new TryTakeThread();
-        t.start();
-        return t;
-    }
-
     public TryTakeThread scheduleTryTake(boolean startInterrupted) {
         TryTakeThread t = new TryTakeThread();
         t.setStartInterrupted(startInterrupted);
@@ -101,14 +95,6 @@ public abstract class DefaultAwaitableReference_AbstractTests extends Concurrent
         joinAll(putter);
         putter.assertSuccess(expectedReturnedRef);
     }
-
-    public void tested_put(Integer newRef, Integer expectedReturnedRef, boolean startInterrupted) {
-        PutThread putter = schedulePut(newRef, startInterrupted);
-        joinAll(putter);
-        putter.assertSuccess(expectedReturnedRef);
-        putter.assertIsTerminatedWithInterruptStatus(startInterrupted);
-    }
-
 
     public void tested_take(Integer expectedTakenRef) {
         TakeThread taker = scheduleTake();

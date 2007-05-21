@@ -122,13 +122,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         return t;
     }
 
-    public Thread scheduleSpuriousWakeups() {
-        SpuriousWakeupsThread t = new SpuriousWakeupsThread();
-        t.start();
-        return t;
-    }
-
-    public SpuriousWakeupsThread scheduleDelayedSpuriousWakeups() {
+    public SpuriousWakeupsThread scheduleSpuriousWakeups() {
         SpuriousWakeupsThread t = new SpuriousWakeupsThread();
         t.start();
         return t;
@@ -149,17 +143,15 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
 
     public class SpuriousWakeupsThread extends TestThread {
 
-        public SpuriousWakeupsThread() {
-        }
-
-        public SpuriousWakeupsThread(long delay, TimeUnit unit) {
-            setDelay(delay, unit);
-        }
-
         @Override
         public void runInternal() {
-            lendableRef.getNoTakersCondition().signalAll();
-            lendableRef.getRefAvailableCondition().signalAll();
+            lendableRef.getMainLock().lock();
+            try {
+                lendableRef.getNoTakersCondition().signalAll();
+                lendableRef.getRefAvailableCondition().signalAll();
+            } finally {
+                lendableRef.getMainLock().unlock();
+            }
         }
     }
 

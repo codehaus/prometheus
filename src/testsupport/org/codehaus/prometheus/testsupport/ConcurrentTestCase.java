@@ -8,7 +8,6 @@ package org.codehaus.prometheus.testsupport;
 import junit.framework.TestCase;
 
 import java.util.concurrent.TimeUnit;
-import java.util.*;
 
 /**
  * A TestCase that contains various concurrency related functions.
@@ -28,22 +27,11 @@ public abstract class ConcurrentTestCase extends TestCase {
 
     public volatile Stopwatch stopwatch;
 
-    //in witch state are threads when they shut down? In some cases they are in blocking mode
-    //and there is maybe no 'reason' to bring them out that state. So a thread is allowed to
-    //be in the blocking mode, this is not erronous. so when to complain (assertion failure)
-    //when to teardown this test.
-    public final Set<Thread> threadList = Collections.synchronizedSet(new HashSet<Thread>());
-
     public ConcurrentTestCase() {
     }
 
     public ConcurrentTestCase(String fixture) {
         super(fixture);
-    }
-
-    public void registerThread(Thread t) {
-        if (t == null) throw new NullPointerException();
-        threadList.add(t);
     }
 
     public void giveOthersAChance() {
@@ -58,11 +46,6 @@ public abstract class ConcurrentTestCase extends TestCase {
     @Override
     public void setUp() throws Exception {
         stopwatch = new Stopwatch();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        threadList.clear();
     }
 
     /**
@@ -95,27 +78,6 @@ public abstract class ConcurrentTestCase extends TestCase {
                 fail(String.format("join on thread #%s was interrupted", k));
             }
         }
-    }
-
-    /**
-     * @param delay
-     * @param unit
-     * @param threads
-     */
-    public void joinAllAndSleep(long delay, TimeUnit unit, Thread... threads) {
-        joinAll(threads);
-        sleep(delay, unit);
-    }
-
-    /**
-     * Joins on all threads and sleeps for a cetain amount of time. For more
-     * information see {@link #joinAll(Thread[])} and {@link #sleepMs(long)}
-     *
-     * @param delayMs the number of milliseconds to giveOthersAChance.
-     * @param threads the threads to join on.
-     */
-    public void joinAllAndSleepMs(long delayMs, Thread... threads) {
-        joinAllAndSleep(delayMs, TimeUnit.MILLISECONDS, threads);
     }
 
     /**

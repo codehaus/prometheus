@@ -10,7 +10,7 @@ package org.codehaus.prometheus.references;
  *
  * @author Peter Veentjer.
  */
-public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference_AbstractTests {
+public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference_AbstractTest {
 
     //========= no takers =============
 

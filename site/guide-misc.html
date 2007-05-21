@@ -1,0 +1,81 @@
+<h1>Miscelanious guide</h1>
+<p>
+    This guide describes various other concurrency structures that can be found in the Prometheus library.
+</p>
+
+<h2>Latch</h2>
+<p>
+    A Latch is a single shot mechanism (after is has been opened, it never can be closed again) threads can wait on. As
+    long as the Latch is closed, threads block (unless they are interrupted or a timeout occurs). As soon as it opens,
+    all waiting threads can proceed. After the Latch has been opened, all threads that want to pass the Latch pass it
+    without waiting. Latches are very useful for waiting on state changes that are final, like waiting on the shutdown
+    of a
+    Repeater.
+</p>
+
+<pre>
+    final Latch latch = new Latch();
+
+    void foo(){
+        Thread t1 = new WaitingThread();
+        t1.start();
+        Thread t2 = new WaitingThread();
+        t2.start();
+
+        latch.open();
+        ..
+    }
+
+    class WaitingThread extends Thread{
+        public void run(){
+            try{
+                latch.await();
+            }catch(InterruptedException ex){
+                //ignore
+            }
+        }
+    }
+</pre>
+
+<h2>Creating threads with the StandardThreadFactory</h2>
+<p>
+    The new concurrency library found in Java 5 and higher already has a factory interface for creating thread.
+    The strange thing is that there is no customizable implementation of that interface. That is why I added it
+    to Prometheus: StandardThreadFactory. All kinds of properties can be set, most important ones is priorities
+    (make sure that batch threads, have a low priority).
+</p>
+
+<h2>UninterruptibleSection</h2>
+<p>
+    In some cases you can't/won't deal with a call that can be interrupted by an InterruptedException. For these
+    situations I have made a structure: the UninterruptibleSection.
+</p>
+<pre>
+    final Latch latch = new Latch();
+
+    void waitUninterruptibly(){
+        new UninterruptibleSection(){
+            Object originalsection()throws InterruptedException{
+                latch.await();
+                return null;
+            }
+        }.execute();
+    }
+</pre>
+<p>
+    There also is an uninterruptible section that uses a timeout:
+</p>
+<pre>
+    void tryAwaitUninterruptibly(long timeout, TimeUnit unit){
+        new TimedUninterruptibleSection(){
+            Object originalSection(long timeoutNs)throws InterruptedException, TimeoutException{
+                latch.tryAwait(timeoutNs, TimeUnit.NANOS);
+                return null;
+            }
+        }.execute(timeout,unit);
+    }
+</pre>
+<p>
+    It keeps repeating the original section until a timeout occurrs, or when the section returns or receives
+    a timeout.
+</p>

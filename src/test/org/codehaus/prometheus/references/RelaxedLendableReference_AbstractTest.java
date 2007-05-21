@@ -18,12 +18,6 @@ public abstract class RelaxedLendableReference_AbstractTest<E> extends Concurren
         assertEquals(lendableRef.peek(),ref);
     }
 
-    public PutThread schedulePut(E ref){
-        PutThread putThread = new PutThread(lendableRef,ref);
-        putThread.start();
-        return putThread;
-    }
-
     public TakeThread scheduleTake(){
         TakeThread t = new TakeThread(lendableRef);
         t.start();
@@ -32,12 +26,6 @@ public abstract class RelaxedLendableReference_AbstractTest<E> extends Concurren
 
     public TakeBackThread scheduleTakeBack(E ref){
         TakeBackThread t = new TakeBackThread(lendableRef,ref);
-        t.start();
-        return t;
-    }
-
-    public TimedTryPutThread scheduleTryPut(E ref, long timeoutMs){
-        TimedTryPutThread t = new TimedTryPutThread(lendableRef,ref,timeoutMs);
         t.start();
         return t;
     }

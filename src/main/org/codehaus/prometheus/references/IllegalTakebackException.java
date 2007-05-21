@@ -13,8 +13,6 @@ package org.codehaus.prometheus.references;
  */
 public class IllegalTakebackException extends RuntimeException{
 
-    public IllegalTakebackException(){}
-
     public IllegalTakebackException(String msg){
         super(msg);
     }

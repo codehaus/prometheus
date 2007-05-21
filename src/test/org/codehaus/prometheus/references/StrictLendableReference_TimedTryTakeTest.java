@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
+import org.codehaus.prometheus.testsupport.TestThread;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -112,8 +114,9 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
         assertLendCount(0);
 
         //do spurious wakeup
-        Thread spuriousThread = scheduleSpuriousWakeups();
+        TestThread spuriousThread = scheduleSpuriousWakeups();
         joinAll(spuriousThread);
+        spuriousThread.assertIsTerminatedWithoutThrowing();
 
         //make sure that the tryTake is waiting.
         giveOthersAChance();

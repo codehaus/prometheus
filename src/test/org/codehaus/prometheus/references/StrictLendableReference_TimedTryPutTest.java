@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
+import org.codehaus.prometheus.testsupport.TestThread;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -14,7 +16,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Peter Veentjer.
  */
-public class StrictLendableReference_TimedTryPut extends StrictLendableReference_AbstractTest<Integer> {
+public class StrictLendableReference_TimedTryPutTest extends StrictLendableReference_AbstractTest<Integer> {
 
     public void testArguments() throws TimeoutException, InterruptedException {
         try {
@@ -136,8 +138,9 @@ public class StrictLendableReference_TimedTryPut extends StrictLendableReference
         tryPutThread.assertIsStarted();
 
         //do some spurious wakeups.
-        Thread spuriousThread = scheduleSpuriousWakeups();
+        TestThread spuriousThread = scheduleSpuriousWakeups();
         joinAll(spuriousThread);
+        spuriousThread.assertIsTerminatedWithoutThrowing();
 
         //make sure it is still waiting
         giveOthersAChance();

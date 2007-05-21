@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Peter Veentjer.
  */
-public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableReference_AbstractTests {
+public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableReference_AbstractTest {
 
     @InterruptedTrueFalse
     public void testArguments() throws TimeoutException, InterruptedException {
@@ -48,9 +48,12 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
         Integer newRef = 20;
 
-        tested_put(newRef, oldRef);
+        PutThread putter = schedulePut(newRef,START_INTERRUPTED);
+        joinAll(putter);
+        putter.assertSuccess(oldRef);
 
         assertHasReference(newRef);
+        putter.assertIsTerminatedWithInterruptStatus(true);
     }
 
     @InterruptedFalse
