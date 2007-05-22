@@ -88,7 +88,7 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
     private ShutdownThread shutdown() {
         ShutdownThread shutdownThread = scheduleShutdown();
         joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
+        shutdownThread.assertIsTerminatedNormally();
         return shutdownThread;
     }
 }

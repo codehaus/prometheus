@@ -7,7 +7,6 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.DetectingAndInterruptingRunnable;
-import org.codehaus.prometheus.testsupport.ThrowingRunnable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -88,29 +87,7 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
 */
     //=============== testRunningTaskCausesRuntimeException =============================
 
-    //with a strict repeater
-    public void testRunningTaskCausesRuntimeException_strict() throws InterruptedException {
-        testRunningTaskCausesRuntimeException(true);
-    }
-
-    //with a relaxed repeater
-    public void testRunningTaskCausesRuntimeException_relaxed() throws InterruptedException {
-        testRunningTaskCausesRuntimeException(false);
-    }
-
-    public void testRunningTaskCausesRuntimeException(boolean strict) throws InterruptedException {
-        newRunningRepeater(strict,1);
-
-        ThrowingRunnable task = new ThrowingRunnable();
-        Repeatable repeatable = new RepeatableRunnable(task);
-        tested_repeat(repeatable);
-
-        giveOthersAChance();
-        task.assertExecutedOnceOrMore();
-        assertHasRepeatable(repeatable);
-        assertIsRunning();
-    }
-
+ 
     //============ unsetofinterruptstatus ======================================
 
     //with a strict repeater

@@ -30,6 +30,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         joinAll(putThread);
         putThread.assertIsInterruptedByException();
         assertHasRef(oldRef);
+        assertLendCount(0);
     }
 
     //==========================================================
@@ -52,11 +53,11 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         //putUninterruptibly new value and make sure that the takers have
         //taken the expected value.
         Integer newRef = 1;
-        PutThread putThread = schedulePut(newRef);
-        joinAll(putThread, takeThread1, takeThread2);
+        tested_put(newRef,null);
+        joinAll(takeThread1, takeThread2);
+
         takeThread1.assertSuccess(newRef);
         takeThread2.assertSuccess(newRef);
-        putThread.assertSuccess(null);
         assertHasRef(newRef);
     }
  
@@ -64,10 +65,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         lendableRef = new StrictLendableReference<Integer>();
         Integer ref = 10;
 
-        PutThread<Integer> putThread = schedulePut(ref);
-        joinAll(putThread);
-        putThread.assertSuccess(null);
-
+        tested_put(ref,null);
         assertHasRef(ref);
     }
 
@@ -137,7 +135,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         //do a spuriousThread wakeup and make sure that the put is still waiting
         TestThread spuriousThread = scheduleSpuriousWakeups();
         joinAll(spuriousThread);
-        spuriousThread.assertIsTerminatedWithoutThrowing();
+        spuriousThread.assertIsTerminatedNormally();
 
         giveOthersAChance();
         putThread.assertIsStarted();

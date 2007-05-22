@@ -33,7 +33,15 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         return t;
     }
 
-    public Thread scheduleSpuriousWakeup(long waitMs) {
+    public TimedTryPutThread scheduleTryPut(Integer ref, long timeoutMs, boolean startInterrupted) {
+        TimedTryPutThread t = new TimedTryPutThread(ref, timeoutMs, TimeUnit.MILLISECONDS);
+        t.setStartInterrupted(startInterrupted);
+        t.start();
+        return t;
+    }
+
+
+    public TestThread scheduleSpuriousWakeup(long waitMs) {
         return TestUtil.scheduleSpuriousWakeup(
                 awaitableRef.getMainLock(),
                 awaitableRef.getReferenceAvailableCondition(),
@@ -47,8 +55,10 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         return t;
     }
 
-    public Thread scheduleSpuriousWakeup() {
-        return scheduleSpuriousWakeup(0);
+    public void doSpuriousWakeup() {
+        TestThread t =  scheduleSpuriousWakeup(0);
+        joinAll(t);
+        t.assertIsTerminatedNormally();
     }
 
     public TakeThread scheduleTake() {
@@ -75,6 +85,21 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         taker.setStartInterrupted(startInterrupted);
         taker.start();
         return taker;
+    }
+
+    public void tested_put(boolean startInterrupted, Integer oldRef, Integer newRef) {
+        PutThread putThread = schedulePut(newRef, startInterrupted);
+        joinAll(putThread);
+        putThread.assertSuccess(oldRef);
+        putThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        assertHasReference(newRef);
+    }
+
+    public void tested_tryPut(long timeout, Integer newRef, Integer oldRef) {
+        TimedTryPutThread putter = scheduleTryPut(newRef, timeout);
+        joinAll(putter);
+        putter.assertSuccess(oldRef);
+        assertHasReference(newRef);
     }
 
     public PutThread schedulePut(Integer newRef) {
@@ -117,7 +142,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         }
 
         public void assertSuccess(Integer expectedOldRef) {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             TestCase.assertEquals(expectedOldRef, foundOldRef);
         }
     }
@@ -132,7 +157,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         }
 
         public void assertSuccess(Integer expectedTakenRef) {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             TestCase.assertSame(expectedTakenRef, foundTakenRef);
         }
     }
@@ -156,7 +181,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         }
 
         public void assertSuccess(Integer expectedReplacement) {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertSame(expectedReplacement, foundRef);
         }
     }
@@ -178,7 +203,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         }
 
         public void assertSuccess(Integer expectedTakenRef) {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             TestCase.assertSame(expectedTakenRef, foundTakenRef);
         }
     }
@@ -192,7 +217,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         }
 
         public void assertSuccess(Integer expectedRef) {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             TestCase.assertSame(expectedRef, foundRef);
         }
     }

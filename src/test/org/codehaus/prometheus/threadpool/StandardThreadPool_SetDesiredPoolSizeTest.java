@@ -125,6 +125,6 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         SetDesiredPoolsizeThread setSizeThread = scheduleSetDesiredPoolsize(newpoolsize);
 
         joinAll(setSizeThread);
-        setSizeThread.assertIsTerminatedWithoutThrowing();
+        setSizeThread.assertIsTerminatedNormally();
     }
 }

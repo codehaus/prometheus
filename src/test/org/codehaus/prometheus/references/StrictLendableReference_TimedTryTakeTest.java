@@ -116,7 +116,7 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
         //do spurious wakeup
         TestThread spuriousThread = scheduleSpuriousWakeups();
         joinAll(spuriousThread);
-        spuriousThread.assertIsTerminatedWithoutThrowing();
+        spuriousThread.assertIsTerminatedNormally();
 
         //make sure that the tryTake is waiting.
         giveOthersAChance();

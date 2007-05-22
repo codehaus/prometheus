@@ -1,11 +1,14 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.references.RelaxedLendableReference;
-import org.codehaus.prometheus.references.TakeThread;
 
 import java.util.concurrent.TimeoutException;
 
+/**
+ * Unittests {@link RelaxedLendableReference#takebackAndReset(Object)} method.
+ *
+ * @author Peter Veentjer.
+ */
 public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendableReference_AbstractTest<Integer> {
 
     public void testNulltakeback() {
@@ -24,13 +27,9 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
     public void testTakebackByDifferentThread() {
         Integer ref = 10;
         lendableRef = new RelaxedLendableReference(ref);
-        TakeThread takeThread = scheduleTake();
-        joinAll(takeThread);
 
-        TakebackAndResetThread takebackAndResetThread = scheduleTakebackAndReset(ref);
-        joinAll(takebackAndResetThread);
-        takebackAndResetThread.assertIsTerminatedWithoutThrowing();
-
+        tested_take(ref);
+        tested_takebackAndReset(ref);
         assertHasRef(null);
     }
 
@@ -47,21 +46,21 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
         };
         thread.start();
         joinAll(thread);
-        thread.assertIsTerminatedWithoutThrowing();
+        thread.assertIsTerminatedNormally();
         assertHasRef(null);
     }
 
     public void testMultipleIncorrectTackebacks() {
         Integer originalRef = 10;
         lendableRef = new RelaxedLendableReference(originalRef);
-        TakeThread takeThread = scheduleTake();
-        joinAll(takeThread);
 
+        tested_take(originalRef);
+
+        //do multiple takebacksAndResets with different reference, and check that the
+        //the reference has null
         for (int k = 0; k < 10; k++) {
             Integer replaceRef = 20+k;
-            TakebackAndResetThread takebackAndResetThread = scheduleTakebackAndReset(replaceRef);
-            joinAll(takebackAndResetThread);
-            takebackAndResetThread.assertIsTerminatedWithoutThrowing();
+            tested_takebackAndReset(replaceRef);
             assertHasRef(null);
         }
     }

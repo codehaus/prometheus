@@ -27,7 +27,7 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
         joinAll(t);
 
         assertIsOpen();
-        t.assertIsTerminatedWithoutThrowing();
+        t.assertIsTerminatedNormally();
         t.assertIsTerminatedWithInterruptStatus(startInterrupted);
     }
 
@@ -54,8 +54,8 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
         joinAll(passThread1, passThread2, openThread);
 
         assertIsOpen();
-        passThread1.assertIsTerminatedWithoutThrowing();
-        passThread2.assertIsTerminatedWithoutThrowing();
+        passThread1.assertIsTerminatedNormally();
+        passThread2.assertIsTerminatedNormally();
     }
 
     public void testWaitingTillEndOfTime() {
@@ -98,6 +98,6 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
         sleepMs(DELAY_TINY_MS);
 
         assertIsOpen();
-        passThread.assertIsTerminatedWithoutThrowing();
+        passThread.assertIsTerminatedNormally();
     }
 }

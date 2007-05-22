@@ -210,12 +210,12 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         }
 
         public void assertSuccess() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertTrue(success);
         }
 
         public void assertFailure() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertFalse(success);
         }
     }
@@ -248,7 +248,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         }
 
         public void assertSuccess() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
         }
     }
 

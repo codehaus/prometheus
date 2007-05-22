@@ -150,7 +150,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
         }
 
         public void assertSuccess(Object expectedReturnValue){
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertSame(expectedReturnValue, foundReturnValue);
         }
     }

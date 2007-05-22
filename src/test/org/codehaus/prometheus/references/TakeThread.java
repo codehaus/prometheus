@@ -33,7 +33,7 @@ public class TakeThread<E> extends TestThread {
     }
 
     public void assertSuccess(E expected) {
-        assertIsTerminatedWithoutThrowing();
+        assertIsTerminatedNormally();
         assertSame(expected, foundRef);
     }
 }

@@ -30,7 +30,7 @@ public class TimedTryPutThread<E> extends TestThread {
     }
 
     public void assertSuccess(E expectedReplacement) {
-        assertIsTerminatedWithoutThrowing();
+        assertIsTerminatedNormally();
         assertSame(expectedReplacement, foundRef);
     }
 }

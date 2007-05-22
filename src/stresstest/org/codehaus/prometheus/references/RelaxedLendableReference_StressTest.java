@@ -56,7 +56,7 @@ public class RelaxedLendableReference_StressTest {
 
         private void assertIsTerminatedWithoutThrowing(TestThread... threads) {
             for (TestThread t : threads)
-                t.assertIsTerminatedWithoutThrowing();
+                t.assertIsTerminatedNormally();
         }
 
         private void startPutters() {

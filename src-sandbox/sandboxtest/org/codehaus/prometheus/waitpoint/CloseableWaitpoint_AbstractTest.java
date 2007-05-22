@@ -114,7 +114,7 @@ public abstract class CloseableWaitpoint_AbstractTest extends ConcurrentTestCase
         }
 
         public void assertSuccess(long maximumRemainingTimeoutMs) {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             long ms = TimeUnit.NANOSECONDS.toMillis(foundRemainingTimeoutNs);
             String msg = String.format("maximum %d found %d", maximumRemainingTimeoutMs, foundRemainingTimeoutNs);
             assertTrue(
@@ -147,12 +147,12 @@ public abstract class CloseableWaitpoint_AbstractTest extends ConcurrentTestCase
         }
 
         public void assertFailure() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertFalse(success);
         }
 
         public void assertSuccess() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertTrue(success);
         }
     }

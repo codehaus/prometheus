@@ -104,13 +104,13 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
     private void shutdownNow() {
         ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
         joinAll(shutdownNowThread);
-        shutdownNowThread.assertIsTerminatedWithoutThrowing();
+        shutdownNowThread.assertIsTerminatedNormally();
     }
 
     private void awaitShutdown() {
         AwaitShutdownThread awaitShutdownThread = scheduleAwaitShutdown();
         joinAll(awaitShutdownThread);
-        awaitShutdownThread.assertIsTerminatedWithoutThrowing();
+        awaitShutdownThread.assertIsTerminatedNormally();
     }
 
     public void assertShutdownHappens() {

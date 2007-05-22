@@ -67,6 +67,6 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
         StartThread startThread = scheduleStart();
 
         joinAll(startThread);
-        startThread.assertIsTerminatedWithoutThrowing();
+        startThread.assertIsTerminatedNormally();
     }
 }

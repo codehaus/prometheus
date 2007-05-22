@@ -78,7 +78,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
         SleepingRunnable sleepingRunnable = new SleepingRunnable(DELAY_MEDIUM_MS);
         ExecuteThread executeThread = scheduleExecute(sleepingRunnable,START_UNINTERRUPTED);
         joinAll(executeThread);
-        executeThread.assertIsTerminatedWithoutThrowing();
+        executeThread.assertIsTerminatedNormally();
 
         CountingRunnable task = new CountingRunnable();
         TryExecuteThread tryExecuteThread = scheduleTryExecute(task,DELAY_EON_MS);

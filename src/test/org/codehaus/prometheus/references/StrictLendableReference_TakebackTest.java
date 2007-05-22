@@ -12,6 +12,7 @@ package org.codehaus.prometheus.references;
  */
 public class StrictLendableReference_TakebackTest extends StrictLendableReference_AbstractTest<Integer> {
 
+    //null values can be returned, so it should fail
     public void testTakeBackNull() throws InterruptedException {
         try {
             new StrictLendableReference().takeback(null);
@@ -21,6 +22,7 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         }
     }
 
+    //a strict reference doesn't accept an incorrect reference to be taken back
     public void testTakeBackIncorrectReference() throws InterruptedException {
         Integer originalRef = 10;
         Integer takebackRef = 20;
@@ -28,19 +30,20 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
 
         LendThread<Integer> lender = scheduleLend(takebackRef, DELAY_SMALL_MS);
         joinAll(lender);
-
         lender.assertIsIncorrectRef();
         assertLendCount(1);
         assertHasRef(originalRef);
         assertPutWaits(30);
     }
 
+    //a lend reference can be returned by a different thread
     public void testTakebackByDifferentThread() {
         Integer originalRef = 10;
         lendableRef = new StrictLendableReference<Integer>(originalRef);
 
         TakeThread taker = scheduleTake();
         joinAll(taker);
+        taker.assertIsTerminatedNormally();
 
         TakeBackThread takeBack = scheduleTakeback(originalRef);
         joinAll(takeBack);
@@ -51,6 +54,8 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         assertPutSucceeds(20);
     }
 
+    //a value that is lend multiple times by different threads, can be
+    //taken back multiple times by a single thread
     public void testTakeBackBySameThreadMultipleTimes() {
         Integer orignalRef = 10;
         lendableRef = new StrictLendableReference<Integer>(orignalRef);
@@ -62,12 +67,12 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
 
         MultipleTakebackThread takebackThread = scheduleMultipleTakebacks(3,orignalRef);
         joinAll(takebackThread);
-
         takebackThread.assertSuccess();
         assertHasRef(orignalRef);
         assertLendCount(0);
     }
 
+    //a takeback of a non 'illegal reference' is not allowed.
     public void testTakebackWhileNotTaken() {
         Integer originalRef = 10;
         lendableRef = new StrictLendableReference<Integer>(originalRef);
@@ -81,18 +86,21 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         assertPutSucceeds(30);
     }
 
-    public void testTakeBackDifferentInstanceEqualValue() {
+    //take followed by takeback of different instances of the same object
+    //(so equals match) is allowed.
+    public void testLendByOneThread_equalObject(){
         Integer originalRef = new Integer(10);
         Integer takenbackRef = new Integer(10);
-        testTakeBackBySameThread(originalRef,takenbackRef);
+        testLendByOneThread(originalRef,takenbackRef);
     }
 
-    public void testTakeBackSameInstance() {
+    //take followed by takeback of same instance is allowed (ofcourse)
+    public void testLendByOneThread_sameObject() {
         Integer originalRef = new Integer(10);
-        testTakeBackBySameThread(originalRef,originalRef);
+        testLendByOneThread(originalRef,originalRef);
     }
 
-    public void testTakeBackBySameThread(Integer originalRef, Integer takebackRef) {
+    public void testLendByOneThread(Integer originalRef, Integer takebackRef) {
         lendableRef = new StrictLendableReference<Integer>(originalRef);
 
         LendThread<Integer> lender = scheduleLend( takebackRef, DELAY_MEDIUM_MS);

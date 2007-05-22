@@ -75,6 +75,6 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
         ShutdownNowThread shutdownThread = scheduleShutdownNow();
 
         joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
+        shutdownThread.assertIsTerminatedNormally();
     }
 }

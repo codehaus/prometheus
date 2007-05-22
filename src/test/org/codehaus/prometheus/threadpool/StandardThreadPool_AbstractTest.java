@@ -83,7 +83,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         //shut down the threadpool
         ShutdownThread shutdownThread = scheduleShutdown();
         joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
+        shutdownThread.assertIsTerminatedNormally();
         assertIsShuttingdown();
     }
 
@@ -150,7 +150,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         };
         t.start();
         joinAll(t);
-        t.assertIsTerminatedWithoutThrowing();
+        t.assertIsTerminatedNormally();
         assertIsShutdown();
     }
 

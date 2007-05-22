@@ -5,8 +5,10 @@
  */
 package org.codehaus.prometheus.references;
 
+import org.codehaus.prometheus.testsupport.InterruptedTrueFalse;
+
 /**
- * Unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#put(Object)} method.
+ * Unittests the {@link DefaultAwaitableReference#put(Object)} method.
  *
  * @author Peter Veentjer.
  */
@@ -14,25 +16,22 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
 
     //========= no takers =============
 
-    public void testNoTakers_startUninterrupted(){
+    public void testNoTakers_startUninterrupted() {
         testNoTakers(START_UNINTERRUPTED);
     }
 
-    public void testNoTakers_startInterrupted(){
+    public void testNoTakers_startInterrupted() {
         testNoTakers(START_INTERRUPTED);
     }
 
+    @InterruptedTrueFalse
     public void testNoTakers(boolean startInterrupted) {
         Integer oldRef = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
         //do a put and make sure it completes 
         Integer newRef = 20;
-        PutThread putThread = schedulePut(newRef, startInterrupted);
-        joinAll(putThread);
-        putThread.assertSuccess(oldRef);
-        putThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
-        assertHasReference(newRef);
+        tested_put(startInterrupted, oldRef, newRef);
     }
 
     //========= waiting takers =============
@@ -66,27 +65,24 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
     //========= has takers =============
     // a put should not be blocked by previous takes
 
-    public void testActiveTakers_startUninterrupted(){
+    public void testActiveTakers_startUninterrupted() {
         testActiveTakers(START_UNINTERRUPTED);
     }
-    
-    public void testActiveTakers_startInterrupted(){
+
+    public void testActiveTakers_startInterrupted() {
         testActiveTakers(START_INTERRUPTED);
     }
 
-    public void testActiveTakers(boolean startInterrupted){
+    public void testActiveTakers(boolean startInterrupted) {
         Integer oldRef = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
+        //do a take
         tested_take(oldRef);
 
-        //now do a put and make sure it completes
+        //now do a put and make sure it completes (a relaxed lendable
+        //reference doesn't care about previous takes)
         Integer newRef = 20;
-        PutThread putThread = schedulePut(newRef,startInterrupted);
-        joinAll(putThread);
-        putThread.assertSuccess(oldRef);
-        putThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
-        assertHasReference(newRef);
+        tested_put(startInterrupted, oldRef, newRef);
     }
-
 }

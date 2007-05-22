@@ -26,7 +26,7 @@ public class Latch_OpenWithoutLockingTest extends Latch_AbstractTest {
         OpenWithoutLockingThread openThread = scheduleOpenWithoutLocking(startInterrupted);
         joinAll(openThread);
         assertIsOpen();
-        openThread.assertIsTerminatedWithoutThrowing();
+        openThread.assertIsTerminatedNormally();
         openThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
     }
 

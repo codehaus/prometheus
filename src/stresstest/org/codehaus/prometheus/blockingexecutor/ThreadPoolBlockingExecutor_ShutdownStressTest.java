@@ -106,7 +106,7 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
 
         public void assertAllProducersFinished() {
             for (TaskProducer t : workerList)
-                t.assertIsTerminatedWithoutThrowing();
+                t.assertIsTerminatedNormally();
         }
 
         public TaskProducer scheduleProducer() {

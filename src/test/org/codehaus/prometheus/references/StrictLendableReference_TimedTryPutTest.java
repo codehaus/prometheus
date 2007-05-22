@@ -140,7 +140,7 @@ public class StrictLendableReference_TimedTryPutTest extends StrictLendableRefer
         //do some spurious wakeups.
         TestThread spuriousThread = scheduleSpuriousWakeups();
         joinAll(spuriousThread);
-        spuriousThread.assertIsTerminatedWithoutThrowing();
+        spuriousThread.assertIsTerminatedNormally();
 
         //make sure it is still waiting
         giveOthersAChance();

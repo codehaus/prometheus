@@ -45,7 +45,7 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
         //open the latch, and check that the awaitThread has finished successfully.
         OpenThread openThread = scheduleOpen();
         joinAll(openThread);
-        openThread.assertIsTerminatedWithoutThrowing();
+        openThread.assertIsTerminatedNormally();
         assertIsOpen();
     }
 
@@ -99,12 +99,12 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
         }
 
         public void assertSuccess() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertTrue(success);
         }
 
         public void assertFailure() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertFalse(success);
         }
     }

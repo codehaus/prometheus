@@ -59,6 +59,12 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         assertHasRef(newRef);
     }
 
+    public void tested_takebackAndReset(E ref) {
+        TakebackAndResetThread<E> t = scheduleTakebackAndReset(ref);
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+    }
+
     public E tested_take(E expectedTakenRef) {
         TakeThread<E> takeThread = scheduleTake();
         joinAll(takeThread);
@@ -169,7 +175,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         }
 
         public void assertSuccess(E expectedTakeRef) {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertSame(expectedTakeRef, foundTakenRef);
         }
     }
@@ -192,7 +198,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         }
 
         public void assertSuccess() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertTrue(completed);
         }
     }

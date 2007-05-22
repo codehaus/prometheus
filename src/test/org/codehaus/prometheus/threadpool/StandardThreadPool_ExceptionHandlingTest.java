@@ -43,7 +43,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         //shut down the
         ShutdownNowThread shutdownThread = scheduleShutdownNow();
         joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
+        shutdownThread.assertIsTerminatedNormally();
 
         //make sure that no exception has been thrown.
         giveOthersAChance();

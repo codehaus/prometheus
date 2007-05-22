@@ -25,7 +25,7 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
         
         TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(0);
         joinAll(tryLockThread);
-        tryLockThread.assertIsTerminatedWithoutThrowing();
+        tryLockThread.assertIsTerminatedNormally();
     }
 
     public void testSomeWaitingNeeded()throws InterruptedException{
@@ -38,7 +38,7 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
         tryLockThread.assertIsStarted();
 
         joinAll(lockAndUnlockThread,tryLockThread);
-        tryLockThread.assertIsTerminatedWithoutThrowing();
+        tryLockThread.assertIsTerminatedNormally();
     }
 
     public void testTooMuchWaiting() throws InterruptedException {

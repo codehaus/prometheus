@@ -29,8 +29,8 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
 
         //check that the awaiting threads shutdown
         joinAll(awaitThread1,awaitThread2);
-        awaitThread1.assertIsTerminatedWithoutThrowing();
-        awaitThread2.assertIsTerminatedWithoutThrowing();
+        awaitThread1.assertIsTerminatedNormally();
+        awaitThread2.assertIsTerminatedNormally();
         assertIsShutdown();
     }
 
@@ -47,8 +47,8 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
 
         //check that the awaits are successful after shutdown.
         joinAll(awaitThread1,awaitThread2);
-        awaitThread1.assertIsTerminatedWithoutThrowing();
-        awaitThread2.assertIsTerminatedWithoutThrowing();
+        awaitThread1.assertIsTerminatedNormally();
+        awaitThread2.assertIsTerminatedNormally();
         assertIsShutdown();
     }
 
@@ -79,14 +79,14 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
         AwaitShutdownThread awaitThread2 = scheduleAwaitShutdown();
         joinAll(awaitThread1,awaitThread2);
 
-        awaitThread1.assertIsTerminatedWithoutThrowing();
-        awaitThread2.assertIsTerminatedWithoutThrowing();
+        awaitThread1.assertIsTerminatedNormally();
+        awaitThread2.assertIsTerminatedNormally();
         assertIsShutdown();
     }
 
     private void shutdown() {
         ShutdownThread shutdownThread = scheduleShutdown();
         joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
+        shutdownThread.assertIsTerminatedNormally();
     }
 }

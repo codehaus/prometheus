@@ -24,7 +24,7 @@ public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPo
         SetDefaultWorkerJobThread setThread = scheduleSetDefaultWorkerJob(firstJob);
         joinAll(setThread);
 
-        setThread.assertIsTerminatedWithoutThrowing();
+        setThread.assertIsTerminatedNormally();
         //make sure that the threadpool hasn't started.
         assertIsUnstarted();
         assertSame(firstJob, threadpool.getDefaultWorkerJob());
@@ -34,7 +34,7 @@ public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPo
         setThread = scheduleSetDefaultWorkerJob(secondJob);
 
         joinAll(setThread);
-        setThread.assertIsTerminatedWithoutThrowing();
+        setThread.assertIsTerminatedNormally();
         assertIsUnstarted();
         assertSame(secondJob, threadpool.getDefaultWorkerJob());        
     }

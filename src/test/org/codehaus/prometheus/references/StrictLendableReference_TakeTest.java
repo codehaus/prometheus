@@ -151,7 +151,7 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         }
 
         public void assertSuccess(Integer expectedRef) {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertEquals(count,refList.size());
             for(Integer ref: refList){
                 assertSame(expectedRef,ref);
@@ -173,7 +173,7 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         //do a spurious wakeup and see that nothing has changed
         TestThread spuriousThread = scheduleSpuriousWakeups();
         joinAll(spuriousThread);
-        spuriousThread.assertIsTerminatedWithoutThrowing();
+        spuriousThread.assertIsTerminatedNormally();
 
         giveOthersAChance();
         takeThread1.assertIsStarted();

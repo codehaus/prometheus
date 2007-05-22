@@ -67,9 +67,9 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
         joinAll(shutdownThread);
         giveOthersAChance();
 
-        shutdownThread.assertIsTerminatedWithoutThrowing();
-        awaitThread1.assertIsTerminatedWithoutThrowing();
-        awaitThread2.assertIsTerminatedWithoutThrowing();
+        shutdownThread.assertIsTerminatedNormally();
+        awaitThread1.assertIsTerminatedNormally();
+        awaitThread2.assertIsTerminatedNormally();
         assertIsShutdown();
     }
 

@@ -93,7 +93,7 @@ public class ThreadPoolBlockingExecutor_ExecuteStressTest extends ConcurrentTest
         for (TaskProducer t : workerList) {
             try {
                 t.join();
-                t.assertIsTerminatedWithoutThrowing();
+                t.assertIsTerminatedNormally();
             } catch (InterruptedException e) {
                 fail("unexpected InterruptedException");
             }

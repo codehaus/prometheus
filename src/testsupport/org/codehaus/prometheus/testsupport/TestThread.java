@@ -214,7 +214,7 @@ public class TestThread extends Thread {
     /**
      * Asserts that the TestThread is terminated and no Throwable is thrown.
      */
-    public final void assertIsTerminatedWithoutThrowing() {
+    public final void assertIsTerminatedNormally() {
         assertIsTerminated();
         if(foundThrowable!=null)
             foundThrowable.printStackTrace();

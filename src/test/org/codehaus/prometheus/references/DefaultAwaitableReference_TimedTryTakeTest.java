@@ -90,9 +90,9 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         giveOthersAChance();
         takeThread.assertIsStarted();
 
-        PutThread putThread = schedulePut(ref);
-
-        joinAll(putThread,takeThread);
+        tested_put(ref,null);
+                
+        joinAll(takeThread);
         takeThread.assertSuccess(ref);
         assertHasReference(ref);
     }
@@ -100,8 +100,8 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
     @InterruptedFalse
     public void testTooMuchWaiting() throws InterruptedException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        TimedTryTakeThread taker = scheduleTryTake(DELAY_SMALL_MS);
 
+        TimedTryTakeThread taker = scheduleTryTake(DELAY_SMALL_MS);
         joinAll(taker);
         taker.assertIsTimedOut();
         assertHasReference(null);
@@ -129,15 +129,13 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         giveOthersAChance();
         taker.assertIsStarted();
 
-        Thread spurious = scheduleSpuriousWakeup();
-        joinAll(spurious);
+        doSpuriousWakeup();
         giveOthersAChance();
         taker.assertIsStarted();
 
         Integer ref = 20;
-        PutThread putter = schedulePut(ref);
-
-        joinAll(putter,taker);
+        tested_put(ref,null);
+        joinAll(taker);
         taker.assertSuccess(ref);
         assertHasReference(ref);
     }

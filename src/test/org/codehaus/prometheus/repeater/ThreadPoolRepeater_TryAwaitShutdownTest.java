@@ -76,8 +76,8 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
 
         joinAll(t1, t2);
 
-        t1.assertIsTerminatedWithoutThrowing();
-        t2.assertIsTerminatedWithoutThrowing();
+        t1.assertIsTerminatedNormally();
+        t2.assertIsTerminatedNormally();
     }
 
     public void testInterruptedWhileWaiting() {
@@ -104,8 +104,8 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
 
         joinAll(t1, t2);
 
-        t1.assertIsTerminatedWithoutThrowing();
-        t2.assertIsTerminatedWithoutThrowing();
+        t1.assertIsTerminatedNormally();
+        t2.assertIsTerminatedNormally();
     }
 
     public TryAwaitShutdownThread scheduleTryAwaitShutdown(long timeoutMs) {

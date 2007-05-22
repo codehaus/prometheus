@@ -47,7 +47,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
 
         t.start();
         t.join();
-        t.assertIsTerminatedWithoutThrowing();
+        t.assertIsTerminatedNormally();
     }
 
     public void assertLockUnavailable() throws InterruptedException {
@@ -85,7 +85,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
         }
 
         public void assertSuccess() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
         }
     }
 

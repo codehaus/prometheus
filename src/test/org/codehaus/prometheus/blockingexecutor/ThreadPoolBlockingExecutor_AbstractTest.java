@@ -29,11 +29,11 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         if (executor != null) {
             ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
             joinAll(shutdownNowThread);
-            shutdownNowThread.assertIsTerminatedWithoutThrowing();
+            shutdownNowThread.assertIsTerminatedNormally();
 
             AwaitShutdownThread awaitThread = scheduleAwaitShutdown();
             joinAll(awaitThread);
-            awaitThread.assertIsTerminatedWithoutThrowing();
+            awaitThread.assertIsTerminatedNormally();
 
             assertIsShutdown();
         }
@@ -222,7 +222,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         }
 
         public void assertSuccess() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
         }
     }
 
@@ -243,7 +243,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         }
 
         public void assertSuccess(Runnable... expectedTasks) {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             List<Runnable> list = Arrays.asList(expectedTasks);
             assertEquals(list, foundTask);
         }
@@ -282,7 +282,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         }
 
         public void assertIsSuccess() {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
         }
 
         public void assertIsRejected() {

@@ -80,7 +80,7 @@ public class ThreadPoolBlockingExecutor_ShutdownTest extends ThreadPoolBlockingE
     private void shutdown() {
         ShutdownThread shutdownThread = scheduleShutdown();
         joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
+        shutdownThread.assertIsTerminatedNormally();
     }
 }
 

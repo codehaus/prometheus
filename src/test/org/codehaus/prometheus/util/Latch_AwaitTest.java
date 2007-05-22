@@ -26,7 +26,7 @@ public class Latch_AwaitTest extends Latch_AbstractTest {
         AwaitThread awaitThread = scheduleAwait(startInterrupted);
 
         joinAll(awaitThread);
-        awaitThread.assertIsTerminatedWithoutThrowing();
+        awaitThread.assertIsTerminatedNormally();
         awaitThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
     }
 
@@ -51,7 +51,7 @@ public class Latch_AwaitTest extends Latch_AbstractTest {
         OpenThread openThread = scheduleOpen();
 
         joinAll(awaitThread, openThread);
-        awaitThread.assertIsTerminatedWithoutThrowing();
+        awaitThread.assertIsTerminatedNormally();
         awaitThread.assertIsTerminatedWithInterruptStatus(false);
     }
 
@@ -84,7 +84,7 @@ public class Latch_AwaitTest extends Latch_AbstractTest {
         OpenThread openThread = scheduleOpen();
 
         joinAll(awaitThread, openThread);
-        awaitThread.assertIsTerminatedWithoutThrowing();
+        awaitThread.assertIsTerminatedNormally();
         awaitThread.assertIsTerminatedWithInterruptStatus(false);
     }
 }

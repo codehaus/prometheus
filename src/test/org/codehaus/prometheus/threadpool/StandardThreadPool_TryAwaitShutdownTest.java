@@ -43,9 +43,9 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
         ShutdownThread shutdownThread = scheduleShutdown();
 
         joinAll(shutdownThread,awaitThread1,awaitThread2);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
-        awaitThread1.assertIsTerminatedWithoutThrowing();
-        awaitThread2.assertIsTerminatedWithoutThrowing();
+        shutdownThread.assertIsTerminatedNormally();
+        awaitThread1.assertIsTerminatedNormally();
+        awaitThread2.assertIsTerminatedNormally();
         threadPoolThreadFactory.assertCreatedCount(oldpoolsize);
         assertIsShutdown();
     }
@@ -61,7 +61,7 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
         TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(0);
         joinAll(awaitThread);
 
-        awaitThread.assertIsTerminatedWithoutThrowing();
+        awaitThread.assertIsTerminatedNormally();
     }
 
     public void testTimedOut(){

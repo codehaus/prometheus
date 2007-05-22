@@ -44,12 +44,12 @@ public class LendThread<E> extends TestThread {
     }
 
     public void assertIsIncorrectRef(){
-        assertIsTerminatedWithoutThrowing();
+        assertIsTerminatedNormally();
         TestCase.assertEquals(LendState.incorrectref,lendState);
     }
 
     public void assertIsTakenBack(E expectedRef){
-        assertIsTerminatedWithoutThrowing();
+        assertIsTerminatedNormally();
         TestCase.assertEquals(LendState.takenback,lendState);
         TestCase.assertSame(expectedRef, takenRef);
     }

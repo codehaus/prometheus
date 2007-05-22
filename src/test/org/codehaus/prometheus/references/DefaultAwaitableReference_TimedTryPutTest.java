@@ -5,10 +5,6 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.testsupport.InterruptedFalse;
-import org.codehaus.prometheus.testsupport.InterruptedTrue;
-import org.codehaus.prometheus.testsupport.InterruptedTrueFalse;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -19,7 +15,6 @@ import java.util.concurrent.TimeoutException;
  */
 public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableReference_AbstractTest {
 
-    @InterruptedTrueFalse
     public void testArguments() throws TimeoutException, InterruptedException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
         try {
@@ -30,7 +25,6 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         }
     }
 
-    @InterruptedTrueFalse
     public void testNegativeTimeout() throws InterruptedException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
@@ -42,21 +36,18 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         }
     }
 
-    @InterruptedTrue
     public void testStartInterrupted() {
         Integer oldRef = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
-        Integer newRef = 20;
 
-        PutThread putter = schedulePut(newRef,START_INTERRUPTED);
-        joinAll(putter);
-        putter.assertSuccess(oldRef);
+        Integer newRef = 20;
+        TimedTryPutThread tryPutThread = scheduleTryPut(newRef,1,START_INTERRUPTED);
+        joinAll(tryPutThread);
+        tryPutThread.assertSuccess(oldRef);
 
         assertHasReference(newRef);
-        putter.assertIsTerminatedWithInterruptStatus(true);
     }
 
-    @InterruptedFalse
     public void testNotReturnedValueDoesntBlockTryPut() {
         testNotReturnedValueDoesntBlockTryPut(0);
         testNotReturnedValueDoesntBlockTryPut(DELAY_SMALL_MS);
@@ -69,20 +60,18 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         Integer oldRef = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
+        //first take a reference
         tested_take(oldRef);
 
+        //now put a reference, this should complete because put isn't blocked by takes
         Integer newRef = 20;
-        put(timeout, newRef, oldRef);
-
-        assertHasReference(newRef);
+        tested_tryPut(timeout, newRef, oldRef);
     }
 
-    @InterruptedFalse
     public void testSuccess_startFromNullValue() {
         testSuccess(null);
     }
 
-    @InterruptedFalse
     public void testSuccess_startFromNonNullValue() {
         testSuccess(new Integer(100));
     }
@@ -90,14 +79,7 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
     public void testSuccess(Integer originalRef) {
         awaitableRef = new DefaultAwaitableReference<Integer>(originalRef);
 
-        Integer newRef = 20;
-        put(DELAY_SMALL_MS, newRef, originalRef);
-        assertHasReference(newRef);
-    }
-
-    private void put(long timeout, Integer newRef, Integer oldRef) {
-        TimedTryPutThread putter = scheduleTryPut(newRef, timeout);
-        joinAll(putter);
-        putter.assertSuccess(oldRef);
+        Integer newRef = originalRef==null?1:originalRef+1;
+        tested_tryPut(DELAY_SMALL_MS, newRef, originalRef);
     }
 }

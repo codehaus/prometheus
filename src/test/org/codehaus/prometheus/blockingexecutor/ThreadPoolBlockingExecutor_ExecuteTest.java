@@ -57,7 +57,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         SleepingRunnable task = new SleepingRunnable(durationMs);
         ExecuteThread executeThread = scheduleExecute(task,START_UNINTERRUPTED);
         joinAll(executeThread);
-        executeThread.assertIsTerminatedWithoutThrowing();
+        executeThread.assertIsTerminatedNormally();
         return task;
     }
 

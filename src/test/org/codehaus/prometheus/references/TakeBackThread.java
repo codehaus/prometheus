@@ -32,12 +32,12 @@ public class TakeBackThread<E> extends TestThread {
     }
 
     public void assertSuccess(){
-        assertIsTerminatedWithoutThrowing();
+        assertIsTerminatedNormally();
         TestCase.assertEquals(State.success,state);
     }
 
     public void assertTakeBackException(){
-        assertIsTerminatedWithoutThrowing();
+        assertIsTerminatedNormally();
         TestCase.assertEquals(State.incorrectref,state);
     }
 }

@@ -28,8 +28,8 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
 
         //make sure that all waiters have terminated without problems
         giveOthersAChance();
-        waiter1Thread.assertIsTerminatedWithoutThrowing();
-        waiter2Thread.assertIsTerminatedWithoutThrowing();
+        waiter1Thread.assertIsTerminatedNormally();
+        waiter2Thread.assertIsTerminatedNormally();
         assertIsShutdown();
     }
 
@@ -48,8 +48,8 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
 
         //make sure that all waiters have terminated without problems
         giveOthersAChance();
-        waiter1Thread.assertIsTerminatedWithoutThrowing();
-        waiter2Thread.assertIsTerminatedWithoutThrowing();
+        waiter1Thread.assertIsTerminatedNormally();
+        waiter2Thread.assertIsTerminatedNormally();
         assertIsShutdown();
     }
 
@@ -65,8 +65,8 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
 
         //wait for the waiters to complete
         joinAll(waiter1Thread, waiter2Thread);
-        waiter1Thread.assertIsTerminatedWithoutThrowing();
-        waiter2Thread.assertIsTerminatedWithoutThrowing();
+        waiter1Thread.assertIsTerminatedNormally();
+        waiter2Thread.assertIsTerminatedNormally();
         assertIsShutdown();
     }
 
@@ -77,8 +77,8 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
 
         //make sure all waiters finish without problems
         giveOthersAChance();
-        waiter1Thread.assertIsTerminatedWithoutThrowing();
-        waiter2Thread.assertIsTerminatedWithoutThrowing();
+        waiter1Thread.assertIsTerminatedNormally();
+        waiter2Thread.assertIsTerminatedNormally();
         assertIsShutdown();
     }
 
@@ -96,8 +96,8 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
 
         //wait for the shutdown to complete and make sure that the waiters have completed
         joinAll(shutdownThread, waiter1Thread, waiter2Thread);
-        waiter1Thread.assertIsTerminatedWithoutThrowing();
-        waiter2Thread.assertIsTerminatedWithoutThrowing();
+        waiter1Thread.assertIsTerminatedNormally();
+        waiter2Thread.assertIsTerminatedNormally();
         assertIsShutdown();
     }
 
@@ -121,6 +121,6 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
     private void shutdown() {
         ShutdownThread shutdownThread = scheduleShutdown();
         joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedWithoutThrowing();
+        shutdownThread.assertIsTerminatedNormally();
     }
 }

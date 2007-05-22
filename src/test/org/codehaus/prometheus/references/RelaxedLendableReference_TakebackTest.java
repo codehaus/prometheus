@@ -12,7 +12,8 @@ package org.codehaus.prometheus.references;
  */
 public class RelaxedLendableReference_TakebackTest extends RelaxedLendableReference_AbstractTest<Integer> {
 
-    public void testTakeBackNull() {
+    //a null can't be taken back
+    public void testTakebackNull() {
         try {
             new RelaxedLendableReference().takeback(null);
             fail("NullPointerException expected");
@@ -25,18 +26,13 @@ public class RelaxedLendableReference_TakebackTest extends RelaxedLendableRefere
         Integer ref = 10;
         lendableRef = new RelaxedLendableReference<Integer>(ref);
 
-        TakeThread<Integer> takeThread = scheduleTake();
-        joinAll(takeThread);
-        takeThread.assertSuccess(ref);
-
-        TakeBackThread<Integer> takebackThread1 = scheduleTakeBack(ref);
-        joinAll(takebackThread1);
-        takebackThread1.assertSuccess();
+        //first take a ref
+        tested_take(ref);
+        //now take it back
+        tested_takeback(ref);
         assertHasRef(ref);
-
-        TakeBackThread<Integer> takebackThread2 = scheduleTakeBack(ref);
-        joinAll(takebackThread2);
-        takebackThread2.assertSuccess();
+        //now take it back a second time. This cal should be ignored.
+        tested_takeback(ref);        
         assertHasRef(ref);
     }
 
@@ -45,16 +41,11 @@ public class RelaxedLendableReference_TakebackTest extends RelaxedLendableRefere
         Integer ref = 10;
         lendableRef = new RelaxedLendableReference<Integer>(ref);
 
-        //take a value
-        TakeThread<Integer> takeThread = scheduleTake();
-        joinAll(takeThread);
-        takeThread.assertSuccess(ref);
-
-        //take back a bogus value
+        //take a reference
+        tested_take(ref);
+        //now bring back a bogus reference
         Integer bogusRef = 20;
-        TakeBackThread<Integer> takebackThread1 = scheduleTakeBack(bogusRef);
-        joinAll(takebackThread1);
-        takebackThread1.assertSuccess();
+        tested_takeback(bogusRef);
         assertHasRef(ref);
     }
 
@@ -64,24 +55,19 @@ public class RelaxedLendableReference_TakebackTest extends RelaxedLendableRefere
 
         //take back a bogus value
         Integer bogusRef = 20;
-        TakeBackThread<Integer> takebackThread1 = scheduleTakeBack(bogusRef);
-        joinAll(takebackThread1);
-        takebackThread1.assertSuccess();
+        tested_takeback(bogusRef);
+        assertHasRef(ref);
+
+        //now bring back the correct reference
+        tested_takeback(ref);
         assertHasRef(ref);
     }
 
     public void testTakebackSuccess() throws InterruptedException {
         Integer ref = 10;
         lendableRef = new RelaxedLendableReference<Integer>(ref);
-        //take a value
-        TakeThread<Integer> takeThread = scheduleTake();
-        joinAll(takeThread);
-        takeThread.assertSuccess(ref);
-
-        //take back a bogus value
-        TakeBackThread<Integer> takebackThread1 = scheduleTakeBack(ref);
-        joinAll(takebackThread1);
-        takebackThread1.assertSuccess();
+        tested_take(ref);
+        tested_takeback(ref);
         assertHasRef(ref);
     }
 }

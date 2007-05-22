@@ -46,7 +46,7 @@ public class Latch_TimedTryAwaitTest extends Latch_AbstractTest {
         TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(startInterupted, 0);
 
         joinAll(awaitThread);
-        awaitThread.assertIsTerminatedWithoutThrowing();
+        awaitThread.assertIsTerminatedNormally();
         awaitThread.assertIsTerminatedWithInterruptStatus(startInterupted);
     }
 
@@ -70,7 +70,7 @@ public class Latch_TimedTryAwaitTest extends Latch_AbstractTest {
         open();
         
         joinAll(awaitThread);
-        awaitThread.assertIsTerminatedWithoutThrowing();
+        awaitThread.assertIsTerminatedNormally();
         awaitThread.assertIsTerminatedWithInterruptStatus(false);
     }
 
@@ -114,6 +114,6 @@ public class Latch_TimedTryAwaitTest extends Latch_AbstractTest {
         //open the latch, and check that the awaitThread has finished successfully.
         open();        
         joinAll(awaitThread);
-        awaitThread.assertIsTerminatedWithoutThrowing();        
+        awaitThread.assertIsTerminatedNormally();
     }
 }

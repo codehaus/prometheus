@@ -219,7 +219,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
         }
 
         public void assertSuccess(Object expectedReturnValue) {
-            assertIsTerminatedWithoutThrowing();
+            assertIsTerminatedNormally();
             assertSame(expectedReturnValue, foundReturnValue);
         }
     }

@@ -68,7 +68,7 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
     private void start() {
         StartThread startThread = scheduleStart();
         joinAll(startThread);
-        startThread.assertIsTerminatedWithoutThrowing();
+        startThread.assertIsTerminatedNormally();
     }
 
 
