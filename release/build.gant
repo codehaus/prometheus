@@ -1,0 +1,28 @@
+build_dir                    = "build"
+
+task ( clean : 'removes all files from the release'){
+    Ant.delete(dir : build_dir)
+}
+
+task ( checkout : 'does a checkout'){
+
+}
+
+task ( build : 'builds stuff'){
+
+}
+
+task ( mark : ''){
+}
+
+task (build_release : 'builds the release'){
+    depends( clean )
+    depends( checkout )
+    depends( build )
+    depends( mark )
+}
+
+task ( 'default' : 'The default target.' ) {
+    println ( 'Default' )
+    Ant.echo ( message : 'A default message from Ant.' )
+}

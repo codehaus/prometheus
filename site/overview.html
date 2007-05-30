@@ -142,11 +142,11 @@
         inside the waitpoint.
     </li>
     <li>
-        <b>Deadlock save calls</b>: writing deadlock free code can be very complicated (almost impossible)
+        <b>Deadlock safe calls</b>: writing deadlock free code can be very complicated (almost impossible)
         but deadlocks can be prevented. Deadlock detection is not obligated by the JVM, but another solution
         is to limit the amount of time for waiting on a resource (like a Lock). But adding timeouts to calls
         can be quite cumbersome: you don't want to administrate the timeout with every call. That is why I'm
-        going to introduce 'save' calls: call that use a timeout but don't require you to deal with the administration.
+        going to introduce 'safe' calls: call that use a timeout but don't require you to deal with the administration.
         A threadlocal is used to store the timeout, this value can be set at the beginning of the callstack, and
         will decrease each time some sort of locking occurs.
     </li>

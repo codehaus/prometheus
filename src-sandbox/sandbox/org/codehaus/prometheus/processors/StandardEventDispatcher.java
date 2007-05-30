@@ -4,14 +4,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Default implementation. 
+ * Default implementation.
  */
-public class StandardEventDispatcher implements EventDispatcher{
+public class StandardEventDispatcher implements EventDispatcher {
 
-    public boolean dispatch(Process process, Event e) throws Exception{
+    public boolean dispatch(Process process, Event e) throws Exception {
         try {
-            Method m = findMethod(process,e);
-            m.invoke(process,e);
+            Method m = findMethod(process, e);
+            m.invoke(process, e);
             return true;
         } catch (NoSuchMethodException e1) {
             return false;
@@ -36,15 +36,17 @@ public class StandardEventDispatcher implements EventDispatcher{
     private Method findMethod(Process process, Event e) throws NoSuchMethodException {
         Class eventClass = e.getClass();
 
-        for(;;){
-            try{
-               return process.getClass().getMethod("handle", eventClass);
-            }catch(NoSuchMethodException ex){
-                eventClass = eventClass.getSuperclass();                
-                System.out.println("event.class:"+eventClass.getClass());
-                if(eventClass.equals(Object.class))
+        for (; ;) {
+            try {
+                Method method = process.getClass().getMethod("handle", eventClass);
+                if (!method.getReturnType().equals(Void.TYPE))
+                    throw new NoSuchMethodException();
+                return method;
+            } catch (NoSuchMethodException ex) {
+                eventClass = eventClass.getSuperclass();
+                if (eventClass.equals(Object.class))
                     throw new NoSuchMethodException();
             }
-        }        
+        }
     }
 }

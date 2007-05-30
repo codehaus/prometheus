@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 /**
  * Unittests the {@link StandardEventDispatcher}.
- *
+ * <p/>
  * todo: checks need to be improved to make sure that a process its handler is not called when it isn't accepted
  *
  * @author Peter Veentjer.
@@ -18,11 +18,12 @@ public class StandardEventDispatcherTest extends TestCase {
         dispatcher = new StandardEventDispatcher();
     }
 
-    private void dispatchReturnsFalse(Process process) {
+    private void dispatchReturnsFalse(TestProcess process) {
         Event event = new DummyEvent();
         try {
             boolean result = dispatcher.dispatch(process, event);
             assertFalse(result);
+            process.assertNotCalled();
         } catch (Exception e) {
             fail();
         }
@@ -43,8 +44,9 @@ public class StandardEventDispatcherTest extends TestCase {
     }
 
     public void testNoMatchingName() {
-        Process process = new Process() {
-            public void foo() {
+        TestProcess process = new TestProcess() {
+            public void foo(Event e) {
+                called = true;
             }
         };
 
@@ -53,8 +55,9 @@ public class StandardEventDispatcherTest extends TestCase {
 
     //this test needs to be defined better
     public void testAccessModifier_private() {
-        Process process = new Process() {
+        TestProcess process = new TestProcess() {
             private void handle(Event e) {
+                called = true;
             }
         };
 
@@ -62,8 +65,9 @@ public class StandardEventDispatcherTest extends TestCase {
     }
 
     public void testAccessModifier_packageFriendly() {
-        Process process = new Process() {
+        TestProcess process = new TestProcess() {
             void handle(Event e) {
+                called = true;
             }
         };
 
@@ -71,8 +75,9 @@ public class StandardEventDispatcherTest extends TestCase {
     }
 
     public void testAccessModifier_protected() {
-        Process process = new Process() {
+        TestProcess process = new TestProcess() {
             protected void handle(Event e) {
+                called = true;
             }
         };
 
@@ -80,8 +85,9 @@ public class StandardEventDispatcherTest extends TestCase {
     }
 
     public void testNotEnoughArguments() throws Exception {
-        Process process = new Process() {
+        TestProcess process = new TestProcess() {
             public void handle() {
+                called = true;
             }
         };
 
@@ -89,8 +95,9 @@ public class StandardEventDispatcherTest extends TestCase {
     }
 
     public void testTooManyArguments() {
-        Process process = new Process() {
+        TestProcess process = new TestProcess() {
             public void handle(Event event1, Event event2) {
+                called = true;
             }
         };
 
@@ -98,33 +105,65 @@ public class StandardEventDispatcherTest extends TestCase {
     }
 
     public void testArgumentIsNotOfCorrectType_completelyDifferentType() {
-        Process process = new Process() {
+        TestProcess process = new TestProcess() {
             public void handle(int foo) {
+                called = true;
             }
         };
 
         dispatchReturnsFalse(process);
     }
 
-    public void testArgumentIsNotOfCorrectType_subtype(){        
-        //Process process = new Process(){
-        //
-        //}
+    public void testArgumentIsNotOfCorrectType_subtype() {
+        //todo
     }
 
     public void testReturntypeIsNotVoid() {
+        TestProcess process = new TestProcess() {
+            public String handle(Event event1, Event event2) {
+                called = true;
+                return null;
+            }
+        };
 
+        dispatchReturnsFalse(process);
     }
 
     public void testHandlerThrowsRuntimeException() {
-
+        //todo
     }
 
     public void testHandlerThrowsCheckedException() {
-
+        //todo
     }
 
-    public void testHandlerSuccessfully() {
+    public void testHandlerSuccessfully_exactMatch() throws Exception {
+        final DummyEvent sendEvent = new DummyEvent();
 
+        TestProcess process = new TestProcess() {
+            public void handle(DummyEvent e) {
+                called = true;
+                assertSame(sendEvent, e);
+            }
+        };
+
+        boolean result = dispatcher.dispatch(process, sendEvent);
+        assertTrue(result);
+        process.assertCalled();
+    }
+
+     public void testHandlerSuccessfully_superclassMatch() throws Exception {
+        final DummyEvent sendEvent = new DummyEvent();
+
+        TestProcess process = new TestProcess() {
+            public void handle(Event e) {
+                called = true;
+                assertSame(sendEvent, e);
+            }
+        };
+
+        boolean result = dispatcher.dispatch(process, sendEvent);
+        assertTrue(result);
+        process.assertCalled();
     }
 }
