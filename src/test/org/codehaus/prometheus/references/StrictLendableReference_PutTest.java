@@ -44,7 +44,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
 
         //put null and make sure that the takers are still waiting
         giveOthersAChance();
-        tested_put(null,null);
+        _tested_put(null,null);
 
         giveOthersAChance();
         takeThread1.assertIsStarted();
@@ -53,7 +53,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         //putUninterruptibly new value and make sure that the takers have
         //taken the expected value.
         Integer newRef = 1;
-        tested_put(newRef,null);
+        _tested_put(newRef,null);
         joinAll(takeThread1, takeThread2);
 
         takeThread1.assertSuccess(newRef);
@@ -65,7 +65,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         lendableRef = new StrictLendableReference<Integer>();
         Integer ref = 10;
 
-        tested_put(ref,null);
+        _tested_put(ref,null);
         assertHasRef(ref);
     }
 
@@ -83,7 +83,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         assertHasRef(oldRef);
 
         //return the old reference
-        tested_takeback(oldRef);
+        _tested_takeback(oldRef);
 
         //now wait for the completion of the lend and the put
         //and check if the put has taken place
@@ -141,7 +141,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         putThread.assertIsStarted();
         assertHasRef(takenref);
 
-        tested_takeback(takenref);
+        _tested_takeback(takenref);
                 
         //new let the lend and the put complete.
         joinAll(putThread);

@@ -1,4 +1,4 @@
 package org.codehaus.prometheus.processors;
 
-public @interface Order {
+public class DummyEvent extends Event{
 }

@@ -5,19 +5,20 @@ import org.codehaus.prometheus.channels.NullInputChannel;
 import org.codehaus.prometheus.channels.OutputChannel;
 import org.codehaus.prometheus.channels.NullOutputChannel;
 
-public class WellProcessor<E> implements Processor{
 
-    private final WellProcess<E> process;
+public class SourceProcessor<E> implements Processor{
+
+    private final SourceProcess<E> process;
     private final OutputChannel outputChannel;
     private volatile InputChannel<Event> incomingEventChannel = new NullInputChannel();
     private volatile OutputChannel<Event> outgoingEventChannel = new NullOutputChannel();
 
-    public WellProcessor(WellProcess<E> process, OutputChannel outputChannel) {
+    public SourceProcessor(SourceProcess<E> process, OutputChannel outputChannel) {
         this.process = process;
         this.outputChannel = outputChannel;
     }
 
-    public WellProcess<E> getProcess() {
+    public SourceProcess<E> getProcess() {
         return process;
     }
 

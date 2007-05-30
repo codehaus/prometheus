@@ -61,11 +61,11 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
         //first take a reference
-        tested_take(oldRef);
+        _tested_take(oldRef);
 
         //now put a reference, this should complete because put isn't blocked by takes
         Integer newRef = 20;
-        tested_tryPut(timeout, newRef, oldRef);
+        _tested_tryPut(timeout, newRef, oldRef);
     }
 
     public void testSuccess_startFromNullValue() {
@@ -80,6 +80,6 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         awaitableRef = new DefaultAwaitableReference<Integer>(originalRef);
 
         Integer newRef = originalRef==null?1:originalRef+1;
-        tested_tryPut(DELAY_SMALL_MS, newRef, originalRef);
+        _tested_tryPut(DELAY_SMALL_MS, newRef, originalRef);
     }
 }

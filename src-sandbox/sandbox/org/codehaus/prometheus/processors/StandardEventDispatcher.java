@@ -25,6 +25,14 @@ public class StandardEventDispatcher implements EventDispatcher{
         }
     }
 
+    /**
+     * Tries to find the handler-method. If no handler method is found, a NoSuchMethodException is thrown.
+     *
+     * @param process
+     * @param e
+     * @return
+     * @throws NoSuchMethodException if no handler method is found.
+     */
     private Method findMethod(Process process, Event e) throws NoSuchMethodException {
         Class eventClass = e.getClass();
 
@@ -32,8 +40,9 @@ public class StandardEventDispatcher implements EventDispatcher{
             try{
                return process.getClass().getMethod("handle", eventClass);
             }catch(NoSuchMethodException ex){
-                eventClass = eventClass.getSuperclass();
-                if(eventClass.getClass().equals(Object.class))
+                eventClass = eventClass.getSuperclass();                
+                System.out.println("event.class:"+eventClass.getClass());
+                if(eventClass.equals(Object.class))
                     throw new NoSuchMethodException();
             }
         }        

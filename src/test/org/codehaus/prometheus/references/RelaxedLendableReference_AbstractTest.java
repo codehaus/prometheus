@@ -36,19 +36,19 @@ public abstract class RelaxedLendableReference_AbstractTest<E> extends Concurren
         return t;
     }
 
-    public void tested_takeback(E takenbackRef) {
+    public void _tested_takeback(E takenbackRef) {
         TakeBackThread<Integer> takebackThread1 = scheduleTakeBack(takenbackRef);
         joinAll(takebackThread1);
         takebackThread1.assertSuccess();
     }
 
-    public void tested_takebackAndReset(E takenbackRef) {
+    public void _tested_takebackAndReset(E takenbackRef) {
         TakebackAndResetThread takebackAndResetThread = scheduleTakebackAndReset(takenbackRef);
         joinAll(takebackAndResetThread);
         takebackAndResetThread.assertIsTerminatedNormally();
     }
 
-    public void tested_take(Integer expectedTakenRef) {
+    public void _tested_take(Integer expectedTakenRef) {
         TakeThread takeThread = scheduleTake();
         joinAll(takeThread);
         takeThread.assertSuccess(expectedTakenRef);

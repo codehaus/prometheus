@@ -125,11 +125,11 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertIsShuttingdown();
     }
 
-    public void tested_repeat(Runnable task){
-        tested_repeat((Repeatable)new RepeatableRunnable(task));
+    public void _tested_repeat(Runnable task){
+        _tested_repeat((Repeatable)new RepeatableRunnable(task));
     }
 
-    public void tested_repeat(Repeatable task){
+    public void _tested_repeat(Repeatable task){
         RepeatThread repeatThread = scheduleRepeat(task);
         joinAll(repeatThread);
     }

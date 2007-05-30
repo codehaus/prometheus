@@ -2,16 +2,24 @@
 version_main                    = "0.1"
 name_main                       = "prometheus"
 name_testsupport                = "prometheus-testsupport"
+name_sandbox                    = "prometheus-sandbox"
 
 dir_src                         = "src"
 dir_src_main                    = "$dir_src/main"
+
 dir_src_test                    = "$dir_src/test"
 dir_src_testsupport             = "$dir_src/testsupport"
 dir_src_stresstest              = "$dir_src/stresstest"
 
+dir_sandbox                     = "src-sandbox"
+dir_src_sandbox                 = "$dir_sandbox/sandbox"
+dir_src_sandbox_test            = "$dir_sandbox/sandboxtest"
+
 dir_target                      = "target"
 dir_classes                     = "$dir_target/classes"
 dir_classes_main                = "$dir_classes/main"
+dir_classes_sandbox             = "$dir_classes/sandbox"
+dir_classes_sandbox_test        = "$dir_classes/sandbox_test"
 dir_classes_test                = "$dir_classes/test"
 dir_classes_stresstest          = "$dir_classes/stresstest"
 dir_classes_testsupport         = "$dir_classes/testsupport"
@@ -129,12 +137,45 @@ task ( compile_stresstest : 'Compiles the stress tests' ) {
     }
 }
 
+task ( compile_sandbox : 'Compiles the sandbox package' ) {
+    depends( compile_main )
+
+    println('executing compile_sandbox')      
+    Ant.mkdir(dir : dir_classes_sandbox)
+    Ant.javac ( srcdir : dir_src_sandbox , destDir : dir_classes_sandbox , source : '1.5' , target : '1.5' , debug : 'on' ) {
+        classpath {
+            path ( refid : 'classpath_provided' )
+            pathelement ( location : dir_classes_main )
+        }
+    }
+}
+
+task ( compile_sandbox_test : 'Compiles the sandbox test package' ) {
+    depends( compile_sandbox )
+    depends( compile_testsupport )
+
+    println('executing compile_sandbox_test')
+    Ant.mkdir(dir : dir_classes_sandbox_test)
+    Ant.javac ( srcdir : dir_src_sandbox_test , destDir : dir_classes_sandbox_test , source : '1.5' , target : '1.5' , debug : 'on' ) {
+        classpath {
+            path ( refid : 'classpath_provided' )
+            path ( refid : 'classpath_support' )
+            pathelement ( location : dir_classes_main )
+            pathelement ( location : dir_classes_sandbox )
+            pathelement ( location : dir_classes_testsupport )
+        }
+    }
+}
+
+
 task (compile_all : 'Compiles all sources '){
     println('executing compile_all')
     depends( compile_main )
     depends( compile_testsupport )
     depends( compile_test )
     depends( compile_stresstest )
+    depends( compile_sandbox )
+    depends( compile_sandbox_test )
 }
 
 //================ test ==================================================
@@ -184,34 +225,67 @@ task(test_stress : 'Runs the stress tests'){
     }
 }
 
+task(test_sandbox : 'Runs the sandbox tests'){
+    depends( compile_sandbox_test )
+    println('executing the sandbox tests')
+    Ant.mkdir ( dir : dir_unitreports )
+    Ant.junit ( printsummary : 'yes' , haltonfailure : 'false') {
+        formatter ( type : 'plain' )
+        batchtest ( fork : 'yes' , todir : dir_unitreports ) {
+            fileset (
+                dir : dir_classes_sandbox_test , includes : '**/*Test.class', excludes : '**/*AbstractTest.class'
+            )
+        }
+        classpath {
+            path ( refid : 'classpath_provided' )
+            path ( refid : 'classpath_support' )
+            pathelement ( location : dir_classes_main )
+            pathelement ( location : dir_classes_testsupport )
+            pathelement ( location : dir_classes_sandbox )
+            pathelement ( location : dir_classes_sandbox_test )
+        }
+    }
+}
+
+
 task( test_all : 'Runs all tests' ){
     println('Running all tests')
     depends( test_main )
     depends( test_stress )
+    depends( test_sandbox )
 }
 
 //================ jar ==================================================
 
 task( jar_main : 'Creates the jar for the main module' ){
     depends( compile_main )
-    println(' Creates the jar for the main module')
+    println( 'Creates the jar for the main module' )
     Ant.mkdir(dir : dir_target)
-    Ant.jar( jarfile : target + '/' + name_main + ' ' + version_main + '.jar',
-             basedir : classes_main)
+    Ant.jar( jarfile : "$dir_target/$name_main-${version_main}.jar",
+             basedir : dir_classes_main)
 }
 
-task( jar_testsupport : 'Creates the jar for the main module'){
+task( jar_testsupport : 'Creates the jar for the testsupport module'){
     depends( compile_testsupport )
-    println(' Creates the jar for testsupport module')
-    Ant.mkdir( dir: target)
-    Ant.jar( jarfile : target + '/' + name_testsupport + ' ' + version_main + '.jar',
-             basedir : classes_main)
+    println( 'Creates the jar for testsupport module' )
+    Ant.mkdir( dir: dir_target)
+    Ant.jar( jarfile : "$dir_target/$name_testsupport-${version_main}.jar",
+             basedir : dir_classes_main)
+}
+
+task( jar_sandbox : 'Creates the jar for the sandbox module'){
+    depends( compile_sandbox )
+    println( 'Creates the jar for the sandbox module' )
+    Ant.mkdir( dir: dir_target)
+    Ant.jar( jarfile : "$dir_target/${name_sandbox}-${version_main}.jar",
+             basedir : dir_classes_sandbox)
 }
 
 task( jar_all : 'Creates all jars' ){
     println( 'Creating all jars' )
-    depends( jar_prometheus )
+    depends( jar_main )
     depends( jar_testsupport )
+    depends( jar_sandbox )
 }
 
 
@@ -249,15 +323,11 @@ task( clover_activate : 'Activates Clover test coverage'){
     Ant.mkdir( dir : "$dir_clover/db/" )
     Ant.'clover-setup'(initString : "$dir_clover/db/prometheus-coverage.db"){
         files{
-            exclude( name : "$dir_src_test/**/*.java")
+            exclude( name : "**/test/**/*.java")
+            exclude( name : "**/test/**/*Test.java")
         }
     }
 }
-
-//<files>
-//  <exclude name="**/optional/**/*.java"/>
-//</files>
-
 
 task( clover_html : 'Generates a Clover HTML test coverage report'){
     depends( clover_activate )
@@ -324,9 +394,8 @@ task( build_dist : 'Builds the complete distribution' ){
     depends( compile_main )
     depends( test_main )
     depends( compile_testsupport )
-    depends( test_testsupport )
-    depends( test_stress )
+    //depends( test_stress )
     depends( javadoc_all )
-    depends( jar_main )
+    depends( jar_all )
     depends( jar_testsupport )
 }

@@ -44,7 +44,7 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
 
         //place a new value, and check that the takes were successful.
         Integer ref = 10;
-        tested_put(ref, null);
+        _tested_put(ref, null);
         joinAll(takeThread1, takeThread2);
         takeThread1.assertSuccess(ref);
         takeThread2.assertSuccess(ref);

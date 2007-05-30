@@ -28,8 +28,8 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
         Integer ref = 10;
         lendableRef = new RelaxedLendableReference(ref);
 
-        tested_take(ref);
-        tested_takebackAndReset(ref);
+        _tested_take(ref);
+        _tested_takebackAndReset(ref);
         assertHasRef(null);
     }
 
@@ -54,13 +54,13 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
         Integer originalRef = 10;
         lendableRef = new RelaxedLendableReference(originalRef);
 
-        tested_take(originalRef);
+        _tested_take(originalRef);
 
         //do multiple takebacksAndResets with different reference, and check that the
         //the reference has null
         for (int k = 0; k < 10; k++) {
             Integer replaceRef = 20+k;
-            tested_takebackAndReset(replaceRef);
+            _tested_takebackAndReset(replaceRef);
             assertHasRef(null);
         }
     }

@@ -40,7 +40,7 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
         assertLendCount(1);
 
         //do the good takeback and make sure that the structure wasn't corrupted by the bad takeback
-        tested_takebackAndReset(originalRef);
+        _tested_takebackAndReset(originalRef);
         // and check that the put has finished
         giveOthersAChance();
         //the takebackandreset has reset the reference to null, so null is returned
@@ -65,14 +65,14 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
         putThread.assertIsStarted();
 
         //do the first good takebackandreset
-        tested_takebackAndReset(originalRef);
+        _tested_takebackAndReset(originalRef);
         //now do a second bad takebackandreset
         Integer badRef = 30;
         assertTakebackAndResetIsRejected(badRef);
         assertHasRef(null);
 
         //now do a second good takeback
-        tested_takebackAndReset(originalRef);
+        _tested_takebackAndReset(originalRef);
         // and check that the put has finished
         giveOthersAChance();
         //the takebackandreset has reset the reference to null, so null is returned
@@ -91,10 +91,10 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
 
         //do a put and make sure it is pending
         Integer newRef = 20;
-        PutThread putThread = tested_pendingPut(newRef);
+        PutThread putThread = _tested_pendingPut(newRef);
 
         //do the takeback
-        tested_takebackAndReset(ref);
+        _tested_takebackAndReset(ref);
 
         // and check that the put has finished
         giveOthersAChance();
@@ -114,10 +114,10 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
 
         //do a put and make sure it is pending
         Integer newRef = 20;
-        PutThread putThread = tested_pendingPut(newRef);
+        PutThread putThread = _tested_pendingPut(newRef);
 
         //do the takeback
-        tested_takebackAndReset(ref);
+        _tested_takebackAndReset(ref);
 
         // and check that the put has finished
         giveOthersAChance();
@@ -144,7 +144,7 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
         lendableRef = new StrictLendableReference<Integer>(ref);
         tested_take(ref);
 
-        tested_takebackAndReset(ref);
+        _tested_takebackAndReset(ref);
 
         //now do the second takeback and reset and make sure it fails
         assertTakebackAndResetIsRejected(ref);

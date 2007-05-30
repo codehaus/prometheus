@@ -25,7 +25,7 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
         newRunningRepeater(true,poolsize);
 
         CountingRepeatable repeatable = new CountingRepeatable(poolsize);
-        tested_repeat(repeatable);
+        _tested_repeat(repeatable);
 
         giveOthersAChance();
         repeatable.assertRunCount(poolsize,2*poolsize);
@@ -56,7 +56,7 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
         newRunningRepeater(false,10);
 
         CountingRunnable task = new CountingRunnable();
-        tested_repeat(task);
+        _tested_repeat(task);
 
         sleepMs(DELAY_LONG_MS);
         task.assertExecutedMoreThanOnce();

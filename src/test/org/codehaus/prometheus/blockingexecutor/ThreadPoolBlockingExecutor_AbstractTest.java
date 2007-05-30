@@ -23,20 +23,32 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     public volatile ThreadPoolBlockingExecutor executor;
     public volatile TracingThreadFactory threadFactory;
 
+    public void _tested_execute(Runnable task) {
+        ExecuteThread thread = scheduleExecute(task, START_UNINTERRUPTED);
+        joinAll(thread);
+        thread.assertIsTerminatedNormally();
+    }
+
     public void tearDown() throws Exception {
         super.tearDown();
 
         if (executor != null) {
-            ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
-            joinAll(shutdownNowThread);
-            shutdownNowThread.assertIsTerminatedNormally();
-
-            AwaitShutdownThread awaitThread = scheduleAwaitShutdown();
-            joinAll(awaitThread);
-            awaitThread.assertIsTerminatedNormally();
-
+            _tested_shutdownNow();
+            _tested_awaitShutdown();
             assertIsShutdown();
         }
+    }
+
+    private void _tested_awaitShutdown() {
+        AwaitShutdownThread awaitThread = scheduleAwaitShutdown();
+        joinAll(awaitThread);
+        awaitThread.assertIsTerminatedNormally();
+    }
+
+    private void _tested_shutdownNow() {
+        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
+        joinAll(shutdownNowThread);
+        shutdownNowThread.assertIsTerminatedNormally();
     }
 
     public ThreadPoolBlockingExecutor getExecutor() {
@@ -53,7 +65,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public void newStartedBlockingExecutor() {
-        newStartedBlockingExecutor(1,0);
+        newStartedBlockingExecutor(1, 0);
     }
 
     public void newStartedBlockingExecutor(int queuesize, int poolsize, Runnable initialTask) {

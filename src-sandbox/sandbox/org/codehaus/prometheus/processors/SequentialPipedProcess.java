@@ -6,6 +6,8 @@ import java.util.List;
  * Not all processes need to be parallel. Some can be executed sequential.
  */
 public class SequentialPipedProcess implements PipedProcess{
+    private SourceProcess sourceProcess;
+    private SinkProcess sinkProcess;
     private List<PipedProcess> pipedProcesses;
 
     public Object process(Object msg) throws Exception {

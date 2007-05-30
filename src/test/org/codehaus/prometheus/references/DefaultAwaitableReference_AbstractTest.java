@@ -87,7 +87,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         return taker;
     }
 
-    public void tested_put(boolean startInterrupted, Integer oldRef, Integer newRef) {
+    public void _tested_put(boolean startInterrupted, Integer oldRef, Integer newRef) {
         PutThread putThread = schedulePut(newRef, startInterrupted);
         joinAll(putThread);
         putThread.assertSuccess(oldRef);
@@ -95,7 +95,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         assertHasReference(newRef);
     }
 
-    public void tested_tryPut(long timeout, Integer newRef, Integer oldRef) {
+    public void _tested_tryPut(long timeout, Integer newRef, Integer oldRef) {
         TimedTryPutThread putter = scheduleTryPut(newRef, timeout);
         joinAll(putter);
         putter.assertSuccess(oldRef);
@@ -115,13 +115,13 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         return t;
     }
 
-    public void tested_put(Integer newRef, Integer expectedReturnedRef) {
+    public void _tested_put(Integer newRef, Integer expectedReturnedRef) {
         PutThread putter = schedulePut(newRef);
         joinAll(putter);
         putter.assertSuccess(expectedReturnedRef);
     }
 
-    public void tested_take(Integer expectedTakenRef) {
+    public void _tested_take(Integer expectedTakenRef) {
         TakeThread taker = scheduleTake();
         joinAll(taker);
         taker.assertSuccess(expectedTakenRef);

@@ -8,6 +8,7 @@ package org.codehaus.prometheus.blockingexecutor;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 import org.codehaus.prometheus.testsupport.TracingThreadFactory;
+import org.codehaus.prometheus.exceptionhandler.NullExceptionHandler;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -43,6 +44,7 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         assertActualPoolSize(0);
         assertDesiredPoolSize(poolsize);
         assertHasDefaultThreadPool();
+        assertHasDefaultExceptionHandler();
     }
 
     //================ ThreadPoolBlockingExecutor(int) =========================
@@ -82,6 +84,7 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         assertDesiredPoolSize(poolsize);
         assertTrue(executor.getWorkQueue().isEmpty());
         threadFactory.assertNoThreadsCreated();
+        assertHasDefaultExceptionHandler();
     }
 
     private void assertHasDefaultThreadPool() {
@@ -101,4 +104,8 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         assertEquals(Integer.MAX_VALUE, linkedWorkQueue.remainingCapacity());
     }
 
+    private void assertHasDefaultExceptionHandler(){
+        assertTrue(executor.getExceptionHandler() instanceof NullExceptionHandler);
+    }
 }
+

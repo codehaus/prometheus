@@ -39,27 +39,27 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         assertSame(expectedRef, lendableRef.peek());
     }
 
-    public PutThread tested_pendingPut(E newRef) {
+    public PutThread _tested_pendingPut(E newRef) {
         PutThread putThread = schedulePut(newRef);
         giveOthersAChance();
         putThread.assertIsStarted();
         return putThread;
     }
 
-    public void tested_takeback(E ref) {
+    public void _tested_takeback(E ref) {
         TakeBackThread<E> t = scheduleTakeback(ref);
         joinAll(t);
         t.assertSuccess();
     }
 
-    public void tested_put(E newRef, E expectedOldRef) {
+    public void _tested_put(E newRef, E expectedOldRef) {
         PutThread<E> putThread = schedulePut(newRef);
         joinAll(putThread);
         putThread.assertSuccess(expectedOldRef);
         assertHasRef(newRef);
     }
 
-    public void tested_takebackAndReset(E ref) {
+    public void _tested_takebackAndReset(E ref) {
         TakebackAndResetThread<E> t = scheduleTakebackAndReset(ref);
         joinAll(t);
         t.assertIsTerminatedNormally();

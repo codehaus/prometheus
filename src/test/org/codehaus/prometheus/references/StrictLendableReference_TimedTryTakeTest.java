@@ -64,7 +64,7 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
 
         //do a put and check that the tryTake was succesfull.
         Integer ref = 10;
-        tested_put(ref,null);
+        _tested_put(ref,null);
         joinAll(tryTakeThread);
         tryTakeThread.assertSuccess(ref);
         assertHasRef(ref);
@@ -125,7 +125,7 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
 
         //do a put and check that the tryTake was succesfull.
         Integer newRef = 10;
-        tested_put(newRef,null);
+        _tested_put(newRef,null);
         joinAll(tryTakeThread);
         tryTakeThread.assertSuccess(newRef);
         assertHasRef(newRef);

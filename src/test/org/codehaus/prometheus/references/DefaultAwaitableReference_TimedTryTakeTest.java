@@ -90,7 +90,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         giveOthersAChance();
         takeThread.assertIsStarted();
 
-        tested_put(ref,null);
+        _tested_put(ref,null);
                 
         joinAll(takeThread);
         takeThread.assertSuccess(ref);
@@ -134,7 +134,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         taker.assertIsStarted();
 
         Integer ref = 20;
-        tested_put(ref,null);
+        _tested_put(ref,null);
         joinAll(taker);
         taker.assertSuccess(ref);
         assertHasReference(ref);

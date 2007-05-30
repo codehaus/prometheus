@@ -13,11 +13,11 @@ public class DefaultAwaitableReference_PeekTest extends DefaultAwaitableReferenc
 
         //check when a new value is set, the new value is seen
         Integer ref = 20;
-        tested_put(ref,null);
+        _tested_put(ref,null);
         assertSame(ref,awaitableRef.peek());
 
         //check if restored to null, the null value is seen
-        tested_put(null,ref);
+        _tested_put(null,ref);
         assertNull(awaitableRef.peek());
     }
 }

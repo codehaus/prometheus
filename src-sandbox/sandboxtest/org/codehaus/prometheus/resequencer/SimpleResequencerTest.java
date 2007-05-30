@@ -13,8 +13,8 @@ public class SimpleResequencerTest extends ConcurrentTestCase {
         SimpleResequencer<Integer> resequencer = new SimpleResequencer<Integer>(queue, new ReentrantLock());
         BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>();
 
-        int threadcount = 10;
-        int count = 100;
+        int threadcount = 3;
+        int count = 5;
         ExecutorService executor = new ThreadPoolExecutor(threadcount, threadcount, 0, TimeUnit.NANOSECONDS, workQueue);
 
         for (int k = 0; k < count; k++) {

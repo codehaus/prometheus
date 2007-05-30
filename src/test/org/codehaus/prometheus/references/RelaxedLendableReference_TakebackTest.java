@@ -27,12 +27,12 @@ public class RelaxedLendableReference_TakebackTest extends RelaxedLendableRefere
         lendableRef = new RelaxedLendableReference<Integer>(ref);
 
         //first take a ref
-        tested_take(ref);
+        _tested_take(ref);
         //now take it back
-        tested_takeback(ref);
+        _tested_takeback(ref);
         assertHasRef(ref);
         //now take it back a second time. This cal should be ignored.
-        tested_takeback(ref);        
+        _tested_takeback(ref);
         assertHasRef(ref);
     }
 
@@ -42,10 +42,10 @@ public class RelaxedLendableReference_TakebackTest extends RelaxedLendableRefere
         lendableRef = new RelaxedLendableReference<Integer>(ref);
 
         //take a reference
-        tested_take(ref);
+        _tested_take(ref);
         //now bring back a bogus reference
         Integer bogusRef = 20;
-        tested_takeback(bogusRef);
+        _tested_takeback(bogusRef);
         assertHasRef(ref);
     }
 
@@ -55,19 +55,19 @@ public class RelaxedLendableReference_TakebackTest extends RelaxedLendableRefere
 
         //take back a bogus value
         Integer bogusRef = 20;
-        tested_takeback(bogusRef);
+        _tested_takeback(bogusRef);
         assertHasRef(ref);
 
         //now bring back the correct reference
-        tested_takeback(ref);
+        _tested_takeback(ref);
         assertHasRef(ref);
     }
 
     public void testTakebackSuccess() throws InterruptedException {
         Integer ref = 10;
         lendableRef = new RelaxedLendableReference<Integer>(ref);
-        tested_take(ref);
-        tested_takeback(ref);
+        _tested_take(ref);
+        _tested_takeback(ref);
         assertHasRef(ref);
     }
 }

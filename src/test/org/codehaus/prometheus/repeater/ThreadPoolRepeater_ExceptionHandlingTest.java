@@ -29,7 +29,7 @@ public class ThreadPoolRepeater_ExceptionHandlingTest extends ThreadPoolRepeater
 
          ThrowingRunnable task = new ThrowingRunnable();
          Repeatable repeatable = new RepeatableRunnable(task);
-         tested_repeat(repeatable);
+         _tested_repeat(repeatable);
 
          sleepMs(DELAY_LONG_MS);
          task.assertExecutedOnceOrMore();

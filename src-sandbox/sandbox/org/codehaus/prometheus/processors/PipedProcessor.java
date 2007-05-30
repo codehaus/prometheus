@@ -8,6 +8,8 @@ import org.codehaus.prometheus.channels.OutputChannel;
 /**
  * A {@link Processor} that executes a {@link PipedProcess}. The input is taken from an {@link InputChannel}
  * and the output is placed on an {@Link OutputChannel}.
+ *
+ * @author Peter Veentjer.
  */
 public class PipedProcessor<E, F> implements Processor {
     private final PipedProcess<E, F> process;
