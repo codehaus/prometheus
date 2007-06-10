@@ -16,11 +16,15 @@ public class MonitoringProcessor implements Processor, Monitorable {
         return target;
     }
 
-    public boolean processOneMsg() throws Exception {
+    public Object getProcess() {
+        return target.getProcess();
+    }
+
+    public boolean once() throws Exception {
         if(on){
-            return target.processOneMsg();
+            return target.once();
         }else{
-            return target.processOneMsg();
+            return target.once();
         }
     }
 

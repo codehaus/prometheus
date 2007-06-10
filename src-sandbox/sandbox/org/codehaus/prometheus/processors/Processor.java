@@ -1,10 +1,17 @@
 package org.codehaus.prometheus.processors;
 
 /**
- * 
+ *
+ * @author Peter Veentjer.
  */
-public interface Processor{
+public interface Processor<P> {
 
-    boolean processOneMsg() throws Exception;
-        
+    /**
+     * Returns the process this Processor is executing
+     *
+     * @return the process this Processor is executing
+     */
+    P getProcess();
+
+    boolean once()throws Exception;
 }

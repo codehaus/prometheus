@@ -17,7 +17,7 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
     }
 
     public void testUnstarted_nonEmptyPool(){
-        testUnstarted(5);
+        testUnstarted(3);
     }
 
     public void testUnstarted(int poolsize) {
@@ -32,7 +32,7 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
     }
 
     public void testStarted() {
-        int poolsize = 10;
+        int poolsize = 3;
         newStartedBlockingExecutor(1,poolsize);
 
         start();

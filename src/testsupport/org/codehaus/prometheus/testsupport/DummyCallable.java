@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
  *
  * @author Peter Veentjer.
  */
+///CLOVER:OFF
 public class DummyCallable<E> implements Callable<E> {
 
     public E call() throws Exception {

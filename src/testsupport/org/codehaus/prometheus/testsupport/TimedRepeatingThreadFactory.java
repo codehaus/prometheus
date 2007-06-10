@@ -17,6 +17,7 @@ import java.util.Vector;
  *
  * @author Peter Veentjer.
  */
+///CLOVER:OFF
 public class TimedRepeatingThreadFactory implements ThreadFactory {
     private final long maxtime;
     private final TimeUnit unit;

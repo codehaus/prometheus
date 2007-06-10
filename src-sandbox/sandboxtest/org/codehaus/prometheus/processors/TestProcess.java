@@ -2,7 +2,7 @@ package org.codehaus.prometheus.processors;
 
 import junit.framework.TestCase;
 
-public class TestProcess implements Process {
+public class TestProcess{
 
     public boolean called = false;
 

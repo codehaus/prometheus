@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Peter Veentjer.
  */
+///CLOVER:OFF
 public class CountingCallable<E> implements Callable<E> {
 
     private AtomicInteger count = new AtomicInteger();

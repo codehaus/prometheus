@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Peter Veentjer.
  */
+///CLOVER:OFF
 public class TimedRepeatingThread extends TestThread {
     private final long maxTimeNs;
     private final Runnable task;

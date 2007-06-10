@@ -10,6 +10,7 @@ package org.codehaus.prometheus.testsupport;
  *
  * @author Peter Veentjer.
  */
+///CLOVER:OFF
 public class DummyRunnable implements Runnable{
     public void run() {        
     }
