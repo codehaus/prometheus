@@ -131,6 +131,11 @@ public class ThreadPoolRepeater implements RepeaterService {
         this(createDefaultThreadpool(poolsize), createDefaultLendableReference(null));
     }
 
+    //todo: needs to be tested
+    public ThreadPoolRepeater(Repeatable repeatable){
+        this(createDefaultThreadpool(1),createDefaultLendableReference(repeatable));
+    }
+
     /**
      * Creates a new strict and unstarted ThreadPoolRepeater with the given poolsize and
      * task to repeat. It uses a {@link StandardThreadPool#StandardThreadPool()} as threadfactory.

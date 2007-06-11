@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * @author Peter Veentjer.
  */
-public class BufferedChannel<E> implements InputChannel<E>,OutputChannel<E>{
+public class BufferedChannel<E> implements Channel<E>{
     private final BlockingQueue<E> queue;
 
     public BufferedChannel(){

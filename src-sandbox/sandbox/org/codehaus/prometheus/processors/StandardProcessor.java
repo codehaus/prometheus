@@ -20,6 +20,37 @@ public class StandardProcessor<P> implements Processor {
     private final OutputChannel output;
     private volatile Dispatcher dispatcher = new StandardDispatcher();
 
+    /**
+     * Creates a sink processor.
+     *
+     * @param input
+     * @param process
+     * @throws NullPointerException if process is null.
+     */
+    public StandardProcessor(InputChannel input, P process){
+        this(process,input,null);
+    }
+
+    /**
+     * Creates a source processor.
+     * 
+     * @param process
+     * @param output
+     * @throws NullPointerException if process is null.
+     */
+    public StandardProcessor(P process, OutputChannel output){
+        this(process,null,output);
+    }
+
+    /**
+     *
+     * @param process
+     * @param input
+     * @param output
+     * @throws NullPointerException if process is null.
+     *
+     * todo: process should be the argument in the middle
+     */
     public StandardProcessor(P process, InputChannel input, OutputChannel output) {
         if (process == null) throw new NullPointerException();
         this.process = process;
@@ -43,15 +74,16 @@ public class StandardProcessor<P> implements Processor {
         Object out;
         Object in;
         if (input == null) {
-            in = null;
             out = dispatch();
+            in = null;
         } else {
             in = input.take();
             out = dispatch(in);
         }
 
-        output(out, in);
-        return true;
+        out = determineOutput(out,in);
+        output(out);
+        return !(out instanceof ProcessDeath);
     }
 
     private Object dispatch(Object... in) throws Exception {
@@ -67,17 +99,21 @@ public class StandardProcessor<P> implements Processor {
         } 
     }
 
-    private void output(Object out, Object in) throws InterruptedException {
-        //if there is no output, we are finishes (the out is dropped)
-        if (output == null)
-            return;
-
+    private Object determineOutput(Object out, Object in){
         //if out was void, we should use the in
         if (Void.INSTANCE.equals(out))
             out = in;
 
-        //a null indicates that no value is placed
-        if (out == null)
+        return out;
+    }
+
+    private void output(Object out) throws InterruptedException {
+        //if there is no output, we are finishes (the out is dropped)
+        if (output == null)
+            return;
+
+        //if out is null we should not post a result
+        if(out == null)
             return;
 
         output.put(out);

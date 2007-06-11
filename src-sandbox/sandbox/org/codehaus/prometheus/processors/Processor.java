@@ -13,5 +13,11 @@ public interface Processor<P> {
      */
     P getProcess();
 
+    /**
+     * Run the Processor once.
+     *
+     * @return true if it should run again, false otherwise.
+     * @throws Exception
+     */
     boolean once()throws Exception;
 }

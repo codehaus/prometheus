@@ -13,9 +13,17 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
         newProcessor(Integer.MAX_VALUE, Integer.MAX_VALUE, process);
     }
 
+    public void newSourceProcessor(Object process){
+        newProcessor(-1,Integer.MAX_VALUE,process);
+    }
+
+    public void newSinkProcessor(Object process){
+        newProcessor(Integer.MAX_VALUE,-1,process);
+    }
+
     public void newProcessor(int inputCapacity, int outputCapacity, Object process) {
-        inputChannel = new BufferedChannel(inputCapacity);
-        outputChannel = new BufferedChannel(outputCapacity);
+        inputChannel = inputCapacity<0?null:new BufferedChannel(inputCapacity);
+        outputChannel = outputCapacity<0?null:new BufferedChannel(outputCapacity);
         standardProcessor = new StandardProcessor(process, inputChannel, outputChannel);
     }
 

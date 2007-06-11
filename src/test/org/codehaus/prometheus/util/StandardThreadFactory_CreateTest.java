@@ -6,7 +6,6 @@
 package org.codehaus.prometheus.util;
 
 import junit.framework.TestCase;
-import org.codehaus.prometheus.util.StandardThreadFactory;
 
 public class StandardThreadFactory_CreateTest extends TestCase {
 
@@ -32,6 +31,7 @@ public class StandardThreadFactory_CreateTest extends TestCase {
             }
         };
 
+        //todo: extra checks needed        
         factory.newThread(task);
     }
 

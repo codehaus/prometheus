@@ -79,8 +79,20 @@ public class StandardProcessorTest extends StandardProcessor_AbstractTest {
         process.assertCalled();
     }
 
-    public void testNoArgProcessReturnsVoid() {
+    public void testNoArgProcessReturnsValue() {
+        final Integer value = 10;
 
+        TestProcess process = new TestProcess() {
+            public Integer receive() {
+                called = true;
+                return value;
+            }
+        };
+        newSourceProcessor(process);
+
+        spawnedOnce(true);
+        spawnedTake(value);
+        process.assertCalled();
     }
 
     public void testReceiveReturnsNull() {
