@@ -2,6 +2,7 @@ package org.codehaus.prometheus.processors;
 
 import org.codehaus.prometheus.channels.BufferedChannel;
 import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.processors.StandardProcessor;
 
 public abstract class StandardProcessor_AbstractTest extends Processor_AbstractTest {
 

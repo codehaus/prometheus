@@ -119,6 +119,7 @@ public class ThreadPoolRepeater implements RepeaterService {
 
     private final LendableReference<Repeatable> lendableRef;
     private final ThreadPool threadPool;
+    private volatile boolean shutdownAfterFalse = false;
 
     /**
      * Creates a new strict and unstarted ThreadPoolRepeater with the given poolsize and a
@@ -132,15 +133,15 @@ public class ThreadPoolRepeater implements RepeaterService {
     }
 
     //todo: needs to be tested
-    public ThreadPoolRepeater(Repeatable repeatable){
-        this(createDefaultThreadpool(1),createDefaultLendableReference(repeatable));
+    public ThreadPoolRepeater(Repeatable repeatable) {
+        this(createDefaultThreadpool(1), createDefaultLendableReference(repeatable));
     }
 
     /**
      * Creates a new strict and unstarted ThreadPoolRepeater with the given poolsize and
      * task to repeat. It uses a {@link StandardThreadPool#StandardThreadPool()} as threadfactory.
      *
-     * @param task the task that should be repeater (is allowed to be null).
+     * @param task     the task that should be repeater (is allowed to be null).
      * @param poolsize the desired number of worker-threads in the threadpool.
      * @throws IllegalArgumentException if poolsize smaller than 0.
      */
@@ -151,11 +152,11 @@ public class ThreadPoolRepeater implements RepeaterService {
     /**
      * Creates a new unstarted ThreadPoolRepeater with the given task, poolsize and ThreadFactory.
      *
-     * @param strict if repeater is strict or relaxed.
-     * @param task the task to repeat (is allowed to be null).
-     * @param poolsize the desired number of worker-threads in the threadpool.
+     * @param strict        if repeater is strict or relaxed.
+     * @param task          the task to repeat (is allowed to be null).
+     * @param poolsize      the desired number of worker-threads in the threadpool.
      * @param threadFactory the ThreadFactory used to fill the threadpool.
-     * @throws NullPointerException if threadFactory is null.
+     * @throws NullPointerException     if threadFactory is null.
      * @throws IllegalArgumentException if poolsize smaller than 0.
      */
     public ThreadPoolRepeater(boolean strict, Repeatable task, int poolsize, ThreadFactory threadFactory) {
@@ -170,7 +171,7 @@ public class ThreadPoolRepeater implements RepeaterService {
     }
 
     /**
-     * Returns the LendableReference this ThreadPoolRepeater uses to store the reference to the 
+     * Returns the LendableReference this ThreadPoolRepeater uses to store the reference to the
      * current task.
      *
      * @return the LendableReference this ThreadPoolRepeater uses.
@@ -179,6 +180,7 @@ public class ThreadPoolRepeater implements RepeaterService {
         return lendableRef;
     }
 
+
     /**
      * Returns the ThreadPool this ThreadPoolRepeater uses.
      *
@@ -186,6 +188,16 @@ public class ThreadPoolRepeater implements RepeaterService {
      */
     public ThreadPool getThreadPool() {
         return threadPool;
+    }
+
+    //todo: test
+    public void setShutdownAfterFalse(boolean shutdownAfterFalse) {
+        this.shutdownAfterFalse = shutdownAfterFalse;
+    }
+
+    //todo: test
+    public boolean isShutdownAfterFalse() {
+        return shutdownAfterFalse;
     }
 
     public ExceptionHandler getExceptionHandler() {
@@ -256,7 +268,6 @@ public class ThreadPoolRepeater implements RepeaterService {
     /**
      * Makes sure that there is ThreadPoolRepeater that is able to work. If it isn't
      * possible, a RejectedExecutionException is thrown.
-     *
      */
     private void ensureUsableRepeater() {
         Lock lock = threadPool.getStateChangeLock();
@@ -276,9 +287,9 @@ public class ThreadPoolRepeater implements RepeaterService {
     public boolean tryRepeat(final Repeatable task) {
         ensureUsableRepeater();
 
-        TimedUninterruptibleSection section = new TimedUninterruptibleSection(){
+        TimedUninterruptibleSection section = new TimedUninterruptibleSection() {
             protected Object originalsection(long timeoutNs) throws InterruptedException, TimeoutException {
-                lendableRef.tryPut(task,timeoutNs,TimeUnit.NANOSECONDS);
+                lendableRef.tryPut(task, timeoutNs, TimeUnit.NANOSECONDS);
                 return null;
             }
         };
@@ -315,6 +326,8 @@ public class ThreadPoolRepeater implements RepeaterService {
             boolean again = true;
             try {
                 again = task.execute();
+                if(!again && shutdownAfterFalse)
+                    shutdown();                    
             } finally {
                 if (again)
                     lendableRef.takeback(task);

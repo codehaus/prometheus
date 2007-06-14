@@ -45,7 +45,7 @@ public class StandardDispatcherTest extends TestCase {
     }
 
     public void assertVoidDispatchSuccess(Object... args) {
-        assertDispatchSuccess(Void.INSTANCE, args);
+        assertDispatchSuccess(VoidValue.INSTANCE, args);
     }
 
     private void assertDispatchCausesInvocationTargetException(Exception ex) throws Exception {
