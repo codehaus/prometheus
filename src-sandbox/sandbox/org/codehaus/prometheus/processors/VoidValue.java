@@ -1,8 +1,13 @@
 package org.codehaus.prometheus.processors;
 
-public final class Void {
 
-    public final static Void INSTANCE = new Void();
+/**
+ *
+ * @author Peter Veentjer.
+ */
+public final class VoidValue {
+
+    public final static VoidValue INSTANCE = new VoidValue();
 
     @Override
     public int hashCode() {
@@ -10,8 +15,7 @@ public final class Void {
     }
 
     public boolean equals(Object that) {
-        if (that == null) return false;
-        return that instanceof Void;
+        return that instanceof VoidValue;
     }
 
     @Override

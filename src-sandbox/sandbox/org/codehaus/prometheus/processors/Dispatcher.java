@@ -15,7 +15,7 @@ public interface Dispatcher {
      * @param process the target object that has the method.
      * @param args the arguments to feed to process
      * @return the value that was returned by the method. If the method has void as return type,
-     *         an instanceof {@link Void} will be returned.  
+     *         an instanceof {@link VoidValue} will be returned.
      * @throws NoSuchMethodException if no matching method is found.
      */
     Object dispatch(Object process, Object... args)

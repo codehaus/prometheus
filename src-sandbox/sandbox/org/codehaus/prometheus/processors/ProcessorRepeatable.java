@@ -31,7 +31,7 @@ public class ProcessorRepeatable implements Repeatable {
         boolean again =  processor.once();
         if(!again){
             //todo: hack
-            System.out.println("shutting down: "+processor.getProcess());
+            System.out.println("shutting down: "+processor);
         }
         return again;
     }

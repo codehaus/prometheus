@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.*;
 
 /**
+ * 
+ *
  * Default implementation.
  */
 public class StandardDispatcher implements Dispatcher {
@@ -14,7 +16,7 @@ public class StandardDispatcher implements Dispatcher {
     public Object dispatch(Object process, Object... args) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Method method = findMethod(process, args);
         Object result = method.invoke(process, args);
-        return returnsVoid(method) ? Void.INSTANCE : result;
+        return returnsVoid(method) ? VoidValue.INSTANCE : result;
     }
 
     private boolean returnsVoid(Method method) {
