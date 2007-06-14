@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.processors;
 
 /**
- * Unittests the {@link StandardProcessor}.
+ * Unittests the {@link org.codehaus.prometheus.processors.standardprocessor.StandardProcessor}.
  */
 public class StandardProcessorTest extends StandardProcessor_AbstractTest {
 

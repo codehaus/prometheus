@@ -16,10 +16,6 @@ public class MonitoringProcessor implements Processor, Monitorable {
         return target;
     }
 
-    public Object getProcess() {
-        return target.getProcess();
-    }
-
     public boolean once() throws Exception {
         if(on){
             return target.once();

@@ -5,7 +5,7 @@ import org.codehaus.prometheus.channels.OutputChannel;
 
 /**
  * todo:
- * this class can be integrated in the {@link StandardProcessor}.
+ * this class can be integrated in the {@link org.codehaus.prometheus.processors.standardprocessor.StandardProcessor}.
  */
 public class SequentialProcessor implements Processor{
 
