@@ -1,13 +1,12 @@
-package org.codehaus.prometheus.processors;
+package org.codehaus.prometheus.processors.standardprocessor;
+
+import org.codehaus.prometheus.processors.TestPipedProcess;
+import org.codehaus.prometheus.processors.TestProcess;
 
 /**
- * Unittests the {@link org.codehaus.prometheus.processors.standardprocessor.StandardProcessor}.
+ * Unittests the {@link StandardProcessor}.
  */
-public class StandardProcessorTest extends StandardProcessor_AbstractTest {
-
-    public void testConstructor_Object_InputChannel_OutputChannel() {
-
-    }
+public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
 
     public void testInterruptedWhileWaiting() {
         //todo

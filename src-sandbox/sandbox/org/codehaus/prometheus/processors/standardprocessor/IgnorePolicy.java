@@ -7,7 +7,7 @@ package org.codehaus.prometheus.processors.standardprocessor;
  *
  * @author Peter Veentjer.
  */
-public class IgnorePolicy implements Policy {
+public class IgnorePolicy implements ErrorPolicy {
     public Object handle(Exception ex, Object... in) {
         return org.codehaus.prometheus.processors.VoidValue.INSTANCE;
     }

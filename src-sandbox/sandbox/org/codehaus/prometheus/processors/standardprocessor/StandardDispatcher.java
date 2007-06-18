@@ -1,26 +1,39 @@
-package org.codehaus.prometheus.processors;
+package org.codehaus.prometheus.processors.standardprocessor;
+
+import org.codehaus.prometheus.processors.Dispatcher;
+import org.codehaus.prometheus.processors.VoidValue;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.*;
 
 /**
- * 
+ * Default implementation of a {@link org.codehaus.prometheus.processors.Dispatcher}.
  *
- * Default implementation.
+ * @author Peter Veentjer.
  */
 public class StandardDispatcher implements Dispatcher {
 
     private static final String NAME_HANDLE_METHOD = "receive";
 
     public Object dispatch(Object process, Object... args) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        if (process == null) throw new NullPointerException();
+
         Method method = findMethod(process, args);
+        return invoke(process, method, args);
+    }
+
+    private Object invoke(Object process, Method method, Object... args) throws IllegalAccessException, InvocationTargetException {
         Object result = method.invoke(process, args);
+        return returns(method, result);
+    }
+
+    private Object returns(Method method, Object result) {
         return returnsVoid(method) ? VoidValue.INSTANCE : result;
     }
 
-    private boolean returnsVoid(Method method) {
-        return method.getReturnType().equals(java.lang.Void.TYPE);
+    private boolean returnsVoid(Method method) {        
+        return method.getReturnType().equals(Void.TYPE);
     }
 
     /**

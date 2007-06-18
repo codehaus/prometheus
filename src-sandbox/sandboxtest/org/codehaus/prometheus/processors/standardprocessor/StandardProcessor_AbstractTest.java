@@ -1,8 +1,8 @@
-package org.codehaus.prometheus.processors;
+package org.codehaus.prometheus.processors.standardprocessor;
 
 import org.codehaus.prometheus.channels.BufferedChannel;
+import org.codehaus.prometheus.processors.Processor_AbstractTest;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.processors.standardprocessor.StandardProcessor;
 
 public abstract class StandardProcessor_AbstractTest extends Processor_AbstractTest {
 
@@ -14,18 +14,18 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
         newProcessor(Integer.MAX_VALUE, Integer.MAX_VALUE, process);
     }
 
-    public void newSourceProcessor(Object process){
-        newProcessor(-1,Integer.MAX_VALUE,process);
+    public void newSourceProcessor(Object process) {
+        newProcessor(-1, Integer.MAX_VALUE, process);
     }
 
-    public void newSinkProcessor(Object process){
-        newProcessor(Integer.MAX_VALUE,-1,process);
+    public void newSinkProcessor(Object process) {
+        newProcessor(Integer.MAX_VALUE, -1, process);
     }
 
     public void newProcessor(int inputCapacity, int outputCapacity, Object process) {
-        inputChannel = inputCapacity<0?null:new BufferedChannel(inputCapacity);
-        outputChannel = outputCapacity<0?null:new BufferedChannel(outputCapacity);
-        standardProcessor = new StandardProcessor(process, inputChannel, outputChannel);
+        inputChannel = inputCapacity < 0 ? null : new BufferedChannel(inputCapacity);
+        outputChannel = outputCapacity < 0 ? null : new BufferedChannel(outputCapacity);
+        standardProcessor = new StandardProcessor(inputChannel, process, outputChannel);
     }
 
     public ProcessThread scheduleProcess() {

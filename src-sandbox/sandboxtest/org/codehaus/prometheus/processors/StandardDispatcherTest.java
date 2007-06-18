@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.lang.reflect.InvocationTargetException;
 
+import org.codehaus.prometheus.processors.standardprocessor.StandardDispatcher;
+
 /**
  * Unittests the {@link StandardDispatcher}.
  *
