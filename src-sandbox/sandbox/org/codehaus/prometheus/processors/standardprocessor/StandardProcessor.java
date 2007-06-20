@@ -270,11 +270,11 @@ public class StandardProcessor implements Processor {
         return format("StandardProcessor(%s)", Arrays.asList(processes));
     }
 
-    interface Step {
+    private interface Step {
         Object evaluate(Object arg) throws Exception;
     }
 
-    class ProcessStep implements Step {
+    private class ProcessStep implements Step {
         private final Object process;
 
         public ProcessStep(Object process) {
@@ -330,7 +330,7 @@ public class StandardProcessor implements Processor {
         }
     }
 
-    class OutputStep implements Step {
+    private class OutputStep implements Step {
 
         OutputStep() {
             //if no output is available, this step should not have been created

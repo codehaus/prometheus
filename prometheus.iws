@@ -28,20 +28,10 @@
   <component name="ChangeListManager">
     <list default="true" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor.java" afterPath="$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prometheus.ipr" afterPath="$PROJECT_DIR$/prometheus.ipr" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/src.iml" afterPath="$PROJECT_DIR$/src/src.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/DropPolicyTest.java" afterPath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/DropPolicyTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src-sandbox/src-sandbox.iml" afterPath="$PROJECT_DIR$/src-sandbox/src-sandbox.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prometheus.iws" afterPath="$PROJECT_DIR$/prometheus.iws" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_AbstractTest.java" afterPath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_AbstractTest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_OnceTest.java" afterPath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_OnceTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/channels/MulticastOutputChannel.java" afterPath="$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/channels/MulticastOutputChannel.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/root.iml" afterPath="$PROJECT_DIR$/root.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prometheus.iws" afterPath="$PROJECT_DIR$/prometheus.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors/standardprocessor/StandardDispatcher.java" afterPath="$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors/standardprocessor/StandardDispatcher.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_ExceptionHandlingTest.java" afterPath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_ExceptionHandlingTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_ConstructorTest.java" afterPath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_ConstructorTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_StopTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_InputOutputAndBlockingTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/channels/BufferedChannel.java" afterPath="$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/channels/BufferedChannel.java" />
     </list>
     <list name="Failed commit: Default" comment="- improved the threadpool, better behaving while shutting down&#10;- improved the repeater so it makes use the threadpool improvement&#10;- improved the blockingexecutor so it makes use of the threadpool improvements" />
     <list name="Failed commit: Default (3)" comment="" />
@@ -251,7 +241,25 @@
       <file leaf-file-name="StandardProcessor_OnceTest.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_OnceTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="13" selection-start="184" selection-end="184" vertical-scroll-proportion="0.11935808">
+            <state line="143" column="79" selection-start="3479" selection-end="3479" vertical-scroll-proportion="0.592">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StandardProcessor.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="327" column="9" selection-start="11157" selection-end="11157" vertical-scroll-proportion="0.677">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StandardProcessor_AbstractTest.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_AbstractTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="85" column="0" selection-start="2775" selection-end="2775" vertical-scroll-proportion="1.357">
               <folding />
             </state>
           </provider>
@@ -487,6 +495,62 @@
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="src-sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors/standardprocessor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="src-sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
           <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/channels" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
@@ -556,15 +620,15 @@
     </key>
   </component>
   <component name="RestoreUpdateTree" />
-  <component name="RunManager" selected="JUnit.StandardProcessor_ExceptionHandlingTest.testIgnore">
-    <tempConfiguration default="false" name="StandardProcessor_ExceptionHandlingTest.testIgnore" type="JUnit" factoryName="JUnit" enabled="false" merge="false">
+  <component name="RunManager" selected="JUnit.StandardProcessor_OnceTest.test_multipleProcesses">
+    <tempConfiguration default="false" name="StandardProcessor_OnceTest.test_multipleProcesses" type="JUnit" factoryName="JUnit" enabled="false" merge="false">
       <pattern value="org.codehaus.prometheus.processors.standardprocessor.*" />
       <module name="src-sandbox" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="org.codehaus.prometheus.processors.standardprocessor" />
-      <option name="MAIN_CLASS_NAME" value="org.codehaus.prometheus.processors.standardprocessor.StandardProcessor_ExceptionHandlingTest" />
-      <option name="METHOD_NAME" value="testIgnore" />
+      <option name="MAIN_CLASS_NAME" value="org.codehaus.prometheus.processors.standardprocessor.StandardProcessor_OnceTest" />
+      <option name="METHOD_NAME" value="test_multipleProcesses" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" />
       <option name="PARAMETERS" />
@@ -906,7 +970,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="25" width="1920" height="1150" extended-state="0" />
+    <frame x="-5" y="25" width="1930" height="1153" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
@@ -920,18 +984,18 @@
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="8" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32976654" order="9" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16439688" order="10" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25024343" order="10" />
       <window_info id="TODO" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="4" />
       <window_info id="Maven" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="8" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" order="1" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" order="0" />
       <window_info id="Module Dependencies" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32905138" order="13" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32454252" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32280514" order="0" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497309" order="2" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39961204" order="6" />
       <window_info id="Duplicates" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="8" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30664062" order="2" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30185005" order="2" />
       <window_info id="SVN Repositories" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32782102" order="8" />
       <window_info id="File View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
       <window_info id="Dependency Cycles" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32905138" order="14" />
@@ -959,7 +1023,7 @@
     <option name="PERFORM_EDIT_IN_BACKGROUND" value="true" />
     <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="- a lot of work on the processors.&#10;   working with return values&#10;   working on stopping processes" />
+    <option name="LAST_COMMIT_MESSAGE" value="- a lot of work on the processes, especially exception handling and cleaning up the logic inside the standardprocessor" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
@@ -980,6 +1044,7 @@
     <MESSAGE value="- improvements on processor" />
     <MESSAGE value="-extracted policies for exceptions" />
     <MESSAGE value="- a lot of work on the processors.&#10;   working with return values&#10;   working on stopping processes" />
+    <MESSAGE value="- a lot of work on the processes, especially exception handling and cleaning up the logic inside the standardprocessor" />
   </component>
   <component name="VssConfiguration">
     <option name="CLIENT_PATH" value="" />
@@ -1031,20 +1096,6 @@
     <option name="myLastEditedConfigurable" value="Default" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors/Dispatcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="17" selection-start="217" selection-end="217" vertical-scroll-proportion="0.15284716">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/TestProcess.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="16" selection-start="239" selection-end="239" vertical-scroll-proportion="0.20773931">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_StopTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="7" column="0" selection-start="63" selection-end="171" vertical-scroll-proportion="0.12357217">
@@ -1076,13 +1127,6 @@
     <entry file="file://$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/DropPolicyTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="13" column="14" selection-start="314" selection-end="314" vertical-scroll-proportion="0.211838">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_AbstractTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="22" selection-start="264" selection-end="264" vertical-scroll-proportion="0.07061267">
           <folding />
         </state>
       </provider>
@@ -1129,9 +1173,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/channels/BufferedChannel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="44" selection-start="1105" selection-end="1105" vertical-scroll-proportion="0.68895644">
+          <folding>
+            <element signature="method#getInternalQueue#0;class#BufferedChannel#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="327" column="9" selection-start="11157" selection-end="11157" vertical-scroll-proportion="0.677">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_AbstractTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="85" column="0" selection-start="2775" selection-end="2775" vertical-scroll-proportion="1.357">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src-sandbox/sandboxtest/org/codehaus/prometheus/processors/standardprocessor/StandardProcessor_OnceTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="13" selection-start="184" selection-end="184" vertical-scroll-proportion="0.11935808">
+        <state line="143" column="79" selection-start="3479" selection-end="3479" vertical-scroll-proportion="0.592">
           <folding />
         </state>
       </provider>

@@ -26,6 +26,10 @@ public class BufferedChannel<E> implements Channel<E>{
         this.queue = queue;
     }
 
+    public BlockingQueue<E> getInternalQueue() {
+        return queue;
+    }
+
     public E take() throws InterruptedException {
         return queue.take();
     }

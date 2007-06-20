@@ -10,6 +10,10 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
     protected volatile BufferedChannel inputChannel;
     protected volatile BufferedChannel outputChannel;
 
+    public void newProcessor(Object[] processes) {
+        newProcessor(Integer.MAX_VALUE, Integer.MAX_VALUE, processes);
+    }
+
     public void newProcessor(Object process) {
         newProcessor(Integer.MAX_VALUE, Integer.MAX_VALUE, process);
     }
@@ -22,10 +26,14 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
         newProcessor(Integer.MAX_VALUE, -1, process);
     }
 
-    public void newProcessor(int inputCapacity, int outputCapacity, Object process) {
+     public void newProcessor(int inputCapacity, int outputCapacity, Object[] processes) {
         inputChannel = inputCapacity < 0 ? null : new BufferedChannel(inputCapacity);
         outputChannel = outputCapacity < 0 ? null : new BufferedChannel(outputCapacity);
-        standardProcessor = new StandardProcessor(inputChannel, process, outputChannel);
+        standardProcessor = new StandardProcessor(inputChannel, processes, outputChannel);
+    }
+
+    public void newProcessor(int inputCapacity, int outputCapacity, Object process) {
+        newProcessor(inputCapacity,outputCapacity,new Object[]{process});
     }
 
     public ProcessThread scheduleProcess() {
