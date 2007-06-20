@@ -2,25 +2,29 @@ package org.codehaus.prometheus.processors.standardprocessor;
 
 import org.codehaus.prometheus.channels.InputChannel;
 import org.codehaus.prometheus.channels.OutputChannel;
-import org.codehaus.prometheus.processors.*;
+import org.codehaus.prometheus.processors.Dispatcher;
+import org.codehaus.prometheus.processors.Processor;
+import org.codehaus.prometheus.processors.VoidValue;
 
 import static java.lang.String.format;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * A {@link org.codehaus.prometheus.processors.Processor} that executes a piped process. The takeInput is taken from an {@link InputChannel}
- * and the sendOutput is placed on an {@Link OutputChannel}. If there is no InputChannel, it is a source
- * process. If there is no sendOutput, it is a sink process.
+ * A {@link org.codehaus.prometheus.processors.Processor} that executes a piped process. The takeInput is
+ * taken from an {@link InputChannel} and the sendOutput is placed on an {@Link OutputChannel}. If there
+ * is no InputChannel, it is a source process. If there is no sendOutput, it is a sink process.
  * <p/>
  * <h1>Dispatching</h1>
  * <p/>
  * If a receive method returns a non null reference, this reference is send to the sendOutput (when sendOutput exists,
  * if no sendOutput exists, the item is dropped).
  * If a receive method returns null, nothing is send to sendOutput.
- * If a receive method returns void, the takeInput is send to the sendOutput (if there was takeInput, if there is no takeInput,
- * nothing happens).
+ * If a receive method returns void, the takeInput is send to the sendOutput (if there was takeInput, if
+ * there is no takeInput, nothing happens).
  * When no matching receive method exists, the inputitem is send to the sendOutput. If there was no takeInput, or
  * there is no sendOutput, nothing happens.
  * <p/>
@@ -44,14 +48,14 @@ import java.util.Arrays;
  * not responsibilities process:
  * -overall exception handling
  * -threading
- * -how to get data (doesn't know the location, but also no blocking?)
- * -how to get rid of it (doesn't know the location, but also no blocking?).
- *      blocking prevents testability.
+ * -how to get data (doesn't know the location, but also no blocking)
+ * -how to get rid of it (doesn't know the location, but also no blocking).
+ * blocking prevents testability.
  * why should the process not know about the channels?
  * -dispatching on type of data
  * -logging
  * -tracing
- *
+ * <p/>
  * If a process returns an iterator, this iterator could be seen as a lazy collection (a collection where the
  * elements don't need to exist from the start).
  *
@@ -61,10 +65,11 @@ public class StandardProcessor implements Processor {
     private final Object[] processes;
     private final InputChannel input;
     private final OutputChannel output;
-    private volatile Dispatcher dispatcher = new StandardDispatcher();
+    private final Step[] steps;
 
     //todo: default another policy
     private volatile ErrorPolicy policy = new PropagatePolicy();
+    private volatile Dispatcher dispatcher = new StandardDispatcher();
     private volatile StopStrategy stopStrategy = new StandardStopStrategy();
 
     /**
@@ -80,8 +85,7 @@ public class StandardProcessor implements Processor {
     }
 
     /**
-     * Creates a 
-     *
+     * Creates a
      *
      * @param input
      * @param processes
@@ -103,7 +107,6 @@ public class StandardProcessor implements Processor {
     }
 
     /**
-     *
      * @param processes
      * @param output
      */
@@ -125,7 +128,6 @@ public class StandardProcessor implements Processor {
     }
 
     /**
-     *
      * @param input
      * @param processes
      * @param output
@@ -135,6 +137,16 @@ public class StandardProcessor implements Processor {
         this.processes = processes;
         this.input = input;
         this.output = output;
+        steps = createSteps();
+    }
+
+    private Step[] createSteps() {
+        List<Step> stepLists = new LinkedList<Step>();
+        for (Object process : processes)
+            stepLists.add(new ProcessStep(process));
+        if (output != null)
+            stepLists.add(new OutputStep());
+        return stepLists.toArray(new Step[stepLists.size()]);
     }
 
     /**
@@ -208,87 +220,42 @@ public class StandardProcessor implements Processor {
         this.policy = policy;
     }
 
-    //todo;
-    // exception handling. not all exceptions are caught.
-    //todo:
-    //this method still needs a lot of cleaning up. The repeated iterator extraction
-    //logic dpoesn't make me a very happy guy. If new structures are going to be added
-    //(like list and arrays) this logic is going to be duplicated again.
-    //todo:
-    //method is way too long.
-    /**
-     * A recursive method
-     *
-     * @param processIndex          the processIndex of the process to use
-     * @param arg the takeInput arg for the process
-     * @return true if process should be executed again, false otherwise.
-     * @throws Exception
-     */
-    private boolean process(int processIndex, Object arg) throws Exception {
-        assert processIndex >= 0 && processIndex <= processes.length;
-        assert arg != null;
+    public boolean evaluateSteps(int stepIndex, Object arg) throws Exception {
+        if (stepIndex == steps.length)
+            return true;
 
-        if (processIndex == processes.length) {
-            //we are at the end of the line
+        boolean again = true;
+        Step step = steps[stepIndex];
+        for (Iterator it = toIterator(arg); it.hasNext();) {
+            arg = it.next();
+            Object result = step.evaluate(arg);
+            if (result != null) {
+                if (stopStrategy.stop(result))
+                    again = false;
 
-            if(arg instanceof Iterator){
-                Iterator inputIterator = (Iterator) arg;
-                for(;inputIterator.hasNext();)
-                    sendOutput(inputIterator.next());
-            }else{
-                sendOutput(arg);
-            }
-
-            //todo:
-            return processorWantsToStop(arg);
-        } else {
-            //there is a process we need to evaluate.
-
-            Object process = processes[processIndex];
-            if (arg instanceof Iterator) {
-                Iterator argIt = (Iterator) arg;
-
-                boolean lastProcessStopped = false;
-                for (; argIt.hasNext();) {
-                    arg = argIt.next();
-                    Object returnValue = evaluateProcess(process, arg);
-                    if (returnValue != null) {
-                        if (stopStrategy.stop(returnValue))
-                            return false;
-
-                        lastProcessStopped = process(processIndex + 1, returnValue);
-                    }
-                }
-
-                return lastProcessStopped;
-            } else {
-                Object returnValue = evaluateProcess(process, arg);
-                if (returnValue == null)
-                    return true;
-
-                if (stopStrategy.stop(returnValue))
-                    return false;
-
-                return process(processIndex + 1, returnValue);
+                evaluateSteps(stepIndex + 1, result);
             }
         }
+        return again;
     }
 
-    private boolean processorWantsToStop(Object actualArgument) {
-        if (actualArgument == null)
-            return false;
+    public Iterator toIterator(Object arg) {
+        if (arg instanceof Iterator)
+            return (Iterator) arg;
 
-        return stopStrategy.stop(actualArgument);
+        LinkedList<Object> l = new LinkedList<Object>();
+        l.add(arg);
+        return l.iterator();
     }
 
     public boolean once() throws Exception {
         Object in = takeInput();
-        return process(0, in);
+        return evaluateSteps(0, in);
     }
 
     /**
      * Takes a message from the takeInput. If no takeInput is available, a VoidValue
-     * is returned. This call blocks if takeInput is not null and no takeInput is
+     * is returned. This call blocks if input is not null and no input is
      * available.
      *
      * @return the taken message (always a not null value).
@@ -298,81 +265,97 @@ public class StandardProcessor implements Processor {
         return input == null ? VoidValue.INSTANCE : input.take();
     }
 
-    /**
-     * Evaluates the process and returns the takeInput that can be send to the next process
-     * or the the sendOutput.
-     *
-     * @param process
-     * @param in
-     * @return
-     * @throws Exception
-     */
-    private Object evaluateProcess(Object process, Object in) throws Exception {
-        Object out = dispatch(process, in);
-        return determineNextInput(out, in);
-    }
-
-    /**
-     * Calls a method on the process.
-     *
-     * @param in the actual arguments of the method to call.
-     * @return the result of the method call on the process.
-     * @throws Exception the exception the method call causes
-     */
-    private Object dispatch(Object process, Object in) throws Exception {
-        assert process != null && in != null;
-        try {
-            //todo: hack, void value should be dealth with in the dispatcher
-            if (in instanceof VoidValue)
-                return dispatcher.dispatch(process);
-            else
-                return dispatcher.dispatch(process, in);
-        } catch (NoSuchMethodException ex) {
-            //todo: this would also be an excelent place to add some logging
-
-            //if no method was found, we can return void.
-            return VoidValue.INSTANCE;
-        } catch (InvocationTargetException ex) {
-            Throwable target = ex.getTargetException();
-            if (!(target instanceof Exception)) {
-                //we are not going to deal with it
-                //todo: needs to be cast to error, etc
-                throw new RuntimeException(target);
-            }
-
-            Exception targetException = (Exception) target;
-            //todo: add logging?
-
-            return policy.handle(targetException, in);
-        }
-    }
-
-    private Object determineNextInput(Object returnValue, Object actualArgument) {
-        //if returnValue was void, we should use the actualArgument
-        return returnValue instanceof VoidValue ? actualArgument : returnValue;
-    }
-
-    /**
-     * Sends the sendOutput to the sendOutput. If no sendOutput is available, this
-     * call is ignored. If the msg is null or void, this call is ignored.
-     *
-     * @param msg the message to place on the sendOutput.
-     * @throws InterruptedException if placement is interrupted.
-     */
-    private void sendOutput(Object msg) throws InterruptedException {
-        //if there is no sendOutput, we are finishes (the out is dropped)
-        if (output == null)
-            return;
-
-        //if out is null or void, we should also ignore it.
-        if (msg == null || msg instanceof VoidValue)
-            return;
-
-        output.put(msg);
-    }
-
     @Override
     public String toString() {
         return format("StandardProcessor(%s)", Arrays.asList(processes));
+    }
+
+    interface Step {
+        Object evaluate(Object arg) throws Exception;
+    }
+
+    class ProcessStep implements Step {
+        private final Object process;
+
+        public ProcessStep(Object process) {
+            if (process == null) throw new NullPointerException();
+            this.process = process;
+        }
+
+        public Object evaluate(Object arg) throws Exception {
+            assert arg != null;
+            Object returned = dispatch(arg);
+            return determineInputNextStep(returned, arg);
+        }
+
+        /**
+         * Calls a method on the process.
+         *
+         * @param arg the actual arguments of the method to call.
+         * @return the result of the method call on the process.
+         * @throws Exception the exception the method call causes
+         */
+        private Object dispatch(Object arg) throws Exception {
+            assert arg != null;
+            try {
+                //todo: hack, void value should be dealth with arg the dispatcher
+                if (arg instanceof VoidValue)
+                    return dispatcher.dispatch(process);
+                else
+                    return dispatcher.dispatch(process, arg);
+            } catch (NoSuchMethodException ex) {
+                //todo: this would also be an excellent place to add some logging
+
+                //if no method was found, we can return void. This make a missing
+                //method the same as a non missing method that returns void.
+                return VoidValue.INSTANCE;
+            } catch (InvocationTargetException ex) {
+                Throwable target = ex.getTargetException();
+                if (!(target instanceof Exception)) {
+                    //we are not going to deal with it
+                    //todo: needs to be cast to error, etc
+                    throw new RuntimeException(target);
+                }
+
+                Exception targetException = (Exception) target;
+                //todo: add logging?
+
+                return policy.handle(targetException, arg);
+            }
+        }
+
+        private Object determineInputNextStep(Object returned, Object arg) {
+            //if returned was void, we should use the arg
+            return returned instanceof VoidValue ? arg : returned;
+        }
+    }
+
+    class OutputStep implements Step {
+
+        OutputStep() {
+            //if no output is available, this step should not have been created
+            if (output == null) throw new NullPointerException();
+        }
+
+        public Object evaluate(Object arg) throws InterruptedException {
+            assert arg != null;
+            sendOutput(arg);
+            return null;
+        }
+
+        /**
+         * Sends the sendOutput to the sendOutput. If no sendOutput is available, this
+         * call is ignored. If the msg is null or void, this call is ignored.
+         *
+         * @param msg the message to place on the sendOutput.
+         * @throws InterruptedException if placement is interrupted.
+         */
+        private void sendOutput(Object msg) throws InterruptedException {
+            //if out is void, we should not output it
+            if (msg instanceof VoidValue)
+                return;
+
+            output.put(msg);
+        }
     }
 }

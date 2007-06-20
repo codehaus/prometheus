@@ -1,49 +1,11 @@
 package org.codehaus.prometheus.processors.standardprocessor;
 
-import org.codehaus.prometheus.processors.TestPipedProcess;
 import org.codehaus.prometheus.processors.TestProcess;
 
 /**
  * Unittests the {@link StandardProcessor}.
  */
 public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
-
-    public void testInterruptedWhileWaiting() {
-        //todo
-    }
-
-    public void testSomeWaitingNeeded() {
-        Object item = new Object();
-        TestPipedProcess process = new TestPipedProcess(item);
-        newProcessor(process);
-
-        //start the processing, this call should block because no work is available.
-        ProcessThread processThread = scheduleProcess();
-        giveOthersAChance();
-        processThread.assertIsStarted();
-
-        //now place an item and make sure that the process completes
-        spawnedPut(item);
-        joinAll(processThread);
-        processThread.assertSuccess(true);
-
-        //now do a take and make sure it succeeds.
-        spawnedTake(item);
-        process.assertSuccess(item);
-    }
-
-    public void testNoWaitingNeeded() {
-        Object item = new Object();
-        TestPipedProcess process = new TestPipedProcess(item);
-        newProcessor(process);
-
-        spawnedPut(item);
-
-        spawnedOnce(true);
-
-        spawnedTake(item);
-        process.assertSuccess(item);
-    }
 
     public void testProcessHasNoMatchingReceive() {
         Integer arg = 10;
@@ -114,34 +76,23 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         process.assertCalled();
     }
 
-    public void testPutOnOutputIsInterrupted() {
+    public void testInputReturnsIterator() {
         //todo
     }
 
-    public void testPutOnOutputThrowsException() {
+    public void testProcessReturnsIterator() {
         //todo
     }
 
-    public void testReceiveThrowsUncheckedException() {
-        final Integer arg = 10;
-        final RuntimeException ex = new RuntimeException() {
-        };
-
-        TestProcess process = new TestProcess() {
-            public Object receive(Integer i) {
-                assertSame(arg, i);
-                called = true;
-                throw ex;
-            }
-        };
-        newProcessor(process);
-
-        spawnedPut(arg);
-        spawnedOnceThrowsException(ex);
-        process.assertCalled();
+    public void test_noInput_noOutput_noProcess() {
+        //todo
     }
 
-    public void testReceiveThrowsCheckedException() {
+    public void test_onlyProcess() {
+        //todo
+    }
+
+    public void test_multipleProcesses() {
         //todo
     }
 }

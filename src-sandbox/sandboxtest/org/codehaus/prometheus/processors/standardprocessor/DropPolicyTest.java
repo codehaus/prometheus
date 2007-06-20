@@ -11,7 +11,7 @@ import org.codehaus.prometheus.processors.VoidValue;
 public class DropPolicyTest extends TestCase {
 
     public void test_noArg(){
-                
+        //todo        
     }
 
     public void test_oneArg(){
@@ -20,7 +20,7 @@ public class DropPolicyTest extends TestCase {
     }
 
     public void test_multipleArgs(){
-
+        //todo
     }
 
     public void assertHandle(Object... in){

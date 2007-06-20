@@ -80,7 +80,7 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
 
         public void assertSuccess(boolean expectedResult) {
             assertIsTerminatedNormally();
-            assertEquals(expectedResult, expectedResult);
+            assertEquals(expectedResult, result);
         }
     }
 

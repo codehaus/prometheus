@@ -25,10 +25,10 @@ public class StandardDispatcher implements Dispatcher {
 
     private Object invoke(Object process, Method method, Object... args) throws IllegalAccessException, InvocationTargetException {
         Object result = method.invoke(process, args);
-        return returns(method, result);
+        return determineReturnValue(method, result);
     }
 
-    private Object returns(Method method, Object result) {
+    private Object determineReturnValue(Method method, Object result) {
         return returnsVoid(method) ? VoidValue.INSTANCE : result;
     }
 

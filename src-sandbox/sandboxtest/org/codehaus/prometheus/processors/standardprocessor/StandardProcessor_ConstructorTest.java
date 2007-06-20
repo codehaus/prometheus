@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.processors.standardprocessor;
 
 /**
- * Unittests the constructors of {@link org.codehaus.prometheus.processors.standardprocessor.StandardProcessor}.
+ * Unittests the constructors of {@link StandardProcessor}.
  *
  * @author Peter Veentjer.
  */
