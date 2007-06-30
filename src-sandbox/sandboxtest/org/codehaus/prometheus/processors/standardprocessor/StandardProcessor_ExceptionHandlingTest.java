@@ -3,9 +3,10 @@ package org.codehaus.prometheus.processors.standardprocessor;
 import org.codehaus.prometheus.processors.IntegerExceptionProcess;
 import org.codehaus.prometheus.processors.IntegerProcess;
 import org.codehaus.prometheus.processors.TestProcess;
+import org.codehaus.prometheus.processors.ThrowingIterator;
 import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
 
-import static java.util.Arrays.asList;
+import java.awt.*;
 import java.util.Iterator;
 
 /**
@@ -29,6 +30,13 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
 
     public void testSetter() {
         newProcessor(new TestProcess());
+        ErrorPolicy policy = new Drop_ErrorPolicy();
+        standardProcessor.setErrorPolicy(policy);
+        assertSame(policy, standardProcessor.getErrorPolicy());
+    }
+
+    public void testSetter_nullArgument() {
+        newProcessor(new TestProcess());
 
         try {
             standardProcessor.setErrorPolicy(null);
@@ -38,8 +46,20 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
     }
 
     public void testErrorIsNotCaught() {
-        //todo
+        Integer arg = 10;
+        Error error = new AWTError("foo");
+        TestProcess process = new IntegerExceptionProcess(arg, error);
+        newProcessor(process);
+
+        standardProcessor.setErrorPolicy(new Ignore_ErrorPolicy());
+
+        spawned_assertPut(arg);
+        spawned_assertOnceThrowsException(error);
+        process.assertCalledOnce();
+        spawned_assertTakeNotPossible();
     }
+
+    //===================== Propagate_ErrorPolicy ====================
 
     public void testPropagate() {
         testPropagate(uncheckedexception);
@@ -56,6 +76,8 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
         spawned_assertOnceThrowsException(ex);
         process.assertCalledOnce();
     }
+
+    //===================== Drop_ErrorPolicy ====================
 
     public void testDrop() {
         testDrop(uncheckedexception);
@@ -74,6 +96,8 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
         spawned_assertTakeNotPossible();
     }
 
+    //===================== Ignore_ErrorPolicy ====================
+
     public void testIgnore() {
         testIgnore(uncheckedexception);
         testIgnore(checkedexception);
@@ -90,6 +114,8 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
         process.assertCalledOnce();
         spawned_assertTake(arg);
     }
+
+    //===================== Replace_ErrorPolicy ====================
 
     public void testReplace() {
         testReplace(uncheckedexception);
@@ -111,6 +137,12 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
         spawned_assertTake(replaced);
     }
 
+    //===================== OtherProblemAreas ====================
+
+    public void testProcessCausesException() {
+        //todo
+    }
+
     public void testTakeFromInputCausesException() {
         //todo
     }
@@ -119,12 +151,16 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
         //todo
     }
 
-    public void testIteratorThrowsException() {
+    public void testIteratorHasNextThrowsException(){
+        
+    }
+
+    public void testIteratorNextThrowsException() {
         Integer initialValue = 1;
         Integer value1 = 1;
         Object value2 = new RuntimeException();
         Integer value3 = 10;
-        Iterator it = asList(value1, value2, value3).iterator();
+        Iterator it = new ThrowingIterator(value1, value2, value3);
         Integer value2Replacement = 5;
 
         TestProcess process = new IntegerProcess(initialValue, it);
@@ -132,7 +168,7 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
         standardProcessor.setErrorPolicy(new Replace_ErrorPolicy(value2Replacement));
 
         spawned_assertPut(initialValue);
-        spawned_assertOnceAndReturnTrue();
+        spawned_assertOnceAndReturnTrue(3);
         process.assertCalledOnce();
 
         //this can be simplified.

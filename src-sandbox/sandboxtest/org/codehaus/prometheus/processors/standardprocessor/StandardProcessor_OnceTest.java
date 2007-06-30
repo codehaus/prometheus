@@ -27,14 +27,11 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         spawned_assertTakeNotPossible();
     }
 
-    public void testArgProcessReturnsVoid() {
+    public void testSingleProcessReturnsVoid() {
         Integer arg = 10;
 
         IntegerProcess process = new IntegerProcess(arg, VoidValue.INSTANCE);
-        testArgProcessReturnsVoid(process, arg);
-    }
 
-    public void testArgProcessReturnsVoid(TestProcess process, Integer arg) {
         newProcessor(process);
 
         spawned_assertPut(arg);
@@ -43,6 +40,23 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         process.assertCalledOnce();
         spawned_assertTakeNotPossible();
     }
+
+    public void testFirstOfMultipleProcessesReturnsVoid() {
+        Integer arg1 = 10;
+        Integer arg2 = 20;
+
+        IntegerProcess process1 = new IntegerProcess(arg1, VoidValue.INSTANCE);
+        IntegerProcess process2 = new IntegerProcess(arg1,arg2);
+        newProcessor(process1,process2);
+
+        spawned_assertPut(arg1);
+        spawned_assertOnceAndReturnTrue();
+        spawned_assertTake(arg2);
+        process1.assertCalledOnce();
+        process2.assertCalledOnce();
+        spawned_assertTakeNotPossible();
+    }
+
 
     public void testInputReturnsVoid() {
         TestProcess process = new NoArgProcess();
@@ -67,7 +81,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         spawned_assertTakeNotPossible();
     }
 
-    public void testReceiveReturnsNull() {
+    public void testSingleProcessReturnsNull() {
         Integer arg = 10;
 
         TestProcess process = new IntegerProcess(arg, null);
@@ -79,10 +93,25 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         process.assertCalledOnce();
     }
 
+    public void testFirstOfMultipleProcessesReturnsNull() {
+        Integer arg1 = 1;
+
+        TestProcess process1 = new IntegerProcess(arg1, null);
+        TestProcess process2 = new IntegerProcess();
+
+        newProcessor(new Object[]{process1, process2});
+
+        spawned_assertPut(arg1);
+        spawned_assertOnceAndReturnTrue();
+        process1.assertCalledOnce();
+        process2.assertNotCalled();
+        spawned_assertTakeNotPossible();
+    }
+
     public void testProcessReturnsIterator() {
         Integer arg = 10;
-        List<Integer> itemList = generateRandomNumberList(20);
-       
+        List<Integer> itemList = generateRandomNumberList(10);
+
         TestProcess process = new IntegerProcess(arg, itemList.iterator());
         newProcessor(process);
 
@@ -95,7 +124,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
     }
 
     public void testInputReturnsIterator() {
-        List<Integer> itemList = generateRandomNumberList(20);
+        List<Integer> itemList = generateRandomNumberList(10);
 
         newProcessor(new Object[]{});
 
@@ -107,39 +136,12 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         }
     }
 
+    /*
     public void testChainedProcessesThatReturnIterators() {
-        /*
-        final Integer arg = 10;
-
-        final List<Integer> item1List = generateRandomNumberList();
-        final List<Integer> item2List = generateRandomNumberList();
-
-        TestProcess process1 = new TestProcess() {
-            public Iterator<Integer> receive(Integer i) {
-                assertSame(arg, i);
-                signalCalled();
-                return item1List.iterator();
-            }
-        };
-
-        TestProcess process2 = new TestProcess() {
-            public Iterator<Integer> receive(Integer i) {
-                assertSame(arg, i);
-                signalCalled();
-                return item2List.iterator();
-            }
-        };
-
+        TestProcess process1;
+        TestProcess process2;
         newProcessor(new Object[]{process1, process2});
-
-        spawned_assertPut(arg);
-        spawned_assertOnce(true);
-        //check that all items have been outputted.
-        for (Integer item : itemList1){
-            spawned_assertTake(item);
-        }
-          */
-    }
+    } */
 
 
     public void test_noInput_noOutput_noProcess() {
@@ -172,7 +174,8 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         spawned_assertTakeNotPossible();
     }
 
-    public void test_multipleProcesses() {
+
+    public void test_chainedProcesses() {
         Integer arg1 = 1;
         Integer arg2 = 2;
         Integer arg3 = 3;

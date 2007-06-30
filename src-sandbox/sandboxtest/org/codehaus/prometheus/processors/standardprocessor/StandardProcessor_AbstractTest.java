@@ -24,11 +24,7 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
     }
 
 
-    public void newProcessor(Object[] processes) {
-        newProcessor(Integer.MAX_VALUE, Integer.MAX_VALUE, processes);
-    }
-
-    public void newProcessor(Object process) {
+    public void newProcessor(Object... process) {
         newProcessor(Integer.MAX_VALUE, Integer.MAX_VALUE, process);
     }
 
@@ -56,6 +52,11 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
         return t;
     }
 
+    public void spawned_assertOnceAndReturnTrue(int count){
+        for(int k=0;k<count;k++)
+            spawned_assertOnceAndReturnTrue();
+    }
+
     public void spawned_assertOnceAndReturnTrue() {
         spawned_assertOnce(true);
     }
@@ -70,7 +71,7 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
         processThread.assertSuccess(expectedResult);
     }
 
-    public void spawned_assertOnceThrowsException(Exception ex) {
+    public void spawned_assertOnceThrowsException(Throwable ex) {
         ProcessThread processThread = scheduleProcess();
         joinAll(processThread);
         processThread.assertIsTerminatedWithThrowing(ex);

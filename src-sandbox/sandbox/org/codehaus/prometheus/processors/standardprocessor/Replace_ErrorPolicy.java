@@ -1,6 +1,4 @@
-package org.codehaus.prometheus.processors.standardprocessor;
-
-/**
+package org.codehaus.prometheus.processors.standardprocessor; /**
  * The replace policy replaces the incoming message by a (static) instance.
  * <p/>
  * If you need to send back an dynamic instance instead of a static one, you need to
