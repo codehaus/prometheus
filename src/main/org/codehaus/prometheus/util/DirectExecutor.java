@@ -15,8 +15,8 @@ import java.util.concurrent.Executor;
  */
 public class DirectExecutor implements Executor {
 
-	public void execute(Runnable command) {
-		if(command == null)throw new NullPointerException();
-		command.run();
-	}
+    public void execute(Runnable command) {
+        if (command == null) throw new NullPointerException();
+        command.run();
+    }
 }

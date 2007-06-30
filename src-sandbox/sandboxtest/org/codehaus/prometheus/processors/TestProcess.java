@@ -1,16 +1,31 @@
 package org.codehaus.prometheus.processors;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertEquals;
 
-public class TestProcess{
+import java.util.concurrent.atomic.AtomicInteger;
 
-    public boolean called = false;
+/**
+ * A Process that can be used for testing purposes. 
+ *
+ * @author Peter Veentjer.
+ */
+public class TestProcess {
 
-    public void assertNotCalled() {
-        TestCase.assertFalse(called);
+    public final AtomicInteger callCount = new AtomicInteger();
+
+    public void signalCalled() {
+        callCount.incrementAndGet();
     }
 
-    public void assertCalled(){
-        TestCase.assertTrue(called);
+    public void assertCalled(int count) {
+        assertEquals(count, callCount.intValue());
+    }
+
+    public void assertNotCalled() {
+        assertCalled(0);
+    }
+
+    public void assertCalledOnce() {
+        assertCalled(1);
     }
 }

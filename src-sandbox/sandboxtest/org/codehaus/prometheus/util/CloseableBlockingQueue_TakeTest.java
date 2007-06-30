@@ -7,5 +7,6 @@ package org.codehaus.prometheus.util;
 
 public class CloseableBlockingQueue_TakeTest extends CloseableBlockingQueueTests {
 
-    public void testDummy(){}
+    public void testDummy() {
+    }
 }

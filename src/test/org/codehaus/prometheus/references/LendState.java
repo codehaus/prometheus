@@ -6,5 +6,5 @@
 package org.codehaus.prometheus.references;
 
 public enum LendState {
-    waitingfortake, taken, takenback,interrupted,incorrectref
+    waitingfortake, taken, takenback, interrupted, incorrectref
 }

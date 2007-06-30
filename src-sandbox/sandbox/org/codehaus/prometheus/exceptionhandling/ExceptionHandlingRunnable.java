@@ -6,7 +6,7 @@ import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
  * A Runnable that is able to deal with exceptions.
  * usage:
  * subclassing or
- *
+ * <p/>
  * idea: let certain exceptions fall through. maybe they are needed on a lower level.
  *
  * @author Peter Veentjer.
@@ -16,13 +16,13 @@ public final class ExceptionHandlingRunnable implements Runnable, ExceptionHandl
     private final ExceptionHandler handler;
     private final Runnable task;
 
-    public ExceptionHandlingRunnable(){
+    public ExceptionHandlingRunnable() {
         handler = null;
         task = null;
     }
 
-    public ExceptionHandlingRunnable(ExceptionHandler handler, Runnable task){
-        if(handler == null||task == null)throw new NullPointerException();
+    public ExceptionHandlingRunnable(ExceptionHandler handler, Runnable task) {
+        if (handler == null || task == null) throw new NullPointerException();
         this.handler = handler;
         this.task = task;
     }
@@ -37,20 +37,20 @@ public final class ExceptionHandlingRunnable implements Runnable, ExceptionHandl
     }
 
     public void run() {
-        try{
+        try {
             protectedRun();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             handle(ex);
         }
     }
 
-    public void protectedRun()throws Exception{
-        if(task == null)throw new IllegalStateException();
+    public void protectedRun() throws Exception {
+        if (task == null) throw new IllegalStateException();
         task.run();
     }
 
     public void handle(Exception ex) {
-        if(handler==null)throw new IllegalStateException();
+        if (handler == null) throw new IllegalStateException();
         handler.handle(ex);
     }
 }

@@ -5,10 +5,10 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
+import org.codehaus.prometheus.exceptionhandler.NullExceptionHandler;
+import org.codehaus.prometheus.testsupport.TracingThreadFactory;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.util.StandardThreadFactory;
-import org.codehaus.prometheus.testsupport.TracingThreadFactory;
-import org.codehaus.prometheus.exceptionhandler.NullExceptionHandler;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -64,7 +64,7 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         }
 
         try {
-            new ThreadPoolBlockingExecutor(-1,new StandardThreadFactory(), new LinkedBlockingQueue<Runnable>());
+            new ThreadPoolBlockingExecutor(-1, new StandardThreadFactory(), new LinkedBlockingQueue<Runnable>());
             fail();
         } catch (IllegalArgumentException ex) {
         }
@@ -72,14 +72,14 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>();
         threadFactory = new TracingThreadFactory();
         int poolsize = 10;
-        executor = new ThreadPoolBlockingExecutor(poolsize,threadFactory, workQueue);
+        executor = new ThreadPoolBlockingExecutor(poolsize, threadFactory, workQueue);
 
         assertIsUnstarted();
         assertSame(workQueue, executor.getWorkQueue());
         //assertHasThreadFactory(factory);
         assertNotNull(executor.getThreadPool() instanceof StandardThreadPool);
-        StandardThreadPool pool = (StandardThreadPool)executor.getThreadPool();
-        assertSame(threadFactory,pool.getThreadFactory());
+        StandardThreadPool pool = (StandardThreadPool) executor.getThreadPool();
+        assertSame(threadFactory, pool.getThreadFactory());
         assertActualPoolSize(0);
         assertDesiredPoolSize(poolsize);
         assertTrue(executor.getWorkQueue().isEmpty());
@@ -104,7 +104,7 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         assertEquals(Integer.MAX_VALUE, linkedWorkQueue.remainingCapacity());
     }
 
-    private void assertHasDefaultExceptionHandler(){
+    private void assertHasDefaultExceptionHandler() {
         assertTrue(executor.getExceptionHandler() instanceof NullExceptionHandler);
     }
 }

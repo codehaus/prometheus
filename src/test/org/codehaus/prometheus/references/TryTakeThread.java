@@ -5,14 +5,14 @@
  */
 package org.codehaus.prometheus.references;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertEquals;
 import org.codehaus.prometheus.testsupport.TestThread;
 
 public class TryTakeThread<E> extends TestThread {
     private final LendableReference<E> lendableRef;
     private volatile E foundRef;
 
-    public TryTakeThread(LendableReference<E> lendableRef){
+    public TryTakeThread(LendableReference<E> lendableRef) {
         this.lendableRef = lendableRef;
     }
 
@@ -21,8 +21,8 @@ public class TryTakeThread<E> extends TestThread {
         foundRef = lendableRef.tryTake();
     }
 
-    public void assertSuccess(E expectedRef){
+    public void assertSuccess(E expectedRef) {
         assertIsTerminatedNormally();
-        TestCase.assertEquals(expectedRef,foundRef);
+        assertEquals(expectedRef, foundRef);
     }
 }

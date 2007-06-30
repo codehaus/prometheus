@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.uninterruptiblesection;
 
-import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.util.Latch;
 
 import java.util.concurrent.TimeUnit;

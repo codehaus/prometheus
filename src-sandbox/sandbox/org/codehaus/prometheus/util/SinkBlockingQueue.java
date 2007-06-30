@@ -1,18 +1,17 @@
 package org.codehaus.prometheus.util;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.AbstractQueue;
-import java.util.Iterator;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A {@link java.util.concurrent.BlockingQueue} that eats up all messages that are put on it. Other methods are not
  * supported. A SinkBlockingQueue is convenient when a BlockingQueue is needed, but you are interrested in the items
  * that are put. If a normal {@link java.util.concurrent.BlockingQueue} implementation was used, it could lead to
- * failing offer or blocking put if it is bounded, or to memory problems when it is unbounded. 
- *
+ * failing offer or blocking put if it is bounded, or to memory problems when it is unbounded.
  */
 public final class SinkBlockingQueue<E> extends AbstractQueue<E> implements BlockingQueue<E> {
 
@@ -25,7 +24,7 @@ public final class SinkBlockingQueue<E> extends AbstractQueue<E> implements Bloc
     }
 
     public boolean offer(E o) {
-        if(o == null)throw new NullPointerException();
+        if (o == null) throw new NullPointerException();
         return true;
     }
 
@@ -38,11 +37,11 @@ public final class SinkBlockingQueue<E> extends AbstractQueue<E> implements Bloc
     }
 
     public void put(E o) throws InterruptedException {
-        if(o == null)throw new NullPointerException();
+        if (o == null) throw new NullPointerException();
     }
 
     public boolean offer(E o, long timeout, TimeUnit unit) throws InterruptedException {
-        if(o == null || unit == null)throw new NullPointerException();
+        if (o == null || unit == null) throw new NullPointerException();
         return true;
     }
 
@@ -66,17 +65,17 @@ public final class SinkBlockingQueue<E> extends AbstractQueue<E> implements Bloc
         throw new UnsupportedOperationException();
     }
 
-    public boolean equals(Object thatObj){
+    public boolean equals(Object thatObj) {
         //todo
         throw new RuntimeException();
     }
 
-    public int hashCode(){
+    public int hashCode() {
         //todo
         throw new RuntimeException();
     }
 
-    public String toString(){
+    public String toString() {
         //todo
         throw new RuntimeException();
     }

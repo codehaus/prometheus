@@ -2,7 +2,6 @@ package org.codehaus.prometheus.processors;
 
 
 /**
- *
  * @author Peter Veentjer.
  */
 public final class VoidValue {
@@ -21,5 +20,9 @@ public final class VoidValue {
     @Override
     public String toString() {
         return "void";
+    }
+
+    public static boolean isVoid(Object o) {
+        return o instanceof VoidValue;
     }
 }

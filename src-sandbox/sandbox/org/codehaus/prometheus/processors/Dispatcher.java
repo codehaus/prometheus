@@ -10,14 +10,15 @@ import java.lang.reflect.InvocationTargetException;
 public interface Dispatcher {
 
     /**
-     *
-     *
      * @param process the target object that has the method.
-     * @param args the arguments to feed to process
+     * @param arg     the arguments to feed to process. If no argument is available, a VoidValue should be used
      * @return the value that was returned by the method. If the method has void as return type,
      *         an instanceof {@link VoidValue} will be returned.
-     * @throws NoSuchMethodException if no matching method is found.
+     * @throws NoSuchMethodException     if no matching method is found.
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws NullPointerException      if process or arg is null.
      */
-    Object dispatch(Object process, Object... args)
+    Object dispatch(Object process, Object arg)
             throws IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 }

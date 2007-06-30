@@ -51,7 +51,7 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
     }
 
     public void testStartedEmptyPool() {
-        newRunningRepeater(true,0);
+        newRunningRepeater(true, 0);
         shutdownNow();
         assertIsShutdown();
         assertActualPoolSize(0);

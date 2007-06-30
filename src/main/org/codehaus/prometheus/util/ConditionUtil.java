@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.util;
 
-import static org.codehaus.prometheus.util.ConcurrencyUtil.ensureNoTimeout;
 import org.codehaus.prometheus.uninterruptiblesection.TimedUninterruptibleSection;
+import static org.codehaus.prometheus.util.ConcurrencyUtil.ensureNoTimeout;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -55,7 +55,6 @@ public class ConditionUtil {
     }
 
     /**
-     *
      * @param condition the condition to wait on.
      * @param timeout   how long to wait before giving up in units of <tt>unit</tt>.
      * @param unit      a <tt>TimeUnit</tt> determining how to interpret the <tt>timeout</tt>
@@ -64,7 +63,7 @@ public class ConditionUtil {
      * @throws InterruptedException if the thread is interrupted while waiting.
      * @throws NullPointerException if condition or unit is <tt>null</tt>.
      * @throws TimeoutException     if a timeout occurs.
-     * @see #awaitNanosUninterruptiblyAndThrow(Condition, long)
+     * @see #awaitNanosUninterruptiblyAndThrow(Condition,long)
      */
     public static long awaitAndThrow(Condition condition, long timeout, TimeUnit unit)
             throws InterruptedException, TimeoutException {

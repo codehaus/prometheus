@@ -31,8 +31,8 @@ public class ThrottlingWaitpoint extends AbstractWaitpoint {
 
     public ThrottlingWaitpoint(float frequency) {
         this.frequency = frequency;
-        this.periodNs = (long)(TimeUnit.SECONDS.toNanos(1)/frequency);
-        System.out.println("period:"+periodNs);
+        this.periodNs = (long) (TimeUnit.SECONDS.toNanos(1) / frequency);
+        System.out.println("period:" + periodNs);
     }
 
     public float getFrequency() {
@@ -65,13 +65,13 @@ public class ThrottlingWaitpoint extends AbstractWaitpoint {
 
     public synchronized long calcDelayNs() {
         long currentNs = System.nanoTime();
-        if(currentNs<nextNs){
+        if (currentNs < nextNs) {
             //we zijn er nog niet, we moeten wachten
-            long delay = nextNs-currentNs;
-            nextNs = currentNs+ periodNs;
+            long delay = nextNs - currentNs;
+            nextNs = currentNs + periodNs;
             return delay;
-        }else{
-            nextNs = currentNs+ periodNs;                     
+        } else {
+            nextNs = currentNs + periodNs;
             //we zijn er
             return 0;
         }

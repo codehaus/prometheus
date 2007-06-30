@@ -212,7 +212,7 @@ public class DefaultAwaitableReference<E> extends AbstractAwaitableReference<E> 
         return reference != null;
     }
 
-    public E put(E newRef){
+    public E put(E newRef) {
         mainLock.lock();
         try {
             return postNewReference(newRef);

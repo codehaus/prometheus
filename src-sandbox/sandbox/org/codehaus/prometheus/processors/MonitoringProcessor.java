@@ -5,7 +5,7 @@ import org.codehaus.prometheus.monitoring.Monitorable;
 import java.util.Map;
 
 /**
- * A Processor that decorates another processor and monitors its behaviour. 
+ * A Processor that decorates another processor and monitors its behaviour.
  *
  * @author Peter Veentjer.
  */
@@ -13,8 +13,8 @@ public class MonitoringProcessor implements Processor, Monitorable {
     private final Processor target;
     private volatile boolean on = false;
 
-    public MonitoringProcessor(Processor target){
-        if(target == null)throw new NullPointerException();
+    public MonitoringProcessor(Processor target) {
+        if (target == null) throw new NullPointerException();
         this.target = target;
     }
 
@@ -23,10 +23,10 @@ public class MonitoringProcessor implements Processor, Monitorable {
     }
 
     public boolean once() throws Exception {
-        if(on){
+        if (on) {
             //todo: add monitor data.
             return target.once();
-        }else{
+        } else {
             return target.once();
         }
     }

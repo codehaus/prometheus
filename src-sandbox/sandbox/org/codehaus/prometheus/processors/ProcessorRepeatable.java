@@ -28,10 +28,10 @@ public class ProcessorRepeatable implements Repeatable {
     }
 
     public boolean execute() throws Exception {
-        boolean again =  processor.once();
-        if(!again){
+        boolean again = processor.once();
+        if (!again) {
             //todo: hack
-            System.out.println("shutting down: "+processor);
+            System.out.println("shutting down: " + processor);
         }
         return again;
     }

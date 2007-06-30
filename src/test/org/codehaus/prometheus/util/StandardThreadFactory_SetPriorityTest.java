@@ -6,7 +6,6 @@
 package org.codehaus.prometheus.util;
 
 import junit.framework.TestCase;
-import org.codehaus.prometheus.util.StandardThreadFactory;
 
 public class StandardThreadFactory_SetPriorityTest extends TestCase {
 

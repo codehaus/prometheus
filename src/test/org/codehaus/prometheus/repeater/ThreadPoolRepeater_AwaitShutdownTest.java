@@ -30,11 +30,11 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
 
     //=========================================================
 
-    public void testStartedButNoJob_strict(){
+    public void testStartedButNoJob_strict() {
         testStartedButNoJob(true);
     }
 
-    public void testStartedButNoJob_relaxed(){
+    public void testStartedButNoJob_relaxed() {
         testStartedButNoJob(false);
     }
 
@@ -45,16 +45,16 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
 
     //=========================================================
 
-    public void testStartedAndRunningJob_strict(){
+    public void testStartedAndRunningJob_strict() {
         testStartedAndRunningJob(true);
     }
 
-    public void testStartedAndRunningJob_relaxed(){
+    public void testStartedAndRunningJob_relaxed() {
         testStartedAndRunningJob(false);
     }
 
     public void testStartedAndRunningJob(boolean strict) {
-        newRunningRepeater(strict,new RepeatableRunnable(new SleepingRunnable(DELAY_SMALL_MS)));
+        newRunningRepeater(strict, new RepeatableRunnable(new SleepingRunnable(DELAY_SMALL_MS)));
         assertAwaitForTerminationSucceedsWhenShutdown();
     }
 
@@ -69,7 +69,7 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
     }
 
     public void testShuttingDown(boolean strict) throws InterruptedException {
-        newShuttingdownRepeater(strict,2* DELAY_SMALL_MS);
+        newShuttingdownRepeater(strict, 2 * DELAY_SMALL_MS);
         assertAwaitForTerminationSucceedsWhenShutdown();
     }
 
@@ -97,11 +97,11 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
 
     //=========================================================
 
-    public void testInterruptedWhileWaiting_strict(){
+    public void testInterruptedWhileWaiting_strict() {
         testInterruptedWhileWaiting(true);
     }
 
-    public void testInterruptedWhileWaiting_relaxed(){
+    public void testInterruptedWhileWaiting_relaxed() {
         testInterruptedWhileWaiting(false);
     }
 
@@ -158,8 +158,8 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
             }
         }
 
-        public void assertIsInterrupted(){
-            assertEquals(BlockingState.interrupted,state);
+        public void assertIsInterrupted() {
+            assertEquals(BlockingState.interrupted, state);
         }
 
         public void assertIsFinished() {

@@ -74,8 +74,8 @@ public class CloseableWaitpoint extends AbstractWaitpoint implements Closeable {
      * and a flag indicating if this CloseableWaitpoint should be open.
      *
      * @param mainLock the mainLock
-     * @param open      <tt>true</tt> if the CloseableWaitpoint is open, <tt>false</tt> if it
-     *                  it should be closed
+     * @param open     <tt>true</tt> if the CloseableWaitpoint is open, <tt>false</tt> if it
+     *                 it should be closed
      * @throws UnsupportedOperationException if the mainLock isn't able to create a Condition,
      * @throws NullPointerException          if mainLock is <tt>null</tt>
      * @see Lock#newCondition()

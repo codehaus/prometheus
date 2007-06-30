@@ -20,10 +20,10 @@ public abstract class AbstractAwaitableReference<E> implements AwaitableReferenc
 
     public E tryTake() {
         try {
-            TimedUninterruptibleSection<E> section = new TimedUninterruptibleSection<E>(){
+            TimedUninterruptibleSection<E> section = new TimedUninterruptibleSection<E>() {
                 protected E originalsection(long timeoutNs)
                         throws InterruptedException, TimeoutException {
-                    return tryTake(timeoutNs,TimeUnit.NANOSECONDS);
+                    return tryTake(timeoutNs, TimeUnit.NANOSECONDS);
                 }
             };
 

@@ -12,15 +12,15 @@ package org.codehaus.prometheus.references;
  */
 public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableReference_AbstractTest {
 
-    public void testReferenceAvailable_startInterrupted(){
+    public void testReferenceAvailable_startInterrupted() {
         testReferenceAvailable(START_INTERRUPTED);
     }
 
-    public void testReferenceAvailable_startUninterrupted(){
+    public void testReferenceAvailable_startUninterrupted() {
         testReferenceAvailable(START_UNINTERRUPTED);
     }
 
-    public void testReferenceAvailable(boolean startInterrupted){
+    public void testReferenceAvailable(boolean startInterrupted) {
         Integer ref = 20;
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
 
@@ -33,15 +33,15 @@ public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableRefer
 
     //=======================================================
 
-    public void testNoReferenceAvailable_startInterrupted(){
+    public void testNoReferenceAvailable_startInterrupted() {
         testNoReferenceAvailable(START_INTERRUPTED);
     }
 
-    public void testNoReferenceAvailable_startUninterrupted(){
+    public void testNoReferenceAvailable_startUninterrupted() {
         testNoReferenceAvailable(START_UNINTERRUPTED);
     }
 
-    public void testNoReferenceAvailable(boolean startInterrupted){
+    public void testNoReferenceAvailable(boolean startInterrupted) {
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
         //do a trytake and make sure it completes without a reference

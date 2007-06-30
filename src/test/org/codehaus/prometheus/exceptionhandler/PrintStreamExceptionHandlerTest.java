@@ -39,10 +39,10 @@ public class PrintStreamExceptionHandlerTest extends TestCase {
 
         Exception ex = createMock(Exception.class);
         ex.printStackTrace(out);
-        
-        replay(out,ex);
+
+        replay(out, ex);
         PrintStreamExceptionHandler handler = new PrintStreamExceptionHandler(out);
         handler.handle(ex);
-        verify(out,ex);
+        verify(out, ex);
     }
 }

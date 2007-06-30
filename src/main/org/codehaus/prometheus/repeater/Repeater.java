@@ -49,7 +49,7 @@ import java.util.concurrent.TimeoutException;
  * @see java.util.concurrent.Executor
  * @see java.util.concurrent.ThreadPoolExecutor
  */
-public interface  Repeater {
+public interface Repeater {
 
     /**
      * Starts repeating the given task at some point in the future. This call is responsive to

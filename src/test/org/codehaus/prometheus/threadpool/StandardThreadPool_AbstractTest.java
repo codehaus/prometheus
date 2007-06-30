@@ -1,11 +1,11 @@
 package org.codehaus.prometheus.threadpool;
 
+import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
 import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.testsupport.TracingThreadFactory;
 import org.codehaus.prometheus.util.StandardThreadFactory;
-import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -50,7 +50,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     }
 
     //all workers are going to execute a task that takes an eon to complete
-    public void ensureNoIdleWorkers(){
+    public void ensureNoIdleWorkers() {
         ensureNoIdleWorkers(DELAY_EON_MS);
     }
 

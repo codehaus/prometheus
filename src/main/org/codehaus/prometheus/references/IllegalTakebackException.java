@@ -11,9 +11,9 @@ package org.codehaus.prometheus.references;
  *
  * @author Peter Veentjer.
  */
-public class IllegalTakebackException extends RuntimeException{
+public class IllegalTakebackException extends RuntimeException {
 
-    public IllegalTakebackException(String msg){
+    public IllegalTakebackException(String msg) {
         super(msg);
     }
 }

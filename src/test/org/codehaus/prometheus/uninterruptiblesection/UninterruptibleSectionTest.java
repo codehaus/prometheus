@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.uninterruptiblesection;
 
-import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.util.Latch;
 
 /**
@@ -149,7 +149,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
             foundReturnValue = section.execute();
         }
 
-        public void assertSuccess(Object expectedReturnValue){
+        public void assertSuccess(Object expectedReturnValue) {
             assertIsTerminatedNormally();
             assertSame(expectedReturnValue, foundReturnValue);
         }

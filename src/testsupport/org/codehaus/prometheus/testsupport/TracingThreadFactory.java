@@ -1,6 +1,6 @@
 package org.codehaus.prometheus.testsupport;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.*;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.Collections;
@@ -72,7 +72,7 @@ public class TracingThreadFactory implements ThreadFactory {
      */
     public void assertCreatedCount(int expected){
         if(expected<0)throw new IllegalArgumentException();
-        TestCase.assertEquals(expected,threadList.size());
+        assertEquals(expected,threadList.size());
     }
 
     /**
@@ -81,7 +81,7 @@ public class TracingThreadFactory implements ThreadFactory {
     public void assertThreadsHaveTerminated(){
         //todo: also picks up unstarted ones
         for(Thread thread:threadList){
-            TestCase.assertFalse(String.format("Thread '%s' is still alive",thread),thread.isAlive());
+            assertFalse(String.format("Thread '%s' is still alive",thread),thread.isAlive());
         }
     }
 
@@ -96,9 +96,7 @@ public class TracingThreadFactory implements ThreadFactory {
     }
 
     public void assertAllThreadsAlive() {
-        for(Thread thread:threadList){
-            TestCase.assertTrue(thread.isAlive());
-        }
-
+        for(Thread thread:threadList)
+            assertTrue(thread.isAlive());
     }
 }

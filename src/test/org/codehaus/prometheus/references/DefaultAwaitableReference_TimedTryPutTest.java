@@ -41,7 +41,7 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
         Integer newRef = 20;
-        TimedTryPutThread tryPutThread = scheduleTryPut(newRef,1,START_INTERRUPTED);
+        TimedTryPutThread tryPutThread = scheduleTryPut(newRef, 1, START_INTERRUPTED);
         joinAll(tryPutThread);
         tryPutThread.assertSuccess(oldRef);
 
@@ -79,7 +79,7 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
     public void testSuccess(Integer originalRef) {
         awaitableRef = new DefaultAwaitableReference<Integer>(originalRef);
 
-        Integer newRef = originalRef==null?1:originalRef+1;
+        Integer newRef = originalRef == null ? 1 : originalRef + 1;
         _tested_tryPut(DELAY_SMALL_MS, newRef, originalRef);
     }
 }

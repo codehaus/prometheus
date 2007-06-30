@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.lendablereference;
 
-import org.codehaus.prometheus.waitpoint.Waitpoint;
 import org.codehaus.prometheus.references.LendableReference;
+import org.codehaus.prometheus.waitpoint.Waitpoint;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -16,30 +16,30 @@ import java.util.concurrent.TimeoutException;
  * wait, this is done by using a {@link Waitpoint}. This structure can be used to control the taking
  * of references; for example:
  * <ol>
- *      <li>to close a LendableReference, see
- *          {@link org.codehaus.prometheus.waitpoint.CloseableWaitpoint}
- *      </li>
- *      <li>to throttle a LendableReference, see
- *          {@link org.codehaus.prometheus.waitpoint.ThrottlingWaitpoint}
- *      </li>
+ * <li>to close a LendableReference, see
+ * {@link org.codehaus.prometheus.waitpoint.CloseableWaitpoint}
+ * </li>
+ * <li>to throttle a LendableReference, see
+ * {@link org.codehaus.prometheus.waitpoint.ThrottlingWaitpoint}
+ * </li>
  * </ol>
- *
+ * <p/>
  * <p/>
  * idea:
- * a LendableReference with a limit on the number of lend references. this can only be done with an 
+ * a LendableReference with a limit on the number of lend references. this can only be done with an
  * enter/exit-waitpoint.
  *
- * @see org.codehaus.prometheus.references.AwaitableReferenceWithWaitingTakes
  * @author Peter Veentjer.
+ * @see org.codehaus.prometheus.references.AwaitableReferenceWithWaitingTakes
  */
-public class LendableReferenceWithWaitingTakes<E,W extends Waitpoint> implements LendableReference<E> {
+public class LendableReferenceWithWaitingTakes<E, W extends Waitpoint> implements LendableReference<E> {
     private final LendableReference<E> target;
     private final W waitPoint;
 
     /**
      * Constructs a new LendableReferenceWithWaitingTakes
      *
-     * @param target the LendableReference that is being 'controlled'.
+     * @param target    the LendableReference that is being 'controlled'.
      * @param waitPoint the Waitpoint used to do the controlling.
      * @throws NullPointerException if target or waitPoint is null.
      */
@@ -60,7 +60,7 @@ public class LendableReferenceWithWaitingTakes<E,W extends Waitpoint> implements
 
     /**
      * Returns the Waitpoint.
-     * 
+     *
      * @return the Waitpoint used.
      */
     public W getWaitpoint() {
@@ -74,7 +74,7 @@ public class LendableReferenceWithWaitingTakes<E,W extends Waitpoint> implements
 
     /**
      * {@inheritDoc}
-     *
+     * <p/>
      * Before doing the tryTake, {@link Waitpoint#pass()} is called.
      *
      * @return {@inheritDoc}
@@ -86,7 +86,7 @@ public class LendableReferenceWithWaitingTakes<E,W extends Waitpoint> implements
     }
 
     public void takebackAndReset(E ref) {
-        target.takebackAndReset(ref);        
+        target.takebackAndReset(ref);
     }
 
     public E tryTake(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
@@ -100,7 +100,7 @@ public class LendableReferenceWithWaitingTakes<E,W extends Waitpoint> implements
 
     /**
      * {@inheritDoc}
-     *
+     * <p/>
      * The Waitpoint is not called for this method.
      *
      * @param newRef {@inheritDoc}
@@ -113,15 +113,15 @@ public class LendableReferenceWithWaitingTakes<E,W extends Waitpoint> implements
 
     /**
      * {@inheritDoc}
-     *
+     * <p/>
      * The Waitpoint is not called for this method.
      *
-     * @param newRef {@inheritDoc}
+     * @param newRef  {@inheritDoc}
      * @param timeout {@inheritDoc}
-     * @param unit {@inheritDoc}
+     * @param unit    {@inheritDoc}
      * @return {@inheritDoc}
      * @throws InterruptedException {@inheritDoc}
-     * @throws TimeoutException {@inheritDoc}
+     * @throws TimeoutException     {@inheritDoc}
      */
     public E tryPut(E newRef, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
         return target.tryPut(newRef, timeout, unit);
@@ -129,7 +129,7 @@ public class LendableReferenceWithWaitingTakes<E,W extends Waitpoint> implements
 
     /**
      * {@inheritDoc}
-     *
+     * <p/>
      * The Waitpoint is not called for this method.
      *
      * @return {@inheritDoc}

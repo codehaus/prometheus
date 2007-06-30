@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.testsupport;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.*;
 
 import java.util.concurrent.TimeoutException;
 
@@ -34,7 +34,7 @@ public abstract class BlockingRunnable extends TestRunnable {
     }
 
     public void assertIsNew(){
-        TestCase.assertNull(state);
+        assertNull(state);
     }
 
     /**
@@ -73,8 +73,8 @@ public abstract class BlockingRunnable extends TestRunnable {
      */
     public void assertState(BlockingState expectedState) {
         assertNoRuntimeException();
-        TestCase.assertNotNull("blocking state has not been set, has the task runWork?", state);
-        TestCase.assertEquals(expectedState, state);
+        assertNotNull("blocking state has not been set, has the task runWork?", state);
+        assertEquals(expectedState, state);
     }
 
     /**

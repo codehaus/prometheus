@@ -6,8 +6,8 @@
 package org.codehaus.prometheus.blockingexecutor.jmx;
 
 import junit.framework.TestCase;
-import org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor;
 import org.codehaus.prometheus.blockingexecutor.BlockingExecutorServiceState;
+import org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor;
 import static org.easymock.classextension.EasyMock.*;
 
 import java.util.LinkedList;

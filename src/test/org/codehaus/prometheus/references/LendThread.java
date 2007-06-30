@@ -5,7 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertSame;
 import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.util.ConcurrencyUtil;
 
@@ -15,12 +16,12 @@ public class LendThread<E> extends TestThread {
     private final LendableReference<E> lendableRef;
     private final long lendPeriod;
     private final TimeUnit lendUnit;
-    private volatile LendState  lendState;
+    private volatile LendState lendState;
     private volatile E takenRef;
     private final E takebackRef;
 
 
-    public LendThread(LendableReference<E> lendableRef,E takebackRef, long lendPeriod, TimeUnit lendUnit){
+    public LendThread(LendableReference<E> lendableRef, E takebackRef, long lendPeriod, TimeUnit lendUnit) {
         this.lendableRef = lendableRef;
         this.lendPeriod = lendPeriod;
         this.lendUnit = lendUnit;
@@ -33,30 +34,30 @@ public class LendThread<E> extends TestThread {
         try {
             takenRef = lendableRef.take();
             lendState = LendState.taken;
-            ConcurrencyUtil.sleepUninterruptibly(lendPeriod,lendUnit);
+            ConcurrencyUtil.sleepUninterruptibly(lendPeriod, lendUnit);
             lendableRef.takeback(takebackRef);
             lendState = LendState.takenback;
         } catch (InterruptedException e) {
-           lendState = LendState.interrupted;
-        }catch(IllegalTakebackException e){
+            lendState = LendState.interrupted;
+        } catch (IllegalTakebackException e) {
             lendState = LendState.incorrectref;
         }
     }
 
-    public void assertIsIncorrectRef(){
+    public void assertIsIncorrectRef() {
         assertIsTerminatedNormally();
-        TestCase.assertEquals(LendState.incorrectref,lendState);
+        assertEquals(LendState.incorrectref, lendState);
     }
 
-    public void assertIsTakenBack(E expectedRef){
+    public void assertIsTakenBack(E expectedRef) {
         assertIsTerminatedNormally();
-        TestCase.assertEquals(LendState.takenback,lendState);
-        TestCase.assertSame(expectedRef, takenRef);
+        assertEquals(LendState.takenback, lendState);
+        assertSame(expectedRef, takenRef);
     }
 
-    public void assertIsTaken(E expectedRef){
+    public void assertIsTaken(E expectedRef) {
         assertNoRuntimeException();
-        TestCase.assertEquals(LendState.taken,lendState);
-        TestCase.assertSame(expectedRef, takenRef);
+        assertEquals(LendState.taken, lendState);
+        assertSame(expectedRef, takenRef);
     }
 }

@@ -7,21 +7,21 @@ package org.codehaus.prometheus.channels;
 
 import org.codehaus.prometheus.util.TimeoutThreadLocal;
 
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  *
  *
  */
-public abstract class AbstractInputChannel<E> implements InputChannel<E>{
+public abstract class AbstractInputChannel<E> implements InputChannel<E> {
 
     public E saveTake() throws InterruptedException, TimeoutException {
         long systemTimeNs = System.nanoTime();
         long timeoutNs = TimeoutThreadLocal.get();
         E item = poll(timeoutNs, TimeUnit.NANOSECONDS);
         long endTimeNs = System.nanoTime();
-        long elapsedNs = endTimeNs-systemTimeNs;
+        long elapsedNs = endTimeNs - systemTimeNs;
         long remainingNs = timeoutNs - elapsedNs;
         TimeoutThreadLocal.set(remainingNs);
         return item;

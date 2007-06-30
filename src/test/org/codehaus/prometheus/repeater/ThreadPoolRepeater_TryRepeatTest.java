@@ -11,7 +11,7 @@ import org.codehaus.prometheus.testsupport.NonInterruptableSleepingRunnable;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
- * Unittests the {@link ThreadPoolRepeater#tryRepeat(Repeatable)} method. 
+ * Unittests the {@link ThreadPoolRepeater#tryRepeat(Repeatable)} method.
  *
  * @author Peter Veentjer.
  */
@@ -31,7 +31,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
         Repeatable repeatable = new RepeatableRunnable(task);
 
         TryRepeatThread t = scheduleTryRepeat(repeatable, startInterrupted);
-        
+
         joinAll(t);
         t.assertSuccess();
         t.assertIsTerminatedWithInterruptStatus(startInterrupted);
@@ -59,7 +59,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
         newRunningStrictRepeater(originalRepeatable);
 
         CountingRunnable task = new CountingRunnable();
-        TryRepeatThread t = scheduleTryRepeat( new RepeatableRunnable(task),startInterrupted);
+        TryRepeatThread t = scheduleTryRepeat(new RepeatableRunnable(task), startInterrupted);
 
         joinAll(t);
         t.assertFailure();
@@ -137,7 +137,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
 
     public void testShutdown(boolean startInterrupted) {
         newShutdownRepeater();
-        CountingRunnable task = new CountingRunnable();         
+        CountingRunnable task = new CountingRunnable();
         TryRepeatThread t = scheduleTryRepeat(new RepeatableRunnable(task), startInterrupted);
 
         joinAll(t);

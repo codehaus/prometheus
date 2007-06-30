@@ -1,7 +1,6 @@
 package org.codehaus.prometheus.util;
 
 import junit.framework.TestCase;
-import org.codehaus.prometheus.util.ConcurrencyUtil;
 
 import java.util.concurrent.TimeoutException;
 

@@ -4,22 +4,22 @@ package org.codehaus.prometheus.repeater;
  * A {@link Repeatable} that adapts a {@link Runnable} so it can be used as a Repeatable.
  * There are two different ways to use it:
  * <ol>
- *      <li>inject a Runnable by using the constructor {@link #RepeatableRunnable(Runnable)} </li>
- *      <li>subclass this RepeatableRunnable and override the {@link #run()} method</li>
+ * <li>inject a Runnable by using the constructor {@link #RepeatableRunnable(Runnable)} </li>
+ * <li>subclass this RepeatableRunnable and override the {@link #run()} method</li>
  * </ol>
  * The {@link #execute()} method always returns <tt>true</tt> unless a RuntimeException occurs.
  *
  * @author Peter Veentjer.
  */
-public class RepeatableRunnable implements Repeatable, Runnable{
+public class RepeatableRunnable implements Repeatable, Runnable {
 
     private final Runnable runnable;
 
     /**
      * Creates a new RepeatableRunnable. This constructor needs to be called when subclassing
-     * is used (the {@link #run} method should be overridden). 
+     * is used (the {@link #run} method should be overridden).
      */
-    public RepeatableRunnable(){
+    public RepeatableRunnable() {
         runnable = this;
     }
 
@@ -30,8 +30,8 @@ public class RepeatableRunnable implements Repeatable, Runnable{
      * @param runnable the task to execute.
      * @throws NullPointerException if runnable is null.
      */
-    public RepeatableRunnable(Runnable runnable){
-        if(runnable == null)throw new NullPointerException();
+    public RepeatableRunnable(Runnable runnable) {
+        if (runnable == null) throw new NullPointerException();
         this.runnable = runnable;
     }
 

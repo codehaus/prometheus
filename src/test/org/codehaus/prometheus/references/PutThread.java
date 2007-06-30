@@ -7,12 +7,10 @@ package org.codehaus.prometheus.references;
 
 import static junit.framework.TestCase.assertSame;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.references.LendableReference;
 
 import java.util.concurrent.TimeoutException;
 
 /**
- *
  * @author Peter Veentjer.
  */
 public class PutThread<E> extends TestThread {
@@ -20,7 +18,7 @@ public class PutThread<E> extends TestThread {
     private final E newRef;
     private volatile E replacedRef;
 
-    public PutThread(LendableReference<E> lendableRef, E newRef){
+    public PutThread(LendableReference<E> lendableRef, E newRef) {
         this.lendableRef = lendableRef;
         this.newRef = newRef;
     }
@@ -29,8 +27,9 @@ public class PutThread<E> extends TestThread {
     protected void runInternal() throws InterruptedException, TimeoutException {
         replacedRef = lendableRef.put(newRef);
     }
-    public void assertSuccess(E expectedReplacedRef){
+
+    public void assertSuccess(E expectedReplacedRef) {
         assertIsTerminatedNormally();
-        assertSame(expectedReplacedRef,replacedRef);
+        assertSame(expectedReplacedRef, replacedRef);
     }
 }

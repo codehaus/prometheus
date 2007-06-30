@@ -9,12 +9,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- *
  * @author Peter Veentjer.
  */
-public class StandardResourcePool<E> implements ResourcePool<E>{
+public class StandardResourcePool<E> implements ResourcePool<E> {
 
-    public StandardResourcePool(){}
+    public StandardResourcePool() {
+    }
 
     public void takeback(E e) {
         throw new RuntimeException();

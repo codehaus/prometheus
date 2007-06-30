@@ -7,5 +7,6 @@ package org.codehaus.prometheus.processors.standardprocessor;
  */
 public class StandardProcessor_ConstructorTest extends StandardProcessor_AbstractTest {
 
-    public void testDummy(){}
+    public void testDummy() {
+    }
 }

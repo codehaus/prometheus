@@ -9,11 +9,11 @@ import org.codehaus.prometheus.processors.TestPipedProcess;
  */
 public class StandardProcessor_InputOutputAndBlockingTest extends StandardProcessor_AbstractTest {
 
-    public void testNullInput(){
+    public void testNullInput() {
         //todo
     }
 
-    public void testNullOutput(){
+    public void testNullOutput() {
         //todo
     }
 
@@ -32,12 +32,12 @@ public class StandardProcessor_InputOutputAndBlockingTest extends StandardProces
         processThread.assertIsStarted();
 
         //now place an item and make sure that the process completes
-        spawnedPut(item);
+        spawned_assertPut(item);
         joinAll(processThread);
         processThread.assertSuccess(true);
 
         //now do a take and make sure it succeeds.
-        spawnedTake(item);
+        spawned_assertTake(item);
         process.assertSuccess(item);
     }
 
@@ -46,11 +46,11 @@ public class StandardProcessor_InputOutputAndBlockingTest extends StandardProces
         TestPipedProcess process = new TestPipedProcess(item);
         newProcessor(process);
 
-        spawnedPut(item);
+        spawned_assertPut(item);
 
-        spawnedOnce(true);
+        spawned_assertOnceAndReturnTrue();
 
-        spawnedTake(item);
+        spawned_assertTake(item);
         process.assertSuccess(item);
     }
 

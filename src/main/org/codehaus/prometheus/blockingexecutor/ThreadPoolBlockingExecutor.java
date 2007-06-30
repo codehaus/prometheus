@@ -72,12 +72,11 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
     }
 
     /**
-     *
      * @param poolsize
      * @param factory
      * @param workQueue
      */
-    public ThreadPoolBlockingExecutor(int poolsize,ThreadFactory factory, BlockingQueue<Runnable> workQueue) {
+    public ThreadPoolBlockingExecutor(int poolsize, ThreadFactory factory, BlockingQueue<Runnable> workQueue) {
         this(createDefaultThreadPool(factory, poolsize), workQueue);
     }
 

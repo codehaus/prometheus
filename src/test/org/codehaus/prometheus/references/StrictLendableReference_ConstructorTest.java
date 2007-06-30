@@ -5,14 +5,12 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.StrictLendableReference;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Unittests the constructors of the {@link org.codehaus.prometheus.references.StrictLendableReference}.
- *
+ * <p/>
  * Peter Veentjer.
  */
 public class StrictLendableReference_ConstructorTest extends StrictLendableReference_AbstractTest {

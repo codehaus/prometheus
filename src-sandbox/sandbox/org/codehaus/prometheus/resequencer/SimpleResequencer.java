@@ -7,6 +7,9 @@ import java.util.concurrent.locks.Lock;
 
 /**
  * A {@link Resequencer} where puts block as long as the item to be placed is out of sequence.
+ * <p/>
+ * todo:
+ * working with a buffer to store out of order items is a better approach.
  *
  * @author Peter Veentjer.
  */

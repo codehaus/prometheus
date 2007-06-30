@@ -10,17 +10,17 @@ package org.codehaus.prometheus.util;
  *
  * @author Peter Veentjer.
  */
-public class Latch_TryAwaitTest extends Latch_AbstractTest{
+public class Latch_TryAwaitTest extends Latch_AbstractTest {
 
-    public void testClosed_startInterrupted(){
+    public void testClosed_startInterrupted() {
         testClosed(START_INTERRUPTED);
     }
 
-    public void testClosed_startUninterrupted(){
+    public void testClosed_startUninterrupted() {
         testClosed(START_UNINTERRUPTED);
     }
 
-    public void testClosed(boolean startInterrupted){
+    public void testClosed(boolean startInterrupted) {
         newClosedLatch();
 
         TryAwaitThread tryAwaitThread = scheduleTryAwait(startInterrupted);
@@ -30,15 +30,15 @@ public class Latch_TryAwaitTest extends Latch_AbstractTest{
         tryAwaitThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
     }
 
-    public void testOpen_startInterrupted(){
+    public void testOpen_startInterrupted() {
         testOpen(START_INTERRUPTED);
     }
 
-    public void testOpen_startUninterrupted(){
+    public void testOpen_startUninterrupted() {
         testOpen(START_UNINTERRUPTED);
     }
 
-    public void testOpen(boolean startInterrupted){
+    public void testOpen(boolean startInterrupted) {
         newOpenLatch();
 
         TryAwaitThread tryAwaitThread = scheduleTryAwait(startInterrupted);

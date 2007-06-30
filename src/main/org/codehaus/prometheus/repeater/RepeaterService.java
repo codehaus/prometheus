@@ -16,28 +16,28 @@ import java.util.concurrent.TimeoutException;
  * A {@link Repeater} that provides methods to access and change the state.
  * <p/>
  * <h3>Exception handling</h3>
- * <p>
+ * <p/>
  * Exceptions can be handled by injecting a {@link ExceptionHandler}. If no ExceptionHandler is injected,
- * caught exceptions are discarded. 
+ * caught exceptions are discarded.
  * <p/>
  * <h3>Shutting down</h3>
- * <p>
+ * <p/>
  * A RepeaterService can be shutdown by calling:
  * </p>
  * <ol>
- *  <li>
- *      {@link #shutdown()}: doesn't interrupt a running task.
- *  </li>
- *  <li>
- *      {@link #shutdownNow()}: does interrupt a running task.
- *  </li>
+ * <li>
+ * {@link #shutdown()}: doesn't interrupt a running task.
+ * </li>
+ * <li>
+ * {@link #shutdownNow()}: does interrupt a running task.
+ * </li>
  * </ol>
- * <p>
+ * <p/>
  * Both shutdown methods can be called regardless of the state the RepeaterService is in. The call
- * doesn't await shutdown, see the {@link #awaitShutdown()} and {@link #tryAwaitShutdown(long, TimeUnit)}
- * methods. 
+ * doesn't await shutdown, see the {@link #awaitShutdown()} and {@link #tryAwaitShutdown(long,TimeUnit)}
+ * methods.
  * </p>
- *
+ * <p/>
  * Pauzing will be added in one of the next releases.
  *
  * @author Peter Veentjer.
@@ -65,15 +65,15 @@ public interface RepeaterService extends Repeater {
      * This method doesn't block until this RepeaterService has shut down. See the
      * {@link #awaitShutdown()} for that.
      *
-     * @see #shutdown() 
+     * @see #shutdown()
      * @see #awaitShutdown()
-     * @see #tryAwaitShutdown(long, TimeUnit)
+     * @see #tryAwaitShutdown(long,TimeUnit)
      */
     void shutdown();
 
     /**
      * Shuts down this RepeaterService. If a task is running, it is interrupted. If you don't want
-     * to interrupt the running task, see {@link #shutdown()}.  
+     * to interrupt the running task, see {@link #shutdown()}.
      * <p/>
      * If this RepeaterService already is shuttingdown, the tasks are interrupted. If this repeater
      * is shutdown, the call is ignored. This method can be called safely at every moment without
@@ -84,7 +84,7 @@ public interface RepeaterService extends Repeater {
      *
      * @see #shutdown()
      * @see #awaitShutdown()
-     * @see #tryAwaitShutdown(long, TimeUnit)
+     * @see #tryAwaitShutdown(long,TimeUnit)
      */
     void shutdownNow();
 
@@ -97,7 +97,7 @@ public interface RepeaterService extends Repeater {
      * </ol>
      *
      * @throws InterruptedException if the thread is interrupted while waiting for termination.
-     * @see #tryAwaitShutdown(long, TimeUnit)
+     * @see #tryAwaitShutdown(long,TimeUnit)
      * @see #shutdownNow()
      */
     void awaitShutdown() throws InterruptedException;

@@ -1,15 +1,16 @@
 package org.codehaus.prometheus.processors;
 
-import static junit.framework.TestCase.*;
+import static junit.framework.TestCase.assertSame;
+import static junit.framework.TestCase.assertTrue;
 
 
-public class TestPipedProcess{
+public class TestPipedProcess {
 
     private volatile boolean called = false;
     private volatile Object foundMsg;
     private final Object returnMsg;
 
-    public TestPipedProcess(Object returnMsg){
+    public TestPipedProcess(Object returnMsg) {
         this.returnMsg = returnMsg;
     }
 

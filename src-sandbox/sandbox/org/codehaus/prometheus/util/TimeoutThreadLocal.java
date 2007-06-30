@@ -27,33 +27,29 @@ public class TimeoutThreadLocal {
             };
 
     /**
-     *
      * @param timeoutNs
      */
-    public static void set(long timeoutNs){
+    public static void set(long timeoutNs) {
         timeoutThreadLocal.set(timeoutNs);
     }
 
     /**
-     *
      * @param amountNs
      */
-    public static void decrease(long amountNs){
-        
+    public static void decrease(long amountNs) {
+
     }
 
     /**
-     *
      * @param timeout
      * @param unit
      */
-    public static void set(long timeout, TimeUnit unit){
+    public static void set(long timeout, TimeUnit unit) {
         long timeoutNs = unit.toNanos(timeout);
         timeoutThreadLocal.set(timeoutNs);
     }
 
     /**
-     * 
      * @return
      */
     public static long get() {

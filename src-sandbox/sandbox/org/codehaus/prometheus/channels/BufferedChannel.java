@@ -1,60 +1,15 @@
 package org.codehaus.prometheus.channels;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 /**
  *
  *
- * @author Peter Veentjer.
  */
-public class BufferedChannel<E> implements Channel<E>{
-    private final BlockingQueue<E> queue;
+public interface BufferedChannel<E> extends Channel<E> {
 
-    public BufferedChannel(){
-        this(new LinkedBlockingQueue<E>());
-    }
+    int size();
 
-    public BufferedChannel(int capacity){
-        this(new LinkedBlockingQueue<E>(capacity));
-    }
+    void setRemainingCapacity(int capacity);
 
-    public BufferedChannel(BlockingQueue<E> queue){
-        if(queue == null)throw new NullPointerException();
-        this.queue = queue;
-    }
+    int getRemainingCapacity();
 
-    public BlockingQueue<E> getInternalQueue() {
-        return queue;
-    }
-
-    public E take() throws InterruptedException {
-        return queue.take();
-    }
-
-    public E poll(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
-        E item = queue.poll(timeout,unit);
-        if(item == null)
-            throw new TimeoutException();
-        return item;
-    }
-
-    public E poll() {
-        return queue.poll();
-    }
-
-    public E peek() {
-        return queue.peek();
-    }
-
-    public void put(E item) throws InterruptedException {
-        queue.put(item);
-    }
-
-    public long offer(E item, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
-        queue.offer(item,timeout,unit);
-        throw new RuntimeException();
-    }
 }

@@ -367,8 +367,8 @@
 
     <xsl:template name="alternated-row">
         <xsl:attribute name="class">
-            <xsl:if test="position() mod 2 = 1">a</xsl:if>
-            <xsl:if test="position() mod 2 = 0">b</xsl:if>
+            <xsl:if test="chainFrame() mod 2 = 1">a</xsl:if>
+            <xsl:if test="chainFrame() mod 2 = 0">b</xsl:if>
         </xsl:attribute>
     </xsl:template>
 

@@ -1,6 +1,12 @@
 package org.codehaus.prometheus.processors.standardprocessor;
 
+import org.codehaus.prometheus.processors.IntegerExceptionProcess;
+import org.codehaus.prometheus.processors.IntegerProcess;
 import org.codehaus.prometheus.processors.TestProcess;
+import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
+
+import static java.util.Arrays.asList;
+import java.util.Iterator;
 
 /**
  * Unittests all exception related functionality of the {@link StandardProcessor}.
@@ -21,6 +27,16 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
         };
     }
 
+    public void testSetter() {
+        newProcessor(new TestProcess());
+
+        try {
+            standardProcessor.setErrorPolicy(null);
+            fail();
+        } catch (NullPointerException ex) {
+        }
+    }
+
     public void testErrorIsNotCaught() {
         //todo
     }
@@ -31,20 +47,14 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
     }
 
     private void testPropagate(final Exception ex) {
-        final Integer arg = 10;
-        TestProcess process = new TestProcess() {
-            public Object receive(Integer i) throws Exception {
-                assertSame(arg, i);
-                called = true;
-                throw ex;
-            }
-        };
+        Integer arg = 10;
+        TestProcess process = new IntegerExceptionProcess(arg, ex);
         newProcessor(process);
-        standardProcessor.setPolicy(new PropagatePolicy());
+        standardProcessor.setErrorPolicy(new Propagate_ErrorPolicy());
 
-        spawnedPut(arg);
-        spawnedOnceThrowsException(ex);
-        process.assertCalled();
+        spawned_assertPut(arg);
+        spawned_assertOnceThrowsException(ex);
+        process.assertCalledOnce();
     }
 
     public void testDrop() {
@@ -53,21 +63,15 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
     }
 
     public void testDrop(final Exception ex) {
-        final Integer arg = 10;
-        TestProcess process = new TestProcess() {
-            public Object receive(Integer i) throws Exception {
-                assertSame(arg, i);
-                called = true;
-                throw ex;
-            }
-        };
+        Integer arg = 10;
+        TestProcess process = new IntegerExceptionProcess(arg, ex);
         newProcessor(process);
-        standardProcessor.setPolicy(new DropPolicy());
+        standardProcessor.setErrorPolicy(new Drop_ErrorPolicy());
 
-        spawnedPut(arg);
-        spawnedOnce(true);
-        process.assertCalled();
-        //todo: no take possible
+        spawned_assertPut(arg);
+        spawned_assertOnceAndReturnTrue();
+        process.assertCalledOnce();
+        spawned_assertTakeNotPossible();
     }
 
     public void testIgnore() {
@@ -76,21 +80,15 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
     }
 
     public void testIgnore(final Exception ex) {
-        final Integer arg = 10;
-        TestProcess process = new TestProcess() {
-            public Object receive(Integer i) throws Exception {
-                assertSame(arg, i);
-                called = true;
-                throw ex;
-            }
-        };
+        Integer arg = 10;
+        TestProcess process = new IntegerExceptionProcess(arg, ex);
         newProcessor(process);
-        standardProcessor.setPolicy(new IgnorePolicy());
+        standardProcessor.setErrorPolicy(new Ignore_ErrorPolicy());
 
-        spawnedPut(arg);
-        spawnedOnce(true);
-        process.assertCalled();
-        spawnedTake(arg);
+        spawned_assertPut(arg);
+        spawned_assertOnceAndReturnTrue();
+        process.assertCalledOnce();
+        spawned_assertTake(arg);
     }
 
     public void testReplace() {
@@ -99,7 +97,18 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
     }
 
     public void testReplace(final Exception ex) {
-        //todo
+        Integer arg = 10;
+        TestProcess process = new IntegerExceptionProcess(arg, ex);
+        newProcessor(process);
+        Integer replaced = randomInt();
+        standardProcessor.setErrorPolicy(new Replace_ErrorPolicy(replaced));
+
+        spawned_assertPut(arg);
+        spawned_assertOnceAndReturnTrue();
+
+        //this can be simplified
+        process.assertCalledOnce();
+        spawned_assertTake(replaced);
     }
 
     public void testTakeFromInputCausesException() {
@@ -111,7 +120,25 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
     }
 
     public void testIteratorThrowsException() {
-        //todo
-    }
+        Integer initialValue = 1;
+        Integer value1 = 1;
+        Object value2 = new RuntimeException();
+        Integer value3 = 10;
+        Iterator it = asList(value1, value2, value3).iterator();
+        Integer value2Replacement = 5;
 
+        TestProcess process = new IntegerProcess(initialValue, it);
+        newProcessor(process);
+        standardProcessor.setErrorPolicy(new Replace_ErrorPolicy(value2Replacement));
+
+        spawned_assertPut(initialValue);
+        spawned_assertOnceAndReturnTrue();
+        process.assertCalledOnce();
+
+        //this can be simplified.
+        spawned_assertTake(value1);
+        spawned_assertTake(value2Replacement);
+        spawned_assertTake(value3);
+        spawned_assertTakeNotPossible();
+    }
 }

@@ -120,13 +120,13 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         LendableReference<Repeatable> lendableRef = new StrictLendableReference<Repeatable>();
         int poolsize = 10;
         ThreadPool threadPool = new StandardThreadPool(poolsize);
-        repeater = new ThreadPoolRepeater(threadPool,lendableRef);
+        repeater = new ThreadPoolRepeater(threadPool, lendableRef);
 
         assertIsUnstarted();
         assertDesiredPoolSize(poolsize);
         assertActualPoolSize(0);
         assertSame(lendableRef, repeater.getLendableRef());
-        assertSame(threadPool,repeater.getThreadPool());
+        assertSame(threadPool, repeater.getThreadPool());
     }
 
     //========================= asserts =======================

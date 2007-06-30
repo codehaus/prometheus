@@ -6,7 +6,7 @@ import java.util.concurrent.TimeoutException;
 /**
  *
  */
-public class NullInputChannel<E> implements InputChannel<E>{
+public class NullInputChannel<E> implements InputChannel<E> {
 
     public final static NullInputChannel INSTANCE = new NullInputChannel();
 
@@ -15,12 +15,12 @@ public class NullInputChannel<E> implements InputChannel<E>{
     }
 
     public E poll() {
-         return null;
+        return null;
     }
 
     public E poll(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
-        if(unit == null)throw new NullPointerException();
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        if (unit == null) throw new NullPointerException();
+        return null;
     }
 
     public E peek() {

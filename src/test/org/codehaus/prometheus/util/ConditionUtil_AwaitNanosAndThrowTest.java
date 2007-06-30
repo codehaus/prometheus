@@ -31,7 +31,7 @@ public class ConditionUtil_AwaitNanosAndThrowTest extends ConditionUtil_Abstract
         }
     }
 
-    public void testInterruptedWhileWaiting() throws InterruptedException, TimeoutException {             
+    public void testInterruptedWhileWaiting() throws InterruptedException, TimeoutException {
         long timeout = 10;
         EasyMock.expect(conditionMock.awaitNanos(timeout)).andThrow(new InterruptedException());
         EasyMock.replay(conditionMock);
@@ -68,7 +68,6 @@ public class ConditionUtil_AwaitNanosAndThrowTest extends ConditionUtil_Abstract
         long remainingNs = ConditionUtil.awaitNanosAndThrow(cond, timeoutNs);
         assertTrue(remainingNs >= 0);
     }*/
-
 
 
     public void testIllegalMonitorState() throws TimeoutException, InterruptedException {

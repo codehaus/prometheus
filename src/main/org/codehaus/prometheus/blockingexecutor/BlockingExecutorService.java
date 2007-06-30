@@ -28,14 +28,13 @@ public interface BlockingExecutorService extends BlockingExecutor {
     ExceptionHandler getExceptionHandler();
 
     /**
-     *
      * @param handler
      */
     void setExceptionHandler(ExceptionHandler handler);
 
     /**
      * Starts this BlockingExecutorService.
-     *
+     * <p/>
      * if already started or paused nothing happens
      * if shutting down or shutdownNow -> illegalsstateexception
      */
@@ -86,7 +85,8 @@ public interface BlockingExecutorService extends BlockingExecutor {
      * @throws InterruptedException if the current thread is interrupted while waiting for shutdown.
      */
     void awaitShutdown() throws InterruptedException;
-   /**
+
+    /**
      * Waits until this service compelely is shutdownNow.
      * <p/>
      * This call can finish in 3 ways:
@@ -98,7 +98,7 @@ public interface BlockingExecutorService extends BlockingExecutor {
      *
      * @param timeout
      * @param unit
-     * @throws TimeoutException if the wait has timed out.
+     * @throws TimeoutException     if the wait has timed out.
      * @throws InterruptedException if the wait was interrupted
      * @throws NullPointerException if unit is null.
      */

@@ -14,14 +14,14 @@ import org.codehaus.prometheus.testsupport.SleepingRunnable;
  */
 public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_AbstractTest {
 
-    public void testArguments(){
+    public void testArguments() {
         newRunningStrictRepeater();
         int poolsize = repeater.getDesiredPoolSize();
 
-        try{
+        try {
             repeater.setDesiredPoolSize(-1);
             fail();
-        }catch(IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             assertTrue(true);
         }
 
@@ -30,24 +30,24 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(1);
     }
 
-    public void testUnstarted(){
+    public void testUnstarted() {
         newUnstartedStrictRepeater();
         int poolsize = 100;
 
         repeater.setDesiredPoolSize(poolsize);
 
         assertIsUnstarted();
-        assertEquals(poolsize,repeater.getDesiredPoolSize());
+        assertEquals(poolsize, repeater.getDesiredPoolSize());
         assertActualPoolSize(0);
     }
 
-    public void testStarted_incPoolsize(){
+    public void testStarted_incPoolsize() {
         newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_TINY_MS)));
 
-        int[] sizes = new int[]{0,10,1,0,2,0,20,0};
-        for(int size: sizes){
+        int[] sizes = new int[]{0, 10, 1, 0, 2, 0, 20, 0};
+        for (int size : sizes) {
             assertActualPoolsizeChanges(size);
-        }        
+        }
     }
 
     private void assertActualPoolsizeChanges(int poolsize) {
@@ -57,31 +57,31 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
         assertDesiredPoolSize(poolsize);
 
         //give the workers enough time to terminate
-        sleepMs((poolsize+oldPoolsize)*20+100);
+        sleepMs((poolsize + oldPoolsize) * 20 + 100);
 
         assertIsRunning();
         assertDesiredPoolSize(poolsize);
         assertActualPoolSize(poolsize);
     }
 
-    public void testShuttingdown(){
+    public void testShuttingdown() {
         newShuttingdownRepeater(DELAY_SMALL_MS);
         assertSetPoolSizeThrowsIllegalStateException();
     }
 
-    public void testShutdown(){
+    public void testShutdown() {
         newShutdownRepeater();
         assertSetPoolSizeThrowsIllegalStateException();
     }
 
     private void assertSetPoolSizeThrowsIllegalStateException() {
         RepeaterServiceState oldState = repeater.getState();
-        try{
+        try {
             repeater.setDesiredPoolSize(100);
             fail();
-        }catch(IllegalStateException ex){
+        } catch (IllegalStateException ex) {
             assertTrue(true);
         }
-        assertEquals(oldState,repeater.getState());
+        assertEquals(oldState, repeater.getState());
     }
 }

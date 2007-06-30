@@ -5,59 +5,59 @@
  */
 package org.codehaus.prometheus.util;
 
-import org.codehaus.prometheus.testsupport.TestUtil;
+import static org.codehaus.prometheus.testsupport.TestUtil.scheduleSignallAll;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends ConditionUtil_AbstractTest{
+public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends ConditionUtil_AbstractTest {
 
     public void testArguments() throws TimeoutException {
-        try{
-            ConditionUtil.awaitNanosUninterruptiblyAndThrow(null,10);
+        try {
+            ConditionUtil.awaitNanosUninterruptiblyAndThrow(null, 10);
             fail();
-        }catch(NullPointerException ex){
+        } catch (NullPointerException ex) {
             assertTrue(true);
         }
     }
 
-    public void testNegativeTimeout(){
+    public void testNegativeTimeout() {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
         lock.lock();
         try {
-            ConditionUtil.awaitNanosUninterruptiblyAndThrow(condition,-1);
+            ConditionUtil.awaitNanosUninterruptiblyAndThrow(condition, -1);
             fail();
         } catch (TimeoutException e) {
             assertTrue(true);
-        } finally{
+        } finally {
             lock.unlock();
         }
     }
 
     //===========================================================
 
-    public void testSomeWaitingNeeded_startInterrupted(){
+    public void testSomeWaitingNeeded_startInterrupted() {
         testSomeWaitingNeeded(true);
     }
 
-    public void testSomeWaitingNeeded_startUninterrupted(){
+    public void testSomeWaitingNeeded_startUninterrupted() {
         testSomeWaitingNeeded(false);
     }
 
-    public void testSomeWaitingNeeded(boolean interrupted){
+    public void testSomeWaitingNeeded(boolean interrupted) {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
         long timeoutNs = millisToNanos(DELAY_MEDIUM_MS);
-        AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock,condition,timeoutNs,interrupted);
+        AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock, condition, timeoutNs, interrupted);
 
         giveOthersAChance();
         t.assertIsStarted();
 
-        Thread signalThread = TestUtil.scheduleSignallAll(lock,condition);
-        joinAll(signalThread,t);
+        Thread signalThread = scheduleSignallAll(lock, condition);
+        joinAll(signalThread, t);
 
         t.assertSuccess();
         t.assertIsTerminatedWithInterruptStatus(interrupted);
@@ -65,19 +65,19 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
 
     //===========================================================
 
-    public void testTooMuchWaiting_startInterrupted(){
+    public void testTooMuchWaiting_startInterrupted() {
         testTooMuchWaiting(true);
     }
 
-    public void testTooMuchWaiting_startUninterrupted(){
+    public void testTooMuchWaiting_startUninterrupted() {
         testTooMuchWaiting(false);
     }
 
-    public void testTooMuchWaiting(boolean startInterrupted){
+    public void testTooMuchWaiting(boolean startInterrupted) {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
         long timeoutNs = millisToNanos(DELAY_SMALL_MS);
-        AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock,condition,timeoutNs,startInterrupted);
+        AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock, condition, timeoutNs, startInterrupted);
         joinAll(t);
 
         t.assertIsTimedOut();
@@ -86,28 +86,28 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
 
     //===========================================================
 
-    public void testInterruptedWhileWaiting_startInterrupted(){
+    public void testInterruptedWhileWaiting_startInterrupted() {
         testInterruptedWhileWaiting(true);
     }
 
-    public void testInterruptedWhileWaiting_startUninterrupted(){
+    public void testInterruptedWhileWaiting_startUninterrupted() {
         testInterruptedWhileWaiting(false);
     }
 
-    public void testInterruptedWhileWaiting(boolean interrupted){
+    public void testInterruptedWhileWaiting(boolean interrupted) {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
         long timeoutNs = millisToNanos(DELAY_MEDIUM_MS);
 
-        AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock,condition,timeoutNs,interrupted);
+        AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock, condition, timeoutNs, interrupted);
 
         giveOthersAChance();
         t.assertIsStarted();
 
         t.interrupt();
         giveOthersAChance();
-        Thread signalThread = TestUtil.scheduleSignallAll(lock,condition);        
-        joinAll(t,signalThread);
+        Thread signalThread = scheduleSignallAll(lock, condition);
+        joinAll(t, signalThread);
         t.assertSuccess();
         t.assertIsTerminatedWithInterruptStatus();
     }

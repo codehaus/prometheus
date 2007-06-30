@@ -78,12 +78,12 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         joinAll(takeThread);
         takeThread.assertIsInterruptedByException();
         assertHasRef(null);
-        assertPutIsPossible(1,null);
+        assertPutIsPossible(1, null);
         assertLendCount(0);
     }
 
     private void assertPutIsPossible(Integer newRef, Integer oldRef) {
-        TimedTryPutThread timedTryPutThread = scheduleTimedTryPut(newRef,0);
+        TimedTryPutThread timedTryPutThread = scheduleTimedTryPut(newRef, 0);
         joinAll(timedTryPutThread);
         timedTryPutThread.assertSuccess(oldRef);
     }
@@ -130,7 +130,7 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         assertHasRef(ref);
     }
 
-    public MultipleTakeThread scheduleMultipleTake(int count){
+    public MultipleTakeThread scheduleMultipleTake(int count) {
         MultipleTakeThread t = new MultipleTakeThread(count);
         t.start();
         return t;
@@ -152,13 +152,13 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
 
         public void assertSuccess(Integer expectedRef) {
             assertIsTerminatedNormally();
-            assertEquals(count,refList.size());
-            for(Integer ref: refList){
-                assertSame(expectedRef,ref);
+            assertEquals(count, refList.size());
+            for (Integer ref : refList) {
+                assertSame(expectedRef, ref);
             }
         }
     }
-    
+
     //spurious needs to be done from thread that has a readlock
     public void testSpuriousWakeup() throws InterruptedException {
         lendableRef = new StrictLendableReference<Integer>();

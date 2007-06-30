@@ -102,7 +102,7 @@
 
   <xsl:template match="package">
     <tr>
-      <td><xsl:value-of select="position()"/></td>
+      <td><xsl:value-of select="chainFrame()"/></td>
       <td><xsl:value-of select="classes"/></td>
       <td><xsl:value-of select="functions"/></td>
       <td><xsl:value-of select="ncss"/></td>
@@ -119,7 +119,7 @@
   </xsl:template>
 
   <xsl:template match="tr">
-    <xsl:variable name="row"><xsl:value-of select="position()"/></xsl:variable>
+    <xsl:variable name="row"><xsl:value-of select="chainFrame()"/></xsl:variable>
     <tr>
       <xsl:apply-templates select="td">
         <xsl:with-param name="row"><xsl:value-of select="$row"/></xsl:with-param>
@@ -132,7 +132,7 @@
     <xsl:choose>
       <xsl:when test="$row='1'">
         <th>
-          <xsl:if test="position()=6">
+          <xsl:if test="chainFrame()=6">
             <xsl:text>|</xsl:text>
           </xsl:if>
           <xsl:value-of select="."/>&#160;
@@ -140,7 +140,7 @@
       </xsl:when>
       <xsl:otherwise>
         <td>
-          <xsl:if test="position()=6">
+          <xsl:if test="chainFrame()=6">
             <xsl:text>| </xsl:text>
           </xsl:if>
           <xsl:value-of select="."/>&#160;
@@ -187,7 +187,7 @@
 
   <xsl:template match="object">
     <tr>
-      <td><xsl:value-of select="position()"/></td>
+      <td><xsl:value-of select="chainFrame()"/></td>
       <td><xsl:value-of select="ncss"/></td>
       <td><xsl:value-of select="functions"/></td>
       <td><xsl:value-of select="classes"/></td>
@@ -241,7 +241,7 @@
       </xsl:choose>
     </xsl:variable>
     <tr>
-      <td><xsl:value-of select="position()"/></td>
+      <td><xsl:value-of select="chainFrame()"/></td>
       <td><xsl:value-of select="ncss"/></td>
       <td><font color="{$ccn-color}"><xsl:value-of select="ccn"/></font></td>
       <td><font color="{$jdocs-color}"><xsl:value-of select="javadocs"/></font></td>

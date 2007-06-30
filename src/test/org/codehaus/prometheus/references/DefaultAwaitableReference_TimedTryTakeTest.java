@@ -63,7 +63,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
     public void testNoWaitingNeeded(boolean startInterrupted) throws TimeoutException, InterruptedException {
         Integer ref = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(ref);
-        TimedTryTakeThread taker = scheduleTryTake(0,startInterrupted);
+        TimedTryTakeThread taker = scheduleTryTake(0, startInterrupted);
 
         joinAll(taker);
         assertHasReference(ref);
@@ -74,9 +74,9 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
     //================================================================
 
     @InterruptedTrue
-    public void testSomeWaitingNeeded_startInterrupted(){
+    public void testSomeWaitingNeeded_startInterrupted() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        TimedTryTakeThread takeThread = scheduleTryTake(DELAY_SMALL_MS,START_INTERRUPTED);
+        TimedTryTakeThread takeThread = scheduleTryTake(DELAY_SMALL_MS, START_INTERRUPTED);
         joinAll(takeThread);
         takeThread.assertIsInterruptedByException();
     }
@@ -90,8 +90,8 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         giveOthersAChance();
         takeThread.assertIsStarted();
 
-        _tested_put(ref,null);
-                
+        _tested_put(ref, null);
+
         joinAll(takeThread);
         takeThread.assertSuccess(ref);
         assertHasReference(ref);
@@ -118,7 +118,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         taker.interrupt();
         joinAll(taker);
         taker.assertIsInterruptedByException();
-        assertHasReference(null);        
+        assertHasReference(null);
     }
 
     @InterruptedFalse
@@ -134,7 +134,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
         taker.assertIsStarted();
 
         Integer ref = 20;
-        _tested_put(ref,null);
+        _tested_put(ref, null);
         joinAll(taker);
         taker.assertSuccess(ref);
         assertHasReference(ref);

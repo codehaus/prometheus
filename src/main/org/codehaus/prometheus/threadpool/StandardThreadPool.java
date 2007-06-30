@@ -63,7 +63,7 @@ public class StandardThreadPool implements ThreadPool {
      * workerJob.
      *
      * @param workerJob the job that should be executed. The value is allowed to be null, but needs to be
-     *                  set before started.          
+     *                  set before started.
      * @param factory   the ThreadFactory that is used to fill the pool.
      * @throws NullPointerException if workerJob or factory is <tt>null</tt>.
      */
@@ -451,7 +451,7 @@ public class StandardThreadPool implements ThreadPool {
 
                 //if work was retrieved, execute it.
                 if (work != null)
-                    runWork(work);                                
+                    runWork(work);
             }
         }
 

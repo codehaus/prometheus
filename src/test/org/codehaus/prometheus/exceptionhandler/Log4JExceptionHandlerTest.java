@@ -1,7 +1,10 @@
 package org.codehaus.prometheus.exceptionhandler;
 
 import junit.framework.TestCase;
-import org.apache.log4j.*;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import static org.easymock.classextension.EasyMock.*;
 
 /**

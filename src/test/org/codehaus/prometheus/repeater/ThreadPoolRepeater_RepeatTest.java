@@ -65,7 +65,7 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
     //==================== shutting down repeater ===============
 
     public void testShuttingDownRepeater() throws InterruptedException {
-        newShuttingdownRepeater(2* DELAY_SMALL_MS);
+        newShuttingdownRepeater(2 * DELAY_SMALL_MS);
         assertRepeatIsRejected(new DummyRepeatable());
         assertRepeatIsRejected(null);
     }

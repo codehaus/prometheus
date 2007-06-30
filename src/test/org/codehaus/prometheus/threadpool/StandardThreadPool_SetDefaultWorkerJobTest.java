@@ -36,7 +36,7 @@ public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPo
         joinAll(setThread);
         setThread.assertIsTerminatedNormally();
         assertIsUnstarted();
-        assertSame(secondJob, threadpool.getDefaultWorkerJob());        
+        assertSame(secondJob, threadpool.getDefaultWorkerJob());
     }
 
     public void testWhileStarted() {

@@ -17,7 +17,7 @@ public class DefaultAwaitableReference_IsTakePossibleTest extends DefaultAwaitab
         _tested_take(ref);
         assertTakeIsPossible();
     }
-   
+
     public void testNoItemAvailable() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
         assertTakeIsNotPossible();

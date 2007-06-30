@@ -27,7 +27,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         newStartedThreadpool(poolsize);
 
         int errorcount = 30;
-        for(int k=0;k<errorcount;k++)        
+        for (int k = 0; k < errorcount; k++)
             taskQueue.add(new ThrowingRunnable());
 
         giveOthersAChance();
@@ -61,7 +61,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
     }
 
     public void testSet_whileShuttingDown() {
-        newShuttingdownThreadpool(10,DELAY_EON_MS);
+        newShuttingdownThreadpool(10, DELAY_EON_MS);
         assertSetHandlerWorks();
     }
 

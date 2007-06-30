@@ -8,10 +8,10 @@ package org.codehaus.prometheus.references;
 import junit.framework.TestSuite;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TestUtil;
+import static org.codehaus.prometheus.testsupport.TestUtil.*;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * It should test that it doesn't happen that multiple references
@@ -96,9 +96,9 @@ public class StrictLendableReference_StressTest {
 
             public void runInternal() throws InterruptedException {
                 for (int k = 0; k < repeatCountPutters; k++) {
-                    lendableReference.put(TestUtil.randomInt(100000));
-                    TestUtil.sleepRandomMs(10);
-                    TestUtil.someCalculation(TestUtil.randomInt(100000));
+                    lendableReference.put(randomInt(100000));
+                    sleepRandomMs(10);
+                    someCalculation(randomInt(100000));
                 }
             }
         }
@@ -112,8 +112,8 @@ public class StrictLendableReference_StressTest {
                 for (int k = 0; k < repeatCountUsers; k++) {
                     Integer ref = lendableReference.take();
                     try {
-                        TestUtil.sleepRandomMs(10);
-                        TestUtil.someCalculation(TestUtil.randomInt(100000));
+                        sleepRandomMs(10);
+                        someCalculation(randomInt(100000));
                     } finally {
                         //todo: add
                         lendableReference.takeback(ref);

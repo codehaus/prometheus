@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.testsupport;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertFalse;
 
 /**
  * Detects if this runnable was called with the interrupt flag set and next it
@@ -55,7 +55,7 @@ public class DetectingAndInterruptingRunnable extends TestRunnable {
      */
     public void assertNoInterruptFound() {
         assertNoRuntimeException();
-        TestCase.assertFalse(interruptfound);
+        assertFalse(interruptfound);
     }
 }
 

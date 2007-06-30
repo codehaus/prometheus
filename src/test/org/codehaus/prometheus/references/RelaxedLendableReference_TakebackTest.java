@@ -7,7 +7,7 @@ package org.codehaus.prometheus.references;
 
 /**
  * Unittests {@link RelaxedLendableReference#takeback(Object)}.
- *  
+ *
  * @author Peter Veentjer
  */
 public class RelaxedLendableReference_TakebackTest extends RelaxedLendableReference_AbstractTest<Integer> {

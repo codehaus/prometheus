@@ -16,11 +16,11 @@ public class CountingRepeatable implements Repeatable, Runnable {
      * Creates a new CountingRepeatable with the given count.
      *
      * @param count the number of times to execute the task
-     * @throws NullPointerException if mainLock is null.
+     * @throws NullPointerException     if mainLock is null.
      * @throws IllegalArgumentException if count < 0
      */
-    public CountingRepeatable(int count){
-        if(count<0)throw new IllegalArgumentException();
+    public CountingRepeatable(int count) {
+        if (count < 0) throw new IllegalArgumentException();
         this.count.set(count);
         this.task = null;
     }
@@ -28,14 +28,14 @@ public class CountingRepeatable implements Repeatable, Runnable {
     /**
      * Creates a new CountingRepeatable
      *
-     * @param task the task to repeat
+     * @param task  the task to repeat
      * @param count the number of times to repeat the execution of the task
-     * @throws NullPointerException if task is null
+     * @throws NullPointerException     if task is null
      * @throws IllegalArgumentException if count < 0
      */
-    public CountingRepeatable(Runnable task, int count){
-        if(task == null)throw new NullPointerException();
-        if(count<0)throw new IllegalArgumentException();
+    public CountingRepeatable(Runnable task, int count) {
+        if (task == null) throw new NullPointerException();
+        if (count < 0) throw new IllegalArgumentException();
         this.task = task;
         this.count.set(count);
     }
@@ -68,9 +68,9 @@ public class CountingRepeatable implements Repeatable, Runnable {
      */
     public final boolean execute() {
         long count = this.count.getAndDecrement();
-        if(count<=0)
+        if (count <= 0)
             return false;
-        
+
         run();
         return true;
     }

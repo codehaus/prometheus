@@ -5,7 +5,8 @@
  */
 package org.codehaus.prometheus.util;
 
-public class CloseableBlockingQueue_OfferTest extends CloseableBlockingQueueTests{
+public class CloseableBlockingQueue_OfferTest extends CloseableBlockingQueueTests {
 
-    public void testDummy(){}
+    public void testDummy() {
+    }
 }

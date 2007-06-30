@@ -7,15 +7,15 @@ package org.codehaus.prometheus.references;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.codehaus.prometheus.testsupport.TestUtil;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepRandomMs;
 import org.codehaus.prometheus.testsupport.TimedRepeatingThreadFactory;
 import org.codehaus.prometheus.uninterruptiblesection.UninterruptibleSection;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A stresstest for the DefaultAwaitableReference.
@@ -59,7 +59,7 @@ public class DefaultAwaitableReference_StressTest {
                         new Runnable() {
 
                             public void run() {
-                                TestUtil.sleepRandomMs(100);
+                                sleepRandomMs(100);
                                 ref.getMainLock().lock();
                                 try {
                                     ref.getReferenceAvailableCondition().signalAll();
@@ -82,7 +82,7 @@ public class DefaultAwaitableReference_StressTest {
                 Thread thread = factory.newThread(
                         new Runnable() {
                             public void run() {
-                                TestUtil.sleepRandomMs(100);
+                                sleepRandomMs(100);
                                 UninterruptibleSection section = new UninterruptibleSection() {
 
                                     protected Object originalsection() throws InterruptedException {
@@ -108,7 +108,7 @@ public class DefaultAwaitableReference_StressTest {
                             public void run() {
                                 try {
                                     awaitableRef.take();
-                                    TestUtil.sleepRandomMs(100);
+                                    sleepRandomMs(100);
                                 } catch (InterruptedException e) {
                                     Thread.currentThread().interrupt();
                                 }

@@ -140,15 +140,15 @@ public class StandardThreadPool_ConstructorTest extends StandardThreadPool_Abstr
         } catch (NullPointerException ex) {
         }
 
-        test_int_WorkerJob_ThreadFactory(0,null);
-        test_int_WorkerJob_ThreadFactory(0,new DummyWorkerJob());
-        test_int_WorkerJob_ThreadFactory(1,null);
-        test_int_WorkerJob_ThreadFactory(1,new DummyWorkerJob());
+        test_int_WorkerJob_ThreadFactory(0, null);
+        test_int_WorkerJob_ThreadFactory(0, new DummyWorkerJob());
+        test_int_WorkerJob_ThreadFactory(1, null);
+        test_int_WorkerJob_ThreadFactory(1, new DummyWorkerJob());
     }
 
     public void test_int_WorkerJob_ThreadFactory(int poolsize, WorkerJob workerJob) {
         TracingThreadFactory factory = new TracingThreadFactory();
-        threadpool = new StandardThreadPool(poolsize,workerJob, factory);
+        threadpool = new StandardThreadPool(poolsize, workerJob, factory);
         assertIsUnstarted();
         assertSame(factory, threadpool.getThreadFactory());
         assertActualPoolsize(0);

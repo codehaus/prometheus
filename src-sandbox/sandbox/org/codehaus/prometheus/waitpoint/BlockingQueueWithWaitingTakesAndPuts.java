@@ -16,23 +16,23 @@ import java.util.concurrent.TimeUnit;
  * decorates a target BlockingQueue. It also contains a pair of
  * associated Waitpoints:
  * <ol>
- *      <li>
- *          <b>frontWaitpoint</b>:
- *      </li>
- *      <li>
- *          <b>backWaitpoint</b>:
- *      </li>
+ * <li>
+ * <b>frontWaitpoint</b>:
+ * </li>
+ * <li>
+ * <b>backWaitpoint</b>:
+ * </li>
  * </ol>
- *
+ * <p/>
  * What is it useful for?
  * -creating a BlockingQueue that can be opened and closed.
- *  frontend-close/backend-close
+ * frontend-close/backend-close
  * -creating a BlockingQueue where the takes an puts can be
- *  throttled.
- * 
+ * throttled.
+ *
  * @author Peter Veentjer.
  */
-public class BlockingQueueWithWaitingTakesAndPuts<E,FW extends Waitpoint, BW extends Waitpoint>
+public class BlockingQueueWithWaitingTakesAndPuts<E, FW extends Waitpoint, BW extends Waitpoint>
         extends AbstractQueue<E>
         implements BlockingQueue<E> {
 
@@ -40,7 +40,7 @@ public class BlockingQueueWithWaitingTakesAndPuts<E,FW extends Waitpoint, BW ext
     private final BW backWaitpoint;
     private final BlockingQueue<E> targetQueue;
 
-    public BlockingQueueWithWaitingTakesAndPuts(BlockingQueue<E> queue, FW frontWaitpoint, BW backWaitpoint){
+    public BlockingQueueWithWaitingTakesAndPuts(BlockingQueue<E> queue, FW frontWaitpoint, BW backWaitpoint) {
         this.targetQueue = queue;
         this.frontWaitpoint = frontWaitpoint;
         this.backWaitpoint = backWaitpoint;

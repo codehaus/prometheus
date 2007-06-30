@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Unittests the {@link StrictLendableReference#tryPut(Object, long, TimeUnit)}
- * method. 
+ * Unittests the {@link StrictLendableReference#tryPut(Object,long,TimeUnit)}
+ * method.
  *
  * @author Peter Veentjer.
  */
@@ -44,7 +44,7 @@ public class StrictLendableReference_TimedTryPutTest extends StrictLendableRefer
         Integer ref = 10;
         lendableRef = new StrictLendableReference<Integer>(ref);
 
-        TimedTryPutThread tryPutThread = scheduleTimedTryPut(null,0);
+        TimedTryPutThread tryPutThread = scheduleTimedTryPut(null, 0);
         joinAll(tryPutThread);
 
         assertHasRef(null);
@@ -57,7 +57,7 @@ public class StrictLendableReference_TimedTryPutTest extends StrictLendableRefer
         Integer ref = 10;
 
         //a put with a nul timeout should complete without problems
-        TimedTryPutThread tryPutThread = scheduleTimedTryPut(ref,0);
+        TimedTryPutThread tryPutThread = scheduleTimedTryPut(ref, 0);
         joinAll(tryPutThread);
         assertHasRef(ref);
         tryPutThread.assertSuccess(null);
@@ -81,7 +81,7 @@ public class StrictLendableReference_TimedTryPutTest extends StrictLendableRefer
 
         //now bring the item back and check that the put now is able to complete
         TakeBackThread takeBackThread = scheduleTakeback(originalRef);
-        joinAll(tryPutThread,takeBackThread);
+        joinAll(tryPutThread, takeBackThread);
         tryPutThread.assertSuccess(originalRef);
         assertHasRef(newRef);
         assertLendCount(0);

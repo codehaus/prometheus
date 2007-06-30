@@ -1,91 +1,150 @@
 package org.codehaus.prometheus.processors.standardprocessor;
 
+import org.codehaus.prometheus.processors.IntegerProcess;
+import org.codehaus.prometheus.processors.NoArgProcess;
 import org.codehaus.prometheus.processors.TestProcess;
+import org.codehaus.prometheus.processors.VoidValue;
+
+import java.util.List;
 
 /**
  * Unittests the {@link StandardProcessor}.
+ *
+ * @author Peter Veentjer.
  */
 public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
 
-    public void testProcessHasNoMatchingReceive() {
-        Integer arg = 10;
+    public void testNoMatchingReceive() {
+        String arg = "foo";
 
-        TestProcess process = new TestProcess() {
-            public void receive(String s) {
-                fail();
-            }
-        };
+        TestProcess process = new IntegerProcess();
         newProcessor(process);
 
-        spawnedPut(arg);
-        spawnedOnce(true);
-        spawnedTake(arg);
+        spawned_assertPut(arg);
+        spawned_assertOnceAndReturnTrue();
+        spawned_assertTake(arg);
         process.assertNotCalled();
+        spawned_assertTakeNotPossible();
     }
 
     public void testArgProcessReturnsVoid() {
-        final Integer arg = 10;
+        Integer arg = 10;
 
-        TestProcess process = new TestProcess() {
-            public void receive(Integer i) {
-                assertSame(arg, i);
-                called = true;
-            }
-        };
+        IntegerProcess process = new IntegerProcess(arg, VoidValue.INSTANCE);
+        testArgProcessReturnsVoid(process, arg);
+    }
+
+    public void testArgProcessReturnsVoid(TestProcess process, Integer arg) {
         newProcessor(process);
 
-        spawnedPut(arg);
-        spawnedOnce(true);
-        spawnedTake(arg);
-        process.assertCalled();
+        spawned_assertPut(arg);
+        spawned_assertOnceAndReturnTrue();
+        spawned_assertTake(arg);
+        process.assertCalledOnce();
+        spawned_assertTakeNotPossible();
+    }
+
+    public void testInputReturnsVoid() {
+        TestProcess process = new NoArgProcess();
+        newProcessor(process);
+
+        spawned_assertPut(VoidValue.INSTANCE);
+        spawned_assertOnceAndReturnTrue();
+        spawned_assertTakeNotPossible();
+        process.assertCalledOnce();
+        spawned_assertTakeNotPossible();
     }
 
     public void testNoArgProcessReturnsValue() {
-        final Integer value = 10;
+        Integer returned = 10;
 
-        TestProcess process = new TestProcess() {
-            public Integer receive() {
-                called = true;
-                return value;
-            }
-        };
+        TestProcess process = new NoArgProcess(returned);
         newSourceProcessor(process);
 
-        spawnedOnce(true);
-        spawnedTake(value);
-        process.assertCalled();
+        spawned_assertOnceAndReturnTrue();
+        spawned_assertTake(returned);
+        process.assertCalledOnce();
+        spawned_assertTakeNotPossible();
     }
 
     public void testReceiveReturnsNull() {
-        final Integer arg = 10;
+        Integer arg = 10;
 
-        TestProcess process = new TestProcess() {
-            public Object receive(Integer i) {
-                assertSame(arg, i);
-                called = true;
-                return null;
-            }
-        };
+        TestProcess process = new IntegerProcess(arg, null);
         newProcessor(process);
 
-        spawnedPut(arg);
-        spawnedOnce(true);
-
-        //todo: zou een take nu niet moeten mislukken?
-        spawnedTake(arg);
-        process.assertCalled();
-    }
-
-    public void testInputReturnsIterator() {
-        //todo
+        spawned_assertPut(arg);
+        spawned_assertOnceAndReturnTrue();
+        spawned_assertTakeNotPossible();
+        process.assertCalledOnce();
     }
 
     public void testProcessReturnsIterator() {
-        //todo
+        Integer arg = 10;
+        List<Integer> itemList = generateRandomNumberList(20);
+       
+        TestProcess process = new IntegerProcess(arg, itemList.iterator());
+        newProcessor(process);
+
+        spawned_assertPut(arg);
+        for (Integer item : itemList) {
+            spawned_assertOnceAndReturnTrue();
+            spawned_assertTake(item);
+            spawned_assertTakeNotPossible();
+        }
     }
 
+    public void testInputReturnsIterator() {
+        List<Integer> itemList = generateRandomNumberList(20);
+
+        newProcessor(new Object[]{});
+
+        spawned_assertPut(itemList.iterator());
+        for (Integer item : itemList) {
+            spawned_assertOnceAndReturnTrue();
+            spawned_assertTake(item);
+            spawned_assertTakeNotPossible();
+        }
+    }
+
+    public void testChainedProcessesThatReturnIterators() {
+        /*
+        final Integer arg = 10;
+
+        final List<Integer> item1List = generateRandomNumberList();
+        final List<Integer> item2List = generateRandomNumberList();
+
+        TestProcess process1 = new TestProcess() {
+            public Iterator<Integer> receive(Integer i) {
+                assertSame(arg, i);
+                signalCalled();
+                return item1List.iterator();
+            }
+        };
+
+        TestProcess process2 = new TestProcess() {
+            public Iterator<Integer> receive(Integer i) {
+                assertSame(arg, i);
+                signalCalled();
+                return item2List.iterator();
+            }
+        };
+
+        newProcessor(new Object[]{process1, process2});
+
+        spawned_assertPut(arg);
+        spawned_assertOnce(true);
+        //check that all items have been outputted.
+        for (Integer item : itemList1){
+            spawned_assertTake(item);
+        }
+          */
+    }
+
+
     public void test_noInput_noOutput_noProcess() {
-        //todo
+        newProcessor(-1, -1, new Object[]{});
+        spawned_assertOnceAndReturnTrue();
     }
 
     public void test_noProcess() {
@@ -93,69 +152,44 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
 
         newProcessor(new Object[]{});
 
-        spawnedPut(arg);
-        spawnedOnce(true);
-        spawnedTake(arg);
+        spawned_assertPut(arg);
+        spawned_assertOnceAndReturnTrue();
+        spawned_assertTake(arg);
+        spawned_assertTakeNotPossible();
     }
 
     public void test_onlyProcess() {
-        final Integer arg1 = 1;
-        final Integer arg2 = 2;
+        Integer arg1 = 1;
+        Integer arg2 = 2;
 
-        TestProcess process = new TestProcess() {
-            public Object receive(Integer i) {
-                assertSame(arg1, i);
-                called = true;
-                return arg2;
-            }
-        };
-
-
+        TestProcess process = new IntegerProcess(arg1, arg2);
         newProcessor(new Object[]{process});
 
-        spawnedPut(arg1);
-        spawnedOnce(true);
-        spawnedTake(arg2);
-        process.assertCalled();
+        spawned_assertPut(arg1);
+        spawned_assertOnceAndReturnTrue();
+        spawned_assertTake(arg2);
+        process.assertCalledOnce();
+        spawned_assertTakeNotPossible();
     }
 
     public void test_multipleProcesses() {
-        final Integer arg1 = 1;
-        final Integer arg2 = 2;
-        final Integer arg3 = 3;
-        final Integer arg4 = 4;
+        Integer arg1 = 1;
+        Integer arg2 = 2;
+        Integer arg3 = 3;
+        Integer arg4 = 4;
 
-        TestProcess process1 = new TestProcess() {
-            public Object receive(Integer i) {
-                assertSame(arg1, i);
-                called = true;
-                return arg2;
-            }
-        };
-
-        TestProcess process2 = new TestProcess() {
-            public Object receive(Integer i) {
-                assertSame(arg2, i);
-                called = true;
-                return arg3;
-            }
-        };
-
-        TestProcess process3 = new TestProcess() {
-            public Object receive(Integer i) {
-                assertSame(arg3, i);
-                called = true;
-                return arg4;
-            }
-        };
+        TestProcess process1 = new IntegerProcess(arg1, arg2);
+        TestProcess process2 = new IntegerProcess(arg2, arg3);
+        TestProcess process3 = new IntegerProcess(arg3, arg4);
 
         newProcessor(new Object[]{process1, process2, process3});
 
-        spawnedPut(arg1);
-        spawnedOnce(true);
-        spawnedTake(arg4);
-        process1.assertCalled();
-        process2.assertCalled();
-        process3.assertCalled();
+        spawned_assertPut(arg1);
+        spawned_assertOnceAndReturnTrue();
+        spawned_assertTake(arg4);
+        process1.assertCalledOnce();
+        process2.assertCalledOnce();
+        process3.assertCalledOnce();
+        spawned_assertTakeNotPossible();
     }
 }

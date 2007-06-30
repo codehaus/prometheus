@@ -5,9 +5,6 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.DefaultAwaitableReference;
-import org.codehaus.prometheus.references.LendableReference;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -89,7 +86,7 @@ public class RelaxedLendableReference<E> extends DefaultAwaitableReference<E> im
 
 
     public void takebackAndReset(E ref) {
-        if(ref == null)throw new NullPointerException();
-        put(null);        
+        if (ref == null) throw new NullPointerException();
+        put(null);
     }
 }

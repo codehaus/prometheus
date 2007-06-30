@@ -5,7 +5,6 @@
  */
 package org.codehaus.prometheus.references;
 
-import junit.framework.TestCase;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.testsupport.TestUtil;
@@ -56,7 +55,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
     }
 
     public void doSpuriousWakeup() {
-        TestThread t =  scheduleSpuriousWakeup(0);
+        TestThread t = scheduleSpuriousWakeup(0);
         joinAll(t);
         t.assertIsTerminatedNormally();
     }
@@ -143,7 +142,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
 
         public void assertSuccess(Integer expectedOldRef) {
             assertIsTerminatedNormally();
-            TestCase.assertEquals(expectedOldRef, foundOldRef);
+            assertEquals(expectedOldRef, foundOldRef);
         }
     }
 
@@ -158,7 +157,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
 
         public void assertSuccess(Integer expectedTakenRef) {
             assertIsTerminatedNormally();
-            TestCase.assertSame(expectedTakenRef, foundTakenRef);
+            assertSame(expectedTakenRef, foundTakenRef);
         }
     }
 
@@ -204,7 +203,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
 
         public void assertSuccess(Integer expectedTakenRef) {
             assertIsTerminatedNormally();
-            TestCase.assertSame(expectedTakenRef, foundTakenRef);
+            assertSame(expectedTakenRef, foundTakenRef);
         }
     }
 
@@ -218,9 +217,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
 
         public void assertSuccess(Integer expectedRef) {
             assertIsTerminatedNormally();
-            TestCase.assertSame(expectedRef, foundRef);
+            assertSame(expectedRef, foundRef);
         }
     }
-
-
 }

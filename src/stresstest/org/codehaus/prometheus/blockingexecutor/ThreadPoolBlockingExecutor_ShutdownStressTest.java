@@ -4,7 +4,7 @@ import junit.framework.TestSuite;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TestUtil;
+import static org.codehaus.prometheus.testsupport.TestUtil.*;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
@@ -95,7 +95,7 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
         }
 
         private void shutdownThreadpoolexecutor() throws InterruptedException {
-            TestUtil.sleepRandomMs(1000);
+            sleepRandomMs(1000);
             executor.shutdown();
             executor.awaitShutdown();
 
@@ -121,7 +121,7 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
             protected void runInternal() throws Exception {
                 try {
                     for (int k = 0; k < workcount; k++) {
-                        TestUtil.sleepRandom(20, TimeUnit.MILLISECONDS);
+                        sleepRandom(20, TimeUnit.MILLISECONDS);
                         executor.execute(new Task());
                         placedCount.incrementAndGet();
                     }
@@ -134,8 +134,8 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
         public class Task implements Runnable {
             public void run() {
                 executedCount.incrementAndGet();
-                TestUtil.sleepRandom(20, TimeUnit.MILLISECONDS);
-                TestUtil.someCalculation(100000);
+                sleepRandom(20, TimeUnit.MILLISECONDS);
+                someCalculation(100000);
             }
         }
     }

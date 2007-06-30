@@ -47,7 +47,7 @@ import java.util.concurrent.TimeoutException;
  * <p/>
  * <td><b>Waitpoint vs Condition</b></td>
  * <dd>
- * The Waitpoint can be seen as the waiting part of a Condition. 
+ * The Waitpoint can be seen as the waiting part of a Condition.
  * </dd>
  * <p/>
  * <td><b>Waitpoint vs CountDownLatch/CyclicBarrier</b></td>

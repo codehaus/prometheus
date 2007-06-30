@@ -4,11 +4,11 @@ import org.codehaus.prometheus.monitoring.Monitorable;
 
 import java.util.Map;
 
-public class MonitoringMBeanImpl implements MonitoringMBean{
+public class MonitoringMBeanImpl implements MonitoringMBean {
     private final Monitorable monitorable;
 
-    public MonitoringMBeanImpl(Monitorable monitorable){
-        if(monitorable == null)throw new NullPointerException();
+    public MonitoringMBeanImpl(Monitorable monitorable) {
+        if (monitorable == null) throw new NullPointerException();
         this.monitorable = monitorable;
     }
 

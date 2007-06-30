@@ -20,40 +20,40 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_AbstractTest {
 
-    public void testFalseStopsRepeater(){
+    public void testFalseStopsRepeater() {
         int poolsize = 10;
-        newRunningRepeater(true,poolsize);
+        newRunningRepeater(true, poolsize);
 
         CountingRepeatable repeatable = new CountingRepeatable(poolsize);
         _tested_repeat(repeatable);
 
         giveOthersAChance();
-        repeatable.assertRunCount(poolsize,2*poolsize);
+        repeatable.assertRunCount(poolsize, 2 * poolsize);
     }
 
     //todo: name stinks: it also is not clear what this repeatable should do and should test
-    public class CountingRepeatable implements Repeatable{
+    public class CountingRepeatable implements Repeatable {
 
         private final AtomicInteger count = new AtomicInteger();
         private final int maxCount;
 
-        public CountingRepeatable(int maxCount){
+        public CountingRepeatable(int maxCount) {
             this.maxCount = maxCount;
         }
 
         public boolean execute() {
             int count = this.count.incrementAndGet();
-            return count<maxCount;
+            return count < maxCount;
         }
 
-        public void assertRunCount(int minRunCount, int maxRunCount){
-            assertTrue(minRunCount<=count.get());
-            assertTrue(count.intValue()<=maxRunCount);
+        public void assertRunCount(int minRunCount, int maxRunCount) {
+            assertTrue(minRunCount <= count.get());
+            assertTrue(count.intValue() <= maxRunCount);
         }
     }
 
     public void testSuccess() throws InterruptedException {
-        newRunningRepeater(false,10);
+        newRunningRepeater(false, 10);
 
         CountingRunnable task = new CountingRunnable();
         _tested_repeat(task);
@@ -64,9 +64,9 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
 
     //todo: testen dat de task herhaald blijft.
 
-  //  public void testStrictness() {
-  //      fail();
-  //  }
+    //  public void testStrictness() {
+    //      fail();
+    //  }
 /*
     public void testRelaxedness() {
         newRunningRepeater(false, 10);
@@ -87,10 +87,10 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
 */
     //=============== testRunningTaskCausesRuntimeException =============================
 
- 
     //============ unsetofinterruptstatus ======================================
 
     //with a strict repeater
+
     public void testUnsetOfInterruptStatus_strict() throws InterruptedException {
         testUnsetOfInterruptStatus(true);
     }

@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.blockingexecutor;
 
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TestUtil;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepRandom;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,7 +18,7 @@ public class TaskProducer extends TestThread {
     protected void runInternal() throws Exception {
         for (int k = 0; k < taskCount; k++) {
             executor.execute(new Task());
-            TestUtil.sleepRandom(20, TimeUnit.MILLISECONDS);
+            sleepRandom(20, TimeUnit.MILLISECONDS);
         }
     }
 }

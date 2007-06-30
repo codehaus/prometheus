@@ -1,13 +1,13 @@
 package org.codehaus.prometheus.monitoring;
 
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * A MonitoringRunnable should be 
+ * A MonitoringRunnable should be
  */
-public class MonitoringRunnable implements Runnable, Monitorable{
+public class MonitoringRunnable implements Runnable, Monitorable {
 
     private final AtomicLong count = new AtomicLong();
     private final AtomicLong lastExecution = new AtomicLong();
@@ -30,19 +30,19 @@ public class MonitoringRunnable implements Runnable, Monitorable{
     }
 
     public Map<String, Object> snapshot() {
-        Map<String,Object> snapshot = new HashMap();
+        Map<String, Object> snapshot = new HashMap();
         return snapshot;
     }
 
-    protected void monitoredRun(){
-        
+    protected void monitoredRun() {
+
     }
 
     public final void run() {
-        if(on){
+        if (on) {
             monitoredRun();
-        }else{
-            
+        } else {
+
         }
     }
 }

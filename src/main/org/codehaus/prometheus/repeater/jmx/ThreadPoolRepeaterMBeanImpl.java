@@ -23,8 +23,8 @@ public class ThreadPoolRepeaterMBeanImpl implements ThreadPoolRepeaterMBean {
      * @param threadPoolRepeater the RepeaterService that is exposed by this MBean.
      * @throws NullPointerException if repeater is <tt>null</tt>.
      */
-    public ThreadPoolRepeaterMBeanImpl(ThreadPoolRepeater threadPoolRepeater){
-        if(threadPoolRepeater == null)throw new NullPointerException();
+    public ThreadPoolRepeaterMBeanImpl(ThreadPoolRepeater threadPoolRepeater) {
+        if (threadPoolRepeater == null) throw new NullPointerException();
         this.repeater = threadPoolRepeater;
     }
 
@@ -45,7 +45,7 @@ public class ThreadPoolRepeaterMBeanImpl implements ThreadPoolRepeaterMBean {
         repeater.shutdownNow();
     }
 
-    public void start(){
+    public void start() {
         repeater.start();
     }
 

@@ -146,7 +146,7 @@ public interface AwaitableReference<E> {
      * @throws InterruptedException if the calling thread is interrupted
      */
     E put(E newRef) throws InterruptedException;
-   
+
     /**
      * Tries to put a new reference in this AwaitableReference.
      * <p/>

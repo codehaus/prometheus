@@ -18,7 +18,7 @@ import java.util.concurrent.RejectedExecutionException;
 public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingExecutor_AbstractTest {
 
     public void testArguments() throws InterruptedException {
-        newStartedBlockingExecutor(1,1);
+        newStartedBlockingExecutor(1, 1);
 
         try {
             executor.execute(null);
@@ -30,14 +30,14 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
 
     public void testInterruptedWhileWaiting() {
         int poolsize = 1;
-        newStartedBlockingExecutor(0,poolsize);
+        newStartedBlockingExecutor(0, poolsize);
 
         //place first task
         placeTask(DELAY_EON_MS);
 
         //place the second task. The placement of this task block because there is no space
         SleepingRunnable secondTask = new SleepingRunnable(DELAY_EON_MS);
-        ExecuteThread executeThread = scheduleExecute(secondTask,START_UNINTERRUPTED);
+        ExecuteThread executeThread = scheduleExecute(secondTask, START_UNINTERRUPTED);
 
         //make sure that executeThread is blocking
         giveOthersAChance();
@@ -46,7 +46,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         //interrupt the executingThread
         executeThread.interrupt();
         joinAll(executeThread);
-        
+
         executeThread.assertIsInterruptedByException();
         assertActualPoolSize(poolsize);
         assertIsRunning();
@@ -55,7 +55,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
 
     private SleepingRunnable placeTask(long durationMs) {
         SleepingRunnable task = new SleepingRunnable(durationMs);
-        ExecuteThread executeThread = scheduleExecute(task,START_UNINTERRUPTED);
+        ExecuteThread executeThread = scheduleExecute(task, START_UNINTERRUPTED);
         joinAll(executeThread);
         executeThread.assertIsTerminatedNormally();
         return task;
@@ -64,8 +64,9 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
     //synchronous quueue
 
     //there are no idle workers, but there is space in the queue
-    public void testSuccess_noIdleWorkersButQueueHasSpace(){
-        newStartedBlockingExecutor(10,0);
+
+    public void testSuccess_noIdleWorkersButQueueHasSpace() {
+        newStartedBlockingExecutor(10, 0);
 
         SleepingRunnable task = placeTask(DELAY_EON_MS);
 
@@ -79,7 +80,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
     //there are idle workers but there is no queue capacity (synchronousqueue is used)
     public void testSucccess_idleWorkers() throws InterruptedException {
         int poolsize = 10;
-        newStartedBlockingExecutor(0,poolsize);
+        newStartedBlockingExecutor(0, poolsize);
 
         SleepingRunnable task = placeTask(DELAY_EON_MS);
 
@@ -91,7 +92,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
     }
 
     public void testWhileUnstarted() {
-        newUnstartedBlockingExecutor(1,1);
+        newUnstartedBlockingExecutor(1, 1);
         assertExecuteIsRejected();
     }
 
@@ -101,7 +102,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
     }
 
     public void testWhileShutdown() {
-        newShutdownBlockingExecutor(1,1);
+        newShutdownBlockingExecutor(1, 1);
         assertExecuteIsRejected();
     }
 
@@ -109,7 +110,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         BlockingExecutorServiceState oldState = executor.getState();
         CountingRunnable task = new CountingRunnable();
 
-        ExecuteThread t = scheduleExecute(task,false);
+        ExecuteThread t = scheduleExecute(task, false);
         joinAll(t);
         t.assertIsTerminatedWithThrowing(RejectedExecutionException.class);
 

@@ -29,45 +29,45 @@ public class StandardThreadFactory_ConstructorTest extends TestCase {
         assertFalse(factory.isProducingDaemons());
     }
 
-    public void test_int(){
-        try{
-            new StandardThreadFactory(Thread.MIN_PRIORITY-1);
+    public void test_int() {
+        try {
+            new StandardThreadFactory(Thread.MIN_PRIORITY - 1);
             fail();
-        }catch(IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
         }
 
-        try{
-            new StandardThreadFactory(Thread.MAX_PRIORITY+1);
+        try {
+            new StandardThreadFactory(Thread.MAX_PRIORITY + 1);
             fail();
-        }catch(IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
         }
 
-        int priority = Thread.MIN_PRIORITY+4;
+        int priority = Thread.MIN_PRIORITY + 4;
         StandardThreadFactory factory = new StandardThreadFactory(priority);
-        assertEquals(priority,factory.getPriority());
+        assertEquals(priority, factory.getPriority());
         assertNotNull(factory.getThreadGroup());
         assertFalse(factory.isProducingDaemons());
     }
 
     public void test_int_String() {
-        try{
-            new StandardThreadFactory(Thread.MIN_PRIORITY-1,"foo");
+        try {
+            new StandardThreadFactory(Thread.MIN_PRIORITY - 1, "foo");
             fail();
-        }catch(IllegalArgumentException ex){            
+        } catch (IllegalArgumentException ex) {
         }
 
-        try{
-            new StandardThreadFactory(Thread.MAX_PRIORITY+1,"foo");
+        try {
+            new StandardThreadFactory(Thread.MAX_PRIORITY + 1, "foo");
             fail();
-        }catch(IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
         }
 
         //null for threadgroupname is allowed
-        new StandardThreadFactory(Thread.MIN_PRIORITY,(String)null);
+        new StandardThreadFactory(Thread.MIN_PRIORITY, (String) null);
 
         String name = "somename";
         int priority = Thread.NORM_PRIORITY;
-        StandardThreadFactory factory = new StandardThreadFactory(priority,name);
+        StandardThreadFactory factory = new StandardThreadFactory(priority, name);
         assertEquals(priority, factory.getPriority());
         assertNotNull(factory.getThreadGroup());
         assertEquals(name, factory.getThreadGroup().getName());

@@ -5,11 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.references.AbstractAwaitableReference;
 import static org.codehaus.prometheus.util.ConcurrencyUtil.toUsableNanos;
 import static org.codehaus.prometheus.util.ConditionUtil.awaitNanosAndThrow;
-import org.codehaus.prometheus.references.LendableReference;
-import org.codehaus.prometheus.references.IllegalTakebackException;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -144,7 +141,7 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
 
 
     public boolean isTakePossible() {
-        return ref!=null;
+        return ref != null;
     }
 
     public E take() throws InterruptedException {
@@ -179,7 +176,7 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
     /**
      * Decreases the lendCount. If the lendCount reaches 0, the noTakersCondition is signalled.
      * When the lendCount already is 0, an IllegalTakebackException is thrown.
-     *
+     * <p/>
      * This call only should be made when the mainLock is held.
      */
     private void decreaseLendCount() {
@@ -191,7 +188,6 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
     }
 
     /**
-     *
      * @param ref the argument to check. Shouldn't be null.
      */
     private void checkReference(E ref) {

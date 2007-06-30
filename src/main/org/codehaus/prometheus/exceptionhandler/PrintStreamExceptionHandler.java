@@ -17,9 +17,8 @@ public class PrintStreamExceptionHandler implements ExceptionHandler {
     /**
      * Creates a new PrintStreamExceptionHandler that uses System.out as PrintStream to
      * log to.
-     *
      */
-    public PrintStreamExceptionHandler(){
+    public PrintStreamExceptionHandler() {
         this(System.out);
     }
 
@@ -29,8 +28,8 @@ public class PrintStreamExceptionHandler implements ExceptionHandler {
      * @param out the PrintStream this handler logs to.
      * @throws NullPointerException if out is <tt>null</tt>.
      */
-    public PrintStreamExceptionHandler(PrintStream out){
-        if(out == null)throw new NullPointerException();
+    public PrintStreamExceptionHandler(PrintStream out) {
+        if (out == null) throw new NullPointerException();
         this.out = out;
     }
 
@@ -44,6 +43,6 @@ public class PrintStreamExceptionHandler implements ExceptionHandler {
     }
 
     public void handle(Exception ex) {
-        ex.printStackTrace(out);        
+        ex.printStackTrace(out);
     }
 }

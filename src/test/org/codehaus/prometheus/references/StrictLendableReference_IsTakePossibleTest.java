@@ -13,7 +13,7 @@ public class StrictLendableReference_IsTakePossibleTest extends StrictLendableRe
         assertTrue(lendableRef.isTakePossible());
     }
 
-   public void testNoItemAvailable() {
+    public void testNoItemAvailable() {
         Integer ref = null;
         lendableRef = new StrictLendableReference<Integer>(ref);
         assertFalse(lendableRef.isTakePossible());

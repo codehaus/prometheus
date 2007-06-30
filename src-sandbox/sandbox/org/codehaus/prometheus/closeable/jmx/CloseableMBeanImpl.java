@@ -12,7 +12,7 @@ import org.codehaus.prometheus.closeable.Closeable;
  *
  * @author Peter Veentjer.
  */
-public class CloseableMBeanImpl implements CloseableMBean{
+public class CloseableMBeanImpl implements CloseableMBean {
 
     private final Closeable closeable;
 
@@ -22,8 +22,8 @@ public class CloseableMBeanImpl implements CloseableMBean{
      * @param closeable the Closeable this CloseableMBeanImpl exposes.
      * @throws NullPointerException if closeable is <tt>null</tt>.
      */
-    public CloseableMBeanImpl(Closeable closeable){
-        if(closeable == null)throw new NullPointerException();
+    public CloseableMBeanImpl(Closeable closeable) {
+        if (closeable == null) throw new NullPointerException();
         this.closeable = closeable;
     }
 

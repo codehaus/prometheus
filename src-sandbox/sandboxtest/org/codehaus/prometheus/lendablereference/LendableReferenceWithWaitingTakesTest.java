@@ -6,11 +6,11 @@
 package org.codehaus.prometheus.lendablereference;
 
 import junit.framework.TestCase;
-import static org.easymock.EasyMock.*;
-import org.codehaus.prometheus.waitpoint.Waitpoint;
-import org.codehaus.prometheus.waitpoint.CloseableWaitpoint;
-import org.codehaus.prometheus.references.RelaxedLendableReference;
 import org.codehaus.prometheus.references.LendableReference;
+import org.codehaus.prometheus.references.RelaxedLendableReference;
+import org.codehaus.prometheus.waitpoint.CloseableWaitpoint;
+import org.codehaus.prometheus.waitpoint.Waitpoint;
+import static org.easymock.EasyMock.*;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -42,26 +42,26 @@ public class LendableReferenceWithWaitingTakesTest extends TestCase {
         replay(waitpointMock);
     }
 
-    public void testConstructor(){
-        try{
-            new LendableReferenceWithWaitingTakes(null,new CloseableWaitpoint());
+    public void testConstructor() {
+        try {
+            new LendableReferenceWithWaitingTakes(null, new CloseableWaitpoint());
             fail();
-        }catch(NullPointerException ex){
+        } catch (NullPointerException ex) {
             assertTrue(true);
         }
 
-        try{
-            new LendableReferenceWithWaitingTakes(new RelaxedLendableReference(),null);
+        try {
+            new LendableReferenceWithWaitingTakes(new RelaxedLendableReference(), null);
             fail();
-        }catch(NullPointerException ex){
+        } catch (NullPointerException ex) {
             assertTrue(true);
         }
 
         LendableReference target = new RelaxedLendableReference();
         CloseableWaitpoint waitpoint = new CloseableWaitpoint();
-        LendableReferenceWithWaitingTakes ref = new LendableReferenceWithWaitingTakes(target,waitpoint);
-        assertSame(target,ref.getTarget());
-        assertSame(waitpoint,ref.getWaitpoint());
+        LendableReferenceWithWaitingTakes ref = new LendableReferenceWithWaitingTakes(target, waitpoint);
+        assertSame(target, ref.getTarget());
+        assertSame(waitpoint, ref.getWaitpoint());
     }
 
     //==================tryTake==============

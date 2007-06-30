@@ -35,11 +35,11 @@ public class CloseableBlockingQueue<E> extends AbstractQueue<E> implements Block
         //this.open = open;
     }
 
-    public Closeable getFrontClosable(){
+    public Closeable getFrontClosable() {
         return frontCloseable;
     }
 
-    public Closeable getBackCloneable(){
+    public Closeable getBackCloneable() {
         return backCloseable;
     }
 

@@ -68,7 +68,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
     }
 
     public void newRunningRepeater(boolean strict, int poolsize) {
-        newUnstartedRepeater(strict,poolsize);
+        newUnstartedRepeater(strict, poolsize);
         repeater.start();
         assertIsRunning();
     }
@@ -125,11 +125,11 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertIsShuttingdown();
     }
 
-    public void _tested_repeat(Runnable task){
-        _tested_repeat((Repeatable)new RepeatableRunnable(task));
+    public void _tested_repeat(Runnable task) {
+        _tested_repeat((Repeatable) new RepeatableRunnable(task));
     }
 
-    public void _tested_repeat(Repeatable task){
+    public void _tested_repeat(Repeatable task) {
         RepeatThread repeatThread = scheduleRepeat(task);
         joinAll(repeatThread);
     }
@@ -162,7 +162,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertSame(repeater.getLendableRef().peek(), task);
     }
 
-    public AwaitShutdownThread scheduleAwaitShutdown(){
+    public AwaitShutdownThread scheduleAwaitShutdown() {
         AwaitShutdownThread t = new AwaitShutdownThread();
         t.start();
         return t;
@@ -226,7 +226,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         return t;
     }
 
-    public ShutdownNowThread scheduleShutdownNow(){
+    public ShutdownNowThread scheduleShutdownNow() {
         ShutdownNowThread t = new ShutdownNowThread();
         t.start();
         return t;
@@ -252,14 +252,14 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         }
     }
 
-    public class ShutdownNowThread extends TestThread{
+    public class ShutdownNowThread extends TestThread {
         @Override
-        protected void runInternal(){
+        protected void runInternal() {
             repeater.shutdownNow();
         }
     }
 
-    public class AwaitShutdownThread extends TestThread{
+    public class AwaitShutdownThread extends TestThread {
         @Override
         protected void runInternal() throws InterruptedException {
             repeater.awaitShutdown();

@@ -18,11 +18,11 @@ public class ThrottlingWaitpoint_Test extends TestCase {
     }
 
 
-    public class RunThread extends Thread{
+    public class RunThread extends Thread {
         private int count;
 
-        public void run(){
-            while(count<100){
+        public void run() {
+            while (count < 100) {
                 waitpoint.passUninterruptibly();
                 count++;
             }

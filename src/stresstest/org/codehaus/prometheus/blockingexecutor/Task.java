@@ -1,6 +1,7 @@
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.testsupport.TestUtil;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepRandom;
+import static org.codehaus.prometheus.testsupport.TestUtil.someCalculation;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,7 +25,7 @@ public class Task implements Runnable {
 
     public void run() {
         count.incrementAndGet();
-        TestUtil.sleepRandom(20, TimeUnit.MILLISECONDS);
-        TestUtil.someCalculation(100000);
+        sleepRandom(20, TimeUnit.MILLISECONDS);
+        someCalculation(100000);
     }
 }

@@ -5,8 +5,9 @@
  */
 package org.codehaus.prometheus.testsupport;
 
-import junit.framework.TestCase;
-import org.codehaus.prometheus.util.ConcurrencyUtil;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static org.codehaus.prometheus.util.ConcurrencyUtil.sleepUninterruptibly;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -87,23 +88,23 @@ public class CountingRunnable implements Runnable {
      */
     public void assertExecuteCount(long expectedCount) {
         if (expectedCount < 0) throw new IllegalArgumentException();
-        TestCase.assertEquals(expectedCount, count.longValue());
+        assertEquals(expectedCount, count.longValue());
     }
 
     public void assertNotExecuted() {
-        TestCase.assertEquals(0, count.longValue());
+        assertEquals(0, count.longValue());
     }
 
     public void assertExecutedMoreThanOnce() {
-        TestCase.assertTrue(count.longValue() > 1);
+        assertTrue(count.longValue() > 1);
     }
 
     public void assertExecutedOnceOrMore() {
-        TestCase.assertTrue(count.longValue() > 0);
+        assertTrue(count.longValue() > 0);
     }
 
     public void assertExecutedOnce() {
-        TestCase.assertEquals(1, count.longValue());
+        assertEquals(1, count.longValue());
     }
 
     //TODO: not very pretty, needs to be improved.
@@ -111,8 +112,8 @@ public class CountingRunnable implements Runnable {
         //make sure that the current task isn't running anymore.
         long oldCount = getCount();
         //todo: remove dependency.
-        ConcurrencyUtil.sleepUninterruptibly(ConcurrentTestCase.DELAY_SMALL_MS, TimeUnit.MILLISECONDS);
+        sleepUninterruptibly(ConcurrentTestCase.DELAY_SMALL_MS, TimeUnit.MILLISECONDS);
         long newCount = getCount();
-        TestCase.assertEquals(oldCount, newCount);
+        assertEquals(oldCount, newCount);
     }
 }

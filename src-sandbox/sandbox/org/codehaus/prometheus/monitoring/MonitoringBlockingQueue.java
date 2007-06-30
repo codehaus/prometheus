@@ -18,7 +18,7 @@ public class MonitoringBlockingQueue<E> extends AbstractQueue<E> implements Bloc
     private volatile boolean on = true;
 
     public void reset() {
-        
+
     }
 
     public boolean isOn() {
@@ -34,7 +34,7 @@ public class MonitoringBlockingQueue<E> extends AbstractQueue<E> implements Bloc
     }
 
     public Map<String, Object> snapshot() {
-        Map<String,Object> map = new HashMap<String,Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
         return map;
     }
 
@@ -52,9 +52,9 @@ public class MonitoringBlockingQueue<E> extends AbstractQueue<E> implements Bloc
     }
 
     public boolean offer(E e) {
-        if(on){
+        if (on) {
             throw new RuntimeException();
-        }else{
+        } else {
             return targetQueue.offer(e);
         }
     }
@@ -69,15 +69,15 @@ public class MonitoringBlockingQueue<E> extends AbstractQueue<E> implements Bloc
     }
 
     public void put(E e) throws InterruptedException {
-        if(on){
+        if (on) {
             waitingPutCount.incrementAndGet();
-            try{
+            try {
                 targetQueue.put(e);
                 waitingTakeCount.incrementAndGet();
-            }finally{
-                waitingPutCount.decrementAndGet();   
+            } finally {
+                waitingPutCount.decrementAndGet();
             }
-        }else{
+        } else {
             targetQueue.put(e);
         }
     }

@@ -43,8 +43,8 @@ public class DefaultAwaitableReference_ConstructorTest extends TestCase {
         assertNotNull(awaitableRef.getReferenceAvailableCondition());
     }
 
-    public void assertHasRef(Integer ref){
-        assertSame(ref,awaitableRef.peek());
+    public void assertHasRef(Integer ref) {
+        assertSame(ref, awaitableRef.peek());
     }
 
     public void test_E_valueNotNull() {

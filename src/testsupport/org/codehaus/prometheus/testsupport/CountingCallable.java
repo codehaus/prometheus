@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.testsupport;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertEquals;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,6 +32,6 @@ public class CountingCallable<E> implements Callable<E> {
     }
 
     public void assertNotExecuted(){
-        TestCase.assertEquals(0,count.intValue());
+        assertEquals(0,count.intValue());
     }
 }

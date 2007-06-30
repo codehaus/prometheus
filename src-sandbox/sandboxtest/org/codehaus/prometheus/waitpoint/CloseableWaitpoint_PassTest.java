@@ -12,11 +12,11 @@ package org.codehaus.prometheus.waitpoint;
  */
 public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest {
 
-    public void testNoWaitingNeeded_startUninterrupted(){
+    public void testNoWaitingNeeded_startUninterrupted() {
         testNoWaitingNeeded(START_UNINTERRUPTED);
     }
 
-    public void testNoWaitingNeeded_startInterrupted(){
+    public void testNoWaitingNeeded_startInterrupted() {
         testNoWaitingNeeded(START_INTERRUPTED);
     }
 
@@ -31,11 +31,11 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
         t.assertIsTerminatedWithInterruptStatus(startInterrupted);
     }
 
-    public void testSomeWaitingNeeded_startInterrupted(){
+    public void testSomeWaitingNeeded_startInterrupted() {
         newClosedCloseableWaitpoint();
 
         PassThread passThread = schedulePass(START_INTERRUPTED);
-        
+
         joinAll(passThread);
         passThread.assertIsInterruptedByException();
     }
@@ -64,7 +64,7 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
 
         sleepMs(DELAY_TINY_MS);
         assertIsClosed();
-        passThread.assertIsStarted();        
+        passThread.assertIsStarted();
     }
 
     public void testInterruptedWhileWaiting() {

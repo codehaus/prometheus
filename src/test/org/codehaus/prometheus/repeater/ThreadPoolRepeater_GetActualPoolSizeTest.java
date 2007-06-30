@@ -14,11 +14,11 @@ public class ThreadPoolRepeater_GetActualPoolSizeTest extends ThreadPoolRepeater
 
     //=========== unstarted =============
 
-    public void testUnstarted_strict(){
+    public void testUnstarted_strict() {
         testUnstarted(true);
     }
 
-    public void testUnstarted_relaxed(){
+    public void testUnstarted_relaxed() {
         testUnstarted(false);
     }
 
@@ -29,27 +29,26 @@ public class ThreadPoolRepeater_GetActualPoolSizeTest extends ThreadPoolRepeater
 
     //========= running ========
 
-    public void testRunningWithTask_strict(){
+    public void testRunningWithTask_strict() {
         testRunningWithTask(true);
     }
 
-    public void testRunningWithTask_relaxed(){
+    public void testRunningWithTask_relaxed() {
         testRunningWithTask(false);
     }
 
     public void testRunningWithTask(boolean strict) {
-        newRunningRepeater(strict,new DummyRepeatable());
+        newRunningRepeater(strict, new DummyRepeatable());
         assertActualPoolSize(1);
     }
 
-
     //========== running without task
 
-    public void testRunningWithoutTask_strict(){
+    public void testRunningWithoutTask_strict() {
         testRunningWithoutTask(true);
     }
 
-    public void testRunningWithoutTask_relaxed(){
+    public void testRunningWithoutTask_relaxed() {
         testRunningWithoutTask(false);
     }
 
@@ -60,11 +59,11 @@ public class ThreadPoolRepeater_GetActualPoolSizeTest extends ThreadPoolRepeater
 
     //========== shutting down ================
 
-    public void testShuttingdown_strict(){
+    public void testShuttingdown_strict() {
         testShuttingdown(true);
     }
 
-    public void testShuttingdown_relaxed(){
+    public void testShuttingdown_relaxed() {
         testShuttingdown(false);
     }
 
@@ -75,11 +74,11 @@ public class ThreadPoolRepeater_GetActualPoolSizeTest extends ThreadPoolRepeater
 
     //============= shut down ================
 
-    public void testShutdown_strict(){
+    public void testShutdown_strict() {
         testShutdown(true);
     }
 
-    public void testShutdown_relaxed(){
+    public void testShutdown_relaxed() {
         testShutdown(false);
     }
 

@@ -7,7 +7,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Unittests the {@link LockUtil#tryLockNanos(Lock, long)} method.
+ * Unittests the {@link LockUtil#tryLockNanos(Lock,long)} method.
  *
  * @author Peter Veentjer.
  */
@@ -28,7 +28,7 @@ public class LockUtil_TryLockNanosTest extends LockUtil_AbstractTest {
         TryLockThread tryLockThread = scheduleTryLock(0, START_UNINTERRUPTED);
         joinAll(tryLockThread);
 
-        tryLockThread.assertSuccess();        
+        tryLockThread.assertSuccess();
         assertLockUnavailable();
     }
 
@@ -43,7 +43,7 @@ public class LockUtil_TryLockNanosTest extends LockUtil_AbstractTest {
     public void testSomeWaitingNeeded() throws InterruptedException {
         newLockedLock(DELAY_MEDIUM_MS);
 
-        TryLockThread tryLock = scheduleTryLock(DELAY_LONG_MS,START_UNINTERRUPTED);
+        TryLockThread tryLock = scheduleTryLock(DELAY_LONG_MS, START_UNINTERRUPTED);
 
         giveOthersAChance();
         tryLock.assertIsStarted();
@@ -55,7 +55,7 @@ public class LockUtil_TryLockNanosTest extends LockUtil_AbstractTest {
     public void testTooMuchWaiting() throws InterruptedException {
         newLockedLock(DELAY_LONG_MS);
         long remaining = LockUtil.tryLockNanos(lock, 100);
-        assertTrue(remaining < 0);        
+        assertTrue(remaining < 0);
     }
 
     public void testInterruptedWhileWaiting() throws InterruptedException {

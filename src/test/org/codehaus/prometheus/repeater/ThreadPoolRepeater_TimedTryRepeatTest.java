@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Unittests the {@link ThreadPoolRepeater#tryRepeat(Repeatable, long, TimeUnit)} method. 
+ * Unittests the {@link ThreadPoolRepeater#tryRepeat(Repeatable,long,TimeUnit)} method.
  *
  * @author Peter Veentjer.
  */
@@ -46,7 +46,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         CountingRunnable task = new CountingRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
         newRunningStrictRepeater();
-        
+
         try {
             repeater.tryRepeat(repeatable, -1, TimeUnit.MILLISECONDS);
             fail("TimeoutException expected");
@@ -67,7 +67,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         CountingRunnable newTask = new CountingRunnable();
         TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(new RepeatableRunnable(newTask), DELAY_TINY_MS);
         joinAll(tryRepeatThread);
-        
+
         tryRepeatThread.assertIsTimedOut();
         newTask.assertNotRunningAnymore();
         assertIsRunning();
@@ -80,7 +80,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
 
         Repeatable originalTask = repeater.getLendableRef().peek();
         CountingRunnable task = new CountingRunnable();
-        TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(new RepeatableRunnable(task),1);
+        TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(new RepeatableRunnable(task), 1);
         joinAll(tryRepeatThread);
         tryRepeatThread.assertIsTerminatedWithThrowing(RejectedExecutionException.class);
         assertIsShuttingdown();
@@ -125,7 +125,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
 
         CountingRunnable task = new CountingRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
-        TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(repeatable,1000);
+        TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(repeatable, 1000);
         joinAll(tryRepeatThread);
 
         tryRepeatThread.assertSuccess();
@@ -133,7 +133,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         assertHasRepeatable(repeatable);
 
         giveOthersAChance();
-                
+
         task.assertExecutedOnceOrMore();
     }
 

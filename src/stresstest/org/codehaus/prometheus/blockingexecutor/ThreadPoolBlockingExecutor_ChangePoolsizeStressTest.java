@@ -1,13 +1,14 @@
 package org.codehaus.prometheus.blockingexecutor;
 
 import junit.framework.TestSuite;
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.TestUtil;
-import org.codehaus.prometheus.testsupport.TestThread;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
+import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.testsupport.TestThread;
+import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Peter Veentjer.
@@ -59,7 +60,7 @@ public class ThreadPoolBlockingExecutor_ChangePoolsizeStressTest {
             scheduleTaskProducers(workercount,taskcount);
             startSizeChangeThreads();
 
-            TestUtil.sleepMs(10000);
+            sleepMs(10000);
         }
 
         public void scheduleTaskProducers(int workerCount, int taskCount) {
@@ -99,9 +100,9 @@ public class ThreadPoolBlockingExecutor_ChangePoolsizeStressTest {
         public void runInternal() {
             for (int k = 0; k < nrchanges; k++) {
 
-                int poolsize = TestUtil.randomInt(maxpoolsize);
+                int poolsize = randomInt(maxpoolsize);
                 executor.setDesiredPoolSize(poolsize);
-                TestUtil.sleepMs(100);
+                sleepMs(100);
             }
         }
     }

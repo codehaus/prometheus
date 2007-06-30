@@ -5,38 +5,38 @@ Process
 
 class PiProcess{
 
-    Item recieve(Item item){
-        item.setPi(pi(item.getPiInput());
-        return item;        
-    }
+Item recieve(Item item){
+item.setPi(pi(item.getPiInput());
+return item;
+}
 }
 
 class WriteProcess{
-    private boolean corrupted = false;
-    private FileWriter writer;
+private boolean corrupted = false;
+private FileWriter writer;
 
-    public void receive(Item item){
-        if(corrupted)
-            return;
+public void receive(Item item){
+if(corrupted)
+return;
 
-        String s = String.format("%f %f",item.getPi(),item.getFibonacci());
-        writer.writelin(s);
-    }
+String s = String.format("%f %f",item.getPi(),item.getFibonacci());
+writer.writelin(s);
+}
 
-    public void receive(CorruptedStream e){
-        corrupted = true;
-        if(writer!=null)
-            writer.close();
-    }
+public void receive(CorruptedStream e){
+corrupted = true;
+if(writer!=null)
+writer.close();
+}
 
-    public void receive(EndOfStream e){
-        writer.close();
-    }
+public void receive(EndOfStream e){
+writer.close();
+}
 
-    public void receive(StartOfStream e){
-        corrupted = false;
-        writer = new FileWriter(e.getOutputFile());
-    }
+public void receive(StartOfStream e){
+corrupted = false;
+writer = new FileWriter(e.getOutputFile());
+}
 }
 
 Stuff to think about:

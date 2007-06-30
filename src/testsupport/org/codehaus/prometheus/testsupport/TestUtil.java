@@ -22,12 +22,19 @@ import java.util.concurrent.locks.Lock;
  */
 public class TestUtil {
 
-    public static int randomInt(int maxvalue){
-        Random r = new Random();
-        return r.nextInt(maxvalue+1);
+    public final static Random r = new Random();
+
+    public static int randomInt(int maxvalue) {
+        return r.nextInt(maxvalue + 1);
     }
 
-    public static long randomLong(long maxvalue){
+    public static int randomInt() {
+        //Random r = new Random();
+        return r.nextInt(Integer.MAX_VALUE);
+    }
+
+
+    public static long randomLong(long maxvalue) {
         Random r = new Random();
         return Math.abs(r.nextLong() % maxvalue);
     }
@@ -42,7 +49,7 @@ public class TestUtil {
         long ms = unit.toMillis(sleepNs);
         int ns = (int) (unit.toNanos(sleepNs) % TimeUnit.MILLISECONDS.toNanos(1));
         try {
-        //    System.out.println("ms "+ms+" ns "+ns);
+            //    System.out.println("ms "+ms+" ns "+ns);
             Thread.sleep(ms, ns);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

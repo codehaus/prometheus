@@ -1,6 +1,6 @@
 package org.codehaus.prometheus.exceptionhandler;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertEquals;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -28,24 +28,24 @@ public class TracingExceptionHandler implements ExceptionHandler {
     }
 
     public void assertCount(Class exceptionClass, int expectedCount) {
-        TestCase.assertEquals(expectedCount, getCount(exceptionClass));
+        assertEquals(expectedCount, getCount(exceptionClass));
     }
 
     /**
      * Prints the tacktraces of all thrown exceptions.
      */
     public void printStacktraces() {
-        if(exceptionList.isEmpty())
+        if (exceptionList.isEmpty())
             return;
 
-        System.out.println(String.format("==================== stacktraces: %d ==================",exceptionList.size()));
+        System.out.println(String.format("==================== stacktraces: %d ==================", exceptionList.size()));
         for (Exception ex : exceptionList)
             ex.printStackTrace();
         System.out.println("================== end stacktraces ==================");
     }
 
     public void assertCount(int expectedCount) {
-        TestCase.assertEquals(expectedCount, exceptionList.size());
+        assertEquals(expectedCount, exceptionList.size());
     }
 
     public void assertNoErrors() {
@@ -54,7 +54,7 @@ public class TracingExceptionHandler implements ExceptionHandler {
 
     public void assertCountAndNoOthers(Class exceptionClass, int expectedCount) {
         assertCount(expectedCount);
-        TestCase.assertEquals(expectedCount, getCount(exceptionClass));
+        assertEquals(expectedCount, getCount(exceptionClass));
     }
 
     public void handle(Exception ex) {

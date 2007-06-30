@@ -7,7 +7,6 @@ package org.codehaus.prometheus.util;
 
 import junit.framework.TestCase;
 import static org.easymock.EasyMock.*;
-import org.codehaus.prometheus.util.DirectExecutor;
 
 /**
  * The DirectExecutorTest unittests the {@link DirectExecutor}.
@@ -19,43 +18,43 @@ public class DirectExecutorTest extends TestCase {
     private DirectExecutor directExecutor;
     private Runnable taskMock;
 
-    public void setUp(){
+    public void setUp() {
         taskMock = createMock(Runnable.class);
         directExecutor = new DirectExecutor();
     }
 
-    public void replayMocks(){
+    public void replayMocks() {
         replay(taskMock);
     }
 
-    public void verifyMocks(){
+    public void verifyMocks() {
         verify(taskMock);
     }
 
-    public void testTaskIsNull(){
-        try{
+    public void testTaskIsNull() {
+        try {
             directExecutor.execute(null);
             fail("NullPointerException expected");
-        }catch(NullPointerException ex){
+        } catch (NullPointerException ex) {
             assertTrue(true);
         }
     }
 
-    public void testTaskThrowsRuntimeException(){
+    public void testTaskThrowsRuntimeException() {
         taskMock.run();
         expectLastCall().andThrow(new RuntimeException());
 
         replayMocks();
-        try{
+        try {
             directExecutor.execute(taskMock);
             fail("RuntimeException expected");
-        }catch(RuntimeException ex){
+        } catch (RuntimeException ex) {
             assertTrue(true);
         }
         verifyMocks();
     }
 
-    public void testSuccess(){
+    public void testSuccess() {
         taskMock.run();
 
         replayMocks();

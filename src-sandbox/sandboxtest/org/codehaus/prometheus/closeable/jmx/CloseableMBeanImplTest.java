@@ -6,9 +6,9 @@
 package org.codehaus.prometheus.closeable.jmx;
 
 import junit.framework.TestCase;
-import static org.easymock.EasyMock.*;
 import org.codehaus.prometheus.closeable.Closeable;
 import org.codehaus.prometheus.waitpoint.CloseableWaitpoint;
+import static org.easymock.EasyMock.*;
 
 /**
  * Because the CloseableMBeanImpl is just a delegate from a
@@ -37,10 +37,10 @@ public class CloseableMBeanImplTest extends TestCase {
     }
 
     public void testConstructor() {
-        try{
+        try {
             new CloseableMBeanImpl(null);
             fail();
-        }catch(NullPointerException ex){
+        } catch (NullPointerException ex) {
             assertTrue(true);
         }
 

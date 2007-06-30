@@ -29,7 +29,7 @@ public class CloseableWaitsection implements Closeable, Waitsection {
     private volatile boolean open;
 
     public CloseableWaitsection(boolean open) {
-        this(newDefaultMainLock(),open);
+        this(newDefaultMainLock(), open);
     }
 
     public CloseableWaitsection(Lock mainLock, boolean open) {
@@ -57,10 +57,10 @@ public class CloseableWaitsection implements Closeable, Waitsection {
 
     public void open() {
         mainLock.lock();
-        try{
+        try {
             open = true;
             isOpenCondition.signalAll();
-        }finally{
+        } finally {
             mainLock.unlock();
         }
     }
@@ -70,27 +70,27 @@ public class CloseableWaitsection implements Closeable, Waitsection {
     }
 
     public void enter() throws InterruptedException {
-        if(open)
+        if (open)
             return;
 
         mainLock.lockInterruptibly();
-        try{
-            while(!open)
+        try {
+            while (!open)
                 isOpenCondition.await();
-        }finally{
+        } finally {
             mainLock.unlock();
         }
     }
 
     public void enterUninterruptibly() {
-        if(open)
+        if (open)
             return;
 
         mainLock.lock();
-        try{
-            while(!open)
+        try {
+            while (!open)
                 isOpenCondition.awaitUninterruptibly();
-        }finally{
+        } finally {
             mainLock.unlock();
         }
     }

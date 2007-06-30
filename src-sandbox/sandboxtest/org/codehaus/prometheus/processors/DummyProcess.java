@@ -1,4 +1,4 @@
 package org.codehaus.prometheus.processors;
 
-public class DummyProcess{
+public class DummyProcess {
 }

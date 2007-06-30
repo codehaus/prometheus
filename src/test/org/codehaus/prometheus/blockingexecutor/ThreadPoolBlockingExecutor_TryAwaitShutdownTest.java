@@ -95,7 +95,7 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
 
     public void testInterruptedWhileWaiting() {
         newStartedBlockingExecutor();
-     
+
         TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(DELAY_EON_MS);
         giveOthersAChance();
         assertIsRunning();

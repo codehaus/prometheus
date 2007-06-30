@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.lendablereference;
 
-import org.codehaus.prometheus.waitpoint.Waitsection;
 import org.codehaus.prometheus.references.LendableReference;
+import org.codehaus.prometheus.waitpoint.Waitsection;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -15,14 +15,14 @@ public class LendableReferenceWithEnteringWaitpoint<E> implements LendableRefere
     private final LendableReference<E> target;
     private final Waitsection waitpoint;
 
-    public LendableReferenceWithEnteringWaitpoint(LendableReference<E> target, Waitsection waitpoint){
+    public LendableReferenceWithEnteringWaitpoint(LendableReference<E> target, Waitsection waitpoint) {
         this.target = target;
         this.waitpoint = waitpoint;
     }
 
     public E take() throws InterruptedException {
         waitpoint.enter();
-        return target.take();        
+        return target.take();
     }
 
 

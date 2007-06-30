@@ -1,9 +1,9 @@
 package org.codehaus.prometheus.exceptionhandler;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
-import org.apache.log4j.Level;
 
 /**
  * An {@link ExceptionHandler} that uses Log4j als logging mechanism.

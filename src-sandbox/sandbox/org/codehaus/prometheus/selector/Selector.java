@@ -5,15 +5,15 @@
  */
 package org.codehaus.prometheus.selector;
 
-import org.codehaus.prometheus.repeater.Repeater;
 import org.codehaus.prometheus.repeater.RepeatableRunnable;
+import org.codehaus.prometheus.repeater.Repeater;
 
 import java.util.concurrent.BlockingQueue;
 
 /**
  * an executor already is a selector. n threads can serve m clients.
  * non blocking..
- *
+ * <p/>
  * non blocking channel. zonder queueing.
  * non blocking io.
  */
@@ -38,7 +38,7 @@ public class Selector {
                     }
                 }
             } catch (InterruptedException e) {
-               throw new RuntimeException();
+                throw new RuntimeException();
             }
         }
     }

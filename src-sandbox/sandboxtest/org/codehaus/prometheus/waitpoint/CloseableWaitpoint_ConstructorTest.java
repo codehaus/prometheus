@@ -5,8 +5,6 @@
  */
 package org.codehaus.prometheus.waitpoint;
 
-import org.codehaus.prometheus.waitpoint.CloseableWaitpoint;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 

@@ -19,8 +19,8 @@ public class WaitingOutputChannel<E> extends AbstractOutputChannel<E> {
     private final OutputChannel<E> target;
     private final Waitpoint waitpoint;
 
-    public WaitingOutputChannel(OutputChannel<E> target, Waitpoint waitpoint){
-        if(target == null||waitpoint == null)throw new NullPointerException();
+    public WaitingOutputChannel(OutputChannel<E> target, Waitpoint waitpoint) {
+        if (target == null || waitpoint == null) throw new NullPointerException();
         this.target = target;
         this.waitpoint = waitpoint;
     }
@@ -39,7 +39,7 @@ public class WaitingOutputChannel<E> extends AbstractOutputChannel<E> {
     }
 
     public long offer(E item, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
-        long remainingTimeoutNs = waitpoint.tryPass(timeout,unit);
-        return target.offer(item,remainingTimeoutNs,TimeUnit.NANOSECONDS);
+        long remainingTimeoutNs = waitpoint.tryPass(timeout, unit);
+        return target.offer(item, remainingTimeoutNs, TimeUnit.NANOSECONDS);
     }
 }

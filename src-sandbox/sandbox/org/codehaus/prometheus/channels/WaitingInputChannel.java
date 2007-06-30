@@ -11,15 +11,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * An InputChannel where all
+ * An InputChannel that uses a Waitpoint.
  *
  * @author Peter Veentjer.
  */
-public class WaitingInputChannel<E> extends AbstractInputChannel<E>{
+public class WaitingInputChannel<E> extends AbstractInputChannel<E> {
     private final InputChannel<E> target;
     private final Waitpoint waitpoint;
 
-    public WaitingInputChannel(InputChannel<E> target, Waitpoint waitpoint){
+    public WaitingInputChannel(InputChannel<E> target, Waitpoint waitpoint) {
         this.target = target;
         this.waitpoint = waitpoint;
     }
@@ -42,8 +42,8 @@ public class WaitingInputChannel<E> extends AbstractInputChannel<E>{
     }
 
     public E poll(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
-        long remainingTimeoutNs = waitpoint.tryPass(timeout,unit);
-        return target.poll(remainingTimeoutNs,TimeUnit.NANOSECONDS);
+        long remainingTimeoutNs = waitpoint.tryPass(timeout, unit);
+        return target.poll(remainingTimeoutNs, TimeUnit.NANOSECONDS);
     }
 
     public E peek() {

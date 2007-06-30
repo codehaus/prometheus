@@ -113,7 +113,7 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
 
         //interrupt waiter1 and make sure that it is terminated and waiter2 is still waiting
         waiter1Thread.interrupt();
-        giveOthersAChance(DELAY_MEDIUM_MS);        
+        giveOthersAChance(DELAY_MEDIUM_MS);
         waiter1Thread.assertIsInterruptedByException();
         waiter2Thread.assertIsStarted();
     }

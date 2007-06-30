@@ -8,7 +8,7 @@ package org.codehaus.prometheus.references;
 import org.codehaus.prometheus.testsupport.TestThread;
 
 /**
- * Unittests the {@link StrictLendableReference#put(Object)} method. 
+ * Unittests the {@link StrictLendableReference#put(Object)} method.
  *
  * @author Peter Veentjer.
  */
@@ -20,12 +20,12 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
     // receives an InterruptedException.
     //==========================================================
 
-    public void testStartInterrupted(){
+    public void testStartInterrupted() {
         Integer oldRef = 10;
         lendableRef = new StrictLendableReference<Integer>(oldRef);
 
         Integer newRef = 20;
-        PutThread putThread = schedulePut(newRef,START_INTERRUPTED);
+        PutThread putThread = schedulePut(newRef, START_INTERRUPTED);
 
         joinAll(putThread);
         putThread.assertIsInterruptedByException();
@@ -44,7 +44,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
 
         //put null and make sure that the takers are still waiting
         giveOthersAChance();
-        _tested_put(null,null);
+        _tested_put(null, null);
 
         giveOthersAChance();
         takeThread1.assertIsStarted();
@@ -53,25 +53,25 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         //putUninterruptibly new value and make sure that the takers have
         //taken the expected value.
         Integer newRef = 1;
-        _tested_put(newRef,null);
+        _tested_put(newRef, null);
         joinAll(takeThread1, takeThread2);
 
         takeThread1.assertSuccess(newRef);
         takeThread2.assertSuccess(newRef);
         assertHasRef(newRef);
     }
- 
+
     public void testNoWaiting() {
         lendableRef = new StrictLendableReference<Integer>();
         Integer ref = 10;
 
-        _tested_put(ref,null);
+        _tested_put(ref, null);
         assertHasRef(ref);
     }
 
     //a different thread has taken a value, so the put neets to wait untill the value is returned.
     public void testSomeWaitingNeeded(Integer newRef) {
-        Integer oldRef = newRef==null?1:newRef + 10;
+        Integer oldRef = newRef == null ? 1 : newRef + 10;
         lendableRef = new StrictLendableReference<Integer>(oldRef);
 
         //take a reference so that the put is going to block
@@ -92,11 +92,11 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         assertHasRef(newRef);
     }
 
-    public void testSomeWaitingNeeded_putNull(){
+    public void testSomeWaitingNeeded_putNull() {
         testSomeWaitingNeeded(null);
     }
 
-    public void testSomeWaitingNeeded_putNonNull(){
+    public void testSomeWaitingNeeded_putNonNull() {
         testSomeWaitingNeeded(10);
     }
 
@@ -142,7 +142,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         assertHasRef(takenref);
 
         _tested_takeback(takenref);
-                
+
         //new let the lend and the put complete.
         joinAll(putThread);
         putThread.assertSuccess(takenref);

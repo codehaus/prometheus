@@ -5,7 +5,7 @@ package org.codehaus.prometheus.references;
  */
 public class DefaultAwaitableReference_PeekTest extends DefaultAwaitableReference_AbstractTest {
 
-    public void test(){
+    public void test() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
         //check that the initial null value is seen
@@ -13,11 +13,11 @@ public class DefaultAwaitableReference_PeekTest extends DefaultAwaitableReferenc
 
         //check when a new value is set, the new value is seen
         Integer ref = 20;
-        _tested_put(ref,null);
-        assertSame(ref,awaitableRef.peek());
+        _tested_put(ref, null);
+        assertSame(ref, awaitableRef.peek());
 
         //check if restored to null, the null value is seen
-        _tested_put(null,ref);
+        _tested_put(null, ref);
         assertNull(awaitableRef.peek());
     }
 }

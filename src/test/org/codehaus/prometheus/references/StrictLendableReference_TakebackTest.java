@@ -63,9 +63,9 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         TakeThread takeThread1 = scheduleTake();
         TakeThread takeThread2 = scheduleTake();
         TakeThread takeThread3 = scheduleTake();
-        joinAll(takeThread1,takeThread2,takeThread3);
+        joinAll(takeThread1, takeThread2, takeThread3);
 
-        MultipleTakebackThread takebackThread = scheduleMultipleTakebacks(3,orignalRef);
+        MultipleTakebackThread takebackThread = scheduleMultipleTakebacks(3, orignalRef);
         joinAll(takebackThread);
         takebackThread.assertSuccess();
         assertHasRef(orignalRef);
@@ -88,22 +88,22 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
 
     //take followed by takeback of different instances of the same object
     //(so equals match) is allowed.
-    public void testLendByOneThread_equalObject(){
+    public void testLendByOneThread_equalObject() {
         Integer originalRef = new Integer(10);
         Integer takenbackRef = new Integer(10);
-        testLendByOneThread(originalRef,takenbackRef);
+        testLendByOneThread(originalRef, takenbackRef);
     }
 
     //take followed by takeback of same instance is allowed (ofcourse)
     public void testLendByOneThread_sameObject() {
         Integer originalRef = new Integer(10);
-        testLendByOneThread(originalRef,originalRef);
+        testLendByOneThread(originalRef, originalRef);
     }
 
     public void testLendByOneThread(Integer originalRef, Integer takebackRef) {
         lendableRef = new StrictLendableReference<Integer>(originalRef);
 
-        LendThread<Integer> lender = scheduleLend( takebackRef, DELAY_MEDIUM_MS);
+        LendThread<Integer> lender = scheduleLend(takebackRef, DELAY_MEDIUM_MS);
         giveOthersAChance();
         lender.assertIsTaken(originalRef);
 

@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.testsupport;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 
@@ -48,11 +48,11 @@ public class Stopwatch {
     public void assertElapsedSmallerThanMs(long ms) {
         long elapsedMs = calcElapsedMs();
         String msg = "elapsed:"+elapsedMs+" ms:"+ms;
-        TestCase.assertTrue(msg,elapsedMs < ms);
+        assertTrue(msg,elapsedMs < ms);
     }
 
     public void assertElapsedBiggerOrEqualThanMs(long ms) {
         long elapsedMs = calcElapsedMs();
-        TestCase.assertTrue(elapsedMs >= ms);
+        assertTrue(elapsedMs >= ms);
     }
 }

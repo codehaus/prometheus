@@ -2,8 +2,8 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.util.Latch;
 
-import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -17,15 +17,15 @@ public final class RepeatableFuture implements Repeatable, Future {
     private final Latch latch = new Latch();
     private volatile boolean cancelled = false;
 
-    public RepeatableFuture(Repeatable repeatable){
-        if(repeatable == null)throw new NullPointerException();
+    public RepeatableFuture(Repeatable repeatable) {
+        if (repeatable == null) throw new NullPointerException();
         this.repeatable = repeatable;
     }
 
     public boolean execute() throws Exception {
         boolean success = repeatable.execute();
-        if(!success)
-            latch.open();        
+        if (!success)
+            latch.open();
         return success;
     }
 
@@ -47,7 +47,7 @@ public final class RepeatableFuture implements Repeatable, Future {
     }
 
     public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        latch.tryAwait(timeout,unit);
+        latch.tryAwait(timeout, unit);
         return null;
     }
 }

@@ -1,7 +1,6 @@
 package org.codehaus.prometheus.processors;
 
 /**
- *
  * @author Peter Veentjer.
  */
 public interface Processor<P> {
@@ -12,5 +11,5 @@ public interface Processor<P> {
      * @return true if it should run again, false otherwise.
      * @throws Exception
      */
-    boolean once()throws Exception;
+    boolean once() throws Exception;
 }

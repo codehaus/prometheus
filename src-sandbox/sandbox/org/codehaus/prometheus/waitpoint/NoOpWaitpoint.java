@@ -14,11 +14,11 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Peter Veentjer.
  */
-public class NoOpWaitpoint implements Waitpoint{
+public class NoOpWaitpoint implements Waitpoint {
 
     public final static NoOpWaitpoint INSTANCE = new NoOpWaitpoint();
 
-    public void pass(){
+    public void pass() {
     }
 
     public void passUninterruptibly() {

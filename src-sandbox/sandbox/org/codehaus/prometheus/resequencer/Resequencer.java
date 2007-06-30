@@ -1,12 +1,11 @@
 package org.codehaus.prometheus.resequencer;
 
 /**
- *
  * @author Peter Veentjer.
  */
-public interface Resequencer<S,E> {
+public interface Resequencer<S, E> {
 
-  void put(S sequenceId, E item) throws InterruptedException;
+    void put(S sequenceId, E item) throws InterruptedException;
 
-  S nextSequenceId();
+    S nextSequenceId();
 }

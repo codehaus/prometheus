@@ -1,10 +1,10 @@
 package org.codehaus.prometheus.repeater;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertEquals;
 import junit.framework.TestSuite;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.TestUtil;
+import static org.codehaus.prometheus.testsupport.TestUtil.*;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.util.StandardThreadFactory;
@@ -52,7 +52,7 @@ public class ThreadPoolRepeater_RepeatStressTest {
         public void runTest() throws InterruptedException {
             repeater.start();
             repeater.repeat(task);
-            TestUtil.sleepRandomMs(10000);
+            sleepRandomMs(10000);
 
             repeater.shutdown();
             repeater.awaitShutdown();
@@ -75,7 +75,7 @@ public class ThreadPoolRepeater_RepeatStressTest {
         }
 
         public void assertCount(long expectedExecutionCount){
-            TestCase.assertEquals(expectedExecutionCount, currentExecutionCount);
+            assertEquals(expectedExecutionCount, currentExecutionCount);
         }
 
         public boolean execute() throws Exception {
@@ -86,8 +86,8 @@ public class ThreadPoolRepeater_RepeatStressTest {
                 currentExecutionCount++;
             }
             
-            TestUtil.sleepRandomMs(50);
-            TestUtil.someCalculation(TestUtil.randomInt(100000));
+            sleepRandomMs(50);
+            someCalculation(randomInt(100000));
             Thread.yield();
             return true;
         }

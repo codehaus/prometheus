@@ -12,15 +12,15 @@ package org.codehaus.prometheus.waitpoint;
  */
 public class CloseableWaitpoint_TryPassTest extends CloseableWaitpoint_AbstractTest {
 
-    public void testOpen_startUninterrupted(){
+    public void testOpen_startUninterrupted() {
         testOpen(false);
     }
 
-    public void testOpen_startInterrupted(){
+    public void testOpen_startInterrupted() {
         testOpen(true);
     }
 
-    public void testOpen(boolean startInterrupted){
+    public void testOpen(boolean startInterrupted) {
         newOpenCloseableWaitpoint();
         TryPassThread t = scheduleTryPass(startInterrupted);
 
@@ -30,15 +30,15 @@ public class CloseableWaitpoint_TryPassTest extends CloseableWaitpoint_AbstractT
     }
 
 
-    public void testClosed_startUninterrupted(){
+    public void testClosed_startUninterrupted() {
         testClosed(false);
     }
 
-    public void testClosed_startInterrupted(){
+    public void testClosed_startInterrupted() {
         testClosed(true);
     }
 
-    public void testClosed(boolean startInterrupted){
+    public void testClosed(boolean startInterrupted) {
         newClosedCloseableWaitpoint();
         TryPassThread t = scheduleTryPass(startInterrupted);
 

@@ -1,6 +1,6 @@
 package org.codehaus.prometheus.threadpool;
 
-public class DummyWorkerJob implements WorkerJob{
+public class DummyWorkerJob implements WorkerJob {
 
     public Object getWork() throws InterruptedException {
         throw new RuntimeException();

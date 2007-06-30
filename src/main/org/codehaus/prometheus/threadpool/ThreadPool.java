@@ -9,7 +9,7 @@ import java.util.concurrent.locks.Lock;
 /**
  * refactor repeater and blockingexecutor so they use a threadpool. The current solution is too
  * complex.
- *
+ * <p/>
  * <p/>
  * The workers in the ThreadPool keep repeating a {@link WorkerJob}. A threadpool can have
  * a default workjob for those cases you always want to keep repeating the same job over
@@ -21,12 +21,12 @@ import java.util.concurrent.locks.Lock;
  * blocking queue {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor}. Workers
  * that are idle, are executing the getWork method (they are waiting for something to process) and else
  * they are working.
- *<p/>
- *
- * <p>
+ * <p/>
+ * <p/>
+ * <p/>
  * Exception handler: by injecting an instanceof of an {@link ExceptionHandler} one is able to
  * handle exceptions. Default a {@link org.codehaus.prometheus.exceptionhandler.NullExceptionHandler} is used.
- *
+ * <p/>
  * <p/>
  * What does it mean when the poolsize grows.
  * does a worker need to repeat it's task? Or is this a responsibility from it's container like the repeater
@@ -34,7 +34,7 @@ import java.util.concurrent.locks.Lock;
  * <p/>
  * Threads in threadpools are reused, so you don't want to throw them away.
  * is it desirable to let different jobs in the threadpool?
- *
+ * <p/>
  * The threadpool should have a notice how much work has to be done. For every piece of work
  * this number is increased.
  */
@@ -90,7 +90,7 @@ public interface ThreadPool {
      *                               if threads need to be created, but no default WorkerJob is set.
      */
     void start();
-  
+
     /**
      * Shuts down this ThreadPool. It doesn't interrupt workers while they are executing a task.
      * This call doesn't block while this ThreadPool is shutting down.
@@ -140,7 +140,7 @@ public interface ThreadPool {
 
     /**
      * Gets the desired poolsize. The desired poolsize doesn't have to match the actual poolsize.
-     * It can take some time for the pool to grow or shrink to the desired poolsize. 
+     * It can take some time for the pool to grow or shrink to the desired poolsize.
      *
      * @return the desired poolsize.
      */

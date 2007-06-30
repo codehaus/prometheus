@@ -5,20 +5,20 @@
  */
 package org.codehaus.prometheus.repeater;
 
+import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.references.LendableReference;
 import org.codehaus.prometheus.references.RelaxedLendableReference;
 import org.codehaus.prometheus.references.StrictLendableReference;
-import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
+import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPoolState;
 import org.codehaus.prometheus.threadpool.WorkerJob;
-import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.uninterruptiblesection.TimedUninterruptibleSection;
 
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -326,8 +326,8 @@ public class ThreadPoolRepeater implements RepeaterService {
             boolean again = true;
             try {
                 again = task.execute();
-                if(!again && shutdownAfterFalse)
-                    shutdown();                    
+                if (!again && shutdownAfterFalse)
+                    shutdown();
             } finally {
                 if (again)
                     lendableRef.takeback(task);

@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.resequencer;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.TestUtil;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepRandomMs;
 
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
@@ -50,7 +50,7 @@ public class SimpleResequencerTest extends ConcurrentTestCase {
         }
 
         public void run() {
-            TestUtil.sleepRandomMs(5000);
+            sleepRandomMs(5000);
             try {
                 resequencer.put(sequenceId, load);
                 System.out.println("load:" + load);

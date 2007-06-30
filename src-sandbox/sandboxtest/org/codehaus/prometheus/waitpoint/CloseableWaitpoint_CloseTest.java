@@ -12,13 +12,13 @@ package org.codehaus.prometheus.waitpoint;
  */
 public class CloseableWaitpoint_CloseTest extends CloseableWaitpoint_AbstractTest {
 
-    public void testFromClosedToClosed(){
+    public void testFromClosedToClosed() {
         newClosedCloseableWaitpoint();
         waitpoint.close();
         assertIsClosed();
     }
 
-    public void testFromOpenToClosed(){
+    public void testFromOpenToClosed() {
         newOpenCloseableWaitpoint();
         waitpoint.close();
         assertIsClosed();

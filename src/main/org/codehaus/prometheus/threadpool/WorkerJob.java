@@ -20,15 +20,15 @@ package org.codehaus.prometheus.threadpool;
  * <p/>
  * I think this interface is so ThreadPool implementation specific, and that it should be removed
  * from the {@link ThreadPool} interface.
- *
+ * <p/>
  * The problem is with the getWork method. If a threadpool decides to shut down, it interrupts
  * all idle threads. If thread is blocking for work, the interrupted exception is caught, but the
  * threadpool decides to let the run the worker again -> deadlock. It wait for work that is
  * never comming. But if the threadpool decides to put the worker-thread down, it could lead
  * to unprocced work (the current situation at the BlockingThreadPoolExecutor).
- *
+ * <p/>
  * Could it happen that a threadpool shuts down, but a worker executes the getWork method. This
- * is a bad thing because that thread could be shut down 
+ * is a bad thing because that thread could be shut down
  *
  * @author Peter Veentjer.
  */
@@ -44,14 +44,12 @@ public interface WorkerJob<E> {
     E getWork() throws InterruptedException;
 
     /**
-     *
      * This call should not block indefinitely.
-     *
      *
      * @return the retrieved work, null indicates that no work is available anymore for processing.
      * @throws InterruptedException
      */
-    E getWorkWhileShuttingdown()throws InterruptedException;
+    E getWorkWhileShuttingdown() throws InterruptedException;
 
     /**
      * Execute the work that was obtained by {@link #getWork()}.

@@ -13,7 +13,7 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
         StartThread startThread = scheduleStart();
 
         joinAll(startThread);
-        startThread.assertIsTerminatedWithThrowing(IllegalStateException.class);        
+        startThread.assertIsTerminatedWithThrowing(IllegalStateException.class);
         assertIsUnstarted();
         threadPoolThreadFactory.assertCreatedCount(0);
     }

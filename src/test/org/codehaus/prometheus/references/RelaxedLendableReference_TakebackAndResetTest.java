@@ -33,10 +33,10 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
         assertHasRef(null);
     }
 
-    public void testTakebackBySameThread(){
+    public void testTakebackBySameThread() {
         final Integer ref = 10;
         lendableRef = new RelaxedLendableReference(ref);
-        TestThread thread = new TestThread(){
+        TestThread thread = new TestThread() {
             @Override
             protected void runInternal() throws InterruptedException, TimeoutException {
                 Integer ref = lendableRef.take();
@@ -59,7 +59,7 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
         //do multiple takebacksAndResets with different reference, and check that the
         //the reference has null
         for (int k = 0; k < 10; k++) {
-            Integer replaceRef = 20+k;
+            Integer replaceRef = 20 + k;
             _tested_takebackAndReset(replaceRef);
             assertHasRef(null);
         }

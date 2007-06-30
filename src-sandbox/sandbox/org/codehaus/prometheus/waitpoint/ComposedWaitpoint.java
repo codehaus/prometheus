@@ -12,7 +12,7 @@ import java.util.concurrent.TimeoutException;
  * The ComposedWaitpoint is a Waitpoint that is composed of a chain
  * of Waitpoints. It can be used to combine the behaviour of
  * other Waitpoints.
- *
+ * <p/>
  * idea:
  * The ComposedWaitpoint should be able to execute all Waitpoints
  * under once single atomic action (using a lock). At the moment
@@ -57,7 +57,7 @@ public class ComposedWaitpoint implements Waitpoint {
     }
 
     public long tryPass(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
-        if(unit == null)throw new NullPointerException();
+        if (unit == null) throw new NullPointerException();
         throw new NullPointerException();
     }
 }

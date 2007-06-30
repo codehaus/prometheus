@@ -6,13 +6,12 @@
 package org.codehaus.prometheus.resourcepool;
 
 /**
- *
  * todo:
- * make remark about LendableReference. 
+ * make remark about LendableReference.
  *
  * @author Peter Veentjer.
  */
-public interface ResourcePool<E>{
+public interface ResourcePool<E> {
 
     void takeback(E e);
 }

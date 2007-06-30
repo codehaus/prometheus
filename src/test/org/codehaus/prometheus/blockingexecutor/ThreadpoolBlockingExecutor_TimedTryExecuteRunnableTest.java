@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Unittests the {@link ThreadPoolBlockingExecutor#tryExecute(Runnable, long, TimeUnit)} method.
+ * Unittests the {@link ThreadPoolBlockingExecutor#tryExecute(Runnable,long,TimeUnit)} method.
  *
  * @author Peter Veentjer.
  */
@@ -44,10 +44,10 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
     }
 
     public void testTimeout() {
-        newStartedBlockingExecutor(0,0);
+        newStartedBlockingExecutor(0, 0);
 
         CountingRunnable task = new CountingRunnable();
-        TryExecuteThread executeThread = scheduleTryExecute(task,DELAY_SMALL_MS);
+        TryExecuteThread executeThread = scheduleTryExecute(task, DELAY_SMALL_MS);
         joinAll(executeThread);
 
         executeThread.assertIsTimedOut();
@@ -55,10 +55,10 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
     }
 
     public void testInterruptedWhileWaiting() {
-        newStartedBlockingExecutor(0,0);
+        newStartedBlockingExecutor(0, 0);
         CountingRunnable task = new CountingRunnable();
 
-        TryExecuteThread executeThread = scheduleTryExecute(task,DELAY_EON_MS);
+        TryExecuteThread executeThread = scheduleTryExecute(task, DELAY_EON_MS);
 
         giveOthersAChance();
         executeThread.assertIsStarted();
@@ -72,16 +72,16 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
         assertIsRunning();
     }
 
-    public void testSomeWaitingNeeded(){
-        newStartedBlockingExecutor(0,1);
+    public void testSomeWaitingNeeded() {
+        newStartedBlockingExecutor(0, 1);
 
         SleepingRunnable sleepingRunnable = new SleepingRunnable(DELAY_MEDIUM_MS);
-        ExecuteThread executeThread = scheduleExecute(sleepingRunnable,START_UNINTERRUPTED);
+        ExecuteThread executeThread = scheduleExecute(sleepingRunnable, START_UNINTERRUPTED);
         joinAll(executeThread);
         executeThread.assertIsTerminatedNormally();
 
         CountingRunnable task = new CountingRunnable();
-        TryExecuteThread tryExecuteThread = scheduleTryExecute(task,DELAY_EON_MS);
+        TryExecuteThread tryExecuteThread = scheduleTryExecute(task, DELAY_EON_MS);
         giveOthersAChance();
         tryExecuteThread.assertIsStarted();
 
@@ -94,7 +94,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
     }
 
     public void testNoWaitingNeeded() {
-        newStartedBlockingExecutor(0,1);
+        newStartedBlockingExecutor(0, 1);
         CountingRunnable task = new CountingRunnable();
 
         TryExecuteThread executeThread = scheduleTryExecute(task, 0);
@@ -110,7 +110,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
     }
 
     public void testExecuteWhenUnstarted() {
-        newUnstartedBlockingExecutor(1,1);
+        newUnstartedBlockingExecutor(1, 1);
         assertExecuteIsRejected();
     }
 
@@ -120,7 +120,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
     }
 
     public void testExecuteWhileShutdown() {
-        newShutdownBlockingExecutor(1,1);
+        newShutdownBlockingExecutor(1, 1);
         assertExecuteIsRejected();
     }
 

@@ -8,5 +8,6 @@ import junit.framework.TestCase;
  * @author Peter Veentjer.
  */
 public class ProcessorRepeatableTest extends TestCase {
-    public void testDummy(){}
+    public void testDummy() {
+    }
 }

@@ -22,13 +22,13 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
 
     public void testFreeLockNoWaitingNeeded() {
         lock = new ReentrantLock();
-        
+
         TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(0);
         joinAll(tryLockThread);
         tryLockThread.assertIsTerminatedNormally();
     }
 
-    public void testSomeWaitingNeeded()throws InterruptedException{
+    public void testSomeWaitingNeeded() throws InterruptedException {
         lock = new ReentrantLock();
         Thread lockAndUnlockThread = scheduleLockAndUnlock(DELAY_SMALL_MS);
         giveOthersAChance();
@@ -37,7 +37,7 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
         giveOthersAChance();
         tryLockThread.assertIsStarted();
 
-        joinAll(lockAndUnlockThread,tryLockThread);
+        joinAll(lockAndUnlockThread, tryLockThread);
         tryLockThread.assertIsTerminatedNormally();
     }
 
@@ -50,7 +50,7 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
         tryLockThread.assertIsTimedOut();
     }
 
-    public void testInterruptedWhileWaiting(){
+    public void testInterruptedWhileWaiting() {
         lock = new ReentrantLock();
         Thread lockAndUnlockThread = scheduleLockAndUnlock(DELAY_SMALL_MS);
         giveOthersAChance();
@@ -60,7 +60,7 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
         tryLockThread.assertIsStarted();
 
         tryLockThread.interrupt();
-        joinAll(lockAndUnlockThread,tryLockThread);
+        joinAll(lockAndUnlockThread, tryLockThread);
         tryLockThread.assertIsInterruptedByException();
     }
 }

@@ -46,7 +46,7 @@ public class ConditionUtil_TimedAwaitAndThrowTest extends ConditionUtil_Abstract
     public void testInterruptedWhileWaiting() throws TimeoutException, InterruptedException {
         Lock lock = new ReentrantLock();
         Condition cond = lock.newCondition();
-        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock,cond, DELAY_LONG_MS);
+        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock, cond, DELAY_LONG_MS);
 
         giveOthersAChance();
         awaitThread.assertIsStarted();
@@ -59,14 +59,14 @@ public class ConditionUtil_TimedAwaitAndThrowTest extends ConditionUtil_Abstract
     public void testSomeWaiting() throws InterruptedException, TimeoutException {
         Lock lock = new ReentrantLock();
         Condition cond = lock.newCondition();
-        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock,cond, DELAY_LONG_MS);
+        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock, cond, DELAY_LONG_MS);
 
         giveOthersAChance();
         awaitThread.assertIsStarted();
 
-        Thread signalAllThread = scheduleSignallAll(lock,cond);
-        joinAll(signalAllThread,awaitThread);
-        
+        Thread signalAllThread = scheduleSignallAll(lock, cond);
+        joinAll(signalAllThread, awaitThread);
+
         awaitThread.assertIsSuccess(DELAY_LONG_MS - DELAY_TINY_MS);
     }
 
@@ -74,7 +74,7 @@ public class ConditionUtil_TimedAwaitAndThrowTest extends ConditionUtil_Abstract
         Lock lock = new ReentrantLock();
         Condition cond = lock.newCondition();
 
-        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock,cond, DELAY_MEDIUM_MS);
+        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock, cond, DELAY_MEDIUM_MS);
         joinAll(awaitThread);
 
         awaitThread.assertIsTimedOut();

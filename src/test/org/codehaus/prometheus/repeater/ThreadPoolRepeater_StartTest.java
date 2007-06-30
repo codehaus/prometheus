@@ -63,7 +63,7 @@ public class ThreadPoolRepeater_StartTest extends ThreadPoolRepeater_AbstractTes
     }
 
     public void testStartWhileShuttingdown() throws InterruptedException {
-        newShuttingdownRepeater(2* DELAY_SMALL_MS);
+        newShuttingdownRepeater(2 * DELAY_SMALL_MS);
 
         assertStartCausesIllegalStateException();
         assertActualPoolSize(1);

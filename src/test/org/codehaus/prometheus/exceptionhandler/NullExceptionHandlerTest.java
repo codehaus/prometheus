@@ -10,11 +10,11 @@ import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 public class NullExceptionHandlerTest extends ConcurrentTestCase {
 
     //check it doesn't complain when a null is passed.
-    public void testHandleNull(){
+    public void testHandleNull() {
         NullExceptionHandler.INSTANCE.handle(null);
     }
 
-    public void testHandleException(){
+    public void testHandleException() {
         NullExceptionHandler.INSTANCE.handle(new Exception());
     }
 }

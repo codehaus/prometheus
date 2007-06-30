@@ -6,7 +6,7 @@
 package org.codehaus.prometheus.util;
 
 import static org.codehaus.prometheus.util.ConcurrencyUtil.toUsableNanos;
-import static org.codehaus.prometheus.util.ConditionUtil.*;
+import static org.codehaus.prometheus.util.ConditionUtil.awaitNanosAndThrow;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -31,7 +31,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Latch {
 
-    public static Lock newDefaultMainLock(){
+    public static Lock newDefaultMainLock() {
         return new ReentrantLock();
     }
 
@@ -43,7 +43,7 @@ public class Latch {
      * Creates a new unfair Latch with a {@link ReentrantLock#ReentrantLock()}
      * as main lock.
      */
-    public Latch(){
+    public Latch() {
         this(newDefaultMainLock());
     }
 
@@ -51,8 +51,8 @@ public class Latch {
      * Creates a new Latch with the given mainLock.
      *
      * @param mainLock the mainLock
-     * @throws NullPointerException if mainLock is <tt>null</tt>.
-     * @throws UnsupportedOperationException if the mainLock doesn't support the 
+     * @throws NullPointerException          if mainLock is <tt>null</tt>.
+     * @throws UnsupportedOperationException if the mainLock doesn't support the
      *                                       creation of a new Condition.
      */
     public Latch(Lock mainLock) {
@@ -114,20 +114,20 @@ public class Latch {
      * waiting on the Latch are signalled and continue. The difference between {@link #open()} is that the
      * lock already must have been acquired. If this lock is not acquired,
      *
-     * @see #open() 
+     * @see #open()
      */
-    public void openWithoutLocking(){
-        if(open)
+    public void openWithoutLocking() {
+        if (open)
             return;
 
-        isOpenCondition.signalAll();          
+        isOpenCondition.signalAll();
         open = true;
     }
 
     /**
      * Awaits for this Latch to open. If the Latch already is open, the call finishes immediately
      * and no InterruptedException is thrown.
-     * 
+     *
      * @throws InterruptedException if the calling thread is interrupted.
      */
     public void await() throws InterruptedException {
@@ -143,7 +143,7 @@ public class Latch {
         }
     }
 
-    public boolean tryAwait(){
+    public boolean tryAwait() {
         return open;
     }
 
@@ -156,9 +156,9 @@ public class Latch {
         mainLock.lockInterruptibly();
         try {
             while (!open)
-                timeoutNs = awaitNanosAndThrow(isOpenCondition,timeoutNs);
+                timeoutNs = awaitNanosAndThrow(isOpenCondition, timeoutNs);
         } finally {
             mainLock.unlock();
         }
-    }   
+    }
 }

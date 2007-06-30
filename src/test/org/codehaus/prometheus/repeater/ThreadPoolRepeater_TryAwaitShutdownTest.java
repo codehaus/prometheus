@@ -5,15 +5,15 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.TestUtil;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
 import org.codehaus.prometheus.testsupport.TestThread;
+import static org.codehaus.prometheus.testsupport.TestUtil.allowOtherThreadsToRun;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Unittests the {@link ThreadPoolRepeater#tryAwaitShutdown(long, TimeUnit)} method.
+ * Unittests the {@link ThreadPoolRepeater#tryAwaitShutdown(long,TimeUnit)} method.
  *
  * @author Peter Veentjer.
  */
@@ -89,7 +89,7 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
 
         awaitThread.interrupt();
         joinAll(awaitThread);
-        
+
         awaitThread.assertIsInterruptedByException();
         assertIsRunning();
     }
@@ -98,7 +98,7 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
         TryAwaitShutdownThread t1 = scheduleTryAwaitShutdown(timeoutMs);
         TryAwaitShutdownThread t2 = scheduleTryAwaitShutdown(timeoutMs);
 
-        TestUtil.allowOtherThreadsToRun();
+        allowOtherThreadsToRun();
 
         repeater.shutdownNow();
 

@@ -103,11 +103,11 @@ public interface LendableReference<E> extends AwaitableReference<E> {
 
     /**
      * Takes back a lend reference to this LendableReference and resets the reference to null.
-     *
-     * A different thread is allowed to tryTake the reference back. 
+     * <p/>
+     * A different thread is allowed to tryTake the reference back.
      *
      * @param ref
-     * @throws NullPointerException if ref is null.
+     * @throws NullPointerException     if ref is null.
      * @throws IllegalTakebackException
      */
     void takebackAndReset(E ref);

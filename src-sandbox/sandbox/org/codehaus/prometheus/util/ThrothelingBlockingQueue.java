@@ -12,13 +12,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
  * @author Peter Veentjer
  */
 public class ThrothelingBlockingQueue<E> extends AbstractQueue<E> implements BlockingQueue<E> {
     private final BlockingQueue<E> target;
-   
-    public ThrothelingBlockingQueue(BlockingQueue<E> target){
+
+    public ThrothelingBlockingQueue(BlockingQueue<E> target) {
         this.target = target;
     }
 
@@ -74,11 +73,11 @@ public class ThrothelingBlockingQueue<E> extends AbstractQueue<E> implements Blo
         throw new RuntimeException();
     }
 
-    public boolean equals(Object thatObj){
+    public boolean equals(Object thatObj) {
         throw new RuntimeException();
     }
 
-    public int hashCode(){
+    public int hashCode() {
         throw new RuntimeException();
     }
 }
