@@ -23,7 +23,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     public volatile ThreadPoolBlockingExecutor executor;
     public volatile TracingThreadFactory threadFactory;
 
-    public void _tested_execute(Runnable task) {
+    public void spawned_assertExecute(Runnable task) {
         ExecuteThread thread = scheduleExecute(task, START_UNINTERRUPTED);
         joinAll(thread);
         thread.assertIsTerminatedNormally();
@@ -33,30 +33,34 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         super.tearDown();
 
         if (executor != null) {
-            _tested_shutdownNow();
-            _tested_awaitShutdown();
+            spawned_assertShutdownNow();
+            spawned_assertAwaitShutdown();
             assertIsShutdown();
         }
     }
 
-    private void _tested_awaitShutdown() {
+    private void spawned_assertAwaitShutdown() {
         AwaitShutdownThread awaitThread = scheduleAwaitShutdown();
         joinAll(awaitThread);
         awaitThread.assertIsTerminatedNormally();
     }
 
-    private void _tested_shutdownNow() {
+    private void spawned_assertShutdownNow() {
         ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
         joinAll(shutdownNowThread);
         shutdownNowThread.assertIsTerminatedNormally();
     }
 
-    public ThreadPoolBlockingExecutor getExecutor() {
-        return executor;
+    public void spawned_assertSetDesiredPoolSize(int poolsize){
+        SetDesiredPoolSizeThread t = scheduleSetDesiredPoolSize(poolsize);
+        joinAll(t);
+        t.assertIsTerminatedNormally();
     }
 
-    public TracingThreadFactory getThreadFactory() {
-        return threadFactory;
+    public void spawned_assertSetDesiredPoolSizeThrowsException(int poolsize, Class exClass){
+        SetDesiredPoolSizeThread t = scheduleSetDesiredPoolSize(poolsize);
+        joinAll(t);
+        t.assertIsTerminatedWithThrowing(exClass);
     }
 
     public void newStartedBlockingExecutor(int queuesize, int poolsize) {
@@ -206,6 +210,25 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         t.setStartInterrupted(startInterrupted);
         t.start();
         return t;
+    }
+
+    public SetDesiredPoolSizeThread scheduleSetDesiredPoolSize(int poolsize){
+        SetDesiredPoolSizeThread t = new SetDesiredPoolSizeThread(poolsize);
+        t.start();
+        return t;
+    }
+
+    public class SetDesiredPoolSizeThread extends TestThread{
+        final int size;
+
+        public SetDesiredPoolSizeThread(int size) {
+            this.size = size;
+        }
+
+        @Override
+        protected void runInternal() throws Exception {
+            executor.setDesiredPoolSize(size);
+        }
     }
 
     public class ExecuteThread extends TestThread {

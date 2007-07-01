@@ -53,7 +53,7 @@ public class StandardProcessor_StressTest extends StandardProcessor_AbstractTest
 
         try {
             for (Thread thread : threadList)
-                joinAll(6000 * 1000, thread);
+                joinAll(10 * 1000, thread);
         } finally {
             System.out.println("retrieved items"+outputChannel.getInternalQueue().size());
         }

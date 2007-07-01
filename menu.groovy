@@ -22,7 +22,7 @@ def menus = [
         new MenuItem(title:'Mission Statement',     pageid:'missionstatement'),
         new MenuItem(title:'Download',              pageid:'download'),
         new MenuItem(title:'Jira',                  url:'http://jira.codehaus.org/browse/PROM'),
-        new MenuItem(title:'Confluence',            url:'http://docs.codehaus.org/display/PROM/Home'),
+        new MenuItem(title:'Wiki',                  url:'http://docs.codehaus.org/display/PROM/Home'),
         new MenuItem(title:'Blog',                  url:'http://pveentjer.wordpress.com'),
         new MenuItem(title:'Test Coverage',         url:'clover/index.html'),
         new MenuItem(title:'License',               pageid:'license')
@@ -56,7 +56,7 @@ def pages = [
 
 def outputdirectory = 'target/site'
 
-def lastupdate = '19 May, 2007'
+def lastupdate = '30 June, 2007'
 
 //=============== template engine ==================
 

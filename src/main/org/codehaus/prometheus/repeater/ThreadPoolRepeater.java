@@ -122,6 +122,14 @@ public class ThreadPoolRepeater implements RepeaterService {
     private volatile boolean shutdownAfterFalse = false;
 
     /**
+     * Creates a new strict and unstarted ThreadPoolRepeater with one thread and a
+     * {@link org.codehaus.prometheus.util.StandardThreadFactory#StandardThreadFactory()}.
+     */
+    public ThreadPoolRepeater() {
+        this(createDefaultThreadpool(1), createDefaultLendableReference(null));
+    }
+
+    /**
      * Creates a new strict and unstarted ThreadPoolRepeater with the given poolsize and a
      * {@link org.codehaus.prometheus.util.StandardThreadFactory#StandardThreadFactory()}.
      *

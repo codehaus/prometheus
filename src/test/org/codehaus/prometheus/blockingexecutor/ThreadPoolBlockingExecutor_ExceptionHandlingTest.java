@@ -9,11 +9,6 @@ import org.codehaus.prometheus.testsupport.ThrowingRunnable;
  * Unittest the Exception handling functionality of the ThreadPoolBlockingExecutor.
  *
  * @author Peter Veentjer.
- *         <p/>
- *         allshare: leo bornstein: different places to work
- *         aix, websphere, sprin, hibernate, groovy on grails
- *         <p/>
- *         mike lesna
  */
 public class ThreadPoolBlockingExecutor_ExceptionHandlingTest extends ThreadPoolBlockingExecutor_AbstractTest {
     private TracingExceptionHandler exceptionHandler;
@@ -44,7 +39,7 @@ public class ThreadPoolBlockingExecutor_ExceptionHandlingTest extends ThreadPool
     private void assertNormalTaskDoesntActivateExceptionHandler() {
         int oldExceptionCount = exceptionHandler.getCount();
         CountingRunnable task = new CountingRunnable();
-        _tested_execute(task);
+        spawned_assertExecute(task);
         giveOthersAChance(DELAY_MEDIUM_MS);
         task.assertExecutedOnce();
         assertEquals(oldExceptionCount, exceptionHandler.getCount());
@@ -54,7 +49,7 @@ public class ThreadPoolBlockingExecutor_ExceptionHandlingTest extends ThreadPool
         StringIndexOutOfBoundsException ex = new StringIndexOutOfBoundsException();
         int oldExceptionCount = exceptionHandler.getCount(ex.getClass());
         ThrowingRunnable task = new ThrowingRunnable(ex);
-        _tested_execute(task);
+        spawned_assertExecute(task);
         giveOthersAChance(DELAY_MEDIUM_MS);
         task.assertExecutedOnce();
         exceptionHandler.assertCountAndNoOthers(ex.getClass(), oldExceptionCount + 1);
@@ -65,7 +60,7 @@ public class ThreadPoolBlockingExecutor_ExceptionHandlingTest extends ThreadPool
     }
 
     //make sure that a throwable that is not an exception is not caugtht
-    public void testThrowableIsNotCaught() {
+    public void testErrorIsNotCaught() {
         //todo
     }
 }

@@ -1,5 +1,5 @@
 //================ variables ==============================================
-version_main                    = "0.1"
+version_main                    = "0.1rc1"
 name_main                       = "prometheus"
 name_testsupport                = "prometheus-testsupport"
 name_sandbox                    = "prometheus-sandbox"
@@ -34,7 +34,7 @@ dir_javadoc_testsupport         = "$dir_javadoc/testsupport"
 
 dir_unitreports                 = "$dir_target/junit-reports"
 dir_clover                      = "$dir_target/clover"
-
+dir_release                     = "$dir_target/$name_main-$version_main"
 dir_site                        = "$dir_target/site"
 
 clover_home                     = System.getenv ( ).'CLOVER_HOME'
@@ -398,4 +398,56 @@ task( build_dist : 'Builds the complete distribution' ){
     depends( javadoc_all )
     depends( jar_all )
     depends( jar_testsupport )
+}
+
+task (build_release :'Build the complete release'){
+    println( 'Builds the complete release' )
+    //depends( build_dist )
+    Ant.delete(dir: dir_release )
+    Ant.mkdir(dir: dir_release )
+
+    Ant.copy(todir: "$dir_release/javadoc"){
+        fileset(dir: "$dir_javadoc")
+    }
+
+    Ant.copy(todir: "$dir_release/src/main"){
+        fileset(dir: "$dir_src/main")
+    }
+
+    Ant.copy(todir: "$dir_release/src/test"){
+        fileset(dir: "$dir_src/test")
+    }
+
+    Ant.copy(todir: "$dir_release/src/stresstest"){
+        fileset(dir: "$dir_src/stresstest")
+    }
+
+    Ant.copy(todir: "$dir_release/src/testsupport"){
+        fileset(dir: "$dir_src/testsupport")
+    }
+
+    Ant.copy(todir: "$dir_release/bin"){
+        fileset(file: "$dir_target/*.jar")
+    }
+
+    Ant.copy(todir: "$dir_release"){
+        fileset(file: "license.*")
+    }
+
+    Ant.copy(todir: "$dir_release/lib"){
+        fileset(dir: "$dir_lib_provided")
+    }
+
+    Ant.zip(file :"$dir_target/${name_main}-${version_main}.zip"){
+        zipfileset(dir: "$dir_release")
+    }
+}
+
+task (make_release:'Makes a release, does everything'){
+    println('Makes the release, updates the site')
+    depends(build_release)
+
+    Ant.copy(todir: "/mnt/prometheus/releases"){
+        fileset(file: "${dir_target}/${name_main}-${version_main}.zip")
+    }
 }

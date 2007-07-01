@@ -218,7 +218,7 @@
             description="Makes the binary distribution">
 
         <zip file="${target}/${name.main}-${version.main}.zip">
-            <zipfileset file="License.html"
+            <zipfileset file="license.html"
                         prefix="${name.main}-${version.main}"/>
             <zipfileset file="license.css"
                         prefix="${name.main}-${version.main}"/>

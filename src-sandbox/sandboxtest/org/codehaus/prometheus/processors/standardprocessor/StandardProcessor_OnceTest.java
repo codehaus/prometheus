@@ -31,7 +31,6 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         Integer arg = 10;
 
         IntegerProcess process = new IntegerProcess(arg, VoidValue.INSTANCE);
-
         newProcessor(process);
 
         spawned_assertPut(arg);
@@ -56,7 +55,6 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         process2.assertCalledOnce();
         spawned_assertTakeNotPossible();
     }
-
 
     public void testInputReturnsVoid() {
         TestProcess process = new NoArgProcess();
@@ -98,8 +96,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
 
         TestProcess process1 = new IntegerProcess(arg1, null);
         TestProcess process2 = new IntegerProcess();
-
-        newProcessor(new Object[]{process1, process2});
+        newProcessor(process1, process2);
 
         spawned_assertPut(arg1);
         spawned_assertOnceAndReturnTrue();
@@ -126,7 +123,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
     public void testInputReturnsIterator() {
         List<Integer> itemList = generateRandomNumberList(10);
 
-        newProcessor(new Object[]{});
+        newProcessor();
 
         spawned_assertPut(itemList.iterator());
         for (Integer item : itemList) {
@@ -152,7 +149,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
     public void test_noProcess() {
         Integer arg = 1;
 
-        newProcessor(new Object[]{});
+        newProcessor();
 
         spawned_assertPut(arg);
         spawned_assertOnceAndReturnTrue();
@@ -163,8 +160,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
     public void test_onlyProcess() {
         Integer arg1 = 1;
         Integer arg2 = 2;
-
-        TestProcess process = new IntegerProcess(arg1, arg2);
+                                                            TestProcess process = new IntegerProcess(arg1, arg2);
         newProcessor(new Object[]{process});
 
         spawned_assertPut(arg1);
@@ -174,6 +170,20 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         spawned_assertTakeNotPossible();
     }
 
+    public void test_noArgVoidProcess(){
+        TestProcess process = new VoidNoArgProcess();
+        newSourceProcessor(process);
+
+        spawned_assertOnceAndReturnTrue();
+        process.assertCalledOnce();
+        spawned_assertTakeNotPossible();
+    }
+
+    public static class VoidNoArgProcess extends TestProcess{
+        public void receive(){
+            signalCalled();
+        }
+    }
 
     public void test_chainedProcesses() {
         Integer arg1 = 1;

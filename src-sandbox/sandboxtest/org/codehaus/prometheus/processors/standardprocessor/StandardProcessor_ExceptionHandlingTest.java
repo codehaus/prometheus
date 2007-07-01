@@ -61,12 +61,12 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
 
     //===================== Propagate_ErrorPolicy ====================
 
-    public void testPropagate() {
-        testPropagate(uncheckedexception);
-        testPropagate(checkedexception);
+    public void testPropagate_ErrorPolicy() {
+        testPropagate_errorPolicy(uncheckedexception);
+        testPropagate_errorPolicy(checkedexception);
     }
 
-    private void testPropagate(final Exception ex) {
+    private void testPropagate_errorPolicy(final Exception ex) {
         Integer arg = 10;
         TestProcess process = new IntegerExceptionProcess(arg, ex);
         newProcessor(process);
@@ -79,12 +79,12 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
 
     //===================== Drop_ErrorPolicy ====================
 
-    public void testDrop() {
-        testDrop(uncheckedexception);
-        testDrop(checkedexception);
+    public void testDrop_ErrorPolicy() {
+        testDrop_ErrorPolicy(uncheckedexception);
+        testDrop_ErrorPolicy(checkedexception);
     }
 
-    public void testDrop(final Exception ex) {
+    public void testDrop_ErrorPolicy(final Exception ex) {
         Integer arg = 10;
         TestProcess process = new IntegerExceptionProcess(arg, ex);
         newProcessor(process);
@@ -98,12 +98,12 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
 
     //===================== Ignore_ErrorPolicy ====================
 
-    public void testIgnore() {
-        testIgnore(uncheckedexception);
-        testIgnore(checkedexception);
+    public void testIgnore_ErrorPolicy() {
+        testIgnore_ErrorPolicy(uncheckedexception);
+        testIgnore_ErrorPolicy(checkedexception);
     }
 
-    public void testIgnore(final Exception ex) {
+    public void testIgnore_ErrorPolicy(final Exception ex) {
         Integer arg = 10;
         TestProcess process = new IntegerExceptionProcess(arg, ex);
         newProcessor(process);
@@ -117,12 +117,12 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
 
     //===================== Replace_ErrorPolicy ====================
 
-    public void testReplace() {
-        testReplace(uncheckedexception);
-        testIgnore(checkedexception);
+    public void testReplace_ErrorPolicy() {
+        testReplace_ErrorPolicy(uncheckedexception);
+        testIgnore_ErrorPolicy(checkedexception);
     }
 
-    public void testReplace(final Exception ex) {
+    public void testReplace_ErrorPolicy(final Exception ex) {
         Integer arg = 10;
         TestProcess process = new IntegerExceptionProcess(arg, ex);
         newProcessor(process);
@@ -138,9 +138,22 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
     }
 
     //===================== OtherProblemAreas ====================
+    // make sure that messages are not thrown, but passed as message
+    //============================================================
 
     public void testProcessCausesException() {
-        //todo
+        Integer value1 = 1;
+        Exception value2 = new RuntimeException();
+
+        TestProcess process = new IntegerExceptionProcess(value1, value2);
+        newProcessor(process);
+        standardProcessor.setErrorPolicy(new ExceptionAsMessage_ErrorPolicy());
+
+        spawned_assertPut(value1);
+        spawned_assertOnceAndReturnTrue(1);
+        process.assertCalledOnce();
+        spawned_assertTake(value2);
+        spawned_assertTakeNotPossible();
     }
 
     public void testTakeFromInputCausesException() {
@@ -151,8 +164,8 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
         //todo
     }
 
-    public void testIteratorHasNextThrowsException(){
-        
+    public void testIteratorHasNextThrowsException() {
+        //todo (at the moment already tested with getNext)
     }
 
     public void testIteratorNextThrowsException() {
@@ -161,11 +174,10 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
         Object value2 = new RuntimeException();
         Integer value3 = 10;
         Iterator it = new ThrowingIterator(value1, value2, value3);
-        Integer value2Replacement = 5;
 
         TestProcess process = new IntegerProcess(initialValue, it);
         newProcessor(process);
-        standardProcessor.setErrorPolicy(new Replace_ErrorPolicy(value2Replacement));
+        standardProcessor.setErrorPolicy(new ExceptionAsMessage_ErrorPolicy());
 
         spawned_assertPut(initialValue);
         spawned_assertOnceAndReturnTrue(3);
@@ -173,7 +185,7 @@ public class StandardProcessor_ExceptionHandlingTest extends StandardProcessor_A
 
         //this can be simplified.
         spawned_assertTake(value1);
-        spawned_assertTake(value2Replacement);
+        spawned_assertTake(value2);
         spawned_assertTake(value3);
         spawned_assertTakeNotPossible();
     }

@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * An {@link ExceptionHandler} that keeps track of all thrown exceptions. 
+ *
  * @author Peter Veentjer.
  */
 public class TracingExceptionHandler implements ExceptionHandler {

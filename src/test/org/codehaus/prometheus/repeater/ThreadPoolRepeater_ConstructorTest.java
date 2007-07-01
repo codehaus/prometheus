@@ -15,7 +15,27 @@ import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.concurrent.ThreadFactory;
 
+/**
+ * Unittests the constructors of {@link ThreadPoolRepeater}.
+ *
+ * @author Peter Veentjer.
+ */
 public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_AbstractTest {
+
+    //=================== ThreadPoolRepeater() +==========================
+
+    public void test_noarg() {
+        repeater = new ThreadPoolRepeater();
+
+        assertIsUnstarted();
+        assertActualPoolSize(0);
+        assertDesiredPoolSize(1);
+        assertHasDefaultLendableReference();
+        assertHasDefaultThreadPool();
+        assertIsStrict(true);
+        assertHasRepeatable(null);
+        assertShutdownAfterFalse(false);
+    }
 
     //================= ThreadPoolRepeater(int) ===========================
 
@@ -37,6 +57,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertHasDefaultThreadPool();
         assertIsStrict(true);
         assertHasRepeatable(null);
+        assertShutdownAfterFalse(false);
     }
 
     //================== ThreadPoolRepeater(runnable,int) ====================
@@ -60,6 +81,23 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
 
         assertIsUnstarted();
         assertDesiredPoolSize(poolsize);
+        assertActualPoolSize(0);
+        assertHasRepeatable(task);
+        assertIsStrict(true);
+        assertHasDefaultLendableReference();
+        assertHasDefaultThreadPool();
+    }
+
+    public void test_Runnable() {
+        test_Runnable(new DummyRepeatable());
+        test_Runnable(null);
+    }
+
+    private void test_Runnable(DummyRepeatable task) {
+        repeater = new ThreadPoolRepeater(task);
+
+        assertIsUnstarted();
+        assertDesiredPoolSize(1);
         assertActualPoolSize(0);
         assertHasRepeatable(task);
         assertIsStrict(true);
@@ -95,6 +133,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
         assertHasRepeatable(task);
         assertIsStrict(strict);
+        assertShutdownAfterFalse(false);
 
         assertTrue(repeater.getThreadPool() instanceof StandardThreadPool);
         StandardThreadPool threadpool = (StandardThreadPool) repeater.getThreadPool();
@@ -127,9 +166,14 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
         assertSame(lendableRef, repeater.getLendableRef());
         assertSame(threadPool, repeater.getThreadPool());
+        assertShutdownAfterFalse(false);
     }
 
     //========================= asserts =======================
+
+    public void assertShutdownAfterFalse(boolean expected) {
+        assertEquals(expected, repeater.isShutdownAfterFalse());
+    }
 
     private void assertIsStrict(boolean strict) {
         LendableReference ref = repeater.getLendableRef();

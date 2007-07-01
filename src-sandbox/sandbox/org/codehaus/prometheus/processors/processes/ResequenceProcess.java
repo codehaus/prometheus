@@ -29,7 +29,7 @@ import java.util.Map;
  * If an already returned message is received again (a corrupt sequence can also be
  * the cause), an IllegalSequenceException is thrown.
  * <p/>
- * See also the Resequencer from "Enterprise Integration Patterns".
+ * See also the Resequencer in "Enterprise Integration Patterns".
  * <p/>
  * This object is threadsafe. But when multiple threads are using this process,
  * they are handed out messages in the correct order, but the order could get lost as

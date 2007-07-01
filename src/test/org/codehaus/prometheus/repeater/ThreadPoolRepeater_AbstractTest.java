@@ -17,7 +17,6 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
 
     public volatile ThreadPoolRepeater repeater;
 
-
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -72,6 +71,13 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         repeater.start();
         assertIsRunning();
     }
+
+    public void newRunningRepeater(int poolsize) {
+        newUnstartedRepeater(false, poolsize);
+        repeater.start();
+        assertIsRunning();
+    }
+
 
     public void newRunningRepeater(boolean strict, Repeatable task) {
         newUnstartedRepeater(strict);
@@ -188,6 +194,25 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         }
     }
 
+    public void spawned_assertShutdown() {
+        ShutdownThread t = scheduleShutdown();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+        RepeaterServiceState state = repeater.getState();
+        assertTrue(state == RepeaterServiceState.Shutdown || state == RepeaterServiceState.Shuttingdown);
+    }
+
+    public ShutdownThread scheduleShutdown() {
+        ShutdownThread t = new ShutdownThread();
+        t.start();
+        return t;
+    }
+
+    public class ShutdownThread extends TestThread {
+        protected void runInternal() throws Exception {
+            repeater.shutdown();
+        }
+    }
 
     public TryRepeatThread scheduleTryRepeat(Repeatable task, boolean startInterrupted) {
         TryRepeatThread t = new TryRepeatThread(task);
