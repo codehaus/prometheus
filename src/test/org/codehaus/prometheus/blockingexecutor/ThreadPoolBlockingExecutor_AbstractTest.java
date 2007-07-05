@@ -29,6 +29,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         thread.assertIsTerminatedNormally();
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
 
@@ -39,25 +40,33 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         }
     }
 
-    private void spawned_assertAwaitShutdown() {
-        AwaitShutdownThread awaitThread = scheduleAwaitShutdown();
-        joinAll(awaitThread);
-        awaitThread.assertIsTerminatedNormally();
+    public void spawned_assertAwaitShutdown() {
+        AwaitShutdownThread t = scheduleAwaitShutdown();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
     }
 
-    private void spawned_assertShutdownNow() {
-        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
-        joinAll(shutdownNowThread);
-        shutdownNowThread.assertIsTerminatedNormally();
+    public void spawned_assertShutdownNow() {
+        ShutdownNowThread t = scheduleShutdownNow();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
     }
 
-    public void spawned_assertSetDesiredPoolSize(int poolsize){
+    public void spawned_assertShutdown() {
+        ShutdownThread t = scheduleShutdown();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+        assertTrue(executor.getState() == BlockingExecutorServiceState.Shutdown ||
+                executor.getState() == BlockingExecutorServiceState.Shuttingdown);
+    }
+
+    public void spawned_assertSetDesiredPoolSize(int poolsize) {
         SetDesiredPoolSizeThread t = scheduleSetDesiredPoolSize(poolsize);
         joinAll(t);
         t.assertIsTerminatedNormally();
     }
 
-    public void spawned_assertSetDesiredPoolSizeThrowsException(int poolsize, Class exClass){
+    public void spawned_assertSetDesiredPoolSizeThrowsException(int poolsize, Class exClass) {
         SetDesiredPoolSizeThread t = scheduleSetDesiredPoolSize(poolsize);
         joinAll(t);
         t.assertIsTerminatedWithThrowing(exClass);
@@ -91,6 +100,11 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
                 queue);
     }
 
+    public void newShutdownBlockingExecutor(){
+        newUnstartedBlockingExecutor(0,0);
+        executor.shutdown();
+    }
+
     public void newShutdownBlockingExecutor(int queuesize, int poolsize) {
         newUnstartedBlockingExecutor(queuesize, poolsize);
         executor.shutdown();
@@ -110,19 +124,19 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public void assertIsUnstarted() {
-        assertEquals(BlockingExecutorServiceState.Unstarted, executor.getState());
+        assertHasState(BlockingExecutorServiceState.Unstarted);
     }
 
     public void assertIsRunning() {
-        assertEquals(BlockingExecutorServiceState.Running, executor.getState());
+        assertHasState(BlockingExecutorServiceState.Running);
     }
 
     public void assertIsShuttingDown() {
-        assertEquals(BlockingExecutorServiceState.Shuttingdown, executor.getState());
+        assertHasState(BlockingExecutorServiceState.Shuttingdown);
     }
 
     public void assertIsShutdown() {
-        assertEquals(BlockingExecutorServiceState.Shutdown, executor.getState());
+        assertHasState(BlockingExecutorServiceState.Shutdown);
 
         //it could be that no reference to the threadfactory was assigned
         if (threadFactory != null)
@@ -136,6 +150,10 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         assertTrue(executor.getWorkQueue().isEmpty());
     }
 
+    public void assertHasState(BlockingExecutorServiceState expected) {
+        assertEquals(expected, executor.getState());
+    }
+
     public void assertTasksOnWorkQueue(Runnable... expected) {
         BlockingQueue workQueue = executor.getWorkQueue();
         Runnable[] foundTasks = (Runnable[]) workQueue.toArray(new Runnable[]{});
@@ -145,6 +163,21 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
             Runnable expectedTask = expected[k];
             assertSame(expectedTask, foundTask);
         }
+    }
+
+    public ShutdownNowThread spawned_assertShutdownNow(Runnable... expectedUnprocessed) {
+        ShutdownNowThread shutdownThread = scheduleShutdownNow();
+        joinAll(shutdownThread);
+        shutdownThread.assertSuccess(expectedUnprocessed);
+        assertIsShuttingDownOrShutdown();
+        assertWorkQueueIsEmpty();
+        return shutdownThread;
+    }
+
+    public void assertIsShuttingDownOrShutdown() {
+        BlockingExecutorServiceState state = executor.getState();
+        assertTrue(String.format("state was %s",state),
+                state == BlockingExecutorServiceState.Shuttingdown || state == BlockingExecutorServiceState.Shutdown);
     }
 
     public void executeEonTask(int count) {
@@ -212,13 +245,13 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         return t;
     }
 
-    public SetDesiredPoolSizeThread scheduleSetDesiredPoolSize(int poolsize){
+    public SetDesiredPoolSizeThread scheduleSetDesiredPoolSize(int poolsize) {
         SetDesiredPoolSizeThread t = new SetDesiredPoolSizeThread(poolsize);
         t.start();
         return t;
     }
 
-    public class SetDesiredPoolSizeThread extends TestThread{
+    public class SetDesiredPoolSizeThread extends TestThread {
         final int size;
 
         public SetDesiredPoolSizeThread(int size) {

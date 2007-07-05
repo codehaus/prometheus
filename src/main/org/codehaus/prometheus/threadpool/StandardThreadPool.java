@@ -14,8 +14,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * The default implementation of the {@link ThreadPool} interface.
- * <p/>
+ * The default implementation of the {@link ThreadPool} interface. 
  *
  * @author Peter Veentjer.
  */
@@ -32,12 +31,19 @@ public class StandardThreadPool implements ThreadPool {
 
     /**
      * Creates a new StandardThreadPool with a {@link StandardThreadFactory} as ThreadFactory
-     * an no {@link WorkerJob}.
+     * an no {@link WorkerJob} and zero threads in the threadpool.
      */
     public StandardThreadPool() {
         this(new StandardThreadFactory());
     }
 
+    /**
+     * Creates a new StandardThreadPool with a {@link StandardThreadFactory}, no {@link WorkerJob}
+     * and the given number of threads in the threadpool.
+     *
+     * @param poolsize the number of threads in the threadpool.
+     * @throws IllegalArgumentException if poolsize is smaller than 0.
+     */
     public StandardThreadPool(int poolsize) {
         this();
         setDesiredPoolsize(poolsize);
@@ -45,7 +51,7 @@ public class StandardThreadPool implements ThreadPool {
 
     /**
      * Creates a new StandardThreadPool with the given ThreadFactory and no
-     * {@link WorkerJob}.
+     * {@link WorkerJob} and no threads in the threadpool.
      *
      * @param factory the ThreadFactory that is used to fill the pool.
      * @throws NullPointerException if factory is <tt>null</tt>.
@@ -54,13 +60,22 @@ public class StandardThreadPool implements ThreadPool {
         this(0, null, factory);
     }
 
+    /**
+     * Creates a new StandardThreadPool with the given poolsize and ThreadFactory.
+     * The WorkerJob needs to be set before this StandardThreadPool is started.
+     *
+     * @param poolsize the number of threadsin the threadpool.
+     * @param threadFactory the ThreadFactory that is used to fill the pool.
+     * @throws IllegalArgumentException if poolsize smaller than zero.
+     * @throws NullPointerException if threadfactory is null.
+     */
     public StandardThreadPool(int poolsize, ThreadFactory threadFactory) {
         this(poolsize, null, threadFactory);
     }
 
     /**
      * Creates a new StandardThreadPool with the given {@link ThreadFactory} and
-     * workerJob.
+     * workerJob and no threads in the threadpool.
      *
      * @param workerJob the job that should be executed. The value is allowed to be null, but needs to be
      *                  set before started.
@@ -71,6 +86,16 @@ public class StandardThreadPool implements ThreadPool {
         this(0, workerJob, factory);
     }
 
+    /**
+     * Creates a new StandardThreadPool with the given poolsize, ThreadFactory and workerjob.
+     *
+     * @param poolsize  the initial size of the threadpool.
+     * @param workerJob the job that should be executed. The value is allowed to be <tt>null</tt>, but
+     *                  needs to be set before started.
+     * @param factory   the ThreadFactory that is used to fill the pool.
+     * @throws IllegalArgumentException if poolsize smaller than zero.
+     * @throws NullPointerException     if factory is null.
+     */
     public StandardThreadPool(int poolsize, WorkerJob workerJob, ThreadFactory factory) {
         if (poolsize < 0) throw new IllegalArgumentException();
         if (factory == null) throw new NullPointerException();
@@ -135,6 +160,7 @@ public class StandardThreadPool implements ThreadPool {
 
     public void setDesiredPoolsize(int desiredPoolsize) {
         if (desiredPoolsize < 0) throw new IllegalArgumentException();
+
         mainLock.lock();
         try {
             switch (state) {
@@ -147,11 +173,10 @@ public class StandardThreadPool implements ThreadPool {
                         return;
 
                     this.desiredPoolsize = desiredPoolsize;
-                    if (extraThreads > 0) {
+                    if (extraThreads > 0)
                         createWorkers(extraThreads);
-                    } else {
+                     else
                         interruptIdleWorkers(-extraThreads);
-                    }
                     break;
                 case shuttingdown:
                     throw new IllegalStateException("Can't change the poolsize because this threadpool is shutting down");
@@ -253,7 +278,7 @@ public class StandardThreadPool implements ThreadPool {
         return oldState;
     }
 
-    private ThreadPoolState shutdown(boolean interruptWorkers) {
+    private ThreadPoolState shutdown(boolean forced) {
         mainLock.lock();
         try {
             switch (state) {
@@ -264,7 +289,7 @@ public class StandardThreadPool implements ThreadPool {
                         return updateState(ThreadPoolState.shutdown);
                     } else {
                         updateState(ThreadPoolState.shuttingdown);
-                        if (interruptWorkers) {
+                        if (forced) {
                             interruptAllWorkers();
                         } else {
                             interruptIdleWorkers();
@@ -272,7 +297,7 @@ public class StandardThreadPool implements ThreadPool {
                     }
                     return ThreadPoolState.started;
                 case shuttingdown:
-                    if (interruptWorkers)
+                    if (forced)
                         interruptAllWorkers();
                     return ThreadPoolState.shuttingdown;
                 case shutdown:
@@ -333,7 +358,7 @@ public class StandardThreadPool implements ThreadPool {
             try {
                 //if the threadpool is shutting down, we don't want workers to be terminated.
                 //Workers are going to terminate themselves when there is nothing more to do
-                //for them (so when getWorkWhileShuttingdown returns null).
+                //for them (so when getShuttingdownWork returns null).
                 if (state == ThreadPoolState.shuttingdown)
                     return true;
 
@@ -437,7 +462,7 @@ public class StandardThreadPool implements ThreadPool {
             for (; ;) {
                 Object work = null;
                 try {
-                    work = defaultWorkerJob.getWorkWhileShuttingdown();
+                    work = defaultWorkerJob.getShuttingdownWork();
                     //if null was returned, the worker is completely finished.
                     //and can terminate the loop.
                     if (work == null)

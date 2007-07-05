@@ -82,7 +82,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  * previousPosition process will be used as input for the next process (so the dispatcher for more
  * information). The minimum number of processes is 0. Using a chain of processes can be seen
  * as the 'classic' single threaded sequential chain of calls. Unless multiple threads are
- * calling the evaluate method, in that case the same chain will be executed concurrently.
+ * calling the evaluate method, in that case the same chain will be executed concurrently. A single
+ * chain of execution will always be executed by a single thread that remains constant for all
+ * steps in that execution. So taking of input, running the chain of processes and output will
+ * be done by the same thread.
  * </p>
  * <h1>Stateless vs statefull processes</h1>
  * <p/>
@@ -106,7 +109,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * <h1>Performance</h1>
  * <p/>
  * No performance numbers of the overhead of the processor (dequeueing, execution logic,
- * dispatching, queueing) functionality is available. The current focus is for course
+ * dispatching, queueing) functionality are available. The current focus is for course
  * grained processes (so processes with a 'long' execution time) and not on very fine grained
  * processes (processes with a very short execution time). I don't have any numbers on the
  * length of this period.
@@ -131,8 +134,19 @@ import java.util.concurrent.LinkedBlockingQueue;
  * <p/>
  * If a process returns an iterator, this iterator could be seen as a lazy collection (a collection
  * where the elements don't need to exist from the start).
- * <p/>
- * <p/>
+ * <h2>Continuations</h2>
+ * <p>
+ * The StandardProcessor keeps a 'continuation' of the current process and element in the iterator
+ * in memory. A single continuation can be executed by multiple threads of a period of time, but will
+ * be executed by at most a single thread at any moment in time. Continuations are stored in a queue
+ * between processing, and so will be selected fair (so starvation).
+ * </p>
+ * <p>
+ * The advantage of storing the continuations on a queue instead of a threadlocal is that the execution
+ * is not bound to a single thread. If that thread doesn't call the once method anymore, you want a
+ * different thread to take over. It can happen that threads stop calling: when the poolsize of the
+ * ThreadPoolRepeater is decreased for example.
+ * </p>
  * todo:
  * improve error handling:
  * -iterator is not protected very well

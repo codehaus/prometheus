@@ -38,13 +38,13 @@ public class ThreadPoolBlockingExecutor_SetDesiredPoolSizeTest extends ThreadPoo
     }
 
     public void testWhileRunning_nonEmptyPool() {
-        testWhileRunning(5);
+        testWhileRunning(2);
     }
     
     public void testWhileRunning(int poolsize){
         newStartedBlockingExecutor(100,poolsize);
 
-        int newPoolsize = poolsize+10;
+        int newPoolsize = poolsize+3;
         spawned_assertSetDesiredPoolSize(newPoolsize);
 
         assertActualPoolSize(newPoolsize);

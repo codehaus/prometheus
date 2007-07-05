@@ -25,7 +25,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
             return taskQueue.take();
         }
 
-        public Runnable getWorkWhileShuttingdown() throws InterruptedException {
+        public Runnable getShuttingdownWork() throws InterruptedException {
             return taskQueue.poll(0, TimeUnit.MILLISECONDS);
         }
 

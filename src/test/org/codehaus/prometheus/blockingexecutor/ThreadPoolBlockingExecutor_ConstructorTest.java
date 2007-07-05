@@ -52,6 +52,12 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
 
     public void test_int_ThreadFactory_BlockingQueue() {
         try {
+            new ThreadPoolBlockingExecutor(-1, new StandardThreadFactory(), new LinkedBlockingQueue<Runnable>());
+            fail();
+        } catch (IllegalArgumentException ex) {
+        }
+
+        try {
             new ThreadPoolBlockingExecutor(1, null, new LinkedBlockingQueue<Runnable>());
             fail();
         } catch (NullPointerException ex) {
@@ -61,12 +67,6 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
             new ThreadPoolBlockingExecutor(1, new StandardThreadFactory(), null);
             fail();
         } catch (NullPointerException ex) {
-        }
-
-        try {
-            new ThreadPoolBlockingExecutor(-1, new StandardThreadFactory(), new LinkedBlockingQueue<Runnable>());
-            fail();
-        } catch (IllegalArgumentException ex) {
         }
 
         BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>();
@@ -82,7 +82,7 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         assertSame(threadFactory, pool.getThreadFactory());
         assertActualPoolSize(0);
         assertDesiredPoolSize(poolsize);
-        assertTrue(executor.getWorkQueue().isEmpty());
+        assertTasksOnWorkQueue();
         threadFactory.assertNoThreadsCreated();
         assertHasDefaultExceptionHandler();
     }

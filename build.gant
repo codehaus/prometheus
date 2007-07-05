@@ -336,8 +336,8 @@ task( clover_html : 'Generates a Clover HTML test coverage report'){
     Ant.mkdir( dir: "$dir_clover/htmlreport/" )
     Ant.'clover-report'(){
         current( outfile: "$dir_clover/htmlreport"){
-            format( type: 'html' )
-        }
+            format( type: 'html', filter: 'assert')
+        }        
     }
 }
 

@@ -86,6 +86,7 @@ public class TracingThreadFactory implements ThreadFactory {
     }
 
     public Thread newThread(Runnable r) {
+        System.out.println("created total: "+threadList.size());
         Thread t = targetFactory.newThread(r);
         threadList.add(t);
         return t;

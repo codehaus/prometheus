@@ -6,7 +6,7 @@ public class DummyWorkerJob implements WorkerJob {
         throw new RuntimeException();
     }
 
-    public Object getWorkWhileShuttingdown() throws InterruptedException {
+    public Object getShuttingdownWork() throws InterruptedException {
         throw new RuntimeException();
     }
 

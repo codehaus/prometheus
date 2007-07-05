@@ -7,6 +7,7 @@ package org.codehaus.prometheus.blockingexecutor;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import org.codehaus.prometheus.testsupport.TestRunnable;
 
 import java.util.concurrent.RejectedExecutionException;
 
@@ -33,7 +34,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         newStartedBlockingExecutor(0, poolsize);
 
         //place first task
-        placeTask(DELAY_EON_MS);
+        spawned_placeTask(DELAY_EON_MS);
 
         //place the second task. The placement of this task block because there is no space
         SleepingRunnable secondTask = new SleepingRunnable(DELAY_EON_MS);
@@ -53,7 +54,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         secondTask.assertIsNew();
     }
 
-    private SleepingRunnable placeTask(long durationMs) {
+    private SleepingRunnable spawned_placeTask(long durationMs) {
         SleepingRunnable task = new SleepingRunnable(durationMs);
         ExecuteThread executeThread = scheduleExecute(task, START_UNINTERRUPTED);
         joinAll(executeThread);
@@ -68,7 +69,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
     public void testSuccess_noIdleWorkersButQueueHasSpace() {
         newStartedBlockingExecutor(10, 0);
 
-        SleepingRunnable task = placeTask(DELAY_EON_MS);
+        SleepingRunnable task = spawned_placeTask(DELAY_EON_MS);
 
         giveOthersAChance();
         assertActualPoolSize(0);
@@ -82,7 +83,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         int poolsize = 10;
         newStartedBlockingExecutor(0, poolsize);
 
-        SleepingRunnable task = placeTask(DELAY_EON_MS);
+        SleepingRunnable task = spawned_placeTask(DELAY_EON_MS);
 
         giveOthersAChance();
         assertActualPoolSize(poolsize);
@@ -115,7 +116,32 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         t.assertIsTerminatedWithThrowing(RejectedExecutionException.class);
 
         giveOthersAChance();
-        assertEquals(oldState, executor.getState());
+        assertHasState(oldState);
         task.assertNotExecuted();
+    }
+
+    public void testShutdownWhileWaitingForPlacement() {
+        //create an executor with a single thread, and a synchronous queue
+        newStartedBlockingExecutor(0, 1);
+
+        //make sure that the executor is running some task
+        TestRunnable initialTask = new SleepingRunnable(DELAY_LONG_MS);
+        spawned_assertExecute(initialTask);
+
+        //now place the second task. This call blocks untill space is available.
+        TestRunnable task = new SleepingRunnable(DELAY_LONG_MS);
+        ExecuteThread executeThread = scheduleExecute(task, START_UNINTERRUPTED);
+        giveOthersAChance();
+        executeThread.assertIsStarted();
+
+        //in the meanwhile we are going to shutdown the blockingexecutor
+        spawned_assertShutdown();
+        System.out.println("executor.shutdown is called");
+        assertIsShuttingDown();
+
+        //now check that the executeThread fails with a RejectedExecutionException because
+        //the blockingexecutor is shutting down.
+        joinAll(executeThread);
+        executeThread.assertIsTerminatedNormally();
     }
 }

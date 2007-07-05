@@ -7,9 +7,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 
 /**
- * refactor repeater and blockingexecutor so they use a threadpool. The current solution is too
- * complex.
- * <p/>
+ * The ThreadPool is reponsible for managing a set of threads.
+ *
  * <p/>
  * The workers in the ThreadPool keep repeating a {@link WorkerJob}. A threadpool can have
  * a default workjob for those cases you always want to keep repeating the same job over
@@ -37,6 +36,10 @@ import java.util.concurrent.locks.Lock;
  * <p/>
  * The threadpool should have a notice how much work has to be done. For every piece of work
  * this number is increased.
+ * <p/>
+ * Nothing is done with errors (they are not caught and this could lead to corrupted structures).
+ *
+ * @author Peter Veentjer.
  */
 public interface ThreadPool {
 
@@ -122,8 +125,8 @@ public interface ThreadPool {
      * call can be made safely no matter the state the ThreadPool is in. If the ThreadPool already is
      * shutdown, it returned immediately.
      *
-     * @param timeout
-     * @param unit
+     * @param timeout how long to wait before giving up, in units of unit
+     * @param unit    a TimeUnit determining how to interpret the timeout parameter
      * @throws InterruptedException if the thread is interrupted while waiting for the complete shutdown
      *                              to take place.
      * @throws TimeoutException     if a timeout occurred.
@@ -148,7 +151,8 @@ public interface ThreadPool {
 
     /**
      * Sets the desired poolsize of this ThreadPool. The actual poolsize doesn't have to match
-     * the desired poolsize because growing and shrinking of the pool can take some time.
+     * the desired poolsize because growing and shrinking of the pool can take some time. When
+     * the threadpool already is shutting down, or shutdown, it is illegal to call this method.
      *
      * @param desiredPoolsize the desired size of the threadpool.
      * @throws IllegalArgumentException if desiredPoolsize is smaller than 0.

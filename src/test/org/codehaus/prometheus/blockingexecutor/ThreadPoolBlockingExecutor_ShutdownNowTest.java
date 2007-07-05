@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import org.codehaus.prometheus.testsupport.TestRunnable;
 
 /**
  * Unittests the {@link ThreadPoolBlockingExecutor#shutdownNow()} method.
@@ -17,7 +17,7 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
     public void testUnstarted() {
         newUnstartedBlockingExecutor(1, 1);
 
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         assertIsShutdown();
         threadFactory.assertNoThreadsCreated();
@@ -27,7 +27,7 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
     public void testRunning_emptyPool() {
         newStartedBlockingExecutor(10, 0);
 
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         giveOthersAChance();
         assertIsShutdown();
@@ -40,7 +40,7 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
         int poolsize = 3;
         newStartedBlockingExecutor(10, poolsize);
 
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         giveOthersAChance();
         assertIsShutdown();
@@ -57,7 +57,7 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
         executeEonTask(poolsize);
         giveOthersAChance();
 
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         giveOthersAChance();
         assertIsShutdown();
@@ -71,48 +71,49 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
         newStartedBlockingExecutor(10, poolsize);
 
         //tasks that are going to be processed
-        executeEonTask();
-        executeEonTask();
+        TestRunnable runnable1 = executeEonTask();
+        TestRunnable runnable2 = executeEonTask();
 
         //tasks that are not processed
-        SleepingRunnable unprocessed1 = executeEonTask();
-        SleepingRunnable unprocessed2 = executeEonTask();
-        SleepingRunnable unprocessed3 = executeEonTask();
+        TestRunnable unprocessed1 = executeEonTask();
+        TestRunnable unprocessed2 = executeEonTask();
+        TestRunnable unprocessed3 = executeEonTask();
 
-        shutdownNow(unprocessed1, unprocessed2, unprocessed3);
+        spawned_assertShutdownNow(unprocessed1, unprocessed2, unprocessed3);
 
         giveOthersAChance();
         assertIsShutdown();
-        threadFactory.assertCreatedCount(2);
-        //check that the unprocessed tasks, have not been run
+        threadFactory.assertCreatedCount(poolsize);
+        unprocessed1.assertBeginExecutionCount(0);
+        unprocessed2.assertBeginExecutionCount(0);
+        unprocessed3.assertBeginExecutionCount(0);
+
+        runnable1.assertBeginExecutionCount(1);
+        runnable2.assertBeginExecutionCount(1);
+        
         //check that the running tasks were interrupted
     }
 
     public void testShuttingDown() {
         newShuttingDownBlockingExecutor(DELAY_EON_MS);
 
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         giveOthersAChance();
         assertIsShutdown();
         threadFactory.assertCreatedCount(1);
+
+        //todo: check that original task has been
     }
 
     public void testShutdown() {
-        newShutdownBlockingExecutor(1, 10);
-        int oldPoolsize = executor.getThreadPool().getActualPoolSize();
+        newShutdownBlockingExecutor();
+        int oldThreadCount = threadFactory.getThreadCount();
 
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         giveOthersAChance();
         assertIsShutdown();
-        threadFactory.assertCreatedCount(oldPoolsize);
-    }
-
-    private ShutdownNowThread shutdownNow(Runnable... expectedUnprocessed) {
-        ShutdownNowThread shutdownThread = scheduleShutdownNow();
-        joinAll(shutdownThread);
-        shutdownThread.assertSuccess(expectedUnprocessed);
-        return shutdownThread;
+        threadFactory.assertCreatedCount(oldThreadCount);
     }
 }

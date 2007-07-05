@@ -22,21 +22,40 @@ import java.util.concurrent.locks.Lock;
  */
 public class TestUtil {
 
-    public final static Random r = new Random();
+    //random is not threadsafe, so make sure proper concurrency control is applied
+    public final static Random random = new Random();
 
-    public static int randomInt(int maxvalue) {
-        return r.nextInt(maxvalue + 1);
+    /**
+     * Returns a random boolean.
+     *
+     * @return a random boolean.
+     */
+    public synchronized static boolean randomBoolean() {
+        return random.nextBoolean();
     }
 
-    public static int randomInt() {
-        //Random r = new Random();
-        return r.nextInt(Integer.MAX_VALUE);
+    /**
+     * Returns a random int
+     *
+     * @param maxvalue
+     * @return a random int
+     */
+    public synchronized  static int randomInt(int maxvalue) {
+        return random.nextInt(maxvalue + 1);
     }
 
+    /**
+     * Returns a random int.
+     *
+     * @return a random int.
+     */
+    public synchronized  static int randomInt() {
+        //Random random = new Random();
+        return random.nextInt(Integer.MAX_VALUE);
+    }
 
-    public static long randomLong(long maxvalue) {
-        Random r = new Random();
-        return Math.abs(r.nextLong() % maxvalue);
+    public synchronized static long randomLong(long maxvalue) {
+        return Math.abs(random.nextLong() % maxvalue);
     }
 
     public static void sleepRandomMs(long maxSleepMs) {

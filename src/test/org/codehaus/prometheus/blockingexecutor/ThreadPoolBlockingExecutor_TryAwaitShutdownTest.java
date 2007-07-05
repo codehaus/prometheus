@@ -39,7 +39,7 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
     }
 
     public void testTooMuchWaiting() {
-        newStartedBlockingExecutor(1, 1, new SleepingRunnable(DELAY_EON_MS));
+        newStartedBlockingExecutor(0, 1, new SleepingRunnable(DELAY_EON_MS));
 
         TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_MEDIUM_MS);
         TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_MEDIUM_MS);

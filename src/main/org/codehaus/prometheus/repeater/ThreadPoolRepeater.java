@@ -324,7 +324,7 @@ public class ThreadPoolRepeater implements RepeaterService {
             return lendableRef.take();
         }
 
-        public Repeatable getWorkWhileShuttingdown() throws InterruptedException {
+        public Repeatable getShuttingdownWork() throws InterruptedException {
             //no guarantees are made how many times a task is executed, so why try to retrieve
             //one if we aren't required to process it.
             return null;

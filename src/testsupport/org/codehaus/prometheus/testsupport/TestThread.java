@@ -231,8 +231,9 @@ public class TestThread extends Thread {
         if (throwableClass == null) throw new NullPointerException();
 
         assertIsTerminated();
-        assertNotNull(foundThrowable);
-        assertTrue(throwableClass.isInstance(foundThrowable));
+        assertNotNull("no exception found",foundThrowable);
+        assertTrue(format("exception.class %s is not a subclass of %s",throwableClass,foundThrowable.getClass()),
+                    throwableClass.isInstance(foundThrowable));
         printInterrestingStacktrace();
     }
 

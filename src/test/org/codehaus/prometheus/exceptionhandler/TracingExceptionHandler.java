@@ -11,6 +11,7 @@ import java.util.List;
  *
  * @author Peter Veentjer.
  */
+///CLOVER:OFF
 public class TracingExceptionHandler implements ExceptionHandler {
 
     private List<Exception> exceptionList = Collections.synchronizedList(new LinkedList());

@@ -70,6 +70,4 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
         joinAll(startThread);
         startThread.assertIsTerminatedNormally();
     }
-
-
 }

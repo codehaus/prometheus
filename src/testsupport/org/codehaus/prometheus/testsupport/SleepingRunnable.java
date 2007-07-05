@@ -64,7 +64,12 @@ public class SleepingRunnable extends BlockingRunnable {
     }
 
     public void runBlockingInternal() throws InterruptedException {
+        System.out.println("SleepingRunnable is executed");
         //todo: remove dependency
-        ConcurrencyUtil.sleep(sleep, sleepUnit);
+        try{
+            ConcurrencyUtil.sleep(sleep, sleepUnit);
+        }finally{
+            System.out.println("finished");    
+        }
     }
 }
