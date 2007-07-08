@@ -6,9 +6,9 @@
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.NonInterruptableSleepingRunnable;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.util.StandardThreadFactory;
+import org.codehaus.prometheus.testsupport.TracingThreadFactory;
+import org.codehaus.prometheus.testsupport.UninterruptableSleepingRunnable;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
 public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase {
 
     public volatile ThreadPoolRepeater repeater;
+    public volatile TracingThreadFactory repeaterThreadFactory;
 
     @Override
     public void tearDown() throws Exception {
@@ -23,14 +24,33 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
 
         //if a repeater is available, make sure that is can shut down
         if (repeater != null) {
-            ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
-            joinAll(shutdownNowThread);
+            spawned_assertShutdownNow();
 
             AwaitShutdownThread awaitShutdownThread = scheduleAwaitShutdown();
             joinAll(awaitShutdownThread);
             assertIsShutdown();
         }
     }
+
+    //duplicate logic, should be removed
+    public void spawned_assertShutdownNow() {
+        ShutdownNowThread t = scheduleShutdownNow();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+    }
+
+    public void spawned_shutdownNow() {
+        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
+        joinAll(shutdownNowThread);
+        shutdownNowThread.assertIsTerminatedNormally();
+    }
+
+    public void spawned_awaitShutdown() {
+        AwaitShutdownThread awaitShutdownThread = scheduleAwaitShutdown();
+        joinAll(awaitShutdownThread);
+        awaitShutdownThread.assertIsTerminatedNormally();
+    }
+
 
     public void newShutdownRepeater() {
         newRunningStrictRepeater();
@@ -45,12 +65,8 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
 
     public void newShutdownRepeater(boolean strict) {
         newRunningRepeater(strict);
-        repeater.shutdownNow();
-        try {
-            repeater.awaitShutdown();
-        } catch (InterruptedException e) {
-            fail();
-        }
+        spawned_assertShutdown();
+        spawned_awaitShutdown();
         assertIsShutdown();
     }
 
@@ -83,8 +99,8 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         newUnstartedRepeater(strict);
         try {
             repeater.repeat(task);
-            //give the worker in the threadpool time to start the task
-            //If this yield is removed, the thread is started, but maybe has not entered his
+            //give the worker in the threadpool time to spawned_start the task
+            //If this yield is removed, the thread is running, but maybe has not entered his
             //runWork method. If the shutdownNow is called before the runWork method
             //has runWork, the worker thread sees that the repeater is shutting down,
             //so the task is not going to be executed, and this is not
@@ -101,7 +117,8 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
     }
 
     public void newUnstartedStrictRepeater() {
-        repeater = new ThreadPoolRepeater(1);
+        repeaterThreadFactory = new TracingThreadFactory();
+        repeater = new ThreadPoolRepeater(true, null, 1, repeaterThreadFactory);
         assertIsUnstarted();
     }
 
@@ -115,18 +132,19 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
     }
 
     public void newUnstartedRepeater(boolean strict, int poolsize) {
-        repeater = new ThreadPoolRepeater(strict, null, poolsize, new StandardThreadFactory());
+        repeaterThreadFactory = new TracingThreadFactory();
+        repeater = new ThreadPoolRepeater(strict, null, poolsize, repeaterThreadFactory);
         assertIsUnstarted();
     }
 
     public void newShuttingdownRepeater(long timeMs) {
-        newRunningStrictRepeater(new RepeatableRunnable(new NonInterruptableSleepingRunnable(timeMs)));
+        newRunningStrictRepeater(new RepeatableRunnable(new UninterruptableSleepingRunnable(timeMs)));
         repeater.shutdownNow();
         assertIsShuttingdown();
     }
 
     public void newShuttingdownRepeater(boolean strict, long timeMs) {
-        newRunningRepeater(strict, new RepeatableRunnable(new NonInterruptableSleepingRunnable(timeMs)));
+        newRunningRepeater(strict, new RepeatableRunnable(new UninterruptableSleepingRunnable(timeMs)));
         repeater.shutdownNow();
         assertIsShuttingdown();
     }
@@ -146,6 +164,9 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
 
     public void assertIsShutdown() {
         assertEquals(RepeaterServiceState.Shutdown, repeater.getState());
+        assertActualPoolSize(0);
+        if (repeaterThreadFactory != null)
+            repeaterThreadFactory.assertThreadsHaveTerminated();
     }
 
     public void assertIsRunning() {
@@ -154,6 +175,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
 
     public void assertIsShuttingdown() {
         assertEquals(RepeaterServiceState.Shuttingdown, repeater.getState());
+        //todo: controleren dat er minimaal 1 actieve thread is
     }
 
     public void assertDesiredPoolSize(int expected) {

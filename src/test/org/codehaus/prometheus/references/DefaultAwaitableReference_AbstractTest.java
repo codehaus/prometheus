@@ -39,7 +39,6 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         return t;
     }
 
-
     public TestThread scheduleSpuriousWakeup(long waitMs) {
         return TestUtil.scheduleSpuriousWakeup(
                 awaitableRef.getMainLock(),

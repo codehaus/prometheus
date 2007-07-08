@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
 /**
  * Unittests the {@link StrictLendableReference#takeback(Object)} method.
  *

@@ -25,9 +25,9 @@ public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPo
         joinAll(setThread);
 
         setThread.assertIsTerminatedNormally();
-        //make sure that the threadpool hasn't started.
+        //make sure that the threadpool hasn't running.
         assertIsUnstarted();
-        assertSame(firstJob, threadpool.getDefaultWorkerJob());
+        assertSame(firstJob, threadpool.getWorkerJob());
 
         //try to set another job after the first has been set, should succeed.
         WorkerJob secondJob = new DummyWorkerJob();
@@ -36,7 +36,7 @@ public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPo
         joinAll(setThread);
         setThread.assertIsTerminatedNormally();
         assertIsUnstarted();
-        assertSame(secondJob, threadpool.getDefaultWorkerJob());
+        assertSame(secondJob, threadpool.getWorkerJob());
     }
 
     public void testWhileStarted() {
@@ -49,19 +49,24 @@ public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPo
         assertSetDefaultWorkerJobIsRejected();
     }
 
+    public void testWhileForcedShuttingdown() {
+        newForcedShuttingdownThreadpool(3, DELAY_LONG_MS);
+        assertSetDefaultWorkerJobIsRejected();
+    }
+
     public void testWhileShutdown() {
         newShutdownThreadpool();
         assertSetDefaultWorkerJobIsRejected();
     }
 
     private void assertSetDefaultWorkerJobIsRejected() {
-        WorkerJob oldjob = threadpool.getDefaultWorkerJob();
+        WorkerJob oldjob = threadpool.getWorkerJob();
 
         WorkerJob newjob = new DummyWorkerJob();
         SetDefaultWorkerJobThread setThread = scheduleSetDefaultWorkerJob(newjob);
         joinAll(setThread);
 
         setThread.assertIsTerminatedWithThrowing(IllegalStateException.class);
-        assertSame(oldjob, threadpool.getDefaultWorkerJob());
+        assertSame(oldjob, threadpool.getWorkerJob());
     }
 }

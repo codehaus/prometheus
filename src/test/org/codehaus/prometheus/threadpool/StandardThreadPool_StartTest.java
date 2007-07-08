@@ -10,63 +10,76 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
     public void testWhileUnstartedAndNoDefaultWorkJob() {
         newUnstartedThreadPoolWithoutDefaultJob(10);
 
-        StartThread startThread = scheduleStart();
+        spawned_startCausesIllegalStateException();
 
-        joinAll(startThread);
-        startThread.assertIsTerminatedWithThrowing(IllegalStateException.class);
         assertIsUnstarted();
         threadPoolThreadFactory.assertCreatedCount(0);
+        threadPoolExceptionHandler.assertNoErrors();
+    }
+
+    private void spawned_startCausesIllegalStateException() {
+        StartThread startThread = scheduleStart();
+        joinAll(startThread);
+        startThread.assertIsTerminatedWithThrowing(IllegalStateException.class);
     }
 
     public void testWhileUnstarted() {
-        int count = 100;
-        newUnstartedThreadPool(count);
+        int poolsize = 3;
+        newUnstartedThreadPool(poolsize);
 
-        start();
+        spawned_start();
 
-        assertIsStarted();
-        threadPoolThreadFactory.assertCreatedCount(count);
+        assertIsRunning();
+        threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testStarted() {
-        int poolsize = 100;
+        int poolsize = 3;
         newStartedThreadpool(poolsize);
 
-        start();
+        spawned_start();
 
-        assertIsStarted();
+        assertIsRunning();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileShuttingdown() {
-        int poolsize = 10;
+        int poolsize = 3;
         newShuttingdownThreadpool(poolsize, DELAY_EON_MS);
 
-        StartThread startThread = scheduleStart();
+        spawned_startCausesIllegalStateException();
 
-        joinAll(startThread);
-        startThread.assertIsTerminatedWithThrowing(IllegalStateException.class);
         assertIsShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
+    public void testWhileForcedShuttingdown(){
+        int poolsize = 3;
+        newForcedShuttingdownThreadpool(poolsize,DELAY_LONG_MS);
+
+        spawned_startCausesIllegalStateException();
+
+        assertIsForcedShuttingdown();
+        threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
+    }
+    
     public void testWhileShutdown() {
         newShutdownThreadpool();
         int oldpoolsize = threadPoolThreadFactory.getThreadCount();
 
-        StartThread startThread = scheduleStart();
+        spawned_startCausesIllegalStateException();
 
-        joinAll(startThread);
-        startThread.assertIsTerminatedWithThrowing(IllegalStateException.class);
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(oldpoolsize);
-    }
-
-
-    private void start() {
-        StartThread startThread = scheduleStart();
-
-        joinAll(startThread);
-        startThread.assertIsTerminatedNormally();
+        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 }

@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.util;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
 /**
  * Unittests the {@link Latch#await()} method.
  *

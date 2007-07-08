@@ -3,6 +3,7 @@ package org.codehaus.prometheus.blockingexecutor;
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.testsupport.CountingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import org.codehaus.prometheus.testsupport.ThrowingRunnable;
 
 /**
@@ -52,7 +53,7 @@ public class ThreadPoolBlockingExecutor_ExceptionHandlingTest extends ThreadPool
         spawned_assertExecute(task);
         giveOthersAChance(DELAY_MEDIUM_MS);
         task.assertExecutedOnce();
-        exceptionHandler.assertCountAndNoOthers(ex.getClass(), oldExceptionCount + 1);
+        exceptionHandler.assertErrorCountAndNoOthers(ex.getClass(), oldExceptionCount + 1);
     }
 
     public void testFailingExceptionHandlerDoesntCorruptExecutor() {

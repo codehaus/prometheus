@@ -4,8 +4,7 @@ import junit.framework.TestSuite;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import static org.codehaus.prometheus.testsupport.TestUtil.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class ThreadPoolBlockingExecutor_ChangePoolsizeStressTest {
         private final int concurrentsetters;
         private volatile ThreadPoolBlockingExecutor executor;
         private volatile TracingExceptionHandler exceptionHandler;
-        private final List<TaskProducer> workerList = new LinkedList<TaskProducer>();
+        private final List<StressTaskProducer> workerList = new LinkedList<StressTaskProducer>();
         private final int workercount;
         private final int taskcount;
 
@@ -59,7 +58,6 @@ public class ThreadPoolBlockingExecutor_ChangePoolsizeStressTest {
         public void runTest() {
             scheduleTaskProducers(workercount,taskcount);
             startSizeChangeThreads();
-
             sleepMs(10000);
         }
 
@@ -68,8 +66,8 @@ public class ThreadPoolBlockingExecutor_ChangePoolsizeStressTest {
                 scheduleWorker(taskCount);
         }
 
-        public TaskProducer scheduleWorker(int taskCount) {
-            TaskProducer thread = new TaskProducer(taskCount, executor);
+        public StressTaskProducer scheduleWorker(int taskCount) {
+            StressTaskProducer thread = new StressTaskProducer(taskCount, executor);
             workerList.add(thread);
             thread.start();
             return thread;
@@ -84,11 +82,10 @@ public class ThreadPoolBlockingExecutor_ChangePoolsizeStressTest {
         }
     }
 
-
     public static class SizeThread extends TestThread {
         private final int nrchanges;
         private final int maxpoolsize;
-        private ThreadPoolBlockingExecutor executor;
+        private final ThreadPoolBlockingExecutor executor;
 
         public SizeThread(int nrchanges, int maxpoolsize, ThreadPoolBlockingExecutor executor) {
             this.nrchanges = nrchanges;
@@ -102,6 +99,7 @@ public class ThreadPoolBlockingExecutor_ChangePoolsizeStressTest {
 
                 int poolsize = randomInt(maxpoolsize);
                 executor.setDesiredPoolSize(poolsize);
+                //todo: 
                 sleepMs(100);
             }
         }

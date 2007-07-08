@@ -6,7 +6,8 @@
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
-import org.codehaus.prometheus.testsupport.NonInterruptableSleepingRunnable;
+import org.codehaus.prometheus.testsupport.UninterruptableSleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 import java.util.concurrent.RejectedExecutionException;
 
@@ -17,15 +18,15 @@ import java.util.concurrent.RejectedExecutionException;
  */
 public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_AbstractTest {
 
-    public void testUnstarted_startInterrupted() {
-        testUnstarted(true);
+    public void testWhileUnstarted_startInterrupted() {
+        testWhileUnstarted(true);
     }
 
-    public void testUnstarted_startUninterrupted() {
-        testUnstarted(false);
+    public void testWhileUnstarted_startUninterrupted() {
+        testWhileUnstarted(false);
     }
 
-    public void testUnstarted(boolean startInterrupted) {
+    public void testWhileUnstarted(boolean startInterrupted) {
         newUnstartedStrictRepeater();
         CountingRunnable task = new CountingRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
@@ -45,16 +46,16 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
 
     //=====================================================
 
-    public void testRunningSomeWaitingNeeded_startInterrupted() {
-        testRunningSomeWaitingNeeded(true);
+    public void testWhileRunning_someWaitingNeeded_startInterrupted() {
+        testWhileRunning_SomeWaitingNeeded(true);
     }
 
-    public void testRunningSomeWaitingNeeded_startUninterrupted() {
-        testRunningSomeWaitingNeeded(false);
+    public void testWhileRunning_SomeWaitingNeeded_startUninterrupted() {
+        testWhileRunning_SomeWaitingNeeded(false);
     }
 
-    public void testRunningSomeWaitingNeeded(boolean startInterrupted) {
-        Runnable originalTask = new NonInterruptableSleepingRunnable(5000);
+    public void testWhileRunning_SomeWaitingNeeded(boolean startInterrupted) {
+        Runnable originalTask = new UninterruptableSleepingRunnable(5000);
         RepeatableRunnable originalRepeatable = new RepeatableRunnable(originalTask);
         newRunningStrictRepeater(originalRepeatable);
 
@@ -101,15 +102,15 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
 
     //=====================================================
 
-    public void testShuttingdown_startInterrupted() {
-        testShuttingdown(true);
+    public void testWhileShuttingdown_startInterrupted() {
+        testWhileShuttingdown(true);
     }
 
-    public void testShuttingdown_startUninterrupted() {
-        testShuttingdown(false);
+    public void testWhileShuttingdown_startUninterrupted() {
+        testWhileShuttingdown(false);
     }
 
-    public void testShuttingdown(boolean startInterrupted) {
+    public void testWhileShuttingdown(boolean startInterrupted) {
         newShuttingdownRepeater(1000);
         Repeatable originalTask = repeater.getLendableRef().peek();
 
@@ -123,6 +124,10 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
         assertHasRepeatable(originalTask);
         assertActualPoolSize(1);
         assertIsShuttingdown();
+    }
+
+    public void testWhileForcedShuttingdown(){
+        //todo
     }
 
     //=====================================================

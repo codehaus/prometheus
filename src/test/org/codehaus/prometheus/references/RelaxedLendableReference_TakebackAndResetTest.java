@@ -1,6 +1,7 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.TestThread;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 
 import java.util.concurrent.TimeoutException;
 

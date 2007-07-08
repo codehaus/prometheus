@@ -7,6 +7,7 @@ package org.codehaus.prometheus.uninterruptiblesection;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 import org.codehaus.prometheus.util.Latch;
 
 /**

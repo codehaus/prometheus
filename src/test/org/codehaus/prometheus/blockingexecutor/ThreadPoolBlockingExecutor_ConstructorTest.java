@@ -82,7 +82,7 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         assertSame(threadFactory, pool.getThreadFactory());
         assertActualPoolSize(0);
         assertDesiredPoolSize(poolsize);
-        assertTasksOnWorkQueue();
+        assertWorkQueueContains();
         threadFactory.assertNoThreadsCreated();
         assertHasDefaultExceptionHandler();
     }

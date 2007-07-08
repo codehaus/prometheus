@@ -12,7 +12,7 @@ public class ThreadPoolBlockingExecutor_SetDesiredPoolSizeTest extends ThreadPoo
         int oldDesiredPoolSize = executor.getDesiredPoolSize();
         int oldActualPoolSize = executor.getActualPoolSize();
 
-        spawned_assertSetDesiredPoolSizeThrowsException(-1,IllegalArgumentException.class);
+        spawned_assertSetDesiredPoolSizeThrowsException(-1, IllegalArgumentException.class);
 
         assertActualPoolSize(oldActualPoolSize);
         assertDesiredPoolSize(oldDesiredPoolSize);
@@ -20,15 +20,14 @@ public class ThreadPoolBlockingExecutor_SetDesiredPoolSizeTest extends ThreadPoo
     }
 
     public void testWhileUnstarted() {
-        newUnstartedBlockingExecutor(100,1);
+        newUnstartedBlockingExecutor(100, 1);
 
         int oldDesiredPoolSize = executor.getDesiredPoolSize();
-        int oldActualPoolSize = executor.getActualPoolSize();
 
-        int newPoolsize = oldDesiredPoolSize+10;
+        int newPoolsize = oldDesiredPoolSize + 10;
         spawned_assertSetDesiredPoolSize(newPoolsize);
 
-        assertActualPoolSize(oldActualPoolSize);
+        assertActualPoolSize(0);
         assertDesiredPoolSize(newPoolsize);
         assertIsUnstarted();
     }
@@ -40,11 +39,11 @@ public class ThreadPoolBlockingExecutor_SetDesiredPoolSizeTest extends ThreadPoo
     public void testWhileRunning_nonEmptyPool() {
         testWhileRunning(2);
     }
-    
-    public void testWhileRunning(int poolsize){
-        newStartedBlockingExecutor(100,poolsize);
 
-        int newPoolsize = poolsize+3;
+    public void testWhileRunning(int poolsize) {
+        newStartedBlockingExecutor(100, poolsize);
+
+        int newPoolsize = poolsize + 3;
         spawned_assertSetDesiredPoolSize(newPoolsize);
 
         assertActualPoolSize(newPoolsize);
@@ -52,28 +51,31 @@ public class ThreadPoolBlockingExecutor_SetDesiredPoolSizeTest extends ThreadPoo
         assertIsRunning();
     }
 
-    public void testWhileShuttingDown() {
-        newShuttingDownBlockingExecutor(DELAY_EON_MS);
+    public void testWhileShuttingdown() {
+        newShuttingdownBlockingExecutor(DELAY_EON_MS);
+        assertChangeInDesiredPoolsizeIsRejected();
+    }
 
-        int oldDesiredPoolSize = executor.getDesiredPoolSize();
-        int oldActualPoolSize = executor.getActualPoolSize();
-
-        spawned_assertSetDesiredPoolSizeThrowsException(10,IllegalStateException.class);
-
-        assertActualPoolSize(oldActualPoolSize);
-        assertDesiredPoolSize(oldDesiredPoolSize);
-        assertIsShuttingDown();
+    public void testWhileForcedShuttingdown() {
+        newForcedShuttingdownBlockingExecutor(DELAY_LONG_MS,3);
+        assertChangeInDesiredPoolsizeIsRejected();
     }
 
     public void testWhileShutdown() {
-        newShutdownBlockingExecutor(100,1);
-        int oldDesiredPoolSize = executor.getDesiredPoolSize();
-        int oldActualPoolSize = executor.getActualPoolSize();
+        newShutdownBlockingExecutor(100, 3);
+        assertChangeInDesiredPoolsizeIsRejected();
+    }
 
-        spawned_assertSetDesiredPoolSizeThrowsException(10,IllegalStateException.class);
+    private void assertChangeInDesiredPoolsizeIsRejected() {
+        int oldDesiredPoolSize = executor.getDesiredPoolSize();
+        int newDesiredPoolSize = oldDesiredPoolSize+3;
+        int oldActualPoolSize = executor.getActualPoolSize();
+        BlockingExecutorServiceState oldState = executor.getState();
+
+        spawned_assertSetDesiredPoolSizeThrowsException(newDesiredPoolSize, IllegalStateException.class);
 
         assertActualPoolSize(oldActualPoolSize);
         assertDesiredPoolSize(oldDesiredPoolSize);
-        assertIsShutdown();
+        assertHasState(oldState);
     }
 }

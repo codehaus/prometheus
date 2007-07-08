@@ -37,6 +37,10 @@ public class ThreadPoolRepeater_ShutdownTest extends ThreadPoolRepeater_Abstract
         //todo
     }
 
+    public void testWhileForcedShuttingdown(){
+        //todo
+    }
+
     public void testWhileShutdown(){
         newShutdownRepeater();
 

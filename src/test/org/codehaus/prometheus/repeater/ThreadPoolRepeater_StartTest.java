@@ -6,6 +6,7 @@
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#start()} method.
@@ -14,7 +15,7 @@ import org.codehaus.prometheus.testsupport.CountingRunnable;
  */
 public class ThreadPoolRepeater_StartTest extends ThreadPoolRepeater_AbstractTest {
 
-    public void testUnstartedWithoutTask() {
+    public void testWhileUnstarted_noTask() {
         newUnstartedStrictRepeater();
 
         repeater.start();
@@ -23,7 +24,7 @@ public class ThreadPoolRepeater_StartTest extends ThreadPoolRepeater_AbstractTes
         assertActualPoolSize(1);
     }
 
-    public void testUnstartedWithTask() {
+    public void testWhileUnstarted_hasTask() {
         CountingRunnable task = new CountingRunnable();
         newUnstartedRepeater(task);
 
@@ -35,21 +36,21 @@ public class ThreadPoolRepeater_StartTest extends ThreadPoolRepeater_AbstractTes
         task.assertExecutedOnceOrMore();
     }
 
-    public void testRunningWithoutTask() {
+    public void testWhileRunning_noTask() {
         newRunningStrictRepeater();
 
         assertStartIsIgnored();
         assertActualPoolSize(1);
     }
 
-    public void testStartWithTask() {
+    public void testWhileRunning_hasTask() {
         newRunningStrictRepeater(new DummyRepeatable());
 
         assertStartIsIgnored();
         assertActualPoolSize(1);
     }
 
-    public void testNotStartedWithNoThreads() {
+    public void testWhileUnstarted_noThreads() {
         CountingRunnable task = new CountingRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
 
@@ -62,14 +63,14 @@ public class ThreadPoolRepeater_StartTest extends ThreadPoolRepeater_AbstractTes
         assertActualPoolSize(0);
     }
 
-    public void testStartWhileShuttingdown() throws InterruptedException {
+    public void testWhileShuttingdown() throws InterruptedException {
         newShuttingdownRepeater(2 * DELAY_SMALL_MS);
 
         assertStartCausesIllegalStateException();
         assertActualPoolSize(1);
     }
 
-    public void testStartWhileShutdown() throws InterruptedException {
+    public void testWhileShutdown() throws InterruptedException {
         newShutdownRepeater();
 
         assertStartCausesIllegalStateException();

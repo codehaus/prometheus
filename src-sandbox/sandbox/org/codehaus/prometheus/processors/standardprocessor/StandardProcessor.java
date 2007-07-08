@@ -133,7 +133,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * -tracing
  * <p/>
  * If a process returns an iterator, this iterator could be seen as a lazy collection (a collection
- * where the elements don't need to exist from the start).
+ * where the elements don't need to exist from the spawned_start).
  * <h2>Continuations</h2>
  * <p>
  * The StandardProcessor keeps a 'continuation' of the current process and element in the iterator

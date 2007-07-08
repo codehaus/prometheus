@@ -1,5 +1,7 @@
 package org.codehaus.prometheus.references;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
 /**
  * Unittests {@link StrictLendableReference#takebackAndReset(Object)}.
  *

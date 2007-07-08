@@ -6,6 +6,7 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.TestThread;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -75,7 +76,7 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
         lendableRef = new StrictLendableReference<Integer>();
 
         //do a timed take, it should block because no value is available
-        TimedTryTakeThread tryTakeThread = scheduleTimedTryTake(DELAY_SMALL_MS);
+        TimedTryTakeThread tryTakeThread = scheduleTimedTryTake(DELAY_MEDIUM_MS);
         giveOthersAChance();
         tryTakeThread.assertIsStarted();
         assertLendCount(0);

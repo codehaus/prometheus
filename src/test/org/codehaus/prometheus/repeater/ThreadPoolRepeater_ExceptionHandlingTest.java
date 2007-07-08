@@ -2,6 +2,7 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 import org.codehaus.prometheus.testsupport.ThrowingRunnable;
 
 public class ThreadPoolRepeater_ExceptionHandlingTest extends ThreadPoolRepeater_AbstractTest {

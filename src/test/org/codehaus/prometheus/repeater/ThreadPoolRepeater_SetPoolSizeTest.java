@@ -6,6 +6,7 @@
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#setDesiredPoolSize(int)}  method.
@@ -30,7 +31,7 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(1);
     }
 
-    public void testUnstarted() {
+    public void testWhileUnstarted() {
         newUnstartedStrictRepeater();
         int poolsize = 100;
 
@@ -41,7 +42,7 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
     }
 
-    public void testStarted_incPoolsize() {
+    public void testWhileStarted_poolsizeIsIncreased() {
         newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_TINY_MS)));
 
         int[] sizes = new int[]{0, 10, 1, 0, 2, 0, 20, 0};
@@ -57,6 +58,7 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
         assertDesiredPoolSize(poolsize);
 
         //give the workers enough time to terminate
+        //todo: ugly
         sleepMs((poolsize + oldPoolsize) * 20 + 100);
 
         assertIsRunning();
@@ -64,12 +66,16 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(poolsize);
     }
 
-    public void testShuttingdown() {
+    public void testWhileShuttingdown() {
         newShuttingdownRepeater(DELAY_SMALL_MS);
         assertSetPoolSizeThrowsIllegalStateException();
     }
 
-    public void testShutdown() {
+    public void testWhileForcedShuttingdown(){
+        //todo
+    }
+
+    public void testWhileShutdown() {
         newShutdownRepeater();
         assertSetPoolSizeThrowsIllegalStateException();
     }

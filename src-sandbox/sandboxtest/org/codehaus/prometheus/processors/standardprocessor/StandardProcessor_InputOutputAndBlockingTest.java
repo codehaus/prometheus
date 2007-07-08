@@ -1,6 +1,7 @@
 package org.codehaus.prometheus.processors.standardprocessor;
 
 import org.codehaus.prometheus.processors.TestPipedProcess;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 /**
  * Unittests input/output related functionality of the {@link StandardProcessor}.
@@ -26,7 +27,7 @@ public class StandardProcessor_InputOutputAndBlockingTest extends StandardProces
         TestPipedProcess process = new TestPipedProcess(item);
         newProcessor(process);
 
-        //start the processing, this call should block because no work is available.
+        //spawned_start the processing, this call should block because no work is available.
         ProcessThread processThread = scheduleProcess();
         giveOthersAChance();
         processThread.assertIsStarted();

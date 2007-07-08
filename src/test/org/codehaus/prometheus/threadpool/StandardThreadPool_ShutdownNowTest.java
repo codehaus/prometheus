@@ -1,5 +1,10 @@
 package org.codehaus.prometheus.threadpool;
 
+import org.codehaus.prometheus.testsupport.TestRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
+import java.util.List;
+
 /**
  * Unittests the {@link StandardThreadPool#shutdownNow()} method.
  *
@@ -10,30 +15,34 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
     public void testWhileUnstarted() {
         newUnstartedThreadPool(10);
 
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         assertIsShutdown();
         threadPoolThreadFactory.assertNoThreadsCreated();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileRunningAndEmptyPool() {
         newStartedThreadpool(0);
 
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         assertIsShutdown();
         threadPoolThreadFactory.assertNoThreadsCreated();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testIdleWorkersAreInterrupted() {
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         giveOthersAChance();
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testNonIdleWorkersAreInterrupted() throws InterruptedException {
@@ -42,39 +51,67 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
         ensureNoIdleWorkers();
 
         giveOthersAChance();
-        shutdownNow();
-
-        giveOthersAChance(DELAY_MEDIUM_MS);
-        assertIsShutdown();
-        threadPoolThreadFactory.assertCreatedCount(poolsize);
-    }
-
-
-    public void testWhileShuttingDown() {
-        int poolsize = 3;
-        newShuttingdownThreadpool(poolsize, DELAY_EON_MS);
-
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         giveOthersAChance();
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolExceptionHandler.assertNoErrors();
+    }
+
+    public void testWhileShuttingDown_workersAreInterruptible() {
+        int poolsize = 3;
+
+        List<TestRunnable> list = newShuttingdownThreadpool(poolsize, DELAY_EON_MS);
+
+        spawned_assertShutdownNow();
+
+        giveOthersAChance();
+        //if the running thread wasn't interrupted, the pool would not shut down.
+        assertIsShutdown();
+        threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolExceptionHandler.assertNoErrors();
+        //for(TestRunnable r: list)
+        //    r.        
+        //todo: checks need to be done if interrupt is caught on task
+    }
+
+    public void testWhileShuttingDown_workersAreNotInterruptible() {
+        int poolsize = 3;
+        newShuttingdownThreadpool(poolsize, DELAY_LONG_MS, false);
+
+        spawned_assertShutdownNow();
+        giveOthersAChance();
+        assertIsForcedShuttingdown();
+        threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
+    }
+
+    public void testWhileForcedShuttingdown() {
+        int poolsize = 3;
+
+        newForcedShuttingdownThreadpool(poolsize, DELAY_LONG_MS);
+        spawned_assertShutdownNow();
+
+        giveOthersAChance();
+        assertIsForcedShuttingdown();
+        threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileShutdown() {
         newShutdownThreadpool();
         int oldpoolsize = threadpool.getActualPoolSize();
 
-        shutdownNow();
+        spawned_assertShutdownNow();
 
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(oldpoolsize);
-    }
-
-    private void shutdownNow() {
-        ShutdownNowThread shutdownThread = scheduleShutdownNow();
-
-        joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedNormally();
+        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 }

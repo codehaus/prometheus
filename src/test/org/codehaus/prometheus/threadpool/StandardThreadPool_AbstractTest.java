@@ -1,17 +1,20 @@
 package org.codehaus.prometheus.threadpool;
 
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.SleepingRunnable;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TracingThreadFactory;
+import org.codehaus.prometheus.testsupport.*;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * @author Peter Veentjer.
+ */
 public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase {
 
     protected volatile StandardThreadPool threadpool;
@@ -19,6 +22,53 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     protected volatile BlockingQueue<Runnable> taskQueue;
     protected volatile TracingExceptionHandler threadPoolExceptionHandler;
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        taskQueue = new LinkedBlockingQueue<Runnable>();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+
+        if (threadpool == null)
+            return;
+
+        TestThread t = new TestThread() {
+            @Override
+            protected void runInternal() throws Exception {
+                threadpool.shutdownNow();
+                threadpool.awaitShutdown();
+            }
+        };
+        t.start();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+        assertIsShutdown();
+    }
+
+    public void spawned_start() {
+        StartThread t = scheduleStart();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+    }
+
+    public void spawned_assertShutdown() {
+        ShutdownThread t = scheduleShutdown();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+    }
+
+    public void spawned_assertShutdownNow() {
+        ShutdownNowThread t = scheduleShutdownNow();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+    }
+
+    /**
+     * A WorkerJob that takes work from the taskQueue to execute.
+     */
     public class TestWorkerJob implements WorkerJob<Runnable> {
 
         public Runnable getWork() throws InterruptedException {
@@ -34,32 +84,38 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         }
     }
 
+    public List<TestRunnable> ensureNoIdleWorkers(long delayMs) {
+        return ensureNoIdleWorkers(delayMs, true);
+    }
+
+    //all workers are going to execute a task that takes an eon to complete
+    public List<TestRunnable> ensureNoIdleWorkers() {
+        return ensureNoIdleWorkers(DELAY_EON_MS, true);
+    }
+
     /**
      * Ensure that all workers are working
      *
      * @param delayMs the duration of the task
-     * @throws InterruptedException
      */
-    public void ensureNoIdleWorkers(long delayMs) {
+    public List<TestRunnable> ensureNoIdleWorkers(long delayMs, boolean interruptable) {
         try {
-            for (int k = 0; k < threadpool.getDesiredPoolSize(); k++)
-                taskQueue.put(new SleepingRunnable(delayMs));
+            List<TestRunnable> list = new LinkedList<TestRunnable>();
+            for (int k = 0; k < threadpool.getDesiredPoolSize(); k++) {
+                TestRunnable task = interruptable ? new SleepingRunnable(delayMs) : new UninterruptableSleepingRunnable(delayMs);
+                list.add(task);
+                taskQueue.put(task);
+            }
+            giveOthersAChance();
+            //make sure that all workers are executing a job.
+            assertTrue(taskQueue.isEmpty());
+            return list;
         } catch (InterruptedException ex) {
             fail("unexpected interrupted exception");
+            throw new RuntimeException("can't happen");
         }
     }
 
-    //all workers are going to execute a task that takes an eon to complete
-    public void ensureNoIdleWorkers() {
-        ensureNoIdleWorkers(DELAY_EON_MS);
-    }
-
-
-    public void setUp() throws Exception {
-        super.setUp();
-
-        taskQueue = new LinkedBlockingQueue<Runnable>();
-    }
 
     public void newStartedThreadpool() {
         newUnstartedThreadPool();
@@ -71,20 +127,29 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         threadpool.start();
     }
 
-    public void newShuttingdownThreadpool(int poolsize, long runningTimeMs) {
+    public List<TestRunnable> newShuttingdownThreadpool(int poolsize, long runningTimeMs) {
+        return newShuttingdownThreadpool(poolsize, runningTimeMs, true);
+    }
+
+    public List<TestRunnable> newShuttingdownThreadpool(int poolsize, long runningTimeMs, boolean interruptible) {
         newStartedThreadpool(poolsize);
 
-        ensureNoIdleWorkers(runningTimeMs);
-        //give workers time to start executing the task.
-        sleepMs(DELAY_SMALL_MS);
-        //make sure that all workers are executing a job.
-        assertTrue(taskQueue.isEmpty());
+        List<TestRunnable> list = ensureNoIdleWorkers(runningTimeMs, interruptible);
 
         //shut down the threadpool
-        ShutdownThread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedNormally();
+        spawned_assertShutdown();
         assertIsShuttingdown();
+        return list;
+    }
+
+    public List<TestRunnable> newForcedShuttingdownThreadpool(int poolsize, long runningTimeMs) {
+        newStartedThreadpool(poolsize);
+
+        List<TestRunnable> list = ensureNoIdleWorkers(runningTimeMs, false);
+
+        spawned_assertShutdownNow();
+        assertIsForcedShuttingdown();
+        return list;
     }
 
     public void newUnstartedThreadPool() {
@@ -109,8 +174,8 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         threadpool.shutdown();
     }
 
-    public void assertIsStarted() {
-        assertEquals(ThreadPoolState.started, threadpool.getState());
+    public void assertIsRunning() {
+        assertEquals(ThreadPoolState.running, threadpool.getState());
     }
 
     public void assertIsUnstarted() {
@@ -120,7 +185,12 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     public void assertIsShutdown() {
         assertEquals(ThreadPoolState.shutdown, threadpool.getState());
         assertEquals(0, threadpool.getActualPoolSize());
-        //todo:check that threads in threadpool have terminated
+        if (threadPoolThreadFactory != null)
+            threadPoolThreadFactory.assertThreadsHaveTerminated();
+    }
+
+    public void assertIsForcedShuttingdown() {
+        assertEquals(ThreadPoolState.forcedshuttingdown, threadpool.getState());
     }
 
     public void assertIsShuttingdown() {
@@ -133,25 +203,6 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
 
     public void assertActualPoolsize(int expectedPoolsize) {
         assertEquals(expectedPoolsize, threadpool.getActualPoolSize());
-    }
-
-    public void tearDown() throws Exception {
-        super.tearDown();
-
-        if (threadpool == null)
-            return;
-
-        TestThread t = new TestThread() {
-            @Override
-            protected void runInternal() throws Exception {
-                threadpool.shutdownNow();
-                threadpool.awaitShutdown();
-            }
-        };
-        t.start();
-        joinAll(t);
-        t.assertIsTerminatedNormally();
-        assertIsShutdown();
     }
 
     public ShutdownNowThread scheduleShutdownNow() {

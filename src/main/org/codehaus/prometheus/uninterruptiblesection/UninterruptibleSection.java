@@ -78,7 +78,7 @@ package org.codehaus.prometheus.uninterruptiblesection;
  * todo: explain inner workings.<p/>
  * todo: explain return value<p/>
  * todo: explain what happens when the calling thread is interrupted, or
- * already was interrupted when it started executing the execute method.<p/>
+ * already was interrupted when it running executing the execute method.<p/>
  * todo: closures and syntax improvement<p/>
  *
  * @author Peter Veentjer.

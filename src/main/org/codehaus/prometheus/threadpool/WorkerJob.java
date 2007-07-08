@@ -47,7 +47,7 @@ public interface WorkerJob<E> {
 
     /**
      * This call should not block indefinitely.
-     *
+     * 
      * @return the retrieved work, null indicates that no work is available anymore for processing.
      * @throws InterruptedException
      */

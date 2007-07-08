@@ -43,7 +43,7 @@ import java.util.Map;
  * <p/>
  * todo:
  * lastIndex should be something that can be customized by a constructor.
- * This makes it possible to start from a different value than 0.
+ * This makes it possible to spawned_start from a different value than 0.
  *
  * @author Peter Veentjer.
  */

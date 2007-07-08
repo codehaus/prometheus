@@ -9,13 +9,14 @@ import java.util.concurrent.*;
 
 /**
  * The BlockingExecutor executes submitted tasks. The BlockingExecutor can be compared to the
- * {@link java.util.concurrent.Executor}, but the BlockingExecutor tryExecute more control on
+ * {@link java.util.concurrent.Executor}, but the BlockingExecutor provides more control on
  * timeouts and blocking behaviour.
  * <p/>
  * <td><b>What about Future's</b></td>
  * <dd>
- * The BlockingExecutor doesn't provide support for a {@link Future} because this can be realized by
- * using a {@link FutureTask}.
+ * The BlockingExecutor doesn't provide support for a {@link Future} directly, because this can be
+ * realized by using a {@link FutureTask}. If the original task is wrapped inside a FutureTask and
+ * this task executed, you will have your Future, example:
  * <pre>
  * Runnable task = new SomeRunnable();
  * FutureTask futureTask = new FutureTask(task,null);

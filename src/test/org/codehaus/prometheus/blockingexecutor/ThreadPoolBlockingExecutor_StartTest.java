@@ -12,18 +12,18 @@ package org.codehaus.prometheus.blockingexecutor;
  */
 public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExecutor_AbstractTest {
 
-    public void testUnstarted_emptyPool() {
-        testUnstarted(0);
+    public void testWhileUnstarted_emptyPool() {
+        testWhileUnstarted(0);
     }
 
-    public void testUnstarted_nonEmptyPool() {
-        testUnstarted(3);
+    public void testWhileUnstarted_nonEmptyPool() {
+        testWhileUnstarted(3);
     }
 
-    public void testUnstarted(int poolsize) {
+    public void testWhileUnstarted(int poolsize) {
         newStartedBlockingExecutor(1, poolsize);
 
-        start();
+        spawned_start();
 
         assertIsRunning();
         assertActualPoolSize(poolsize);
@@ -31,11 +31,11 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
         threadFactory.assertAllThreadsAlive();
     }
 
-    public void testStarted() {
+    public void testWhileRunning() {
         int poolsize = 3;
         newStartedBlockingExecutor(1, poolsize);
 
-        start();
+        spawned_start();
 
         assertIsRunning();
         assertActualPoolSize(poolsize);
@@ -43,12 +43,17 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
         threadFactory.assertAllThreadsAlive();
     }
 
-    public void testStartWhileShuttingDown() {
-        newShuttingDownBlockingExecutor(DELAY_MEDIUM_MS);
+    public void testWhileShuttingdown() {
+        newShuttingdownBlockingExecutor(DELAY_MEDIUM_MS);
         assertStartIsIllegal();
     }
 
-    public void testStartWhileShutdown() {
+    public void testWhileForcedShuttingdown(){
+        newForcedShuttingdownBlockingExecutor(DELAY_LONG_MS,3);
+        assertStartIsIllegal();
+    }
+
+    public void testWhileShutdown() {
         newShutdownBlockingExecutor(1, 1);
         assertStartIsIllegal();
     }
@@ -63,11 +68,5 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
 
         assertEquals(oldState, executor.getState());
         assertActualPoolSize(oldpoolsize);
-    }
-
-    private void start() {
-        StartThread startThread = scheduleStart();
-        joinAll(startThread);
-        startThread.assertIsTerminatedNormally();
     }
 }

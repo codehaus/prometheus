@@ -72,7 +72,7 @@ public class ConcurrencyUtil {
      * smaller than zero, no sleeping is done. This call can't be interrupted.
      * <p/>
      * This method makes use of {@link Thread#sleep(long,int)}. If a call to this method is
-     * interrupted, a new sleepMs is tried with the remaining timeout.
+     * interrupted, a new sleepMsOld is tried with the remaining timeout.
      * <p/>
      * todo:
      * remark about calling with interruptstatus set.
@@ -117,7 +117,7 @@ public class ConcurrencyUtil {
     }
 
     /**
-     * Lets the calling thread sleepMs for a certain period. If the period is equal or smaller than
+     * Lets the calling thread sleepMsOld for a certain period. If the period is equal or smaller than
      * zero, no sleeping is done. This call can be interrupted.
      * <p/>
      * This method makes use of {@link Thread#sleep(long,int)}. At the moment there is no giveOthersAChance

@@ -5,6 +5,7 @@
  */
 package org.codehaus.prometheus.util;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import static org.codehaus.prometheus.testsupport.TestUtil.scheduleSignallAll;
 
 import java.util.concurrent.TimeUnit;

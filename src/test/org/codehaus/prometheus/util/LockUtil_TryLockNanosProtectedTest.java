@@ -1,5 +1,7 @@
 package org.codehaus.prometheus.util;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -30,10 +32,10 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
 
     public void testSomeWaitingNeeded() throws InterruptedException {
         lock = new ReentrantLock();
-        Thread lockAndUnlockThread = scheduleLockAndUnlock(DELAY_SMALL_MS);
+        Thread lockAndUnlockThread = scheduleLockAndUnlock(DELAY_LONG_MS);
         giveOthersAChance();
 
-        TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(DELAY_MEDIUM_MS);
+        TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(DELAY_EON_MS);
         giveOthersAChance();
         tryLockThread.assertIsStarted();
 
@@ -52,15 +54,15 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
 
     public void testInterruptedWhileWaiting() {
         lock = new ReentrantLock();
-        Thread lockAndUnlockThread = scheduleLockAndUnlock(DELAY_SMALL_MS);
+        scheduleLockAndUnlock(DELAY_EON_MS);
         giveOthersAChance();
 
-        TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(DELAY_LONG_MS);
+        TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(DELAY_EON_MS);
         giveOthersAChance();
         tryLockThread.assertIsStarted();
 
         tryLockThread.interrupt();
-        joinAll(lockAndUnlockThread, tryLockThread);
+        joinAll(tryLockThread);
         tryLockThread.assertIsInterruptedByException();
     }
 }

@@ -1,5 +1,7 @@
 package org.codehaus.prometheus.threadpool;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
 /**
  * Unittests the {@link StandardThreadPool#shutdown()} method.
  *
@@ -10,33 +12,35 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
     public void testWhileUnstarted() {
         newUnstartedThreadPool(10);
 
-        shutdown();
+        spawned_assertShutdown();
 
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(0);
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileRunningButEmptyPool() {
         newStartedThreadpool(0);
 
-        shutdown();
-
-        sleepMs(DELAY_SMALL_MS);
-
+        spawned_assertShutdown();
+        giveOthersAChance();
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(0);
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testIdleWorkersAreInterrupted() {
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
-        shutdown();
+        spawned_assertShutdown();
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
 
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testNonIdleWorkerAreNotInterrupted() {
@@ -44,51 +48,56 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
         newStartedThreadpool(poolsize);
 
         ensureNoIdleWorkers(DELAY_EON_MS);
-        //give workers time to start executing the task.
-        sleepMs(DELAY_SMALL_MS);
+        //give workers time to spawned_start executing the task.
+        giveOthersAChance();
         //make sure that all workers are executing a job.
         assertTrue(taskQueue.isEmpty());
 
-        shutdown();
+        spawned_assertShutdown();
 
-        sleepMs(DELAY_SMALL_MS);
-
+        giveOthersAChance();
         assertIsShuttingdown();
         assertActualPoolsize(poolsize);
         threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
-    public void testWhileShuttingDown_workersAreNotInterrupted() {
+    public void testWhileShuttingDown_nonIdleWorkersAreNotInterrupted() {
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
         ensureNoIdleWorkers(DELAY_EON_MS);
-        //give workers time to start executing the task.
-        sleepMs(DELAY_SMALL_MS);
-        //make sure that all workers are executing a job.
-        assertTrue(taskQueue.isEmpty());
 
-        shutdown();
+        spawned_assertShutdown();
 
-        sleepMs(DELAY_SMALL_MS);
+        giveOthersAChance();
 
         assertIsShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
+    }
+
+    public void testWhileForcedShuttingdown(){
+        int poolsize = 3;
+        newForcedShuttingdownThreadpool(poolsize,DELAY_LONG_MS);
+
+        spawned_assertShutdown();
+        
+        giveOthersAChance();
+
+        assertIsForcedShuttingdown();
+        threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileShutdown() {
         newShutdownThreadpool();
 
-        shutdown();
+        spawned_assertShutdown();
 
         assertIsShutdown();
-    }
-
-
-    private ShutdownThread shutdown() {
-        ShutdownThread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedNormally();
-        return shutdownThread;
     }
 }

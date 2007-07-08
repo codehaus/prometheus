@@ -7,6 +7,8 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.DetectingAndInterruptingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -64,6 +66,7 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
 
     //todo: testen dat de task herhaald blijft.
 
+    //todo
     //  public void testStrictness() {
     //      fail();
     //  }
@@ -74,7 +77,7 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
         TestThread t = new TestThread() {
             public void runInternal() {
                 for (int k = 0; k < 10; k++) {
-                    //Thread.sleepMs();
+                    //Thread.sleepMsOld();
                     try {
                         repeater.repeat(new SleepingRunnable(1));
                     } catch (InterruptedException e) {

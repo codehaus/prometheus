@@ -10,12 +10,12 @@ import org.codehaus.prometheus.util.ConcurrencyUtil;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A {@link BlockingRunnable} that can giveOthersAChance for a certain amount of time. The giveOthersAChance can be
- * interrupted. If you don't want the sleepMs to be interrupted, check the
- * {@link NonInterruptableSleepingRunnable}.
+ * A {@link BlockingRunnable} that can sleeps for a certain amount of time. The sleep
+ * can be interrupted. If you don't want the sleep to be interrupted, check the
+ * {@link UninterruptableSleepingRunnable}.
  *
  * @author Peter Veentjer.
- * @see NonInterruptableSleepingRunnable
+ * @see UninterruptableSleepingRunnable
  */
 public class SleepingRunnable extends BlockingRunnable {
     private final long sleep;
@@ -25,7 +25,7 @@ public class SleepingRunnable extends BlockingRunnable {
      * Creates a new SleepingRunnable that sleeps the given number of
      * milliseconds.
      *
-     * @param sleepMs the period to sleepMs in milliseconds.
+     * @param sleepMs the period to sleepMsOld in milliseconds.
      */
     public SleepingRunnable(long sleepMs) {
         this(sleepMs, TimeUnit.MILLISECONDS);
@@ -64,12 +64,6 @@ public class SleepingRunnable extends BlockingRunnable {
     }
 
     public void runBlockingInternal() throws InterruptedException {
-        System.out.println("SleepingRunnable is executed");
-        //todo: remove dependency
-        try{
-            ConcurrencyUtil.sleep(sleep, sleepUnit);
-        }finally{
-            System.out.println("finished");    
-        }
+        ConcurrencyUtil.sleep(sleep, sleepUnit);
     }
 }

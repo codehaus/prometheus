@@ -7,6 +7,7 @@ package org.codehaus.prometheus.blockingexecutor;
 
 
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -50,11 +51,6 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
         assertIsRunning();
     }
 
-    public void testNotStarted() {
-        newUnstartedBlockingExecutor(10, 10);
-        assertShutdownNowNotifiesWaiters();
-    }
-
     private void assertShutdownNowNotifiesWaiters() {
         TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_EON_MS);
         TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_EON_MS);
@@ -73,19 +69,26 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
         assertIsShutdown();
     }
 
+
+    public void testWhileUnstarted() {
+        newUnstartedBlockingExecutor(10, 10);
+        assertShutdownNowNotifiesWaiters();
+    }
+
+
     //todo: test with shutdown & test with shutdownnow
 
-    public void testStarted_noWorkers() {
+    public void testWhileRunning_noWorkers() {
         newStartedBlockingExecutor(1, 0);
         assertShutdownNowNotifiesWaiters();
     }
 
-    public void testStarted_IdleWorkers() {
+    public void testWhileRunning_IdleWorkers() {
         newStartedBlockingExecutor(1, 10);
         assertShutdownNowNotifiesWaiters();
     }
 
-    public void testStarted_nonIdleWorkers() {
+    public void testWhileRunning_nonIdleWorkers() {
         int poolsize = 10;
         newStartedBlockingExecutor(1, poolsize);
         executeEonTask(poolsize);
@@ -109,22 +112,22 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
 
     //================ shutting down ============================
 
-    public void testShuttingDown_startInterrupted() {
-        newShuttingDownBlockingExecutor(DELAY_LONG_MS);
+    public void testWhileShuttingdown_startInterrupted() {
+        newShuttingdownBlockingExecutor(DELAY_LONG_MS);
 
         TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(DELAY_EON_MS, START_INTERRUPTED);
         giveOthersAChance();
         awaitThread.assertIsInterruptedByException();
-        assertIsShuttingDown();
+        assertIsShuttingdown();
     }
 
-    public void testShuttingDown_startUninterrupted() {
-        newShuttingDownBlockingExecutor(DELAY_LONG_MS);
+    public void testWhileShuttingdown_startUninterrupted() {
+        newShuttingdownBlockingExecutor(DELAY_LONG_MS);
 
         TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(DELAY_EON_MS, START_UNINTERRUPTED);
         giveOthersAChance();
         awaitThread.assertIsStarted();
-        assertIsShuttingDown();
+        assertIsShuttingdown();
 
         joinAll(awaitThread);
         awaitThread.assertSuccess();
@@ -132,17 +135,21 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
         assertIsShutdown();
     }
 
+    public void testWhileForcedShuttingdown(){
+        //todo
+    }
+
     //================ shutdown  ==================================
 
-    public void testShutdown_startInterrupted() {
-        testShutdown(START_INTERRUPTED);
+    public void testWhileShutdown_startInterrupted() {
+        testWhileShutdown(START_INTERRUPTED);
     }
 
-    public void testShutdown_startUninterrupted() {
-        testShutdown(START_UNINTERRUPTED);
+    public void testWhileShutdown_startUninterrupted() {
+        testWhileShutdown(START_UNINTERRUPTED);
     }
 
-    public void testShutdown(boolean startInterrupted) {
+    public void testWhileShutdown(boolean startInterrupted) {
         newShutdownBlockingExecutor(1, 1);
 
         TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(0, startInterrupted);

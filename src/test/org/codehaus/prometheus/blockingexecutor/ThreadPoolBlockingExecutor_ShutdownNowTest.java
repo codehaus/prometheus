@@ -6,6 +6,7 @@
 package org.codehaus.prometheus.blockingexecutor;
 
 import org.codehaus.prometheus.testsupport.TestRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 /**
  * Unittests the {@link ThreadPoolBlockingExecutor#shutdownNow()} method.
@@ -14,17 +15,16 @@ import org.codehaus.prometheus.testsupport.TestRunnable;
  */
 public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlockingExecutor_AbstractTest {
 
-    public void testUnstarted() {
+    public void testWhileUnstarted() {
         newUnstartedBlockingExecutor(1, 1);
 
         spawned_assertShutdownNow();
 
         assertIsShutdown();
         threadFactory.assertNoThreadsCreated();
-        assertWorkQueueIsEmpty();
     }
 
-    public void testRunning_emptyPool() {
+    public void testWhileRunning_emptyPool() {
         newStartedBlockingExecutor(10, 0);
 
         spawned_assertShutdownNow();
@@ -32,11 +32,10 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
         giveOthersAChance();
         assertIsShutdown();
         threadFactory.assertNoThreadsCreated();
-        assertWorkQueueIsEmpty();
     }
 
     //there are workers, but there is nothing to do
-    public void testRunning_completelyIdle() {
+    public void testWhileRunning_workersAreIdle() {
         int poolsize = 3;
         newStartedBlockingExecutor(10, poolsize);
 
@@ -46,11 +45,10 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
         assertIsShutdown();
         threadFactory.assertCreatedCount(poolsize);
         threadFactory.assertThreadsHaveTerminated();
-        assertWorkQueueIsEmpty();
     }
 
     //there are workers and there is no unprocessed work
-    public void testRunning_activeWorkersNoUnprocessedWork() {
+    public void testWhileRunning_activeWorkersAndNoUnprocessedWork() {
         int poolsize = 2;
         newStartedBlockingExecutor(0, poolsize);
 
@@ -61,12 +59,11 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
 
         giveOthersAChance();
         assertIsShutdown();
-        threadFactory.assertCreatedCount(poolsize);
-        //check that eon tasks were started        
+        threadFactory.assertCreatedAndTerminatedCount(poolsize);
     }
 
     //there are active workers and there is also some unprocessed work
-    public void testRunning_activeWorkersUnprocessedWork() {
+    public void testWhileRunning_activeWorkersUnprocessedWork() {
         int poolsize = 2;
         newStartedBlockingExecutor(10, poolsize);
 
@@ -83,7 +80,7 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
 
         giveOthersAChance();
         assertIsShutdown();
-        threadFactory.assertCreatedCount(poolsize);
+        threadFactory.assertCreatedAndTerminatedCount(poolsize);
         unprocessed1.assertBeginExecutionCount(0);
         unprocessed2.assertBeginExecutionCount(0);
         unprocessed3.assertBeginExecutionCount(0);
@@ -94,19 +91,24 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
         //check that the running tasks were interrupted
     }
 
-    public void testShuttingDown() {
-        newShuttingDownBlockingExecutor(DELAY_EON_MS);
+    public void testWhileShuttingdown() {
+        newShuttingdownBlockingExecutor(DELAY_EON_MS);
+        int createdCount = threadFactory.getThreadCount();
 
         spawned_assertShutdownNow();
 
         giveOthersAChance();
         assertIsShutdown();
-        threadFactory.assertCreatedCount(1);
+        threadFactory.assertCreatedAndTerminatedCount(createdCount);
 
         //todo: check that original task has been
     }
 
-    public void testShutdown() {
+    public void testWhileForcedShuttingdown(){
+        //todo
+    }
+
+    public void testWhileShutdown() {
         newShutdownBlockingExecutor();
         int oldThreadCount = threadFactory.getThreadCount();
 
@@ -114,6 +116,6 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
 
         giveOthersAChance();
         assertIsShutdown();
-        threadFactory.assertCreatedCount(oldThreadCount);
+        threadFactory.assertCreatedAndTerminatedCount(oldThreadCount);
     }
 }

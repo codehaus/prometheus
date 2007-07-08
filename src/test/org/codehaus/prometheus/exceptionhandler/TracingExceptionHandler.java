@@ -55,7 +55,7 @@ public class TracingExceptionHandler implements ExceptionHandler {
         assertCount(0);
     }
 
-    public void assertCountAndNoOthers(Class exceptionClass, int expectedCount) {
+    public void assertErrorCountAndNoOthers(Class exceptionClass, int expectedCount) {
         assertCount(expectedCount);
         assertEquals(expectedCount, getCount(exceptionClass));
     }

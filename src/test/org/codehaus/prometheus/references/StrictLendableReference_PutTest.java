@@ -6,6 +6,7 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.TestThread;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 /**
  * Unittests the {@link StrictLendableReference#put(Object)} method.
@@ -34,7 +35,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
     }
 
     //==========================================================
-    //all tests below start uninterrupted    
+    //all tests below spawned_start uninterrupted
     //==========================================================
 
     public void testPutNull() throws InterruptedException {

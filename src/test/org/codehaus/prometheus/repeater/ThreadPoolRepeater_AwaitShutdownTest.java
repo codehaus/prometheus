@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.BlockingState;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#awaitShutdown()} method.
@@ -15,15 +15,17 @@ import org.codehaus.prometheus.testsupport.SleepingRunnable;
  */
 public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_AbstractTest {
 
-    public void testNotStarted_strict() throws InterruptedException {
-        testNotStarted(true);
+//=========================================================
+
+    public void testWhileUnstarted_strict() throws InterruptedException {
+        testWhileUnstarted(true);
     }
 
-    public void testNotStarted_relaxed() throws InterruptedException {
-        testNotStarted(false);
+    public void testWhileUnstarted_relaxed() throws InterruptedException {
+        testWhileUnstarted(false);
     }
 
-    public void testNotStarted(boolean strict) throws InterruptedException {
+    public void testWhileUnstarted(boolean strict) throws InterruptedException {
         newUnstartedRepeater(strict);
         assertAwaitForTerminationSucceedsWhenShutdown();
     }
@@ -43,7 +45,7 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
         assertAwaitForTerminationSucceedsWhenShutdown();
     }
 
-    //=========================================================
+    //====================running=====================================
 
     public void testStartedAndRunningJob_strict() {
         testStartedAndRunningJob(true);
@@ -58,7 +60,7 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
         assertAwaitForTerminationSucceedsWhenShutdown();
     }
 
-    //=========================================================
+    //=================shuttingdown========================================
 
     public void testShuttingDown_strict() throws InterruptedException {
         testShuttingDown(true);
@@ -73,13 +75,19 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
         assertAwaitForTerminationSucceedsWhenShutdown();
     }
 
+    //==============forcedshuttingdown================================
+
+    public void testForcedShuttingdown(){
+        //todo
+    }
+
     //=========================================================
 
-    public void testShutdown_strict() throws InterruptedException {
+    public void testWhileShutdown_strict() throws InterruptedException {
         testShutdown(true);
     }
 
-    public void testShutdown_relaxed() throws InterruptedException {
+    public void testWhileShutdown_relaxed() throws InterruptedException {
         testShutdown(false);
     }
 
@@ -91,8 +99,8 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
 
         joinAll(t1, t2);
 
-        t1.assertIsFinished();
-        t2.assertIsFinished();
+        t1.assertIsTerminatedNormally();
+        t2.assertIsTerminatedNormally();
     }
 
     //=========================================================
@@ -109,15 +117,14 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
         newShuttingdownRepeater(strict, DELAY_MEDIUM_MS);
 
         AwaitShutdownThread awaitThread = scheduleAwaitSchutdown();
-
         //make sure it is waiting
-        sleepMs(DELAY_TINY_MS);
-        awaitThread.assertIsWaiting();
+        giveOthersAChance();
+        awaitThread.assertIsStarted();
 
         //now interrupt the awaitThread
         awaitThread.interrupt();
         joinAll(awaitThread);
-        awaitThread.assertIsInterrupted();
+        awaitThread.assertIsInterruptedByException();
         assertIsShuttingdown();
     }
 
@@ -139,36 +146,8 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
 
         joinAll(t1, t2);
 
-        t1.assertIsFinished();
-        t2.assertIsFinished();
-    }
-
-    //=========================================================
-
-    class AwaitShutdownThread extends Thread {
-        volatile BlockingState state;
-
-        public void run() {
-            state = BlockingState.waiting;
-            try {
-                repeater.awaitShutdown();
-                state = BlockingState.finished;
-            } catch (InterruptedException e) {
-                state = BlockingState.interrupted;
-            }
-        }
-
-        public void assertIsInterrupted() {
-            assertEquals(BlockingState.interrupted, state);
-        }
-
-        public void assertIsFinished() {
-            assertEquals(BlockingState.finished, state);
-        }
-
-        public void assertIsWaiting() {
-            assertEquals(BlockingState.waiting, state);
-        }
+        t1.assertIsTerminatedNormally();
+        t2.assertIsTerminatedNormally();
     }
 }
 

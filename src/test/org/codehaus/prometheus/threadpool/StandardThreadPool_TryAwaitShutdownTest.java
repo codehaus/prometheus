@@ -1,5 +1,7 @@
 package org.codehaus.prometheus.threadpool;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -20,12 +22,12 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
     }
 
     public void testWhileUnstarted() {
-        newUnstartedThreadPool(10);
+        newUnstartedThreadPool(3);
         assertShutdownNotifiesWaiters();
     }
 
     public void testWhileStarted() {
-        newStartedThreadpool(10);
+        newStartedThreadpool(3);
         assertShutdownNotifiesWaiters();
     }
 
@@ -51,7 +53,12 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
     }
 
     public void testWhileShuttingDown() {
-        newShuttingdownThreadpool(10, 2 * DELAY_MEDIUM_MS);
+        newShuttingdownThreadpool(3, 2 * DELAY_MEDIUM_MS);
+        assertShutdownNotifiesWaiters();
+    }
+
+    public void testWhileForcedShuttingdown(){
+        newForcedShuttingdownThreadpool(3,DELAY_LONG_MS);
         assertShutdownNotifiesWaiters();
     }
 
@@ -65,24 +72,25 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
     }
 
     public void testTimedOut() {
-        newStartedThreadpool(10);
+        newStartedThreadpool(3);
 
         TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_MEDIUM_MS);
         TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_MEDIUM_MS);
 
         //check that the await wasn't successful immediately.
-        giveOthersAChance(DELAY_TINY_MS);
+        giveOthersAChance();
         awaitThread1.assertIsStarted();
         awaitThread2.assertIsStarted();
 
+        //check that both awaits are timed out.
         joinAll(awaitThread1, awaitThread2);
         awaitThread1.assertIsTimedOut();
         awaitThread2.assertIsTimedOut();
-        assertIsStarted();
+        assertIsRunning();
     }
 
     public void testInterruptedWhileWaiting() {
-        newStartedThreadpool(10);
+        newStartedThreadpool(3);
 
         TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_EON_MS);
         TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_EON_MS);
@@ -98,6 +106,6 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
         joinAll(awaitThread1);
         awaitThread1.assertIsInterruptedByException();
         awaitThread2.assertIsStarted();
-        assertIsStarted();
+        assertIsRunning();
     }
 }

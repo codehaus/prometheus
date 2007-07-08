@@ -1,6 +1,9 @@
 package org.codehaus.prometheus.util;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import org.easymock.EasyMock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.expect;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -61,8 +64,8 @@ public class LockUtil_TryLockNanosTest extends LockUtil_AbstractTest {
     public void testInterruptedWhileWaiting() throws InterruptedException {
         long timeoutNs = 100;
         lock = EasyMock.createMock(Lock.class);
-        EasyMock.expect(lock.tryLock(timeoutNs, TimeUnit.NANOSECONDS)).andThrow(new InterruptedException());
-        EasyMock.replay(lock);
+        expect(lock.tryLock(timeoutNs, TimeUnit.NANOSECONDS)).andThrow(new InterruptedException());
+        replay(lock);
 
         try {
             LockUtil.tryLockNanos(lock, timeoutNs);

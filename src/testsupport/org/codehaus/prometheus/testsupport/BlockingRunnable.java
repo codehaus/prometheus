@@ -33,7 +33,7 @@ public abstract class BlockingRunnable extends TestRunnable {
         }
     }
 
-    public void assertIsNew(){
+    public void assertIsUnstarted(){
         assertNull(state);
     }
 

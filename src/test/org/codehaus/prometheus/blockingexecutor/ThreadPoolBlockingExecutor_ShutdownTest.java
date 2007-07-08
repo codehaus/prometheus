@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
 /**
  * Unittests the {@link ThreadPoolBlockingExecutor#shutdown()} method.
  *
@@ -12,35 +14,36 @@ package org.codehaus.prometheus.blockingexecutor;
  */
 public class ThreadPoolBlockingExecutor_ShutdownTest extends ThreadPoolBlockingExecutor_AbstractTest {
 
-    public void testNotStarted() {
+    public void testWhileUnstarted() {
         newUnstartedBlockingExecutor(1, 10);
 
-        shutdown();
+        spawned_assertShutdown();
 
         assertIsShutdown();
         threadFactory.assertNoThreadsCreated();
     }
 
-    public void testRunning_noWorkersNoUnprocessedWork() {
+    public void testWhileRunning_noWorkersNoUnprocessedWork() {
         newStartedBlockingExecutor(1, 0);
 
-        shutdown();
+        spawned_assertShutdown();
+
         assertIsShutdown();
         threadFactory.assertNoThreadsCreated();
     }
 
-    public void testRunning_workersAreIdle() {
+    public void testWhileRunning_workersAreIdle() {
         int poolsize = 10;
         newStartedBlockingExecutor(0, poolsize);
 
-        shutdown();
+        spawned_assertShutdown();
 
         giveOthersAChance();
         assertIsShutdown();
-        threadFactory.assertCreatedCount(poolsize);
+        threadFactory.assertCreatedAndTerminatedCount(poolsize);
     }
 
-    public void testRunning_workersAreNotIdle() {
+    public void testWhileRunning_workersAreNotIdle() {
         int poolsize = 10;
         newStartedBlockingExecutor(0, poolsize);
 
@@ -49,38 +52,37 @@ public class ThreadPoolBlockingExecutor_ShutdownTest extends ThreadPoolBlockingE
 
         giveOthersAChance();
 
-        shutdown();
+        spawned_assertShutdown();
 
         //check all invariants
-        assertIsShuttingDown();
-        threadFactory.assertCreatedCount(poolsize);
-        threadFactory.assertAllThreadsAlive();
+        assertIsShuttingdown();
+        threadFactory.assertCreatedAndAliveCount(poolsize);
     }
 
-    public void testShutdownWhileShuttingDown() {
-        newShuttingDownBlockingExecutor(DELAY_EON_MS);
-
-        shutdown();
-
-        assertIsShuttingDown();
-        threadFactory.assertCreatedCount(1);
-        threadFactory.assertAllThreadsAlive();
+    public void testWhileShuttingdown() {
+        newShuttingdownBlockingExecutor(DELAY_EON_MS);
+        assertShutdownIsIgnored();
     }
 
-    public void testShutdownWhileShutdown() {
+    public void testWhileForcedShuttingdown() {
+        int poolsize = 4;
+        newForcedShuttingdownBlockingExecutor(DELAY_LONG_MS, poolsize);
+        assertShutdownIsIgnored();
+    }
+
+    public void testWhileShutdown() {
         newShutdownBlockingExecutor(1, 5);
-        int oldPoolsize = threadFactory.getThreadCount();
-
-        shutdown();
-
-        assertIsShutdown();
-        threadFactory.assertCreatedCount(oldPoolsize);
+        assertShutdownIsIgnored();
     }
 
-    private void shutdown() {
-        ShutdownThread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedNormally();
+    private void assertShutdownIsIgnored() {
+        int oldThreadCount = threadFactory.getThreadCount();
+        BlockingExecutorServiceState oldState = executor.getState();
+
+        spawned_assertShutdown();
+
+        assertHasState(oldState);
+        threadFactory.assertCreatedAndAliveCount(oldThreadCount);
     }
 }
 

@@ -5,13 +5,13 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.SleepingRunnable;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TracingThreadFactory;
+import org.codehaus.prometheus.testsupport.*;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.Arrays;
+import static java.util.Arrays.asList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -36,14 +36,22 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         if (executor != null) {
             spawned_assertShutdownNow();
             spawned_assertAwaitShutdown();
-            assertIsShutdown();
         }
+    }
+
+    public SleepingRunnable spawned_placeSleepingTask(long durationMs) {
+        SleepingRunnable task = new SleepingRunnable(durationMs);
+        ExecuteThread executeThread = scheduleExecute(task, START_UNINTERRUPTED);
+        joinAll(executeThread);
+        executeThread.assertIsTerminatedNormally();
+        return task;
     }
 
     public void spawned_assertAwaitShutdown() {
         AwaitShutdownThread t = scheduleAwaitShutdown();
         joinAll(t);
         t.assertIsTerminatedNormally();
+        assertIsShutdown();
     }
 
     public void spawned_assertShutdownNow() {
@@ -56,8 +64,25 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         ShutdownThread t = scheduleShutdown();
         joinAll(t);
         t.assertIsTerminatedNormally();
-        assertTrue(executor.getState() == BlockingExecutorServiceState.Shutdown ||
-                executor.getState() == BlockingExecutorServiceState.Shuttingdown);
+        assertIsShuttingDownOrShutdown();
+    }
+
+    public void spawned_start() {
+        StartThread t = scheduleStart();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+    }
+
+    public void executeUninterruptibleSleepingTasks(long sleepMs, int count) {
+        List<TestRunnable> tasks = TestUtil.newUninterruptibleSleepingRunnables(sleepMs, count);
+        for (TestRunnable task : tasks)
+            spawned_execute(task);
+    }
+
+    public void spawned_execute(Runnable task) {
+        ExecuteThread t = scheduleExecute(task);
+        joinAll(t);
+        t.assertIsTerminatedNormally();
     }
 
     public void spawned_assertSetDesiredPoolSize(int poolsize) {
@@ -100,8 +125,8 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
                 queue);
     }
 
-    public void newShutdownBlockingExecutor(){
-        newUnstartedBlockingExecutor(0,0);
+    public void newShutdownBlockingExecutor() {
+        newUnstartedBlockingExecutor(0, 0);
         executor.shutdown();
     }
 
@@ -110,7 +135,16 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         executor.shutdown();
     }
 
-    public void newShuttingDownBlockingExecutor(long timeMs) {
+    public void newForcedShuttingdownBlockingExecutor(long sleepMs, int poolsize) {
+        newStartedBlockingExecutor(10000, poolsize);
+        executeUninterruptibleSleepingTasks(sleepMs, poolsize);
+        giveOthersAChance();
+        assertWorkQueueContains();
+        spawned_assertShutdownNow();
+        assertIsShuttingdown();
+    }
+
+    public void newShuttingdownBlockingExecutor(long timeMs) {
         newStartedBlockingExecutor(1, 1, new SleepingRunnable(timeMs));
         executor.shutdown();
     }
@@ -131,7 +165,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         assertHasState(BlockingExecutorServiceState.Running);
     }
 
-    public void assertIsShuttingDown() {
+    public void assertIsShuttingdown() {
         assertHasState(BlockingExecutorServiceState.Shuttingdown);
     }
 
@@ -146,23 +180,18 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         assertWorkQueueIsEmpty();
     }
 
-    public void assertWorkQueueIsEmpty() {
-        assertTrue(executor.getWorkQueue().isEmpty());
-    }
-
     public void assertHasState(BlockingExecutorServiceState expected) {
         assertEquals(expected, executor.getState());
     }
 
-    public void assertTasksOnWorkQueue(Runnable... expected) {
-        BlockingQueue workQueue = executor.getWorkQueue();
-        Runnable[] foundTasks = (Runnable[]) workQueue.toArray(new Runnable[]{});
-        assertEquals(expected.length, foundTasks.length);
-        for (int k = 0; k < expected.length; k++) {
-            Runnable foundTask = foundTasks[k];
-            Runnable expectedTask = expected[k];
-            assertSame(expectedTask, foundTask);
-        }
+    public void assertWorkQueueIsEmpty() {
+        assertTrue(executor.getWorkQueue().isEmpty());
+    }
+
+    public void assertWorkQueueContains(Runnable... expected) {
+        List<Runnable> workList = new LinkedList<Runnable>(executor.getWorkQueue());
+        List<Runnable> expectedList = asList(expected);
+        assertEquals(expectedList, workList);
     }
 
     public ShutdownNowThread spawned_assertShutdownNow(Runnable... expectedUnprocessed) {
@@ -176,7 +205,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
     public void assertIsShuttingDownOrShutdown() {
         BlockingExecutorServiceState state = executor.getState();
-        assertTrue(String.format("state was %s",state),
+        assertTrue(String.format("state was %s", state),
                 state == BlockingExecutorServiceState.Shuttingdown || state == BlockingExecutorServiceState.Shutdown);
     }
 
@@ -236,6 +265,10 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         ShutdownNowThread t = new ShutdownNowThread();
         t.start();
         return t;
+    }
+
+    public ExecuteThread scheduleExecute(Runnable task) {
+        return scheduleExecute(task, START_UNINTERRUPTED);
     }
 
     public ExecuteThread scheduleExecute(Runnable task, boolean startInterrupted) {

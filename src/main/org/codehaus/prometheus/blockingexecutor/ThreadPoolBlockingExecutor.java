@@ -10,11 +10,10 @@ import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPoolState;
 import org.codehaus.prometheus.threadpool.WorkerJob;
-import org.codehaus.prometheus.util.ConcurrencyUtil;
+import static org.codehaus.prometheus.util.ConcurrencyUtil.ensureNoTimeout;
 
 import static java.lang.String.format;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -37,7 +36,7 @@ import java.util.concurrent.locks.Lock;
  * New work won't be accepted, but outstanding work is not processed and new worker-thread creation
  * is not allowed meaning that there could be a deadlock: the blocking executor can't be shut down.
  * <p/>
- * If a task placement is started before a shutdown, but completes after the system is shutting down,
+ * If a task placement is running before a shutdown, but completes after the system is shutting down,
  * the placing thread is responsible to make sure that the task is processed. This is done by removing
  * the task from the queue if it is still there and throwing a RejectedExecutionException or if the
  * task isn't on the queue, it is (being) processed.-g-get
@@ -141,7 +140,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      *
      * @param poolSize the desired number of threads in the ThreadPool.
      * @throws IllegalArgumentException if poolsize smaller than 0.
-     * @throws IllegalStateException if the ThreadPool already is shutting down, or is shut down.
+     * @throws IllegalStateException    if the ThreadPool already is shutting down, or is shut down.
      */
     public void setDesiredPoolSize(int poolSize) {
         threadPool.setDesiredPoolsize(poolSize);
@@ -156,28 +155,28 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
     }
 
     public void shutdown() {
+        //todo
+        //if the threadpool has no threads, it can't process work in the workqueue. So this
+        //needs to be tackled in the interface of BlockingExecutorService
         threadPool.shutdown();
     }
 
     public List<Runnable> shutdownNow() {
-        //the shutdown action is atomic.
-        ThreadPoolState previousState = threadPool.shutdownNow();
-
-        //todo:
-        //problem that needs to be fixed.
-        //it is possible that running threads are interrupted, and have
-        //taken an item from the blockingqueue.
-
-        //at most once the previous state can be started. If the shutdownNow method
-        //is called for the second time, the previous state will be shutdown or
-        //shuttingdown.
-        if (previousState != ThreadPoolState.started) {
-            return Collections.EMPTY_LIST;
-        }
-
+        threadPool.shutdownNow();
         return drainWorkQueue();
     }
 
+    /**
+     * Drains all the items from the workqueue.
+     * <p/>
+     * Drains all items from the workqueue. Execute-threads that are pending for placement, are not
+     * required to have placed their item before this call being called. If this is the case,
+     * their item will be placed on the workqueue. These execute-threads are responsible themselfes
+     * for ensuring that the task is placed. See {@link #ensureTaskHandeled(Runnable)} for more
+     * information.
+     *
+     * @return a List containing all items in the workqueue (in the same order as on the workqueue).
+     */
     private List<Runnable> drainWorkQueue() {
         List<Runnable> runnables = new ArrayList<Runnable>();
         workQueue.drainTo(runnables);
@@ -189,8 +188,9 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         switch (state) {
             case unstarted:
                 return BlockingExecutorServiceState.Unstarted;
-            case started:
+            case running:
                 return BlockingExecutorServiceState.Running;
+            case forcedshuttingdown://fall through                      
             case shuttingdown:
                 return BlockingExecutorServiceState.Shuttingdown;
             case shutdown:
@@ -211,37 +211,46 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
     public void execute(Runnable task) throws InterruptedException {
         if (task == null) throw new NullPointerException();
 
-        assertPoolIsStarted();
-        System.out.println("placing task: "+task);
+        ensurePoolRunning();
+        //System.out.println("placing task: "+task);
         workQueue.put(task);
-        System.out.println("finished placing task: "+task);
+        //System.out.println("finished placing task: "+task);
         ensureTaskHandeled(task);
     }
 
     public void tryExecute(Runnable task, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
         if (task == null || unit == null) throw new NullPointerException();
 
-        ConcurrencyUtil.ensureNoTimeout(timeout);
-
-        assertPoolIsStarted();
-        //try to place the task on the workQueue.
+        ensureNoTimeout(timeout);
+        ensurePoolRunning();
         if (!workQueue.offer(task, timeout, unit))
             throw new TimeoutException();
         ensureTaskHandeled(task);
     }
 
-    private void assertPoolIsStarted() {
-        if (threadPool.getState() != ThreadPoolState.started)
-            throw new RejectedExecutionException();
+    private void ensurePoolRunning() {
+        if (threadPool.getState() != ThreadPoolState.running)
+            throw new RejectedExecutionException("task can't be executed because the ThreadPoolBlockingExecutor" +
+                    " isn't running");
     }
 
     /**
+     * Ensures that a task is handled. If a task is placed, a check is done if the threadpool
+     * stil is running. After that the item is placed on the queue. If the queue is full, the
+     * call block untill space gets available. The problem is that the threadpoolexecutor can
+     * shutdown and that the placed task will never be executed. This methods makes sure that
+     * the task is handled:
+     * <ol>
+     * <li>because it is executed</li>
+     * <li>because it is rejected by throwing a RejectedExecutionException</li>
+     * </ol>
+     * <p/>
      * Logic inside this method has been inspired by the ThreadPoolExecutor.
      *
      * @param task the task to ensure to be handled.
      */
     private void ensureTaskHandeled(Runnable task) {
-        boolean shutdownOccurredWhileWaiting = false;
+        boolean shutdownOccurredDuringTaskPlacement = false;
 
         Lock lock = threadPool.getStateChangeLock();
         lock.lock();
@@ -255,31 +264,36 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
             //first case: job was placed, but maybe the shutdown was initiated in the meanwhile.
 
 
-            if (threadPool.getState() != ThreadPoolState.started) {
-                System.out.println("threadpool.state!=started");
+            if (threadPool.getState() != ThreadPoolState.running) {
+                //            System.out.println("threadpool.state!=running");
                 //the shutdown was initiated before the lock was obtained, so
                 //this call should try to remove the task because no guarantees
                 //are given that is ever is going to be processed.
-                shutdownOccurredWhileWaiting = true;
-            }else{
-                System.out.println("threadpool.state==started");
+                shutdownOccurredDuringTaskPlacement = true;
+            } else {
+                //          System.out.println("threadpool.state==running");
             }
         } finally {
             lock.unlock();
         }
 
-        if (shutdownOccurredWhileWaiting) {
-            //the structure was shutdown, and we don't get any guarantee that the item is going to
-            //be processed or dealt with. That is why we need to check if it is still there.
-            if (workQueue.remove(task)) {
-                //the task was still on the queue, it is removed now, so lets throw an
-                //rejected execution exception to indicate that the execution has failed.
-                throw new RejectedExecutionException();
-            } else {
-                //we were lucky, the task could not be found on the queue anymore, meaning
-                //that is was handeled (either because it was returned by the shutdownNow method
-                //or because it is (being) processed.                 
-            }
+        //if no shutdown has occurred, the caller of the shutdown is now completely responsible for
+        //dealing with unprocessed tasks. If a shutdown has occurred, the task could have been placed,
+        //and the caller of the shutdown method, has no way of nowing this and is not able to deal
+        //with the task that was 'illegally' placed.
+        if (!shutdownOccurredDuringTaskPlacement)
+            return;
+
+        //the structure was shutdown, and we don't get any guarantee that the item is going to
+        //be processed or dealt with. That is why we need to check if it is still there.
+        if (workQueue.remove(task)) {
+            //the task was still on the queue, it is removed now, so lets throw an
+            //rejected execution exception to indicate that the execution has failed.
+            throw new RejectedExecutionException();
+        } else {
+            //we were lucky, the task could not be found on the queue anymore, meaning
+            //that is was handeled (either because it was returned by the shutdownNow method
+            //or because it is (being) processed.
         }
     }
 

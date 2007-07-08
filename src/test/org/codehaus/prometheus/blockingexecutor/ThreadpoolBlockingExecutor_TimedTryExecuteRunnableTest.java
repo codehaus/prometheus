@@ -8,6 +8,8 @@ package org.codehaus.prometheus.blockingexecutor;
 import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.DummyRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -109,30 +111,37 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
         assertIsRunning();
     }
 
-    public void testExecuteWhenUnstarted() {
+    public void testWhileUnstarted() {
         newUnstartedBlockingExecutor(1, 1);
         assertExecuteIsRejected();
     }
 
-    public void testExecuteWhileShuttingDown() {
-        newShuttingDownBlockingExecutor(DELAY_EON_MS);
+    public void testWhileShuttingdown() {
+        newShuttingdownBlockingExecutor(DELAY_EON_MS);
         assertExecuteIsRejected();
     }
 
-    public void testExecuteWhileShutdown() {
+    public void testWhileForcedShuttingdown(){
+        newForcedShuttingdownBlockingExecutor(DELAY_LONG_MS,3);
+        assertExecuteIsRejected();
+    }
+
+    public void testWhileShutdown() {
         newShutdownBlockingExecutor(1, 1);
         assertExecuteIsRejected();
     }
 
     private void assertExecuteIsRejected() {
         BlockingExecutorServiceState oldState = executor.getState();
+        int oldThreadCount = threadFactory.getThreadCount();
         CountingRunnable task = new CountingRunnable();
 
         TryExecuteThread executeThread = scheduleTryExecute(task, DELAY_SMALL_MS);
         joinAll(executeThread);
-
         executeThread.assertIsRejected();
-        assertEquals(oldState, executor.getState());
+
+        assertHasState(oldState);
+        threadFactory.assertCreatedAndAliveCount(oldThreadCount);
         task.assertNotExecuted();
     }
 }

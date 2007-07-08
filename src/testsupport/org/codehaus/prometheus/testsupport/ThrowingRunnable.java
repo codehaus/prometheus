@@ -46,4 +46,5 @@ public final class ThrowingRunnable extends CountingRunnable{
     public void runInternal() {
         throw exception;
     }
+
 }

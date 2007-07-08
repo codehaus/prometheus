@@ -47,7 +47,7 @@ public interface RepeaterService extends Repeater {
     /**
      * Starts this RepeaterService.
      * <p/>
-     * If this RepeaterService already is started, nothing happens. If this RepeaterService is
+     * If this RepeaterService already is running, nothing happens. If this RepeaterService is
      * shutting down, or already is shutdown, an IllegalStateException is thrown.
      *
      * @throws IllegalStateException if the RepeaterService is shutting down, or

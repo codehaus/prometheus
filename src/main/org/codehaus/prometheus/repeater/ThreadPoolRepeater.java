@@ -29,7 +29,7 @@ import java.util.concurrent.locks.Lock;
  * strict en non strict repeat functionaliteit testen.
  * <p/>
  * The threads are not automatically created when a ThreadPoolRepeater is constructed. Only when a
- * task is repeated, or when the start method is called, the threadpool is filled.
+ * task is repeated, or when the spawned_start method is called, the threadpool is filled.
  * todo:
  * if the threadpoolrepeater is shutdown, what is the value
  * of the lendableref.
@@ -92,7 +92,7 @@ import java.util.concurrent.locks.Lock;
  * <p/>
  * If multiple threads are used, you have to make sure that the task that is executed, is threadsafe.
  * If multiple threads are used, and items are taken, processed and than put, it could lead to an
- * out of order put. This can be solved by using a {@link org.codehaus.prometheus.resequencer.Resequencer}.
+ * out of order put. This can be solved by using some sort of Resequencer. 
  *
  * @author Peter Veentjer.
  */
@@ -253,14 +253,16 @@ public class ThreadPoolRepeater implements RepeaterService {
         switch (state) {
             case unstarted:
                 return RepeaterServiceState.Unstarted;
-            case started:
+            case running:
                 return RepeaterServiceState.Running;
             case shuttingdown:
+                return RepeaterServiceState.Shuttingdown;
+            case forcedshuttingdown:
                 return RepeaterServiceState.Shuttingdown;
             case shutdown:
                 return RepeaterServiceState.Shutdown;
             default:
-                throw new IllegalStateException();
+                throw new IllegalStateException("unhandeled state: "+state);
         }
     }
 
@@ -282,11 +284,19 @@ public class ThreadPoolRepeater implements RepeaterService {
         lock.lock();
         try {
             ThreadPoolState state = threadPool.getState();
-            if (state == ThreadPoolState.shutdown || state == ThreadPoolState.shuttingdown)
-                throw new RejectedExecutionException();
-
-            if (state == ThreadPoolState.unstarted)
-                start();
+            switch (state) {
+                case unstarted:
+                    start();
+                    break;
+                case running:
+                    break;
+                case shuttingdown:
+                case forcedshuttingdown:
+                case shutdown:
+                    throw new RejectedExecutionException();
+                default:
+                    throw new RuntimeException("unhandled state " + state);
+            }
         } finally {
             lock.unlock();
         }

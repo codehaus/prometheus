@@ -6,6 +6,7 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.InterruptedTrueFalse;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 /**
  * Unittests the {@link DefaultAwaitableReference#put(Object)} method.

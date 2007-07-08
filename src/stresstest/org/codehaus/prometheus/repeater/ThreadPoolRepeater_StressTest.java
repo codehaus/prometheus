@@ -7,6 +7,7 @@ package org.codehaus.prometheus.repeater;
 
 import junit.framework.TestSuite;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 
 import java.util.Random;
 
@@ -20,13 +21,13 @@ public class ThreadPoolRepeater_StressTest {
     }
 
 
-
     //goal of this test is to see if errors occur when shutting down a repeater.
     //a lot of threads are going to call methods on the repeater. Some
-    //are going to start/pause others are going to shutdown.
+    //are going to spawned_start/pause others are going to shutdown.
     public static class ShutdownStressTest extends ThreadPoolRepeater_AbstractTest {
 
-        public void testDummy(){}
+        public void testDummy() {
+        }
     }
 
     //this tests changes the poolsize from the same threads, so no prometheus calls.

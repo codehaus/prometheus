@@ -7,7 +7,7 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.allowOtherThreadsToRun;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -30,17 +30,17 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
         }
     }
 
-    public void testNotStarted() throws InterruptedException {
+    public void testWhileUnstarted() throws InterruptedException {
         newUnstartedStrictRepeater();
         assertAwaitForTerminationSucceedsWhenShutdown(DELAY_SMALL_MS);
     }
 
-    public void testRunningWithoutJob() {
+    public void testWhileRunning_noJob() {
         newRunningStrictRepeater();
         assertAwaitForTerminationSucceedsWhenShutdown(DELAY_SMALL_MS);
     }
 
-    public void testRunningWithJob() {
+    public void testRunning_hasJob() {
         newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_SMALL_MS)));
         assertAwaitForTerminationSucceedsWhenShutdown(DELAY_MEDIUM_MS);
     }
@@ -63,12 +63,16 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
         t1.assertIsTimedOut();
     }
 
-    public void testShuttingDown() throws InterruptedException {
-        newShuttingdownRepeater(DELAY_SMALL_MS);
-        assertAwaitForTerminationSucceedsWhenShutdown(DELAY_MEDIUM_MS);
+    public void testWhileShuttingdown() throws InterruptedException {
+        newShuttingdownRepeater(DELAY_MEDIUM_MS);
+        assertAwaitForTerminationSucceedsWhenShutdown(DELAY_EON_MS);
     }
 
-    public void testShutdown() throws InterruptedException {
+    public void testWhileForcedShuttingdown(){
+        //todo
+    }
+
+    public void testWhileShutdown() throws InterruptedException {
         newShutdownRepeater();
 
         TryAwaitShutdownThread t1 = scheduleTryAwaitShutdown(0);
@@ -98,7 +102,7 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
         TryAwaitShutdownThread t1 = scheduleTryAwaitShutdown(timeoutMs);
         TryAwaitShutdownThread t2 = scheduleTryAwaitShutdown(timeoutMs);
 
-        allowOtherThreadsToRun();
+        giveOthersAChance();
 
         repeater.shutdownNow();
 

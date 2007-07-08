@@ -1,5 +1,7 @@
 package org.codehaus.prometheus.threadpool;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
 /**
  * Unittests the {@link StandardThreadPool#awaitShutdown()} method.
  *
@@ -9,15 +11,18 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
 
     public void testWhileUnstarted() {
         newUnstartedThreadPool(10);
-        assertShutdownTerminatesWaiters();
+
+        assertShutdownTerminatesWaiters(0);
     }
 
     public void testWhileStarted() {
-        newStartedThreadpool(10);
-        assertShutdownTerminatesWaiters();
+        int poolsize = 10;
+        newStartedThreadpool(poolsize);
+
+        assertShutdownTerminatesWaiters(poolsize);
     }
 
-    public void assertShutdownTerminatesWaiters() {
+    public void assertShutdownTerminatesWaiters(int expectedThreadCreationCount) {
         AwaitShutdownThread awaitThread1 = scheduleAwaitShutdown();
         AwaitShutdownThread awaitThread2 = scheduleAwaitShutdown();
 
@@ -25,31 +30,27 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
         awaitThread1.assertIsStarted();
         awaitThread2.assertIsStarted();
 
-        shutdown();
+        spawned_assertShutdown();
 
-        //check that the awaiting threads shutdown
+        //check that the awaiting threads spawned_assertShutdown
         joinAll(awaitThread1, awaitThread2);
         awaitThread1.assertIsTerminatedNormally();
         awaitThread2.assertIsTerminatedNormally();
         assertIsShutdown();
+        threadPoolThreadFactory.assertCreatedCount(expectedThreadCreationCount);
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileShuttingdown() {
-        newShuttingdownThreadpool(3, DELAY_LONG_MS);
+        int poolsize = 3;
+        newShuttingdownThreadpool(poolsize, DELAY_LONG_MS);
+        assertShutdownTerminatesWaiters(poolsize);
+    }
 
-        AwaitShutdownThread awaitThread1 = scheduleAwaitShutdown();
-        AwaitShutdownThread awaitThread2 = scheduleAwaitShutdown();
-
-        //check that the await wasn't successful immediately.
-        giveOthersAChance();
-        awaitThread1.assertIsStarted();
-        awaitThread2.assertIsStarted();
-
-        //check that the awaits are successful after shutdown.
-        joinAll(awaitThread1, awaitThread2);
-        awaitThread1.assertIsTerminatedNormally();
-        awaitThread2.assertIsTerminatedNormally();
-        assertIsShutdown();
+    public void testWhileForcedShuttingdown() {
+        int poolsize = 3;
+        newForcedShuttingdownThreadpool(poolsize, DELAY_LONG_MS);
+        assertShutdownTerminatesWaiters(poolsize);
     }
 
     public void testInterruptedWhileWaiting() {
@@ -69,7 +70,7 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
         joinAll(awaitThread1);
         awaitThread1.assertIsInterruptedByException();
         awaitThread2.assertIsStarted();
-        assertIsStarted();
+        assertIsRunning();
     }
 
     public void testWhileShutdown() {
@@ -82,11 +83,5 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
         awaitThread1.assertIsTerminatedNormally();
         awaitThread2.assertIsTerminatedNormally();
         assertIsShutdown();
-    }
-
-    private void shutdown() {
-        ShutdownThread shutdownThread = scheduleShutdown();
-        joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedNormally();
     }
 }

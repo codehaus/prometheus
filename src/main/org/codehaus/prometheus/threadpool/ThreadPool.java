@@ -48,7 +48,7 @@ public interface ThreadPool {
      *
      * @return the job this ThreadPool is executing.
      */
-    WorkerJob getDefaultWorkerJob();
+    WorkerJob getWorkerJob();
 
     /**
      * Sets the WorkerJob this ThreadPool executes.
@@ -87,7 +87,7 @@ public interface ThreadPool {
     ThreadPoolState getState();
 
     /**
-     * Starts this ThreadPool. If the ThreadPool already is started, the call is ignored.
+     * Starts this ThreadPool. If the ThreadPool already is running, the call is ignored.
      *
      * @throws IllegalStateException when the ThreadPool is shutting down, shutdown or
      *                               if threads need to be created, but no default WorkerJob is set.

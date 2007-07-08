@@ -20,9 +20,9 @@ import java.util.concurrent.TimeoutException;
  *
  * The states a TestThread can be in are:
  * <ol>
- *  <li><b>new</b>: when the thread has been created but hasn't been started</li>
- * <li><b>started</b>: a thread that is started, but hasn't been terminated. A thread that is blocking
- * also is in the started state.
+ *  <li><b>new</b>: when the thread has been created but hasn't been running</li>
+ * <li><b>running</b>: a thread that is running, but hasn't been terminated. A thread that is blocking
+ * also is in the running state.
  * </li>
  * <li>terminated: when the thread completed the execution of his task</li>
  * </ol>
@@ -77,7 +77,7 @@ public class TestThread extends Thread {
     /**
      * Sets the interrupt status of the thread when it starts.
      *
-     * @param startInterrupted true if the thread should started, interrupted, false otherwise.
+     * @param startInterrupted true if the thread should running, interrupted, false otherwise.
      * @throws IllegalStateException if the TestThread isn't in the java.lang.Thread.State.NEW state anymore.
      */
     public void setStartInterrupted(boolean startInterrupted) {
@@ -105,10 +105,10 @@ public class TestThread extends Thread {
     }
 
     /**
-     * Returns true if this TestThread should start interrupted, false otherwise.
+     * Returns true if this TestThread should spawned_start interrupted, false otherwise.
      * This method can be called anytime.
      *
-     * @return true if this Thread should start interrupted, false otherwise.
+     * @return true if this Thread should spawned_start interrupted, false otherwise.
      */
     public boolean isStartInterrupted() {
         return startInterrupted;
@@ -198,14 +198,14 @@ public class TestThread extends Thread {
     }
 
     /**
-     * Asserts that the TestThread is in the new state (so hasn't start running).
+     * Asserts that the TestThread is in the new state (so hasn't spawned_start running).
      */
     public final void assertIsNew() {
         assertEquals(ThreadState.NEW, state);
     }
 
     /**
-     * Asserts that the TestThread is started (this also includes blocking).
+     * Asserts that the TestThread is running (this also includes blocking).
      */
     public final void assertIsStarted() {
         assertEquals(ThreadState.STARTED, state);

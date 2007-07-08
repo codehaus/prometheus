@@ -8,6 +8,7 @@ package org.codehaus.prometheus.blockingexecutor;
 import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
 import org.codehaus.prometheus.testsupport.TestRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 import java.util.concurrent.RejectedExecutionException;
 
@@ -29,12 +30,17 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         }
     }
 
+    public void testWhileUnstarted() {
+        newUnstartedBlockingExecutor(1, 1);
+        assertExecuteIsRejected();
+    }
+
     public void testInterruptedWhileWaiting() {
         int poolsize = 1;
         newStartedBlockingExecutor(0, poolsize);
 
         //place first task
-        spawned_placeTask(DELAY_EON_MS);
+        spawned_placeSleepingTask(DELAY_EON_MS);
 
         //place the second task. The placement of this task block because there is no space
         SleepingRunnable secondTask = new SleepingRunnable(DELAY_EON_MS);
@@ -51,39 +57,39 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         executeThread.assertIsInterruptedByException();
         assertActualPoolSize(poolsize);
         assertIsRunning();
-        secondTask.assertIsNew();
+        secondTask.assertIsUnstarted();
     }
-
-    private SleepingRunnable spawned_placeTask(long durationMs) {
-        SleepingRunnable task = new SleepingRunnable(durationMs);
-        ExecuteThread executeThread = scheduleExecute(task, START_UNINTERRUPTED);
-        joinAll(executeThread);
-        executeThread.assertIsTerminatedNormally();
-        return task;
-    }
-
-    //synchronous quueue
-
-    //there are no idle workers, but there is space in the queue
 
     public void testSuccess_noIdleWorkersButQueueHasSpace() {
         newStartedBlockingExecutor(10, 0);
 
-        SleepingRunnable task = spawned_placeTask(DELAY_EON_MS);
+        SleepingRunnable task = spawned_placeSleepingTask(DELAY_EON_MS);
 
         giveOthersAChance();
         assertActualPoolSize(0);
-        assertTasksOnWorkQueue(task);
+        assertWorkQueueContains(task);
         assertIsRunning();
-        task.assertIsNew();
+        task.assertIsUnstarted();
+    }
+
+    public void testSuccess_noIdleWorkersAndQueueHasSpace() {
+        newStartedBlockingExecutor(10, 1);
+
+        SleepingRunnable task = spawned_placeSleepingTask(DELAY_EON_MS);
+
+        giveOthersAChance();
+        assertActualPoolSize(1);
+        assertWorkQueueContains();
+        assertIsRunning();
+        task.assertIsStarted();
     }
 
     //there are idle workers but there is no queue capacity (synchronousqueue is used)
-    public void testSucccess_idleWorkers() throws InterruptedException {
+    public void testSucccess_idleWorkersAndQueueHasNoSpace() throws InterruptedException {
         int poolsize = 10;
         newStartedBlockingExecutor(0, poolsize);
 
-        SleepingRunnable task = spawned_placeTask(DELAY_EON_MS);
+        SleepingRunnable task = spawned_placeSleepingTask(DELAY_EON_MS);
 
         giveOthersAChance();
         assertActualPoolSize(poolsize);
@@ -92,13 +98,14 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         task.assertIsStarted();
     }
 
-    public void testWhileUnstarted() {
-        newUnstartedBlockingExecutor(1, 1);
+    public void testShuttingdown() {
+        newShuttingdownBlockingExecutor(DELAY_EON_MS);
         assertExecuteIsRejected();
     }
 
-    public void testExecuteShuttingDown() {
-        newShuttingDownBlockingExecutor(DELAY_EON_MS);
+    public void testWhileForcedShuttingdown() {
+        int poolsize = 3;
+        newForcedShuttingdownBlockingExecutor(DELAY_LONG_MS,poolsize);
         assertExecuteIsRejected();
     }
 
@@ -137,7 +144,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         //in the meanwhile we are going to shutdown the blockingexecutor
         spawned_assertShutdown();
         System.out.println("executor.shutdown is called");
-        assertIsShuttingDown();
+        assertIsShuttingdown();
 
         //now check that the executeThread fails with a RejectedExecutionException because
         //the blockingexecutor is shutting down.

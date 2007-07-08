@@ -5,6 +5,9 @@
  */
 package org.codehaus.prometheus.references;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+
 /**
  * The Take_Test unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#take()} method.
  *

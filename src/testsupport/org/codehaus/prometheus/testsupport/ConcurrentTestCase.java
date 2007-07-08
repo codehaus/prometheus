@@ -34,15 +34,6 @@ public abstract class ConcurrentTestCase extends TestCase {
         super(fixture);
     }
 
-    public void giveOthersAChance() {
-        giveOthersAChance(DELAY_TINY_MS);
-    }
-
-    public void giveOthersAChance(long ms) {
-        sleepMs(ms);
-        Thread.yield();//operation increases the chance of context switches, but it is allowed to be seen as a no-op
-    }
-
     @Override
     public void setUp() throws Exception {
         stopwatch = new Stopwatch();
@@ -77,45 +68,6 @@ public abstract class ConcurrentTestCase extends TestCase {
             } catch (InterruptedException e) {
                 fail(String.format("join on thread #%s was interrupted", k));
             }
-        }
-    }
-
-    /**
-     * Sleeps a certain number of milliseconds. If the calling thread is interrupted,
-     * the test fails.
-     * <p/>
-     * Only the thread that runs the testcase should call this method.
-     *
-     * @param ms the number of milliseconds to giveOthersAChance.
-     */
-    public void sleepMs(long ms) {
-        sleep(ms, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Sleeps a certain amount of time. If the calling thread is interrupted, the test
-     * fails.
-     * <p/>
-     * Only the thread that runs this testcase should call this method.
-     *
-     * @param period the period to giveOthersAChance. If the number is equal or smaller than zero, no
-     *               sleeping is done.
-     * @param unit   the timeunit of period
-     * @throws NullPointerException if unit is null.
-     */
-    public void sleep(long period, TimeUnit unit) {
-        if (unit == null) throw new NullPointerException();
-        if (period <= 0)
-            return;
-
-        long periodNs = unit.toNanos(period);
-        long ms = TimeUnit.NANOSECONDS.toMillis(periodNs);
-        int ns = (int) (periodNs % TimeUnit.MILLISECONDS.toNanos(1));
-
-        try {
-            Thread.sleep(ms, ns);
-        } catch (InterruptedException e) {
-            fail("giveOthersAChance was interrupted");
         }
     }
 }

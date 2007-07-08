@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.waitpoint;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
 /**
  * Unittests the {@link org.codehaus.prometheus.waitpoint.CloseableWaitpoint#pass()} method.
  *
@@ -45,7 +47,7 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
 
         PassThread passThread1 = schedulePass();
         PassThread passThread2 = schedulePass();
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
 
         passThread1.assertIsStarted();
         passThread2.assertIsStarted();
@@ -62,7 +64,7 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
         newClosedCloseableWaitpoint();
         PassThread passThread = schedulePass();
 
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         assertIsClosed();
         passThread.assertIsStarted();
     }
@@ -71,7 +73,7 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
         newClosedCloseableWaitpoint();
 
         PassThread passThread = schedulePass();
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
 
         passThread.interrupt();
         joinAll(passThread);
@@ -84,18 +86,17 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
         newClosedCloseableWaitpoint();
 
         PassThread passThread = schedulePass();
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
 
         Thread spurious = scheduleSpuriousWakeup();
         joinAll(spurious);
-        sleepMs(DELAY_TINY_MS);
-
+        giveOthersAChance();
 
         passThread.assertIsStarted();
 
         OpenThread openThread = scheduleOpen();
         joinAll(openThread);
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
 
         assertIsOpen();
         passThread.assertIsTerminatedNormally();

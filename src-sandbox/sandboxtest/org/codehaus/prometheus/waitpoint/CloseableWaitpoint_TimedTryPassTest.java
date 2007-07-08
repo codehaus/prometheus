@@ -5,6 +5,9 @@
  */
 package org.codehaus.prometheus.waitpoint;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+
 /**
  * Unittests the {@link org.codehaus.prometheus.waitpoint.CloseableWaitpoint#tryPass(long,java.util.concurrent.TimeUnit)}
  * method.
@@ -64,12 +67,12 @@ public class CloseableWaitpoint_TimedTryPassTest extends CloseableWaitpoint_Abst
         TimedTryPassThread tryPassThread = scheduleTimedTryPass(DELAY_LONG_MS);
 
         //make sure the thread is waiting.
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryPassThread.assertIsStarted();
 
         //interrupt the tryPass and make check that the thread was interrupted
         tryPassThread.interrupt();
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         tryPassThread.assertIsInterruptedByException();
     }
 

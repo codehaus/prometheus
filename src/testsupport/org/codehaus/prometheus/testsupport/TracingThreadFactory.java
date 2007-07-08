@@ -1,6 +1,7 @@
 package org.codehaus.prometheus.testsupport;
 
 import static junit.framework.Assert.*;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.Collections;
@@ -22,7 +23,7 @@ public class TracingThreadFactory implements ThreadFactory {
     /**
      * Creates a TracingThreadFactory with a {@link StandardThreadFactory}.
      */
-    public TracingThreadFactory(){
+    public TracingThreadFactory() {
         this(new StandardThreadFactory());
     }
 
@@ -32,8 +33,8 @@ public class TracingThreadFactory implements ThreadFactory {
      * @param targetFactory the ThreadFactory that is decorated.
      * @throws NullPointerException if targetFactory is null.
      */
-    public TracingThreadFactory(ThreadFactory targetFactory){
-        if(targetFactory == null)throw new NullPointerException();
+    public TracingThreadFactory(ThreadFactory targetFactory) {
+        if (targetFactory == null) throw new NullPointerException();
         this.targetFactory = targetFactory;
     }
 
@@ -51,12 +52,12 @@ public class TracingThreadFactory implements ThreadFactory {
      *
      * @return the number of created threads.
      */
-    public int getThreadCount(){
+    public int getThreadCount() {
         return threadList.size();
     }
 
     /**
-     * Returns a List containing all Threads that were created by this ThreadFactory. 
+     * Returns a List containing all Threads that were created by this ThreadFactory.
      *
      * @return a List containing all Threads that were created by the ThreadFactory.
      */
@@ -70,23 +71,33 @@ public class TracingThreadFactory implements ThreadFactory {
      * @param expected the expected number of threads.
      * @throws IllegalArgumentException if expected is smaller than zero.
      */
-    public void assertCreatedCount(int expected){
-        if(expected<0)throw new IllegalArgumentException();
-        assertEquals(expected,threadList.size());
+    public void assertCreatedCount(int expected) {
+        if (expected < 0) throw new IllegalArgumentException();
+        assertEquals(expected, threadList.size());
+    }
+
+    public void assertCreatedAndTerminatedCount(int expected){
+        assertCreatedCount(expected);
+        assertTerminatedCount(expected);
+    }
+
+    public void assertCreatedAndAliveCount(int expected) {
+        assertCreatedCount(expected);
+        assertAliveCount(expected);
     }
 
     /**
      * Asserts that all threads created by the target ThreadFactory have terminated.
      */
-    public void assertThreadsHaveTerminated(){
+    public void assertThreadsHaveTerminated() {
+        giveOthersAChance();
         //todo: also picks up unstarted ones
-        for(Thread thread:threadList){
-            assertFalse(String.format("Thread '%s' is still alive",thread),thread.isAlive());
+        for (Thread thread : threadList) {
+            assertFalse(String.format("Thread '%s' is still alive", thread), thread.isAlive());
         }
     }
 
     public Thread newThread(Runnable r) {
-        System.out.println("created total: "+threadList.size());
         Thread t = targetFactory.newThread(r);
         threadList.add(t);
         return t;
@@ -97,7 +108,29 @@ public class TracingThreadFactory implements ThreadFactory {
     }
 
     public void assertAllThreadsAlive() {
-        for(Thread thread:threadList)
+        for (Thread thread : threadList)
             assertTrue(thread.isAlive());
+    }
+
+    public int getAliveCount() {
+        int count = 0;
+        for (Thread thread : threadList) {
+            if (thread.isAlive())
+                count++;
+        }
+        return count;
+    }
+
+    //todo: picks up also unstarted threads
+    public int getTerminatedCount() {
+        return getThreadCount() - getAliveCount();
+    }
+
+    public void assertAliveCount(int expected) {
+        assertEquals(expected, getAliveCount());
+    }
+
+    public void assertTerminatedCount(int expected) {
+        assertEquals(expected, getTerminatedCount());
     }
 }

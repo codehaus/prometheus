@@ -2,6 +2,8 @@ package org.codehaus.prometheus.util;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

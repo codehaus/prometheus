@@ -35,7 +35,7 @@ public interface BlockingExecutorService extends BlockingExecutor {
     /**
      * Starts this BlockingExecutorService.
      * <p/>
-     * if already started or paused nothing happens
+     * if already running or paused nothing happens
      * if shutting down or shutdownNow -> illegalsstateexception
      */
     void start();
@@ -46,7 +46,7 @@ public interface BlockingExecutorService extends BlockingExecutor {
      * <p/>
      * If this BlockingExecutor already is shutting down or shutdownNow, this call is ignored.
      * <p/>
-     * This call doesn't block until all outstanding and currently started tasks are executed,
+     * This call doesn't block until all outstanding and currently running tasks are executed,
      * a {@link #awaitShutdown()} has to be used for that.
      */
     void shutdown();
@@ -59,7 +59,7 @@ public interface BlockingExecutorService extends BlockingExecutor {
      * If this BlockingExecutor already is shutting down, or shutdownNow,
      * this call is ignored.
      * <p/>
-     * This call doesn't block until all currently started tasks are
+     * This call doesn't block until all currently running tasks are
      * executed, a {@link #awaitShutdown()} has to be used for that.
      *
      * @return a List containing all not executed tasks.

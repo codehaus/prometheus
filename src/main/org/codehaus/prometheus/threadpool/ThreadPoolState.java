@@ -6,5 +6,5 @@ package org.codehaus.prometheus.threadpool;
  * @author Peter Veentjer.
  */
 public enum ThreadPoolState {
-    unstarted, started, shuttingdown, shutdown
+    unstarted, running, shuttingdown, forcedshuttingdown, shutdown
 }

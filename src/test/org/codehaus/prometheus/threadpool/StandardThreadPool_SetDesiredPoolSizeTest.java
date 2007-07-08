@@ -1,5 +1,8 @@
 package org.codehaus.prometheus.threadpool;
 
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+
 /**
  * Unittests the {@link StandardThreadPool#setDesiredPoolsize(int)} method.
  *
@@ -24,12 +27,14 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
-        setDesiredPoolSize(poolsize);
+        spawned_setDesiredPoolSize(poolsize);
 
-        assertIsStarted();
+        assertIsRunning();
         assertActualPoolsize(poolsize);
         assertDesiredPoolsize(poolsize);
         threadPoolThreadFactory.assertCreatedCount(poolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testPoolsizeIncreases() {
@@ -37,12 +42,14 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         newStartedThreadpool(oldpoolsize);
 
         int newpoolsize = 20;
-        setDesiredPoolSize(newpoolsize);
+        spawned_setDesiredPoolSize(newpoolsize);
 
-        assertIsStarted();
+        assertIsRunning();
         assertActualPoolsize(newpoolsize);
         assertDesiredPoolsize(newpoolsize);
         threadPoolThreadFactory.assertCreatedCount(newpoolsize);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testPoolsizeDecreases_IdleWorkersAreKilled() {
@@ -50,13 +57,16 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         newStartedThreadpool(oldpoolsize);
 
         int newpoolsize = 10;
-        setDesiredPoolSize(newpoolsize);
+        spawned_setDesiredPoolSize(newpoolsize);
 
         giveOthersAChance();
-        assertIsStarted();
+        assertIsRunning();
         assertActualPoolsize(newpoolsize);
         assertDesiredPoolsize(newpoolsize);
         threadPoolThreadFactory.assertCreatedCount(oldpoolsize);
+        threadPoolThreadFactory.assertAliveCount(newpoolsize);
+        threadPoolThreadFactory.assertTerminatedCount(oldpoolsize-newpoolsize);
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testPoolsizeDecreases_ActiveWorkersAreKilledAfterWorking() {
@@ -72,32 +82,41 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         int newPoolsize = 2;
         SetDesiredPoolsizeThread setSizeThread = scheduleSetDesiredPoolsize(newPoolsize);
         joinAll(setSizeThread);
-        assertIsStarted();
+        assertIsRunning();
         assertActualPoolsize(oldPoolsize);
         assertDesiredPoolsize(newPoolsize);
 
         //give the workers enough time to terminate
         sleepMs(DELAY_MEDIUM_MS * 3);
-        assertIsStarted();
+        assertIsRunning();
         assertActualPoolsize(newPoolsize);
         assertDesiredPoolsize(newPoolsize);
         threadPoolThreadFactory.assertCreatedCount(oldPoolsize);
+        threadPoolThreadFactory.assertAliveCount(newPoolsize);
+        threadPoolThreadFactory.assertTerminatedCount(oldPoolsize-newPoolsize);
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileUnstarted() {
         int oldPoolsize = 2;
         newUnstartedThreadPool(oldPoolsize);
 
-        int newPoolsize = 10;
-        setDesiredPoolSize(newPoolsize);
+        int newPoolsize = 5;
+        spawned_setDesiredPoolSize(newPoolsize);
         assertIsUnstarted();
         assertActualPoolsize(0);
         assertDesiredPoolsize(newPoolsize);
-        threadPoolThreadFactory.assertCreatedCount(0);
+        threadPoolThreadFactory.assertNoThreadsCreated();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileShuttingDown() {
-        newShuttingdownThreadpool(10, DELAY_EON_MS);
+        newShuttingdownThreadpool(3, DELAY_EON_MS);
+        assertSetDesiredPoolSizeIsRejected();
+    }
+
+    public void testWhileForcedShuttingdown(){
+        newForcedShuttingdownThreadpool(3,DELAY_LONG_MS);
         assertSetDesiredPoolSizeIsRejected();
     }
 
@@ -110,21 +129,23 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         int oldThreadcount = threadPoolThreadFactory.getThreadCount();
         ThreadPoolState oldState = threadpool.getState();
 
-        int desiredPoolsize = 10;
-        SetDesiredPoolsizeThread setSizeThread = scheduleSetDesiredPoolsize(desiredPoolsize);
+        int desiredPoolsize = oldThreadcount+3;
 
+        SetDesiredPoolsizeThread setSizeThread = scheduleSetDesiredPoolsize(desiredPoolsize);
         joinAll(setSizeThread);
         setSizeThread.assertIsTerminatedWithThrowing(IllegalStateException.class);
+
         assertEquals(oldState, threadpool.getState());
         assertActualPoolsize(oldThreadcount);
         assertDesiredPoolsize(oldThreadcount);
         threadPoolThreadFactory.assertCreatedCount(oldThreadcount);
+        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 
-    private void setDesiredPoolSize(int newpoolsize) {
-        SetDesiredPoolsizeThread setSizeThread = scheduleSetDesiredPoolsize(newpoolsize);
-
-        joinAll(setSizeThread);
-        setSizeThread.assertIsTerminatedNormally();
+    private void spawned_setDesiredPoolSize(int newpoolsize) {
+        SetDesiredPoolsizeThread t = scheduleSetDesiredPoolsize(newpoolsize);
+        joinAll(t);
+        t.assertIsTerminatedNormally();
     }
 }

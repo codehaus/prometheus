@@ -7,6 +7,7 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 import java.util.concurrent.RejectedExecutionException;
 
@@ -64,10 +65,14 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
 
     //==================== shutting down repeater ===============
 
-    public void testShuttingDownRepeater() throws InterruptedException {
-        newShuttingdownRepeater(2 * DELAY_SMALL_MS);
+    public void testWhileShuttingdown() throws InterruptedException {
+        newShuttingdownRepeater(2 * DELAY_MEDIUM_MS);
         assertRepeatIsRejected(new DummyRepeatable());
         assertRepeatIsRejected(null);
+    }
+
+    public void testWhileForcedShuttingdown(){
+        //todo
     }
 
     //================== interrupted while waiting to take place ===========
@@ -78,8 +83,7 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
 
         newRunningStrictRepeater(originalRepeatable);
         RepeatThread put = scheduleRepeat(new DummyRepeatable());
-
-        sleepMs(DELAY_TINY_MS);
+        giveOthersAChance();
         put.assertIsStarted();
         assertIsRunning();
         assertHasRepeatable(originalRepeatable);
@@ -91,7 +95,7 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
         assertHasRepeatable(originalRepeatable);
     }
 
-    //============== testShutdown =========
+    //============== testWhileShutdown =========
 
     public void testShutdownRepeater_strict() throws InterruptedException {
         testShutdownRepeater(true);

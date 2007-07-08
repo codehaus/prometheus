@@ -5,8 +5,11 @@
  */
 package org.codehaus.prometheus.testsupport;
 
+import junit.framework.Assert;
 import org.codehaus.prometheus.util.ConcurrencyUtil;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -20,10 +23,31 @@ import java.util.concurrent.locks.Lock;
  *
  * @author Peter Veentjer.
  */
-public class TestUtil {
+public final class TestUtil {
 
-    //random is not threadsafe, so make sure proper concurrency control is applied
+    //random is not threadsafe, so make sure proper synchronization is applied
     public final static Random random = new Random();
+
+    /**
+     * A Factory method for creating TestRunnables that sleeps.
+     *
+     * @param sleepMs the amount of milliseconds to sleep.
+     * @param interruptible if the sleeping should be interruptible or not
+     * @return  the created TestRunnable
+     */
+    public static TestRunnable newSleepingRunnable(long sleepMs, boolean interruptible){
+        return interruptible ? new SleepingRunnable(sleepMs):new UninterruptableSleepingRunnable(sleepMs);
+    }
+
+    public static List<TestRunnable> newUninterruptibleSleepingRunnables(long sleepMs, int count){
+        List<TestRunnable> list = new LinkedList<TestRunnable>();
+        for(int k=0;k<count;k++){
+            TestRunnable runnable = newSleepingRunnable(sleepMs,false);
+            list.add(runnable);
+        }
+        return list;
+    }
+
 
     /**
      * Returns a random boolean.
@@ -35,7 +59,7 @@ public class TestUtil {
     }
 
     /**
-     * Returns a random int
+     * Returns a random int 0<=value<=maxvalue
      *
      * @param maxvalue
      * @return a random int
@@ -45,7 +69,7 @@ public class TestUtil {
     }
 
     /**
-     * Returns a random int.
+     * Returns a random int that is equal or larger to zero.
      *
      * @return a random int.
      */
@@ -58,10 +82,22 @@ public class TestUtil {
         return Math.abs(random.nextLong() % maxvalue);
     }
 
+    /**
+     * Sleeps for a random amount of time.
+     *
+     * @param maxSleepMs the maximum amount of time to sleep
+     */
     public static void sleepRandomMs(long maxSleepMs) {
         sleepRandom(maxSleepMs, TimeUnit.MILLISECONDS);
     }
 
+
+    /**
+     * Sleeps a random amount of time.
+     *
+     * @param maxSleep the maximum amount of time
+     * @param unit
+     */
     public static void sleepRandom(long maxSleep, TimeUnit unit) {
         long sleepNs = randomLong(maxSleep);
 
@@ -74,21 +110,6 @@ public class TestUtil {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Sleeps a period in miliseconds.
-     *
-     * @param ms
-     */
-    public static void sleepMs(long ms) {
-        //todo: remove dependency
-        ConcurrencyUtil.sleepUninterruptibly(ms, TimeUnit.MILLISECONDS);
-    }
-
-
-    public static void allowOtherThreadsToRun() {
-        Thread.yield();
     }
 
     public static TestThread scheduleSignallAll(final Lock lock, final Condition cond) {
@@ -145,5 +166,53 @@ public class TestUtil {
         for (long j = 1; j <= i; j += 4)
             total += 1.0 / j - 1.0 / (j + 2);
         return 4 * total;
+    }
+
+    public static void giveOthersAChance() {
+        giveOthersAChance(3*ConcurrentTestCase.DELAY_TINY_MS);
+    }
+
+    public static void giveOthersAChance(long ms) {
+        Thread.yield();//operation increases the chance of context switches, but it is allowed to be seen as a no-op
+        sleepMs(ms);
+    }
+
+    /**
+     * Sleeps a certain number of milliseconds. If the calling thread is interrupted,
+     * the test fails.
+     * <p/>
+     * Only the thread that runs the testcase should call this method.
+     *
+     * @param ms the number of milliseconds to giveOthersAChance.
+     */
+    public static void sleepMs(long ms) {
+        sleep(ms, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Sleeps a certain amount of time. If the calling thread is interrupted, the test
+     * fails.
+     * <p/>
+     * Only the thread that runs this testcase should call this method.
+     *
+     * @param period the period to giveOthersAChance. If the number is equal or smaller than zero, no
+     *               sleeping is done.
+     * @param unit   the timeunit of period
+     * @throws NullPointerException if unit is null.
+     */
+    public static void sleep(long period, TimeUnit unit) {
+        if (unit == null) throw new NullPointerException();
+        if (period <= 0)
+            return;
+
+        long periodNs = unit.toNanos(period);
+        long ms = TimeUnit.NANOSECONDS.toMillis(periodNs);
+        int ns = (int) (periodNs % TimeUnit.MILLISECONDS.toNanos(1));
+
+        try {
+            Thread.sleep(ms, ns);
+        } catch (InterruptedException e) {
+            Assert.fail("giveOthersAChance was interrupted");
+        }
     }
 }

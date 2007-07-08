@@ -56,7 +56,7 @@ public class ConditionUtil_AwaitNanosAndThrowTest extends ConditionUtil_Abstract
                 ConditionUtil.awaitAndThrow(cond,)
             }
         };
-        t.start();
+        t.spawned_start();
 
         
 

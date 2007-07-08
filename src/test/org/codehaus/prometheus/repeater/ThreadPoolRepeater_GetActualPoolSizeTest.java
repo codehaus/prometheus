@@ -59,30 +59,36 @@ public class ThreadPoolRepeater_GetActualPoolSizeTest extends ThreadPoolRepeater
 
     //========== shutting down ================
 
-    public void testShuttingdown_strict() {
-        testShuttingdown(true);
+    public void testWhileShuttingdown_strict() {
+        testWhileShuttingdown(true);
     }
 
-    public void testShuttingdown_relaxed() {
-        testShuttingdown(false);
+    public void testWhileShuttingdown_relaxed() {
+        testWhileShuttingdown(false);
     }
 
-    public void testShuttingdown(boolean strict) {
+    public void testWhileShuttingdown(boolean strict) {
         newShuttingdownRepeater(strict, DELAY_SMALL_MS);
         assertActualPoolSize(1);
     }
 
+    //=============== forced shuttingdown ==============
+
+    public void testWhileForcedShuttingdown(){
+       //todo 
+    }
+
     //============= shut down ================
 
-    public void testShutdown_strict() {
-        testShutdown(true);
+    public void testWhileShutdown_strict() {
+        testWhileShutdown(true);
     }
 
-    public void testShutdown_relaxed() {
-        testShutdown(false);
+    public void testWhileShutdown_relaxed() {
+        testWhileShutdown(false);
     }
 
-    public void testShutdown(boolean strict) {
+    public void testWhileShutdown(boolean strict) {
         newShutdownRepeater(strict);
         assertActualPoolSize(0);
     }

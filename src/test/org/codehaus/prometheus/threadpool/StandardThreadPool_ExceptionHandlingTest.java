@@ -2,6 +2,8 @@ package org.codehaus.prometheus.threadpool;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.exceptionhandler.NullExceptionHandler;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 import org.codehaus.prometheus.testsupport.ThrowingRunnable;
 
 /**
@@ -19,35 +21,49 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         assertTrue(threadpool.getExceptionHandler() instanceof NullExceptionHandler);
     }
 
-    //every time the task is executed, an exception is thrown.
-    //it also tests that an exception doesn't corrupt the threadpool (so workers work
-    //again after receiving an exception
-    public void testHandlerIsCalled() {
-        int poolsize = 2;
+    /**
+     * every time the task is executed, an exception is thrown.
+     * it also tests that an exception doesn't corrupt the threadpool (so workers work
+     * again after receiving an exception
+     */
+    public void testHandlerIsCalledForRunWorkAndNonInterruptedException() {
+        int poolsize = 3;
         newStartedThreadpool(poolsize);
 
         int errorcount = 30;
-        for (int k = 0; k < errorcount; k++)
-            taskQueue.add(new ThrowingRunnable());
+        createBunchOfProblemTasks(errorcount);
 
-        giveOthersAChance();
-        assertActualPoolsize(poolsize);
-        assertIsStarted();
+        sleepMs(DELAY_LONG_MS);
+        threadPoolThreadFactory.assertCreatedAndAliveCount(poolsize);
         threadPoolExceptionHandler.assertCount(errorcount);
+        assertActualPoolsize(poolsize);
+        assertDesiredPoolsize(poolsize);
+        assertIsRunning();
     }
 
-    public void testHandlerIsNotCalledForIdleWorkerThatIsInterrupted() {
-        newStartedThreadpool(10);
+    private void createBunchOfProblemTasks(int errorcount) {
+        for (int k = 0; k < errorcount; k++)
+            taskQueue.add(new ThrowingRunnable());
+    }
 
-        //all workers are now idle because no work is in the taskqueue.
-        //shut down the
-        ShutdownNowThread shutdownThread = scheduleShutdownNow();
-        joinAll(shutdownThread);
-        shutdownThread.assertIsTerminatedNormally();
+    public void testHandlerIsNotCalledForGetWorkAndInterruptedException() {
+        int poolsize = 3;
+        newStartedThreadpool(poolsize);
+
+        spawned_assertShutdownNow();
 
         //make sure that no exception has been thrown.
         giveOthersAChance();
+        threadPoolThreadFactory.assertCreatedAndTerminatedCount(poolsize);
         threadPoolExceptionHandler.assertCount(0);
+    }
+
+    public void test_getWork_otherException() {
+        //todo
+    }
+
+    public void test_getShuttingdownWork_otherException() {
+        //todo
     }
 
     public void testSet_whileUnstarted() {
@@ -61,7 +77,17 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
     }
 
     public void testSet_whileShuttingDown() {
-        newShuttingdownThreadpool(10, DELAY_EON_MS);
+        newShuttingdownThreadpool(3, DELAY_EON_MS);
+        assertSetHandlerWorks();
+    }
+
+    public void testSetWhileForcedShuttingdown() {
+        newForcedShuttingdownThreadpool(3, DELAY_LONG_MS);
+        assertSetHandlerWorks();
+    }
+
+    public void testSetWhileShutdown() {
+        newShutdownThreadpool();
         assertSetHandlerWorks();
     }
 

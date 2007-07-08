@@ -7,6 +7,7 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +31,24 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         assertIsRunning();
     }
 
+
+    public void testWhileUnstarted() {
+        newUnstartedStrictRepeater();
+
+        CountingRunnable task = new CountingRunnable();
+        Repeatable repeatable = new RepeatableRunnable(task);
+        TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(repeatable, 1000);
+        joinAll(tryRepeatThread);
+
+        tryRepeatThread.assertSuccess();
+        assertIsRunning();
+        assertHasRepeatable(repeatable);
+
+        giveOthersAChance();
+
+        task.assertExecutedOnceOrMore();
+    }
+
     public void testRepeatNull() throws InterruptedException, TimeoutException {
         CountingRunnable task = new CountingRunnable();
         RepeatableRunnable repeatable = new RepeatableRunnable(task);
@@ -41,6 +60,26 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         assertHasRepeatable(null);
         task.assertNotRunningAnymore();
     }
+
+    public void testWhileRunning_someWaitingNeeded() {
+            newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_MEDIUM_MS)));
+            giveOthersAChance();
+
+            CountingRunnable task = new CountingRunnable();
+            Repeatable repeatable = new RepeatableRunnable(task);
+            TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(repeatable, DELAY_LONG_MS);
+
+            giveOthersAChance();
+            tryRepeatThread.assertIsStarted();
+
+            joinAll(tryRepeatThread);
+            tryRepeatThread.assertSuccess();
+            assertIsRunning();
+            assertHasRepeatable(repeatable);
+
+            task.assertExecutedOnceOrMore();
+        }
+
 
     public void testNegativeTimeout() throws InterruptedException {
         CountingRunnable task = new CountingRunnable();
@@ -74,7 +113,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         assertHasRepeatable(originalRepeatable);
     }
 
-    public void testShuttingDown() throws TimeoutException, InterruptedException {
+    public void testWhileShuttingDown() throws TimeoutException, InterruptedException {
         newShuttingdownRepeater(DELAY_MEDIUM_MS);
         giveOthersAChance();
 
@@ -86,6 +125,10 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         assertIsShuttingdown();
         assertHasRepeatable(originalTask);
         task.assertNotExecuted();
+    }
+
+    public void testWhileForcedShuttingdown(){
+        //todo
     }
 
     public void testInterruptedWhileWaiting() {
@@ -104,7 +147,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         assertHasRepeatable(originalRepeatable);
     }
 
-    public void testShutdown() throws InterruptedException {
+    public void testWhileShutdown() throws InterruptedException {
         newShutdownRepeater();
         assertRepeatIsRejected();
         assertIsShutdown();
@@ -120,41 +163,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         }
     }
 
-    public void testNotStarted() {
-        newUnstartedStrictRepeater();
 
-        CountingRunnable task = new CountingRunnable();
-        Repeatable repeatable = new RepeatableRunnable(task);
-        TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(repeatable, 1000);
-        joinAll(tryRepeatThread);
-
-        tryRepeatThread.assertSuccess();
-        assertIsRunning();
-        assertHasRepeatable(repeatable);
-
-        giveOthersAChance();
-
-        task.assertExecutedOnceOrMore();
-    }
-
-    public void testStarted_someWaitingNeeded() {
-        newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_MEDIUM_MS)));
-        giveOthersAChance();
-
-        CountingRunnable task = new CountingRunnable();
-        Repeatable repeatable = new RepeatableRunnable(task);
-        TimedTryRepeatThread tryRepeatThread = scheduleTimedTryRepeat(repeatable, DELAY_LONG_MS);
-
-        giveOthersAChance();
-        tryRepeatThread.assertIsStarted();
-
-        joinAll(tryRepeatThread);
-        tryRepeatThread.assertSuccess();
-        assertIsRunning();
-        assertHasRepeatable(repeatable);
-
-        task.assertExecutedOnceOrMore();
-    }
 
     //todo test that the running task is not interrupted by repeating a task
 }

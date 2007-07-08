@@ -6,8 +6,10 @@
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
-import org.codehaus.prometheus.testsupport.NonInterruptableSleepingRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import org.codehaus.prometheus.testsupport.UninterruptableSleepingRunnable;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#shutdownNow()} method.
@@ -16,15 +18,15 @@ import org.codehaus.prometheus.testsupport.SleepingRunnable;
  */
 public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_AbstractTest {
 
-    public void testNotStarted() {
+    public void testWhileUnstarted() {
         newUnstartedStrictRepeater();
 
-        shutdownNow();
+        spawned_shutdownNow();
 
         assertIsShutdown();
     }
 
-    public void testRunningTask() throws InterruptedException {
+    public void testWhileRunning_repeatableIsRunning() throws InterruptedException {
         CountingRunnable task = new CountingRunnable();
         newRunningStrictRepeater(new RepeatableRunnable(task));
         assertShutdownHappens();
@@ -32,32 +34,34 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
     }
 
-    public void testShutdownNowCantForceNonInterruptibleTaskToEnd() {
-        NonInterruptableSleepingRunnable task = new NonInterruptableSleepingRunnable(DELAY_SMALL_MS);
-        newRunningStrictRepeater(new RepeatableRunnable(task));
-
-        shutdownNow();
-        assertIsShuttingdown();
-
-        assertIsShuttingdown();
-        awaitShutdown();
-        assertIsShutdown();
-    }
-
-    public void testRunningNullTask() {
+    public void testWhileRunning_noRepeatableIsSet() {
         newRunningStrictRepeater();
         assertShutdownHappens();
         assertActualPoolSize(0);
     }
 
-    public void testStartedEmptyPool() {
+
+    public void testShutdownNowCantForceNonInterruptibleTaskToEnd() {
+        UninterruptableSleepingRunnable task = new UninterruptableSleepingRunnable(DELAY_SMALL_MS);
+        newRunningStrictRepeater(new RepeatableRunnable(task));
+
+        spawned_shutdownNow();
+        assertIsShuttingdown();
+
+        assertIsShuttingdown();
+        spawned_awaitShutdown();
+        assertIsShutdown();
+    }
+
+
+    public void testStarted_poolIsEmpty() {
         newRunningRepeater(true, 0);
-        shutdownNow();
+        spawned_shutdownNow();
         assertIsShutdown();
         assertActualPoolSize(0);
     }
 
-    public void testShutdownWhileShuttingDown() {
+    public void testWhileShuttingdown() {
         newShuttingdownRepeater(DELAY_SMALL_MS);
         repeater.shutdownNow();
         assertIsShuttingdown();
@@ -68,7 +72,11 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
     }
 
-    public void testShutdownWhileShutdown() {
+    public void testWhileForcedShuttingdown(){
+        //todo
+    }
+
+    public void testWhileShutdown() {
         newShutdownRepeater();
         repeater.shutdownNow();
         assertIsShutdown();
@@ -87,12 +95,12 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         task.assertIsStarted();
 
         //now shutdown the repeater, this should interrupt the placement of the task
-        shutdownNow();
+        spawned_shutdownNow();
 
         giveOthersAChance();
         task.assertIsInterrupted();
 
-        awaitShutdown();
+        spawned_awaitShutdown();
         stopwatch.stop();
 
         Thread.yield();
@@ -101,22 +109,10 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         stopwatch.assertElapsedSmallerThanMs(1000);
     }
 
-    private void shutdownNow() {
-        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
-        joinAll(shutdownNowThread);
-        shutdownNowThread.assertIsTerminatedNormally();
-    }
-
-    private void awaitShutdown() {
-        AwaitShutdownThread awaitShutdownThread = scheduleAwaitShutdown();
-        joinAll(awaitShutdownThread);
-        awaitShutdownThread.assertIsTerminatedNormally();
-    }
-
     public void assertShutdownHappens() {
-        shutdownNow();
+        spawned_shutdownNow();
 
-        awaitShutdown();
+        spawned_awaitShutdown();
 
         assertIsShutdown();
     }
