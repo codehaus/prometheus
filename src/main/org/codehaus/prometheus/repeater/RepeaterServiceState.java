@@ -11,5 +11,5 @@ package org.codehaus.prometheus.repeater;
  * @author Peter Veentjer.
  */
 public enum RepeaterServiceState {
-    Unstarted, Running, Shuttingdown, Shutdown
+    unstarted, running, shuttingdown, shutdown
 }

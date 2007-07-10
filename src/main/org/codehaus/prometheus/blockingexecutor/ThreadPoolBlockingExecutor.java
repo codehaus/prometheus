@@ -19,27 +19,35 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 
 /**
- * An implementation of an {@link BlockingExecutorService} that uses a {@link ThreadPool} for thread
- * management.
+ * An implementation of a {@link BlockingExecutorService} that uses a {@link ThreadPool} for thread
+ * management and a workqueue (a {@link BlockingQueue}) to store unprocessed jobs.
  * <p/>
- * Als de threadpool gaat shut downen, krijg je geen garantie dat het werk dat uitstaat nog uitgevoerd
- * worden. Als je er werk in zet, en je ziet dat de
+ * <h1>Out of order execution</h1> 
+ * Event though a blocking queue is used to store the items,and an item won't be returned out of order
+ * (FIFO contract) it could be that:
+ * <ol>
+ *  <li>a task takes a longer time than others to execute</li>
+ *  <li>a taken task hasn't had the time to execute (maybe unlucky context switches).</li>
+ * </ol>
+ * The FIFO contract can also be broken, check the {@link PriorityBlockingQueue}. Only when there is a
+ * single thread you get the FIFO guarantee.
  * <p/>
- * Out of order execution with executors. Event though a blocking queue is used to store the items,
- * and an item won't be returned out of order (FIFO contract) it could be that:
- * -a task takes a longer time than others to execute
- * -a taken task hasn't had the time to execute (maybe unlucky context switches).
- * Fifo contract can be broken, check the PriorityBlockingQueue. Onlky when there is a single thread
- * you get the fifo guarantee.
- * <p/>
- * What happens if there are no threads in the threadpool, and the blocking executor is shut down.
- * New work won't be accepted, but outstanding work is not processed and new worker-thread creation
- * is not allowed meaning that there could be a deadlock: the blocking executor can't be shut down.
- * <p/>
- * If a task placement is running before a shutdown, but completes after the system is shutting down,
+ * <h1>Bounded workqueue</h1>
+ * <p>
+ * If you don't have control on the number of tasks in the workqueue, this could lead to resource problems
+ * like running out of memory. That is why it is better to use a bounded BlockingQueue (an unbounded
+ * blockingqueue would also not lead to blocking behaviour).
+ * </p>
+ * <h1>Workqueue without internal capacity</h1>
+ * <p>
+ * In some cases you don't want any unprocessed work, if that is the case, you can use a
+ * {@link SynchronousQueue} as workqueue. A SynchronousQueue only accepts tasks if there is a
+ * worker thread waiting for it. If no worker thread is available, the submission of the task blocks.
+ * </p>
+  * If a task placement is running before a shutdown, but completes after the system is shutting down,
  * the placing thread is responsible to make sure that the task is processed. This is done by removing
  * the task from the queue if it is still there and throwing a RejectedExecutionException or if the
- * task isn't on the queue, it is (being) processed.-g-get
+ * task isn't on the queue, it is (being) processed.
  *
  * @author Peter Veentjer.
  */
@@ -71,19 +79,24 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
     }
 
     /**
-     * @param poolsize
-     * @param factory
-     * @param workQueue
+     * Creates a ThreadPoolBlockingExecutor with the given poolsize, ThreadPool
+     * and workqueue.
+     *
+     * @param poolsize    the initial number of threads in the threadpool
+     * @param factory the ThreadFactory responsible for filling the threadpool
+     * @param workQueue the BlockingQueue used to store unprocessed work.
+     * @throws IllegalArgumentException if poolsize is smaller than zero.
+     * @throws NullPointerException if factory or workQueue is null.
      */
     public ThreadPoolBlockingExecutor(int poolsize, ThreadFactory factory, BlockingQueue<Runnable> workQueue) {
         this(createDefaultThreadPool(factory, poolsize), workQueue);
     }
 
     /**
-     * Creates a new ThreadPoolBlockingExecutor with the given ThreadPool and WorkQueue.
+     * Creates a ThreadPoolBlockingExecutor with the given ThreadPool and workqueue.
      *
-     * @param threadPool
-     * @param workQueue
+     * @param threadPool the ThreadPool that is used to manage threads.
+     * @param workQueue the BlockingQueue used to store unprocessed work.
      * @throws NullPointerException if threadPool or workQueue is null.
      */
     public ThreadPoolBlockingExecutor(ThreadPool threadPool, BlockingQueue<Runnable> workQueue) {
@@ -212,9 +225,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         if (task == null) throw new NullPointerException();
 
         ensurePoolRunning();
-        //System.out.println("placing task: "+task);
         workQueue.put(task);
-        //System.out.println("finished placing task: "+task);
         ensureTaskHandeled(task);
     }
 

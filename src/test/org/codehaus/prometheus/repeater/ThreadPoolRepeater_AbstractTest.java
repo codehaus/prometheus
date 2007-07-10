@@ -159,22 +159,22 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
     }
 
     public void assertIsUnstarted() {
-        assertEquals(RepeaterServiceState.Unstarted, repeater.getState());
+        assertEquals(RepeaterServiceState.unstarted, repeater.getState());
     }
 
     public void assertIsShutdown() {
-        assertEquals(RepeaterServiceState.Shutdown, repeater.getState());
+        assertEquals(RepeaterServiceState.shutdown, repeater.getState());
         assertActualPoolSize(0);
         if (repeaterThreadFactory != null)
             repeaterThreadFactory.assertThreadsHaveTerminated();
     }
 
     public void assertIsRunning() {
-        assertEquals(RepeaterServiceState.Running, repeater.getState());
+        assertEquals(RepeaterServiceState.running, repeater.getState());
     }
 
     public void assertIsShuttingdown() {
-        assertEquals(RepeaterServiceState.Shuttingdown, repeater.getState());
+        assertEquals(RepeaterServiceState.shuttingdown, repeater.getState());
         //todo: controleren dat er minimaal 1 actieve thread is
     }
 
@@ -221,7 +221,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         joinAll(t);
         t.assertIsTerminatedNormally();
         RepeaterServiceState state = repeater.getState();
-        assertTrue(state == RepeaterServiceState.Shutdown || state == RepeaterServiceState.Shuttingdown);
+        assertTrue(state == RepeaterServiceState.shutdown || state == RepeaterServiceState.shuttingdown);
     }
 
     public ShutdownThread scheduleShutdown() {
@@ -261,7 +261,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
             assertTrue(success);
         }
 
-        public void assertFailure() {
+        public void assertFailed() {
             assertIsTerminatedNormally();
             assertFalse(success);
         }

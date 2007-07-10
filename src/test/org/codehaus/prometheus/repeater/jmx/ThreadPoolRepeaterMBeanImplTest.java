@@ -95,7 +95,7 @@ public class ThreadPoolRepeaterMBeanImplTest extends TestCase {
     }
 
     public void testGetState() {
-        RepeaterServiceState state = RepeaterServiceState.Running;
+        RepeaterServiceState state = RepeaterServiceState.running;
         expect(repeaterMock.getState()).andReturn(state);
         replayMocks();
         RepeaterServiceState foundState = mbean.getState();

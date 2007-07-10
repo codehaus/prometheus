@@ -7,5 +7,15 @@ package org.codehaus.prometheus.repeater;
  */
 public class ThreadPoolRepeater_ShutdownAfterFalseTest extends ThreadPoolRepeater_AbstractTest{
 
-    public void testDummy(){}
+    public void testNoShutdownAfterFalse_noShutdown(){
+
+    }
+
+    public void testShutdownAfterFalse_repeatedExecution(){
+
+    }
+
+    public void testShutdownAfterFalse_termination(){
+        
+    }
 }

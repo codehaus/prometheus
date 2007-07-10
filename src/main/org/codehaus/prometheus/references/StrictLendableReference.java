@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p/>
  * The StrictLendableReference causes contention when a new reference is set, because taking/putting
  * threads are going to block until all references are returned. If it doesn't matter that different
- * values are lend at any given moment, the {@link org.codehaus.prometheus.references.RelaxedLendableReference} is a better performing
+ * values are lend at any given moment, the {@link RelaxedLendableReference} is a better performing
  * alternative.
  * <p/>
  * <td><b>Fairness</b></td>
@@ -254,7 +254,6 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
         takebackRef = ref;
         return oldRef;
     }
-
 
     public E tryPut(E newRef, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
         long timeoutNs = toUsableNanos(timeout, unit);

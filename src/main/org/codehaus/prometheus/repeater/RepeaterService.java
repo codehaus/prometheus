@@ -38,7 +38,7 @@ import java.util.concurrent.TimeoutException;
  * methods.
  * </p>
  * <p/>
- * Pauzing will be added in one of the next releases.
+ * Pauzing/throttling will be added in one of the next releases.
  *
  * @author Peter Veentjer.
  */

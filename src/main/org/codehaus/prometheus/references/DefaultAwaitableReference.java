@@ -15,7 +15,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * The default implementation of the {@link AwaitableReference} interface.
+ * The default {@link AwaitableReference} implementation.
  * <p/>
  * This implementation uses a {@link Lock} as mainLock to provide a mutex where a critical section
  * is required. This mainLock also is used to create a {@link Condition}:
@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p/>
  * The takes don't require the Lock if there is a reference available. This means that there will be
  * less overhead, although in the newer virtual machines locking is a lot less expensive. It also
- * means that no InterruptedException is thrown when a reference is available.
+ * means that returning a reference is favored above throwing an InterruptedException 
  * <p/>
  * todo: lock fairness
  *
@@ -37,8 +37,8 @@ public class DefaultAwaitableReference<E> extends AbstractAwaitableReference<E> 
 
     private final Lock mainLock;
     private final Condition referenceAvailableCondition;
-    //this reference needs to be volatile because it is also accessed without being in a
-    //synchronized block.
+    //this reference needs to be volatile because it is also accessed without being used
+    //inside synchronized context.
     private volatile E reference;
 
     /**
@@ -75,7 +75,7 @@ public class DefaultAwaitableReference<E> extends AbstractAwaitableReference<E> 
      * Constructs a new DefaultAwaitableReference with the given Lock and reference.
      *
      * @param reference the reference this DefaultAwaitableReference is going to contain.
-     *                  This reference can be <tt>null</tt>.
+     *                  This is allowed to be <tt>null</tt>.
      * @param mainLock  the main Lock
      * @throws NullPointerException if mainLock is <tt>null</tt>.
      */
@@ -203,9 +203,8 @@ public class DefaultAwaitableReference<E> extends AbstractAwaitableReference<E> 
      * @throws TimeoutException     if a timeout occurrs.
      */
     private void waitUntilReferenceAvailable(long timeoutNs) throws InterruptedException, TimeoutException {
-        while (noReferenceAvailable()) {
-            timeoutNs = awaitNanosAndThrow(referenceAvailableCondition, timeoutNs);
-        }
+        while (noReferenceAvailable())
+            timeoutNs = awaitNanosAndThrow(referenceAvailableCondition, timeoutNs);        
     }
 
     public boolean isTakePossible() {
@@ -230,10 +229,10 @@ public class DefaultAwaitableReference<E> extends AbstractAwaitableReference<E> 
      * Stores the new Reference. If the newReference is not <tt>null</tt>, all threads waiting for
      * the referenceAvailableCondition are signalled.
      * <p/>
-     * This call only should be made by a thread that acquired the mainLock.
+     * This call only should be made when the mainLock is held.
      *
      * @param newReference the new reference, it is allowed to be <tt>null</tt>..
-     * @return returns the old reference.
+     * @return returns the old reference. This value can be null.
      */
     private E postNewReference(E newReference) {
         E oldReference = reference;

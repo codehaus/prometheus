@@ -6,8 +6,7 @@
 package org.codehaus.prometheus.references;
 
 /**
- * An {@link org.codehaus.prometheus.references.AwaitableReference} that adds the concept of
- * taking back the lend reference.
+ * An {@link AwaitableReference} that adds the concept of taking back the lend reference.
  * <p/>
  * todo:synchronization stone that makes it easy to exchange a reference from one thread to zero or
  * more threads. A LendableReference stores a reference: if a thread wants to take that reference,
@@ -25,11 +24,11 @@ package org.codehaus.prometheus.references;
  * </pre>
  * <p/>
  * Depending on the implementation, it could be that multiple Threads are lending the same reference
- * at any moment. For more information see the {@link org.codehaus.prometheus.references.StrictLendableReference} and the
- * {@link org.codehaus.prometheus.references.RelaxedLendableReference}.
+ * at any moment. For more information see the {@link StrictLendableReference} and the
+ * {@link RelaxedLendableReference}.
  * <p/>
  * Depending on the implementation, a new value can be set under certain conditions. In case of the
- * {@link org.codehaus.prometheus.references.StrictLendableReference} a new reference can only be set, if all lending threads have
+ * {@link StrictLendableReference} a new reference can only be set, if all lending threads have
  * returned the lend reference.
  * <p/>
  * The reference check for takeback is done based on equals method. So you can send back a different
@@ -68,6 +67,11 @@ package org.codehaus.prometheus.references;
  * hands out a different resource for every request (a database connection for example). With a
  * LendableReference, you get the same reference for every request (unless a new reference is set
  * between requests). But both structures require that the resource needs to be taken back.
+ * </dd>
+ * <dt>Resetting the reference</dt>
+ * <dd>
+ * It is also possible to remove the reference when taking back. This can be done by the
+ * {@link #takebackAndReset(Object)} method.
  * </dd>
  * <p/>
  * For other comparisons between the LendableReference and the synchronization stones from

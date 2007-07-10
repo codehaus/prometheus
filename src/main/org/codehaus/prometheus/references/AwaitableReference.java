@@ -25,8 +25,7 @@ import java.util.concurrent.TimeoutException;
  * <dt><b>AwaitableReference vs LendableReference</b></dt>
  * <dd>
  * The AwaitableReference has no concept of taking values back (a value that is taken can't to be
- * taken back). See the {@link LendableReference} if this is
- * required.
+ * taken back). See the {@link LendableReference} if this is required.
  * </dd>
  * <p/>
  * <dt><b>AwaitableReference vs Condition</b></dt>
@@ -38,9 +37,10 @@ import java.util.concurrent.TimeoutException;
  * The difference between a {@link java.util.concurrent.BlockingQueue} and an AwaitableReference,
  * is that items normally are removed from the BlockingQueue when it is taken. With an
  * AwaitableReference the item is allowed to stay in the AwaitableReference when it is taken. An
- * AwaitableReference has a capacity of one at most, the BlockingQueue has an unlimited no maximum
- * capacity. One could modify a BlockingQueue so it behaves like an AwaitableReference, but this
- * doesn't make the usage much clearer. That is why I decides to create the AwaitableReference.
+ * AwaitableReference has a capacity of one at most, the BlockingQueue has an unlimited
+ * capacity (unless it is bounded). One could modify a BlockingQueue so it behaves like an
+ * AwaitableReference, but this doesn't make the usage much clearer. That is why I decides to create
+ * the AwaitableReference.
  * </dd>
  * <p/>
  * <dt><b>AwaitableReference vs SynchronousQueue</b></dt>
@@ -66,10 +66,10 @@ import java.util.concurrent.TimeoutException;
  * <dd>
  * The difference between a {@link java.util.concurrent.Future} and an AwaitableReference is that a
  * Future is a single shot mechanism (aka latch) that gets in a final state as soon as a reference
- * (the result of a asynchronous action) is available. The AwaitableReference has no final state,
+ * (the result of an asynchronous executed task) is available. The AwaitableReference has no final state,
  * and the reference it contains, can change multiple times. Another difference is that a Future
- * only contains functionality for waiting for completion, and not for actions to complete the
- * Future.
+ * only contains functionality for waiting for completion, and not the actions to complete the
+ * Future (in case of a Runnable, that would be the run method).
  * </dd>
  * <p/>
  * <dt><b>Save handoff</b></dt>

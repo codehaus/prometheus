@@ -7,7 +7,7 @@ package org.codehaus.prometheus.references;
 
 /**
  * A RuntimeException thrown when attempting to take back an invalid reference to a
- * {@link org.codehaus.prometheus.references.LendableReference}.
+ * {@link LendableReference}.
  *
  * @author Peter Veentjer.
  */

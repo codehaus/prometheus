@@ -7,37 +7,36 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 
 /**
- * The ThreadPool is reponsible for managing a set of threads.
- *
- * <p/>
+ * <p>
+ * The ThreadPool is reponsible for managing a set of threads. Threads in threadpools are reused, so you don't
+ * want to throw them away.
+ * </p>
+ * <p>
  * The workers in the ThreadPool keep repeating a {@link WorkerJob}. A threadpool can have
  * a default workjob for those cases you always want to keep repeating the same job over
  * and over. But a future improvement is planned: creating a Worker with a given WorkerJob.
  * For a worker to execute a WorkJob, it first needs to execute {@link WorkerJob#getWork()} method
- * and after it has got his task it calls the {@link org.codehaus.prometheus.threadpool.WorkerJob#runWork(Object)}
+ * and after it has got his task it calls the {@link WorkerJob#runWork(Object)}
  * method. The getWork could be taking a reference from a LendableReference for example
  * (see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater}) or taking a task from a
  * blocking queue {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor}. Workers
- * that are idle, are executing the getWork method (they are waiting for something to process) and else
+ * that are idle, are executing the getWork method (they are waiting for work to execute) and else
  * they are working.
- * <p/>
- * <p/>
- * <p/>
+ * </p>
+ * <p>
+ * When a ThreadPool is shutdown, it starts calling the {@link WorkerJob#getShuttingdownWork()}.
+ * When a ThreadPool is forced to shutdown by calling the {@link #shutdownNow()} method, no methods
+ * are called on the WorkerJob anymore and the pooled thread is able to rest in peace.
+ * </p>
+ * <h1>Exception handling</h1>
+ * <p>
  * Exception handler: by injecting an instanceof of an {@link ExceptionHandler} one is able to
- * handle exceptions. Default a {@link org.codehaus.prometheus.exceptionhandler.NullExceptionHandler} is used.
+ * handle exceptions. Default a {@link org.codehaus.prometheus.exceptionhandler.NullExceptionHandler}
+ * is used.
  * <p/>
- * <p/>
- * What does it mean when the poolsize grows.
- * does a worker need to repeat it's task? Or is this a responsibility from it's container like the repeater
- * or blockingexecutor.
- * <p/>
- * Threads in threadpools are reused, so you don't want to throw them away.
- * is it desirable to let different jobs in the threadpool?
- * <p/>
- * The threadpool should have a notice how much work has to be done. For every piece of work
- * this number is increased.
  * <p/>
  * Nothing is done with errors (they are not caught and this could lead to corrupted structures).
+ * <p/>
  *
  * @author Peter Veentjer.
  */

@@ -9,17 +9,17 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A LendableReference that allows a new reference to be set, before all references have returned.
- * This means that different references could be lend at any given. If this isn't acceptable, you
+ * A LendableReference that allows a new reference to be set, before all lend references have returned.
+ * This means that different references could be lend at any given moment. If this isn't acceptable, you
  * could have a look at the {@link StrictLendableReference}.
  * <p/>
  * The RelaxedLendableReference extends the DefaultAwaitableReference because this implementation
- * provides all functionality that is required. Only an empty #takeback is implemented.
+ * provides most functionality that is required.  
  * <p/>
- * Because setting of a new value doesn't block when references are lend, and because lending a
+ * Because setting of a new reference doesn't block when old references are lend, and because lending a
  * value doesn't block as long as a non null reference is available, there is not as much lock
  * contention as with the StrictLendableReference. This means that the LendableReference provides
- * better prometheus behaviour.
+ * better concurrent behaviour.
  *
  * @author Peter Veentjer.
  * @see StrictLendableReference
@@ -36,7 +36,7 @@ public class RelaxedLendableReference<E> extends DefaultAwaitableReference<E> im
 
     /**
      * Creates a new RelaxedLendableReference with a default {@link ReentrantLock#ReentrantLock()}
-     * as mainLock and the given ref.
+     * as mainLock and the given reference.
      *
      * @param ref the reference that is placed in this RelaxedLendableReference. This is allowed to
      *            be <tt>null</tt>.
@@ -83,7 +83,6 @@ public class RelaxedLendableReference<E> extends DefaultAwaitableReference<E> im
         if (ref == null) throw new NullPointerException();
         //nothing needs to be done because
     }
-
 
     public void takebackAndReset(E ref) {
         if (ref == null) throw new NullPointerException();

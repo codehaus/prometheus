@@ -22,11 +22,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 
 /**
- * The default implementation of the {@link RepeaterService} interface that uses a pool of threads
- * to keep repeating the task.
- * <p/>
- * todo:
- * strict en non strict repeat functionaliteit testen.
+ * The default implementation of the {@link RepeaterService} interface that {@link ThreadPool} to
+ * manage threads.
  * <p/>
  * The threads are not automatically created when a ThreadPoolRepeater is constructed. Only when a
  * task is repeated, or when the spawned_start method is called, the threadpool is filled.
@@ -123,7 +120,7 @@ public class ThreadPoolRepeater implements RepeaterService {
 
     /**
      * Creates a new strict and unstarted ThreadPoolRepeater with one thread and a
-     * {@link org.codehaus.prometheus.util.StandardThreadFactory#StandardThreadFactory()}.
+     * {@link org.codehaus.prometheus.util.StandardThreadFactory ()}.
      */
     public ThreadPoolRepeater() {
         this(createDefaultThreadpool(1), createDefaultLendableReference(null));
@@ -131,7 +128,7 @@ public class ThreadPoolRepeater implements RepeaterService {
 
     /**
      * Creates a new strict and unstarted ThreadPoolRepeater with the given poolsize and a
-     * {@link org.codehaus.prometheus.util.StandardThreadFactory#StandardThreadFactory()}.
+     * {@link org.codehaus.prometheus.util.StandardThreadFactory ()}.
      *
      * @param poolsize the desired number of worker-threads in the threadpool.
      * @throws IllegalArgumentException if poolsize smaller than 0
@@ -140,7 +137,12 @@ public class ThreadPoolRepeater implements RepeaterService {
         this(createDefaultThreadpool(poolsize), createDefaultLendableReference(null));
     }
 
-    //todo: needs to be tested
+    /**
+     * Creates a new strict and unstarted ThreadPoolRepeater with a single thread and the given
+     * task and a {@link org.codehaus.prometheus.util.StandardThreadFactory}.
+     *
+     * @param repeatable the task to repeat (is allowed to be null).
+     */
     public ThreadPoolRepeater(Repeatable repeatable) {
         this(createDefaultThreadpool(1), createDefaultLendableReference(repeatable));
     }
@@ -171,6 +173,14 @@ public class ThreadPoolRepeater implements RepeaterService {
         this(createDefaultThreadpool(poolsize, threadFactory), createDefaultLendableReference(strict, task));
     }
 
+    /**
+     * Creates a new unstarted ThreadPoolRepeater with the given threadPool and lendableReference.
+     * The ThreadPoolRepeater also sets the WorkerJob on the ThreadPool.
+     *
+     * @param threadPool the ThreadPool this ThreadPoolRepeater uses to manage threads.
+     * @param lendableRef the LendableReference that is used to store the task to repeat. 
+     * @throws NullPointerException if threadPool or lendableRef is null
+     */
     public ThreadPoolRepeater(ThreadPool threadPool, LendableReference<Repeatable> lendableRef) {
         if (threadPool == null || lendableRef == null) throw new NullPointerException();
         this.threadPool = threadPool;
@@ -252,15 +262,15 @@ public class ThreadPoolRepeater implements RepeaterService {
         ThreadPoolState state = threadPool.getState();
         switch (state) {
             case unstarted:
-                return RepeaterServiceState.Unstarted;
+                return RepeaterServiceState.unstarted;
             case running:
-                return RepeaterServiceState.Running;
+                return RepeaterServiceState.running;
             case shuttingdown:
-                return RepeaterServiceState.Shuttingdown;
+                return RepeaterServiceState.shuttingdown;
             case forcedshuttingdown:
-                return RepeaterServiceState.Shuttingdown;
+                return RepeaterServiceState.shuttingdown;
             case shutdown:
-                return RepeaterServiceState.Shutdown;
+                return RepeaterServiceState.shutdown;
             default:
                 throw new IllegalStateException("unhandeled state: "+state);
         }
@@ -269,8 +279,8 @@ public class ThreadPoolRepeater implements RepeaterService {
     public void repeat(Repeatable task) throws InterruptedException {
         ensureUsableRepeater();
 
-        //it cnould be that the repeater just has begon shutting down,
-        //or completely has shut down. It is up to the task to figure out
+        //it could be that the repeater just has begon shutting down,
+        //or completely has shutdown. It is up to the task to figure out
         //if it is executed.
         lendableRef.put(task);
     }

@@ -60,6 +60,31 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertShutdownAfterFalse(false);
     }
 
+//================= ThreadPoolRepeater(Repeatable) ===========================
+
+    public void test_Repeatable() {
+        DummyRepeatable repeatable = new DummyRepeatable();
+        test_Repeatable(repeatable);
+    }
+
+    public void test_Repeatable_null(){
+        test_Repeatable(null);
+    }
+    
+    public void test_Repeatable(Repeatable repeatable){
+        repeater = new ThreadPoolRepeater(repeatable);
+
+        assertIsUnstarted();
+        assertActualPoolSize(0);
+        assertDesiredPoolSize(1);
+        assertHasDefaultLendableReference();
+        assertHasDefaultThreadPool();
+        assertIsStrict(true);
+        assertHasRepeatable(repeatable);
+        assertShutdownAfterFalse(false);
+    }
+
+
     //================== ThreadPoolRepeater(runnable,int) ====================
 
     public void test_Runnable_int() {
@@ -143,7 +168,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
 
     //================ ThreadPoolRepeater(ThreadPool, LendableReference)  ==========
 
-    public void test_ThreadFactory_LendableRefeference_Runnable_int() {
+    public void test_ThreadFactory_LendableRefeference() {
         try {
             new ThreadPoolRepeater(new StandardThreadPool(), null);
             fail("NullPointerException expected");
@@ -166,6 +191,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
         assertSame(lendableRef, repeater.getLendableRef());
         assertSame(threadPool, repeater.getThreadPool());
+        assertNotNull(threadPool.getWorkerJob());
         assertShutdownAfterFalse(false);
     }
 
