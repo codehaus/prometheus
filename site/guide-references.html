@@ -1,16 +1,26 @@
 <h2>References guide</h2>
+<p>
+This documentation is under construction.
+</p>
 
-<h1>AwaitableReference</h1>
+<h3>AwaitableReference</h3>
+<p>
 The AwaitableReference is a synchronization structure that makes it easy to wait on the availability of
 a reference. I guess this is not something that needs to be done often, but I use this synchronization structure
 within Prometheus.
+<p>
 
-<pre>
-
-</pre>
-
-<h1>LendableReference</h1>
+<h3>LendableReference</h3>
+<p>
+    The LendableReference extends the AwaitableReference but adds the concept of lending a reference:
+    a lend reference needs to be taken back.
+</p>
 <ol>
-    <li>StrictLendableReference</li>
-    <li>RelaxedLendableReference</li>
+    <li>StrictLendableReference: a LendableReference that is strict (doesn't allow different references
+    to be lend at any given moment. So before a new reference can be set, all previous lend references
+        need to be taken back.
+    </li>
+    <li>RelaxedLendableReference: a LendableReference that is relaxed. It allows different references
+    to be lend at any given moment. So a new reference can be set before any previous reference is
+    returned.</li>
 </ol>

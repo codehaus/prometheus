@@ -402,7 +402,7 @@ task( build_dist : 'Builds the complete distribution' ){
 
 task (build_release :'Build the complete release'){
     println( 'Builds the complete release' )
-    //depends( build_dist )
+    depends( build_dist )
     Ant.delete(dir: dir_release )
     Ant.mkdir(dir: dir_release )
 

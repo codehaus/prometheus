@@ -9,14 +9,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Unittests the constructors of {@link Latch}.
+ * Unittests the constructors of {@link JucLatch}.
  *
  * @author Peter Veentjer.
  */
-public class Latch_ConstructorTest extends Latch_AbstractTest {
+public class JucLatch_ConstructorTest extends JucLatch_AbstractTest {
 
     public void test_noArg() {
-        latch = new Latch();
+        latch = new JucLatch();
 
         assertIsClosed();
         assertHasDefaultLock();
@@ -31,14 +31,14 @@ public class Latch_ConstructorTest extends Latch_AbstractTest {
 
     public void test_Lock() {
         try {
-            new Latch(null);
+            new JucLatch(null);
             fail();
         } catch (NullPointerException ex) {
             assertTrue(true);
         }
 
         Lock lock = new ReentrantLock();
-        latch = new Latch(lock);
+        latch = new JucLatch(lock);
 
         assertIsClosed();
         assertSame(lock, latch.getMainLock());

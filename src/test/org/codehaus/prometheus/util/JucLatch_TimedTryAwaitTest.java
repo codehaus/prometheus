@@ -6,11 +6,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Unittests the {@link Latch#tryAwait(long,TimeUnit)} method.
+ * Unittests the {@link JucLatch#tryAwait(long,TimeUnit)} method.
  *
  * @author Peter Veentjer.
  */
-public class Latch_TimedTryAwaitTest extends Latch_AbstractTest {
+public class JucLatch_TimedTryAwaitTest extends JucLatch_AbstractTest {
 
     public void testArguments() throws TimeoutException, InterruptedException {
         newOpenLatch();

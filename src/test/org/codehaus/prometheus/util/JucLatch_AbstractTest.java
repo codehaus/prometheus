@@ -17,16 +17,16 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author Peter Veentjer.
  */
-public abstract class Latch_AbstractTest extends ConcurrentTestCase {
+public abstract class JucLatch_AbstractTest extends ConcurrentTestCase {
 
-    public volatile Latch latch;
+    public volatile JucLatch latch;
 
     public void newClosedLatch() {
-        latch = new Latch(new ReentrantLock());
+        latch = new JucLatch(new ReentrantLock());
     }
 
     public void newOpenLatch() {
-        latch = new Latch(new ReentrantLock());
+        latch = new JucLatch(new ReentrantLock());
         latch.open();
     }
 
@@ -82,32 +82,6 @@ public abstract class Latch_AbstractTest extends ConcurrentTestCase {
         t.setStartInterrupted(startInterrupted);
         t.start();
         return t;
-    }
-
-    public TryAwaitThread scheduleTryAwait(boolean startInterrupted) {
-        TryAwaitThread t = new TryAwaitThread();
-        t.setStartInterrupted(startInterrupted);
-        t.start();
-        return t;
-    }
-
-    public class TryAwaitThread extends TestThread {
-        private volatile boolean success;
-
-        @Override
-        public void runInternal() {
-            success = latch.tryAwait();
-        }
-
-        public void assertSuccess() {
-            assertIsTerminatedNormally();
-            assertTrue(success);
-        }
-
-        public void assertFailure() {
-            assertIsTerminatedNormally();
-            assertFalse(success);
-        }
     }
 
     public class AwaitThread extends TestThread {

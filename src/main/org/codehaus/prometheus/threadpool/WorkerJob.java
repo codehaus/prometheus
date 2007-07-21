@@ -40,8 +40,7 @@ public interface WorkerJob<E> {
      * This is important because else it isn't able to force a shutdown.
      *
      * @return the data required for execution (value is not allowed to be null).
-     * @throws InterruptedException if the calling thread was interrupted while waiting for a piece
-     *                              of data.
+     * @throws InterruptedException if the calling thread was interrupted while waiting for work
      */
     E getWork() throws InterruptedException;
 

@@ -1,5 +1,6 @@
 package org.codehaus.prometheus.repeater;
 
+import org.codehaus.prometheus.util.JucLatch;
 import org.codehaus.prometheus.util.Latch;
 
 import java.util.concurrent.ExecutionException;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeoutException;
  */
 public final class RepeatableFuture implements Repeatable, Future {
     private final Repeatable repeatable;
-    private final Latch latch = new Latch();
+    private final Latch latch = new JucLatch();
     private volatile boolean cancelled = false;
 
     public RepeatableFuture(Repeatable repeatable) {
@@ -42,7 +43,7 @@ public final class RepeatableFuture implements Repeatable, Future {
     }
 
     public Object get() throws InterruptedException, ExecutionException {
-        latch.tryAwait();
+        //latch.tryAwait();
         return null;
     }
 

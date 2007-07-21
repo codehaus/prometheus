@@ -9,9 +9,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A Repeater is a structure that keeps repeating a {@link Repeatable} task. If the task
- * is <tt>null</tt>, the Repeater does nothing.  You could see the Repeater as an engine, that
- * can turn an axle (the {@link Repeatable#execute()} method).
+ * An Object that keeps repeating a {@link Repeatable} task. If the task is <tt>null</tt>, the Repeater
+ * does nothing.  You could see the Repeater as an engine, that can turn an axle
+ * (the {@link Repeatable#execute()} method).
  * <p/>
  * <td><b>Remove threading from components</b></td>
  * <dd>
@@ -31,14 +31,14 @@ import java.util.concurrent.TimeoutException;
  * <td><b>Using Repeater in Spring</b></td>
  * <dd>
  * I have gained a lot of new insights while working with the Spring Framework, and although Prometheus
- * doesn't depend on Spring, it can be used in Spring Projects (I have used it in various projects).
+ * doesn't depend on Spring, it can be used in Spring projects (I have used it in various projects).
  * <td><b>Repeater vs Executor</b></td>
  * <dd>
- * The big difference between a Repeater and an Executor is that an Executor executes a task once and
- * the Repeater repeatedly executes the same task. Repeating the same task can be realized by modifying
- * the environment of the Executor, eg:
+ * The big difference between a Repeater and an {@link java.util.concurrent.Executor} is that an Executor
+ * executes a task once and the Repeater repeatedly executes the same task. Repeating the same task can be
+ * realized by modifying the environment of the Executor, eg:
  * <ol>
- * <li>resubmit the task when it completed</li>
+ * <li>resubmit the task when it completes</li>
  * <li>modify a BlockingQueue so that it keeps handing out the same task over and over</li>
  * </ol>
  * But I found this behavior very unnatural and that is why I decided to create a new threadpool structure
@@ -60,7 +60,7 @@ public interface Repeater {
     /**
      * Starts repeating the given task at some point in the future. If the task can't be accepted
      * immediately (maybe because the repeater is strict about different task being executed
-     * concurrently), the call can block.
+     * concurrently), the call is allowed to block.
      * <br/>
      * If the Repeateris currently running a task, this task is not interrupted.
      * <br/>

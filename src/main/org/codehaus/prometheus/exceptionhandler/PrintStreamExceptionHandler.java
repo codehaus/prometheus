@@ -10,7 +10,7 @@ import java.io.PrintStream;
  */
 public class PrintStreamExceptionHandler implements ExceptionHandler {
 
-    public final static PrintStreamExceptionHandler INSTANCE = new PrintStreamExceptionHandler();
+    public final static PrintStreamExceptionHandler SYS_OUT = new PrintStreamExceptionHandler();
 
     private final PrintStream out;
 

@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * The BlockingExecutorService extends the {@link BlockingExecutor} and adds some control features
- * like shutting down and starting.
+ * Extends the {@link BlockingExecutor} and adds some control features like shutting
+ * down and starting.
  *
  * @author Peter Veentjer.
  */

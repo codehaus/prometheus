@@ -1,11 +1,18 @@
 <h1>Repeater guide</h1>
+<p>
+This documentation is under construction.
+</p>
+
 
 <h2>Repeating tasks with the Repeater</h2>
-The Repeater, and the default implementation ThreadPoolRepeater, can be used for the repeated execution
-of a task. The Executor is better suited for executing a task once and altough it can be modified by
-using a work queue that keeps giving out the same task, I don't think it is the right abstraction. 
-
+<p>
+The Repeater, and the default implementation ThreadPoolRepeater, can be used for 
+the repeated execution of a task. The Executor is better suited for executing 
+a task once and although it can be modified by using a work queue that keeps 
+giving out the same task, I don't think it is the right abstraction. 
+<br/>
 Example:
+</p>
 <pre>
 public class SomeRepeatable implements Repeatable{
     public boolean run(){
@@ -20,41 +27,52 @@ repeater.repeat(task);
 </pre>
 
 <h2>Repeating a Runnable</h2>
-In some cases it is easier to use a Runnable instead of a Repeatable. That is why an adapter is created:
-the RepeatableRunnable. It can be extended and the Repeatable.run() method needs to be overriden, or
-a Runnable can be injected.
-
+<p>
+In some cases it is easier to use a Runnable instead of a Repeatable. That is why 
+an adapter is created: the RepeatableRunnable. It can be extended and the 
+Repeatable.run() method needs to be overridden, or a Runnable can be injected.
+<br/>
 Example:
+</p>
 <pre>
 Runnable runnable = new SomeRunnable();
 Repeatable task = new RepeatableRunnable(runnable);
 repeater.repeat(task);        
 </pre>
-
-The reason why this adapter is created is because a lot of functionality already is available for
-Runnables, eg the MethodInvokingRunnable from the Spring framework (Spring is my framework of choice).
+<p>
+The reason why this adapter is created is because a lot of functionality already 
+is available for Runnables, eg the MethodInvokingRunnable from the Spring framework 
+(Spring is my framework of choice).
+</p>
 
 <h2>Stopping a Repeater</h2>
-A Repeater can be stopped by placing a null task in the repeater, or let the Repeatable return false (it also
-sets the task to null). A different
-way to stop a Repeater is to shut it down by calling the shutdown method. The difference between the shutdown and
-placing a null task (or let the repeatable return false) is that the first one is final. So once a Repeater has
-shut down, it can't be actived again. In one of the next releases of Prometheus I'm going to add pauzing functionality.
-This can be done (quite easily) by using a LendableReference decorator: LendableReferenceWithWaitingTakes in combination
-with a CloseableWaitpoint.
+<p>
+A Repeater can be stopped by placing a null task in the repeater, or let the Repeatable 
+return false (it also sets the task to null). A different way to stop a Repeater is
+to shut it down by calling the shutdown or shutdownNow method. The difference between 
+the shutdown methods and placing a null task (or let the repeatable return false) is
+that the first one is final. So once a Repeater has shut down, it can't be activated 
+again. In one of the next releases of Prometheus I'm going to add pausing functionality.
+</p>
 
-<h2>Repeaters and multiple threads in the threadpool</h2>
-The ThreadPoolRepeater has a pool of threads where all threads are running the same task concurrently. The poolsize
-can be set in the constructor, but it also can be set after creation. This can be done with the 'setPoolSize' method.
+<h2>Repeaters and multiple threads</h2>
+<p>
+The ThreadPoolRepeater has a pool of threads where all threads are running the same task 
+concurrently. The poolsize can be set in the constructor, but it also can be set after 
+creation. This can be done with the 'setDesiredPoolSize' method. 
+</p>
 
 <h3>Using a Repeater to set up assemblylines</h3>
-Repeaters are very handy if you want to set up a processing assembly line (production line, pipes/filters) for example...
-
-Example:        
+<p>
+Repeaters are very handy if you want to set up a processing assembly line (production 
+line, pipes/filters).
+<br/>
+Example:
+</p>
 <pre>
-BlockingQueue queue1 = new LinkedBlockingQueue();
-BlockingQueue queue2 = new LinkedBlockingQueue();
-BlockingQueue queue3 = new LinkedBlockingQueue();
+BlockingQueue queue1 = new LinkedBlockingQueue(10);
+BlockingQueue queue2 = new LinkedBlockingQueue(10);
+BlockingQueue queue3 = new LinkedBlockingQueue(10);
 
 public class Process1Repeatable implements Repeatable{
     public boolean execute()throws Exception{
@@ -82,19 +100,19 @@ public class Process3Repeatable implements Repeatable{
     }
 }
 
-Repeater process1Repeater = new ThreadPoolRepeater(1);
+Repeater process1Repeater = new ThreadPoolRepeater();
 process1Repeater.repeat(new Process1Runnable());
 
-Repeater process2Repeater = new ThreadPoolRepeater(1);
+Repeater process2Repeater = new ThreadPoolRepeater();
 process2Repeater.repeat(new Process2Runnable());
 
-Repeater process3Repeater = new ThreadPoolRepeater(1);
+Repeater process3Repeater = new ThreadPoolRepeater();
 process3Repeater.repeat(new Process3Repeatable());
 </pre>
-
-As you can see the there is no thread creation logic of repeating logic inside the components. This is an example
-you usually see:
-
+<p>
+As you can see the there is no thread creation logic of repeating logic inside the 
+components. This is an example of code I usually see:
+</p>
 <pre>
 class Processor{
 
@@ -111,70 +129,47 @@ class Processor{
     }
 }
 </pre>
+<p>
 This is a nightmare to modify, test or reuse. So externalize threading if you can.
 <p/>
-There are some things you have to watch out for. One of the problems is that if multiple threads are used in a repeater
-that is could happen that a messages are processed out of order. Luckely in most cases this is not in issue, but for
-those cases it is a problem I already have a synchronization stone in the sandbox: Resequencer that solves this problem.
-sandbox.
-<p/>
-Another advantage of assembly lines is that they make it possible to make better of resources. Multiple cpu's can be
-used instead of it all running on a single cpu. And with a single thread, you normally have one of the following two
-things:
-<ol>
-    <li>cpu burst</li>
-    <li>io burst</li>
-</ol>
-The problem is that while you have a cpu burst, no io is being performed. And while you are having a cpu burst, no io
-is being performed. The advantage of an assembly lines is that the processes are not synchronous: each process can run
-as fast as it can, so if a process is doing io, others could do cpu.
 
 <h2>JMX and Repeaters</h2>
-The ThreadPoolRepeater has a JMX MBean, that makes it possible to control a ThreadPoolRepeater by JMX.
+<p>
+The ThreadPoolRepeater has a JMX MBean, that makes it possible to control a ThreadPoolRepeater
+by JMX. 
+</p>
 
-<h2>Strict or not strict Repeaters</h2>
-In most cases the task a Repeater executes isn't changed after construction. But there are always situations where you
-do need to change the task. But changing tasks is not without problems either: if multiple threads in the threadpool
-of the ThreadPoolRepeater are executing some task, and if a new task is placed, it could be that at the same moment
-multiple threads are executing different tasks. This behaviour can be controlled by making a Repeater strict or relaxed:
+<h2>Strict or not strict</h2>
+<p>
+In most cases the task a Repeater executes isn't changed after construction. But there are 
+always situations where you do need to change the task. Unfortunately changing tasks is not without 
+problems either: if multiple threads in the threadpool of the ThreadPoolRepeater are executing
+some task, and if a new task is placed, it could be that at the same moment different tasks 
+are executed parallel. This behaviour can be controlled by making a Repeater strict 
+or relaxed:
+</p>
 <ol>
     <li>a <b>strict</b> repeater doesn't allow concurrent execution of different tasks</li>
     <li>a <b>relaxed</b> repeater does allow concurrent execution of different tasks</li>
 </ol>
-This behaviour can be controlled by prividing a true/false in the constructor, but at a deeper level it is controlled
-by using different types of LendableReferences. A StrictLendableReference makes a strict Repeater possible, and a
-RelaxedLendableReference makes a relaxed Repeater possible.
+<p>
+This behavior can be controlled by providing a true/false in the constructor, but at a deeper 
+level it is controlled by using different types of LendableReferences. A StrictLendableReference 
+makes a strict Repeater possible, and a RelaxedLendableReference makes a relaxed Repeater possible.
+</p>
 
 <h2>Exception handling</h2>
 <p>
-Exception handling often is something that could be improved. Especially when you are working with threads yourself
-and are responsible for the calls in the top of the callstack, good exception handling could be a real life saver.
-The ThreadPoolRepeater uses an ExceptionHandler to report exceptions. After the worker uses the exception handler, it
-returns to the pool so it can be used for the following execution. For the rare situations that the thread needs to
-shutdown after it reports an error, a repeatable decorator could be created that returns false as soon as it throws
-an exception.
+Exception handling often is something that could be improved. Especially when you are working 
+with threads yourself and are responsible for the calls in the top of the callstack, good 
+exception handling could be a real life saver. The ThreadPoolRepeater uses an ExceptionHandler 
+to report exceptions. After the worker uses the exception handler, it returns to the pool so 
+it can be used for the following execution. For the rare situations that the thread needs to 
+shutdown after it reports an error, a repeatable decorator could be created that returns false 
+as soon as it throws an exception.
 </p>
 
 <p>
-Standard all exceptions are handled with the PrintStreamExceptionHandler that logs all exceptions to the
-System.out. Next to the this exceptionhandler there also is one for Log4J: Log4jExceptionHandler.
+Standard all exceptions are handled with the PrintStreamExceptionHandler that logs all exceptions 
+to the System.out. Next to the this exceptionhandler there also is one for Log4J: Log4jExceptionHandler.
 </p>
-
-
-
-<h3>Future improvements</h3>
-Setting up factory lines always gives me a kick, but I know it can be complex. That is why I'm working on some components
-that can be used to set up factory lines. The only thing that needs to be provided is one of the following methods:
-
-<pre>
-Object process(Object o);
-void process(Object)
-</pre>
-
-Taking data from queues, and placing on the following queues, dealing with timeouts, dealing with exceptions is all
-taken care of. The only thing that needs to be done is select a Processor (a structure that executes a process method)
-and hook it up to a Repeater, and even this can be simplified by using some sort of facade.
-<p/>
-Another improvement is the introduction of channels (Takeable and Puttable from Doug Lea). BlockingQueue's have too
-many responsibilities: placement of items, taking of items, storage of items. With channels these responsibilities
-are divided.

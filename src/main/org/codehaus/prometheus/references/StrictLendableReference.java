@@ -15,7 +15,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A LendableReference that doesn't allow different references to be lend at the same moment. A new
+ * A {@link LendableReference} that doesn't allow different references to be lend at the same moment. A new
  * reference can only be set, when all lend references are returned.
  * <p/>
  * The StrictLendableReference causes contention when a new reference is set, because taking/putting
@@ -32,8 +32,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * it. Lock implementation normally only allow the same thread to take the value back.
  * </dd>
  * <p/>
- * idea:
- * maybe use a cyclicbarrier.
  *
  * @author Peter Veentjer.
  */

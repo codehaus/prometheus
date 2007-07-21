@@ -135,13 +135,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  * If a process returns an iterator, this iterator could be seen as a lazy collection (a collection
  * where the elements don't need to exist from the spawned_start).
  * <h2>Continuations</h2>
- * <p>
+ * <p/>
  * The StandardProcessor keeps a 'continuation' of the current process and element in the iterator
  * in memory. A single continuation can be executed by multiple threads of a period of time, but will
  * be executed by at most a single thread at any moment in time. Continuations are stored in a queue
  * between processing, and so will be selected fair (so starvation).
  * </p>
- * <p>
+ * <p/>
  * The advantage of storing the continuations on a queue instead of a threadlocal is that the execution
  * is not bound to a single thread. If that thread doesn't call the once method anymore, you want a
  * different thread to take over. It can happen that threads stop calling: when the poolsize of the
@@ -160,9 +160,9 @@ public class StandardProcessor implements Processor {
     private final List processes;
     private final InputChannel input;
     private final OutputChannel output;
-    private final ChainElement[] chainElements;
+    private final ChainStep[] chainSteps;
     private final BlockingQueue<Stack<ChainFrame>> callstackqueue = new LinkedBlockingQueue<Stack<ChainFrame>>();
-        
+
     //todo: default another errorPolicy
     private volatile ErrorPolicy errorPolicy = new Propagate_ErrorPolicy();
     private volatile Dispatcher dispatcher = new StandardDispatcher();
@@ -272,16 +272,16 @@ public class StandardProcessor implements Processor {
         this.processes = unmodifiableList(asList(processes));
         this.input = input;
         this.output = output;
-        chainElements = createSteps();
+        chainSteps = createSteps();
     }
 
-    private ChainElement[] createSteps() {
-        List<ChainElement> chainElementLists = new LinkedList<ChainElement>();
+    private ChainStep[] createSteps() {
+        List<ChainStep> chainStepLists = new LinkedList<ChainStep>();
         for (Object process : processes)
-            chainElementLists.add(new ProcessChainElement(process));
+            chainStepLists.add(new ProcessChainStep(process));
         if (output != null)
-            chainElementLists.add(new OutputChainElement());
-        return chainElementLists.toArray(new ChainElement[chainElementLists.size()]);
+            chainStepLists.add(new OutputChainStep());
+        return chainStepLists.toArray(new ChainStep[chainStepLists.size()]);
     }
 
     /**
@@ -374,26 +374,6 @@ public class StandardProcessor implements Processor {
         this.stopPolicy = stopPolicy;
     }
 
-    /**
-     * Calls the next on the iterator and adds exception handling when this fails.
-     *
-     * @param it the Iterator that used
-     * @return the value retrieved from the next, or when an error occurs, the value returned
-     *         from the errorPolicy
-     * @throws Exception the errorPolicy could decide to throw the exception that is caused
-     */
-    private Object protectedNext(Iterator it) throws Exception {
-        try {
-            if (!it.hasNext())
-                return null;
-
-            return it.next();
-        } catch (Exception ex) {
-            //todo: is this the correct call to the errorhandler? What about input arguments?
-            return errorPolicy.handleReceiveError(ex, VoidValue.INSTANCE);
-        }
-    }
-
 
     /**
      * Transforms an argument to an iterator. If the argument already is an iterator,
@@ -436,6 +416,8 @@ public class StandardProcessor implements Processor {
 
             return true;
         } finally {
+            //if a solution was found, we can put the framestack back again
+            //so another path can be tried the following time.
             if (solutionFound)
                 callstackqueue.put(framestack);
         }
@@ -444,27 +426,37 @@ public class StandardProcessor implements Processor {
     private boolean once(Stack<ChainFrame> framestack) throws Exception {
         if (framestack.isEmpty()) {
             Object in = takeInput();
-            if (chainElements.length == 0)
+            //todo: stop check
+
+            //if there is nothing to try, we are finished and can return true.
+            if (chainSteps.length == 0)
                 return true;
 
-            ChainFrame frame = new ChainFrame(chainElements[0], asIterator(in));
+            //lets create a new frame to find solutions
+            ChainFrame frame = new ChainFrame(chainSteps[0], asIterator(in));
             framestack.push(frame);
         }
 
+        //lets try until we run out of frames or we find a solution
+        //the next time the once method is called, we will continue where
+        //we left
         do {
             ChainFrame frame = framestack.peek();
             Object result = frame.evaluate();
 
             if (result == null) {
+                //a null indicates that no solution could be found with the current 
                 framestack.pop();
             } else {
+                //if we are at the last frame, we have finished a complete chain of execution
+                //and can return true.
                 int framecount = framestack.size();
-                if (framecount == chainElements.length)
+                if (framecount == chainSteps.length)
                     return true;
 
-                ChainFrame newFrame = new ChainFrame(chainElements[framecount], asIterator(result));
+                //we are not at the the last step in the chain, lets go and try the next one 
+                ChainFrame newFrame = new ChainFrame(chainSteps[framecount], asIterator(result));
                 framestack.push(newFrame);
-
             }
         } while (!framestack.isEmpty());
 
@@ -489,38 +481,99 @@ public class StandardProcessor implements Processor {
         return format("StandardProcessor(%s)", Arrays.asList(processes));
     }
 
-    //object is stored in a threadlocal.
+    /**
+     * A ChainFrame can be compared to a stackframe. It it used to provide a continuation, so
+     * the evaluating thread can pop his normal calling stack, but can continue where it left
+     * when it runs again. It could also be that another thread picks the ChainFrame the next
+     * time.
+     */
     private class ChainFrame {
         private final Iterator iterator;
-        private final ChainElement chainElement;
+        private final ChainStep chainStep;
 
-        public ChainFrame(ChainElement chainElement, Iterator iterator) {
-            this.chainElement = chainElement;
+        public ChainFrame(ChainStep chainStep, Iterator iterator) {
+            this.chainStep = chainStep;
             this.iterator = iterator;
         }
 
-        //true indicates that the complete chain execution was successful, false otherwise.
+        /**
+         * Evaluates the current ChainStep. The output of this ChainStep will be the input
+         * of the following ChainStep. This method will try following 
+         *
+         * @return a non null value indicates that the this step has executed succesfully, a
+         *         null value indicates that this step hasn't completed succesfully.
+         * @throws Exception
+         */
         Object evaluate() throws Exception {
-            Object arg = protectedNext(iterator);
-            if (arg == null)
-                return null;
+            //lets true to find a solution until we find one, or until no other solutions
+            //are possible anymore.
+            for (; ;) {
+                if (iterator.hasNext()) {
+                    Object arg = iterator.next();
+                    Object result = chainStep.evaluate(arg);
 
-            return chainElement.evaluate(arg);
+                    //if we have found a possible path to the solution
+                    if (result != null)
+                        return result;
+                } else {
+                    //there are no solutions possible anymore  
+                    return null;
+                }
+            }
+        }
+
+        /**
+         * Calls the next on the iterator and adds exception handling when this fails.
+         *
+         * @param it the Iterator that used
+         * @return the value retrieved from the next, or when an error occurs, the value returned
+         *         from the errorPolicy
+         * @throws Exception the errorPolicy could decide to throw the exception that is caused
+         */
+        private Object protectedNext(Iterator it) throws Exception {
+            try {
+                if (!it.hasNext())
+                    return null;
+
+                return it.next();
+            } catch (Exception ex) {
+                //todo: is this the correct call to the errorhandler? What about input arguments?
+                return errorPolicy.handleReceiveError(ex, VoidValue.INSTANCE);
+            }
         }
 
         public String toString() {
-            return format("chainframe(%s)", chainElement);
+            return format("chainframe(%s)", chainStep);
         }
     }
 
-    private interface ChainElement {
+    /**
+     * A ChainStep is one step in the complete chain of calls that has to be made to
+     * complete a processing step. Every process, and if an output is available, also
+     * the output has its own chainstep.
+     */
+    private interface ChainStep {
+
+        /**
+         * Evaluates the ChainStep. When a ChainStep returns null, steps after the current
+         * step should not be tried.
+         *
+         * @param arg the input data of this step.
+         * @return the result of the step.
+         * @throws Exception the evaluate method is allowed to throw Exceptions. Normally they
+         *                   are caught by the ErrorHandler, but an ErrorHandler can decide to
+         *                   propagate the exception.
+         */
         Object evaluate(Object arg) throws Exception;
     }
 
-    private class ProcessChainElement implements ChainElement {
+    /**
+     * A ChainStep that evaluates a process.
+     */
+    private class ProcessChainStep implements ChainStep {
         private final Object process;
 
-        public ProcessChainElement(Object process) {
+        public ProcessChainStep(Object process) {
             if (process == null) throw new NullPointerException();
             this.process = process;
         }
@@ -575,9 +628,12 @@ public class StandardProcessor implements Processor {
         }
     }
 
-    private class OutputChainElement implements ChainElement {
+    /**
+     * A ChainStep that put output on an OutputChannel.
+     */
+    private class OutputChainStep implements ChainStep {
 
-        OutputChainElement() {
+        OutputChainStep() {
             //if no output is available, this step should not have been created
             assert output != null;
         }

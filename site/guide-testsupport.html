@@ -1,5 +1,7 @@
 <h1>TestSupport guide</h1>
-Documentation is going to be added before the 0.1 release.
+<p>
+    Documentation is going to be added before the 0.1 release.
+</p>
 
 <h2>Test the state a thread is in</h2>
 <p>
@@ -27,30 +29,32 @@ Documentation is going to be added before the 0.1 release.
 <h2>Test if exception is thrown</h2>
 <p>
     If you want to check if a thread has terminated, but no exception was thrown, use the following:
+</p>
 <pre>
     TestThread t = ...;
     t.assertTerminatedWithoutThrowing()
-    </pre>
-
-If you want to check if a specific exception was thrown, you can use the following:
+</pre>
+<p>
+    If you want to check if a specific exception was thrown, you can use the following:
+</p>
 <pre>
     TestThread t = ...;
     t.assertTerminatedWithException(RejectedExecutionException.class)
-    </pre>
-
-If have a reference to the exception, you can also use the following assert statement:
-<pre>
-        Exception ex = ....;
-        TestThread t = ...;
-        t.assertTerminatedWithException()
-    </pre>
+</pre>
+<p>
+    If have a reference to the exception, you can also use the following assert statement:
 </p>
+<pre>
+    Exception ex = ....;
+    TestThread t = ...;
+    t.assertTerminatedWithException(ex)
+</pre>
 
 <h2>Test for interruption</h2>
 <p>
     You can test if a thread is terminated with an InterruptedException by calling
     Thread.assertIsInterruptedByException(). If you want to check the the interrupt flag
-    is set, you can call the 
+    is set, you can call the
 </p>
 
 <h2>Keeping track of created threads</h2>

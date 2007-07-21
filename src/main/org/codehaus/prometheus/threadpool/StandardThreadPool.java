@@ -2,6 +2,7 @@ package org.codehaus.prometheus.threadpool;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.exceptionhandler.NullExceptionHandler;
+import org.codehaus.prometheus.util.JucLatch;
 import org.codehaus.prometheus.util.Latch;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
@@ -14,20 +15,21 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * The default implementation of the {@link ThreadPool} interface.
+ * Default {@link ThreadPool} implementation.
  *
  * @author Peter Veentjer.
  */
 public class StandardThreadPool implements ThreadPool {
 
     private final Lock mainLock = new ReentrantLock();
-    private final Latch shutdownLatch = new Latch(mainLock);
+    private final Latch shutdownLatch = new JucLatch(mainLock);
     private final Set<Worker> workers = new HashSet<Worker>();
     private final ThreadFactory threadFactory;
     private volatile WorkerJob workerJob;
     private volatile ThreadPoolState state = ThreadPoolState.unstarted;
     private volatile int desiredPoolsize;
     private volatile ExceptionHandler exceptionHandler = NullExceptionHandler.INSTANCE;
+    private boolean c;
 
     /**
      * Creates a new StandardThreadPool with a {@link StandardThreadFactory} as ThreadFactory
@@ -353,29 +355,42 @@ public class StandardThreadPool implements ThreadPool {
         shutdownLatch.tryAwait(timeout, unit);
     }
 
+    public boolean isShutdownWhenPoolDriesUp(){
+        return c;
+    }
+
+    public void setShutdownWhenPoolDriesUp(boolean c){
+        this.c = c;
+    }
+
     public ThreadFactory getThreadFactory() {
         return threadFactory;
     }
 
-    public void setWorkerJob(WorkerJob defaultJob) {
-        if (defaultJob == null) throw new NullPointerException();
+    public void setWorkerJob(WorkerJob workerJob) {
+        if (workerJob == null) throw new NullPointerException();
 
         mainLock.lock();
         try {
             if (state != ThreadPoolState.unstarted)
-                throw new IllegalStateException();
+                throw new IllegalStateException("workerJob can only be set on an unstarted ThreadPool");
 
-            this.workerJob = defaultJob;
+            this.workerJob = workerJob;
         } finally {
             mainLock.unlock();
         }
     }
 
+    enum workerstate {
+        running
+    }
+
+    //todo: idea create workerstate?
     private class Worker implements Runnable {
         private final Lock runningLock = new ReentrantLock();
         //the thread that executes this runnable.
         private volatile Thread thread;
-        
+
         /**
          * Returns true if the workerJob should be run again, false otherwise.
          *
@@ -441,12 +456,13 @@ public class StandardThreadPool implements ThreadPool {
                     runningLock.unlock();
                 }
             } else {
-                //the lock could not be obtained because the worker is 'active'.
-                //and this means that it is not interrupted.
+                //the lock could not be obtained because the worker is 'active' and not idle
+                //and this means that it should not be interrupted.
                 return false;
             }
         }
 
+        //todo: code is not pretty (it is vague why the state is compared with running state)
         boolean isThreadPoolShuttingdownNormally() {
             mainLock.lock();
             try {
@@ -474,35 +490,39 @@ public class StandardThreadPool implements ThreadPool {
             //loop that processes all work for shutting down.
             for (; ;) {
                 //state is volatile, so no locking required.
+                //if the threadpool is shutting down, the loop should end
                 if (state != ThreadPoolState.running)
                     break;
 
-                Object work = getWork();
-
-                if (work != null)
-                    runWork(work);
+                Object work = null;
+                try {
+                    //todo: getWork is not protected
+                    work = workerJob.getWork();
+                    if (work == null){
+                        //the worker got the signal that it should terminate itself.
+                        //so break the main loop.
+                        //todo: when a thread stops this loop because his it should
+                        //terminate, it also should deal with the desiredPoolSize. If
+                        //not is dealt with this issue, the actual poolsize could be
+                        //lower than the desiredPoolSize for an indertemined amount
+                        //of time. But is lowering the desiredPoolSize the appropriate
+                        //behavior?
+                        break;
+                    }else{
+                        //work was found, so execute it. This is the logic that
+                        //is executed in most cases.
+                        runWork(work);
+                    }
+                } catch (InterruptedException e) {
+                    //The thread can be interrupted by the threadpool when it want
+                    //an idle thread to wake up very hard.
+                    //
+                    //ignore it. if the worker is going to shutdown
+                    //it will step the next time it enters this loop.
+                }
 
                 if (!wantedWorkerCheck())
                     break;
-            }
-        }
-
-        /**
-         * Get work to execute. This call blocks until work can be get (or unless
-         * the call is interrupted, or some kind of exception occurs).
-         *
-         * @return the work to execute, or null if no work is available.
-         */
-        private Object getWork() {
-            try {
-                return workerJob.getWork();
-            } catch (InterruptedException ex) {
-                //ignore it. If the worker should not be terminated, it will spawned_start
-                //tasking for new work again.
-                return null;
-            } catch (Exception ex) {
-                //todo: needs to be handled
-                return null;
             }
         }
 

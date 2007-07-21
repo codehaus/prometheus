@@ -1,81 +1,88 @@
 <h1>Miscelanious guide</h1>
 <p>
-    This guide describes various other concurrency structures that can be found in the Prometheus library.
+This documentation is under construction.
 </p>
 
 <h2>Latch</h2>
 <p>
-    A Latch is a single shot mechanism (after is has been opened, it never can be closed again) threads can wait on. As
-    long as the Latch is closed, threads block (unless they are interrupted or a timeout occurs). As soon as it opens,
-    all waiting threads can proceed. After the Latch has been opened, all threads that want to pass the Latch pass it
-    without waiting. Latches are very useful for waiting on state changes that are final, like waiting on the shutdown
-    of a
-    Repeater.
+A <a href="http://prometheus.codehaus.org/javadoc/org/codehaus/prometheus/util/Latch.html">Latch</a>
+is single shot waiting mechanism. As long as the latch is closed, all passing threads block until
+the latch opens (or until a timeout occurs or the waiting thread is interrupted). As soon as it 
+is opened, all waiting threads wake up and exit the wait call. Once the Latch is opened, it can't
+be closed again (single shot). If a threads wants to wait on a Latch that already is open, it doesn't need to wait
+and can return immediately. After the Latch has been opened, subsequent calls to the open method are ignored. 
+Latches are useful if you need to wait for something to reach some final state, like waiting for the
+complete shutdown of a threadpool structure.
 </p>
 
 <pre>
-    final Latch latch = new Latch();
+private final Latch latch = new JucLatch();
 
-    void foo(){
-        Thread t1 = new WaitingThread();
-        t1.start();
-        Thread t2 = new WaitingThread();
-        t2.start();
+public void awaitShutdown()throws InterruptedEception{
+    latch.await();
+}
 
-        latch.open();
-        ..
-    }
+private void markAsShutdown(){
+    latch.open();	
+}
 
-    class WaitingThread extends Thread{
-        public void run(){
-            try{
-                latch.await();
-            }catch(InterruptedException ex){
-                //ignore
-            }
-        }
-    }
 </pre>
+<p>
+At the moment the only implementation is the JucLatch: juc stands for java.util.concurrent because the JucLatch 
+is based on the 
+<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/locks/Lock.html">java.util.concurrent.locks.Lock</a> 
+and <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/locks/Condition.html">java.util.concurrent.locks.Condition</a>.
+</p>
 
 <h2>Creating threads with the StandardThreadFactory</h2>
 <p>
-    The new concurrency library found in Java 5 and higher already has a factory interface for creating thread.
-    The strange thing is that there is no customizable implementation of that interface. That is why I added it
-    to Prometheus: StandardThreadFactory. All kinds of properties can be set, most important ones is priorities
-    (make sure that batch threads, have a low priority).
+The java.util.concurrent, the new concurrency library found in Java 5 and higher, already has a factory interface for creating threads is
+available: the <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/ThreadFactory.html">ThreadFactory</a>. 
+The strange thing is that there is no customizable implementation of that interface. That is why I added one
+to Prometheus: the 
+<a href="http://prometheus.codehaus.org/javadoc/org/codehaus/prometheus/util/StandardThreadFactory.html">StandardThreadFactory</a>. 
+All kinds of properties can be set, like priorities, threadgroup, name etc. 
 </p>
 
 <h2>UninterruptibleSection</h2>
 <p>
-    In some cases you can't/won't deal with a call that can be interrupted by an InterruptedException. For these
-    situations I have made a structure: the UninterruptibleSection.
+In some cases you can't/won't deal with a call that can be interrupted by an InterruptedException. For these
+situations I have made a structure: the <a href="http://prometheus.codehaus.org/javadoc/main/org/codehaus/prometheus/uninterruptiblesection/UninterruptibleSection.html">UninterruptibleSection</a>.
+<br/>
+In the example you can see an uninterruptible wait on a latch. The interruptible await call on the latch
+is wrapped inside an UninterruptibleSection.
 </p>
 <pre>
-    final Latch latch = new Latch();
+final Latch latch = new JucLatch();
 
-    void waitUninterruptibly(){
-        new UninterruptibleSection(){
-            Object originalsection()throws InterruptedException{
-                latch.await();
-                return null;
-            }
-        }.execute();
-    }
+void waitUninterruptibly(){
+   new UninterruptibleSection(){
+      Object originalsection()throws InterruptedException{
+         latch.await();
+         return null;            
+      }
+   }.execute();
+}
 </pre>
 <p>
-    There also is an uninterruptible section that uses a timeout:
+There also is an uninterruptible section that uses a timeout:
+the <a href="http://prometheus.codehaus.org/javadoc/main/org/codehaus/prometheus/uninterruptiblesection/TimedUninterruptibleSection.html">TimedUninterruptibleSection</a>.
 </p>
 <pre>
-    void tryAwaitUninterruptibly(long timeout, TimeUnit unit){
-        new TimedUninterruptibleSection(){
-            Object originalSection(long timeoutNs)throws InterruptedException, TimeoutException{
-                latch.tryAwait(timeoutNs, TimeUnit.NANOS);
-                return null;
-            }
-        }.execute(timeout,unit);
-    }
+void tryAwaitUninterruptibly(long timeout, TimeUnit unit){
+   new TimedUninterruptibleSection(){
+      Object originalSection(long timeoutNs)throws InterruptedException, TimeoutException{
+         latch.tryAwait(timeoutNs, TimeUnit.NANOS);
+         return null;
+      }
+   }.execute(timeout,unit);
+}
 </pre>
 <p>
-    It keeps repeating the original section until a timeout occurrs, or when the section returns or receives
-    a timeout.
+It executes the original section with the timeout. If the tryAwait is interrupted, the TimedUninterruptibleSection
+calculates how much timeout is left, and calls the original section again with the remaining timeout. This process 
+is repeated until the tryAwait succeeds or a timeout occurs.
+<br/>
+When closures are introduced in Java 7, they can replace the current clumsy inner class approach.
 </p>
+

@@ -7,6 +7,8 @@ package org.codehaus.prometheus.processors.standardprocessor;
  */
 public interface StopPolicy {
 
+    
+
     /**
      * @param item the item to check
      * @return true if the item indicates stop.

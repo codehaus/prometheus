@@ -9,9 +9,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A LendableReference that allows a new reference to be set, before all lend references have returned.
- * This means that different references could be lend at any given moment. If this isn't acceptable, you
- * could have a look at the {@link StrictLendableReference}.
+ * A {@link LendableReference} that allows a new reference to be set, before all lend references
+ * have returned. This means that different references could be lend at any given moment. If this
+ * isn't acceptable, you could have a look at the {@link StrictLendableReference}.
  * <p/>
  * The RelaxedLendableReference extends the DefaultAwaitableReference because this implementation
  * provides most functionality that is required.  

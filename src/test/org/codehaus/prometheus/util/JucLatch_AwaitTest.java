@@ -8,11 +8,11 @@ package org.codehaus.prometheus.util;
 import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 /**
- * Unittests the {@link Latch#await()} method.
+ * Unittests the {@link JucLatch#await()} method.
  *
  * @author Peter Veentjer.
  */
-public class Latch_AwaitTest extends Latch_AbstractTest {
+public class JucLatch_AwaitTest extends JucLatch_AbstractTest {
 
     public void testAlreadyOpen_startUninterrupted() {
         testAlreadyOpen(false);

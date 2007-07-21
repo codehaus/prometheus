@@ -16,25 +16,43 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Peter Veentjer.
  */
 ///CLOVER:OFF
-public abstract class TestRunnable implements Runnable {
+public class TestRunnable implements Runnable {
 
     private volatile RuntimeException foundException;
     private final AtomicInteger beginExecutionCount = new AtomicInteger();
+    private final AtomicInteger executedCount = new AtomicInteger();
 
-    public abstract void runInternal();
+    public void runInternal() {
+    }
 
     public final void run() {
-        beginExecutionCount.incrementAndGet();
         try {
-            runInternal();
-        } catch (RuntimeException ex) {
-            this.foundException = ex;
+            beginExecutionCount.incrementAndGet();
+            try {
+                runInternal();
+            } catch (RuntimeException ex) {
+                this.foundException = ex;
+            }
+        } finally {
+            executedCount.incrementAndGet();
         }
-    }    
+    }
 
-    public void assertBeginExecutionCount(int expected){
-        if(expected<0)throw new IllegalArgumentException();
-        assertEquals(expected,beginExecutionCount.intValue());
+    public void assertNotExecuted() {
+        assertExecutedCount(0);
+    }
+
+    public void assertExecutedOnce() {
+        assertExecutedCount(1);
+    }
+
+    public void assertExecutedCount(int count) {
+        assertEquals(count, executedCount.intValue());
+    }
+
+    public void assertBeginExecutionCount(int expected) {
+        if (expected < 0) throw new IllegalArgumentException();
+        assertEquals(expected, beginExecutionCount.intValue());
     }
 
     /**
@@ -59,7 +77,7 @@ public abstract class TestRunnable implements Runnable {
     /**
      * Asserts that a RuntimeException is thrown.
      */
-    public void assertRuntimeException(){
+    public void assertRuntimeException() {
         assertNotNull(foundException);
     }
 
@@ -75,9 +93,9 @@ public abstract class TestRunnable implements Runnable {
         foundException.printStackTrace();
     }
 
-    public void assertSameRuntimeException(RuntimeException expectedException){
+    public void assertSameRuntimeException(RuntimeException expectedException) {
         assertNotNull(foundException);
-        assertSame(expectedException,foundException);
+        assertSame(expectedException, foundException);
         foundException.printStackTrace();
     }
 }

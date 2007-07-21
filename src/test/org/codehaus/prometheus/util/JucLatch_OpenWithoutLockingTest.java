@@ -6,11 +6,11 @@
 package org.codehaus.prometheus.util;
 
 /**
- * Unittests the {@link Latch#openWithoutLocking()} method.
+ * Unittests the {@link JucLatch#openWithoutLocking()} method.
  *
  * @author Peter Veentjer.
  */
-public class Latch_OpenWithoutLockingTest extends Latch_AbstractTest {
+public class JucLatch_OpenWithoutLockingTest extends JucLatch_AbstractTest {
 
     public void testOpen_notLockOwner_startUninterrupted() {
         testOpen_notLockOwner(START_UNINTERRUPTED);

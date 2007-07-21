@@ -9,12 +9,12 @@
 
 <h3>First release</h3>
 <p>
-    The first release candidate of version 0.1 has been <a href="download.html">released</a>. No new
-    functionality will be added to the first release, the primary focus will be on improving tests
-    (unit/integration/performance) and documentation.
-<p/>
+The first release candidate of version 0.1 has been <a href="download.html">released</a>. No new
+functionality will be added to the first release, the primary focus will be on improving tests
+(unit/integration/performance) and documentation.
+</p>
 <p>
-    The following features are planned for the first release:
+The following features are planned for the first release:
 </p>
 
 <ul>
@@ -37,12 +37,12 @@
     <li>
         <b>Repeater</b>: a threadpool structure that is responsible for
         repeating tasks. An <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/Executor.html">Executor</a>
-        is great for executing a task once, but a Repeater provides a better abstraction for repeatedly executing tasks.
+        is great for executing a task once, but a Repeater provides a better abstraction for repeatedly
+        executing tasks.
     </li>
     <li>
         <b>BlockingExecutor</b>: a threadpool structure like the
         <a href="http://java.sun.com/j2se/1.6.0/docs/api/java/util/concurrent/Executor.html">Executor</a>
-
         but provides more control on blocking and timeout behaviour.
     </li>
     <li>
@@ -76,9 +76,9 @@
 <h3>Future features</h3>
 
 <p>
-    A lot of functionality has been removed from the first version, to prevent
-    delaying an initial release indefinitely, and moved to a later version. But a lot of nice
-    features (the best ones imho) are planned:
+A lot of functionality has been removed from the first version, to prevent
+delaying an initial release indefinitely, and moved to a later version. But a lot of nice
+features (the best ones imho) are planned:
 </p>
 <ul>
     <li>
@@ -95,16 +95,16 @@
             <li>retrieval of items (take, poll methods)</li>
         </ol>
         That makes BlockingQueues hard to customize (like routing, filtering and multicasting)
-        and that is why these aspects are seperated with Channels:
+        and that is why these aspects are separated with Channels:
         <ol>
             <li>the OutputChannel is responsible for placement of items</li>
             <li>the InputChannel is responsible for retrieval of items</li>
         </ol>
-        In most cases these are the only aspects you are interrested in. With channels you can create very complex
-        systems and customizable systems without integrating this complexity into components. JMS also is a data
-        exchange abstraction, but it is meant for inter virtual machine communication and not intra virtual machine
-        communication and this makes it a less atrictive if you just need to exchange data between threads. The
-        original concurrency library Doug Lea created, contained a similar structure:
+        In most cases these are the only aspects you are interested in. With channels you can create very complex
+        systems and customizable systems without having to integrating this logic into components. JMS also is a data
+        exchange abstraction, but it is meant for inter virtual machine communication (so communication between vm's)
+        and not intra vm communication (communication inside the vm) and this makes it a less attractive if you just
+        need to exchange data between threads. The original concurrency library Doug Lea created, contained a similar structure:
         <a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/Takable.java">Takable</a> and
         <a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/Puttable.java">Puttable</a> but
         unfortunately they were integrated into the BlockingQueue.
@@ -113,14 +113,14 @@
     <li>
         <b>Processes &amp; Processors</b>: provide a 'framework' for setting up assembly lines ('pipes
         and filters'). And can be used to set up applications that need to process large amounts of data
-        like batch applications. The main goal is to seperate 2 aspects:
+        like batch applications. The main goal is to separate 2 aspects:
         <ol>
             <li>the actual processing of messages (in most cases some form of transformation)</li>
             <li>connecting and running processes (synchronous or asynchronous)</li>
         </ol>
         Often these 2 aspects are integrated and form a monolithic piece of code
         that prevents asynchronous execution of processes which in turn prevents all kinds
-        of techniques from being used; for example multi-threading. By seperating these aspects, one
+        of techniques from being used; for example multi-threading. By separating these aspects, one
         can wire up the same processes in a different manner and this makes a system
         much more flexible.
     </li>
@@ -141,18 +141,18 @@
         but deadlocks can be prevented. Deadlock detection is not obligated by the JVM, but another solution
         is to limit the amount of time for waiting on a resource (like a Lock). But adding timeouts to calls
         can be quite cumbersome: you don't want to administrate the timeout with every call. That is why I'm
-        going to introduce 'safe' calls: call that use a timeout but don't require you to deal with the administration.
-        A threadlocal is used to store the timeout, this value can be set at the beginning of the callstack, and
-        will decrease each time some sort of locking occurs.
+        going to introduce 'safe' calls: call that use a timeout but don't require you to deal with the
+        administration. A threadlocal is used to store the timeout, this value can be set at the beginning of
+        the callstack, and will decrease each time some sort of locking occurs.
     </li>
 </ul>
 
 <h3>Recommended literature</h3>
 <p>
 
-    Concurrency control is a very complex subject and good preparation is advisible. And although this library
+    Concurrency control is a very complex subject and good preparation is advisable. And although this library
     tries to reduce complexity, I think it is important that you know what you are doing. Two Java books that
-    really helped me a lot are the following classics:
+    really helped me a lot, are the following classics:
 </p>
 <ol>
     <li><a href="http://www.amazon.com/Concurrent-Programming-Java-Principles-Addison-Wesley/dp/0321256174">Concurrent

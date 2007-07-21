@@ -9,9 +9,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A synchronization stone that stores a reference. It allows a master thread to send references to
- * zero or more slave threads. If a slave thread tries to take a reference but no reference is
- * available, the slave blocks.
+ * A synchronization stone that stores a reference to be shared between threads. If no reference
+ * is available, taking a reference blocks.
  * <p/>
  * Depending on the implementation, the following things are possible:
  * <ol>

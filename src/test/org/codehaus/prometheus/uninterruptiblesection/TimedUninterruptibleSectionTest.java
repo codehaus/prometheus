@@ -8,6 +8,7 @@ package org.codehaus.prometheus.uninterruptiblesection;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
 import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import org.codehaus.prometheus.util.JucLatch;
 import org.codehaus.prometheus.util.Latch;
 
 import java.util.concurrent.TimeUnit;
@@ -25,7 +26,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        latch = new Latch();
+        latch = new JucLatch();
     }
 
     //========= testing arguments =================

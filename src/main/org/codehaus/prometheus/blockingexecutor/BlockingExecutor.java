@@ -8,10 +8,10 @@ package org.codehaus.prometheus.blockingexecutor;
 import java.util.concurrent.*;
 
 /**
- * The BlockingExecutor executes submitted tasks. The BlockingExecutor can be compared to the
+ * An Object that executes submitted tasks. The BlockingExecutor can be compared to the
  * {@link java.util.concurrent.Executor}, but the BlockingExecutor provides more control on
- * blocking behavior and timeouts. If an ThreadPoolExecutor receives a task, it places the
- * task on the workqueue with an offer and a zero timeout. If no place is available on that
+ * blocking behavior and timeouts. If an {@link ThreadPoolExecutor} receives a task, it places the
+ * task on the workqueue using the offer method and a zero timeout. If no place is available on that
  * workqueue, the call doesn't block, but the RejectedExecutionHandler is called instead. In a
  * lot of cases you just want to block until space comes available, and you are left on your
  * own with the ThreadPoolExecutor. This is the gap the BlockingExecutor fills.

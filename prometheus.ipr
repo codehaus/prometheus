@@ -350,6 +350,11 @@
         <entry key="$PROJECT_DIR$">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchUrls">
+                <collection>
+                  <option value="https://svn.codehaus.org/prometheus" />
+                </collection>
+              </option>
               <option name="trunkUrl" value="https://svn.codehaus.org/prometheus" />
             </SvnBranchConfiguration>
           </value>
