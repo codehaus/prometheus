@@ -1,6 +1,6 @@
 package org.codehaus.prometheus.threadpool;
 
-public class DummyWorkerJob implements WorkerJob {
+public class DummyThreadPoolJob implements ThreadPoolJob {
 
     public Object getWork() throws InterruptedException {
         throw new RuntimeException();
@@ -10,7 +10,7 @@ public class DummyWorkerJob implements WorkerJob {
         throw new RuntimeException();
     }
 
-    public void runWork(Object task) throws Exception {
+    public boolean executeWork(Object task) throws Exception {
         throw new RuntimeException();
     }
 }

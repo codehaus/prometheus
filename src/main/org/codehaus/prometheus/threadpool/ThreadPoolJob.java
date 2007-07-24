@@ -4,7 +4,7 @@ package org.codehaus.prometheus.threadpool;
  * The Job a worker-thread in a ThreadPool executes. A WorkJob consists of 2 parts:
  * <ol>
  * <li>{@link #getWork()}: getting task to execute</li>
- * <li>{@link #runWork(Object)}: executing the task itself</li>
+ * <li>{@link #executeWork(Object)}: executing the task itself</li>
  * </ol>
  * <p/>
  * Examples:
@@ -12,7 +12,8 @@ package org.codehaus.prometheus.threadpool;
  * obtaining a reference from a LendableReference (ThreadPoolRepeater).
  * <p/>
  * <p/>
- * A WorkerJob can terminate the worker thread that executes. todo: needs more explanation.
+ * A ThreadPoolJob can terminate the worker thread that executes by returning false in the
+ * executeWork method (behavior while shutting down is undefined at the moment).
  * <p/>
  * The reason that the task is seperated in 2 parts is that the getWork parts can be
  * interrupted if a threadpool needs to shutdown, or when idle threads needs to be removed
@@ -32,10 +33,10 @@ package org.codehaus.prometheus.threadpool;
  *
  * @author Peter Veentjer.
  */
-public interface WorkerJob<E> {
+public interface ThreadPoolJob<E> {
 
     /**
-     * Returns a piece of Work that needs to be run by {@link #runWork(Object)}. This call should
+     * Returns a piece of Work that needs to be run by {@link #executeWork(Object)}. This call should
      * be responsive to interrupts because else the Threadpool isn't able to interrupt idle threads.
      * This is important because else it isn't able to force a shutdown.
      *
@@ -48,7 +49,7 @@ public interface WorkerJob<E> {
      * This call should not block indefinitely.
      * 
      * @return the retrieved work, null indicates that no work is available anymore for processing.
-     * @throws InterruptedException
+     * @throws InterruptedException if the thread is interrupted while getting the shuttingdown work.
      */
     E getShuttingdownWork() throws InterruptedException;
 
@@ -57,6 +58,7 @@ public interface WorkerJob<E> {
      *
      * @param work the data required for execution. The value should never be null.
      * @throws Exception if something goes wrong while executing the work.
+     * @return true if the job should be executed again, false otherwise.
      */
-    void runWork(E work) throws Exception;
+    boolean executeWork(E work) throws Exception;
 }

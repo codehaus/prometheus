@@ -7,10 +7,7 @@ import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 /**
  * @author Peter Veentjer.
@@ -19,13 +16,13 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
 
     protected volatile StandardThreadPool threadpool;
     protected volatile TracingThreadFactory threadPoolThreadFactory;
-    protected volatile BlockingQueue<Runnable> taskQueue;
+    protected volatile BlockingQueue<Callable<Boolean>> taskQueue;
     protected volatile TracingExceptionHandler threadPoolExceptionHandler;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        taskQueue = new LinkedBlockingQueue<Runnable>();
+        taskQueue = new LinkedBlockingQueue<Callable<Boolean>>();
     }
 
     @Override
@@ -67,20 +64,20 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     }
 
     /**
-     * A WorkerJob that takes work from the taskQueue to execute.
+     * A ThreadPoolJob that takes work from the taskQueue to execute.
      */
-    public class TestWorkerJob implements WorkerJob<Runnable> {
+    public class TestThreadPoolJob implements ThreadPoolJob<Callable<Boolean>> {
 
-        public Runnable getWork() throws InterruptedException {
+        public Callable<Boolean> getWork() throws InterruptedException {
             return taskQueue.take();
         }
 
-        public Runnable getShuttingdownWork() throws InterruptedException {
+        public Callable<Boolean> getShuttingdownWork() throws InterruptedException {
             return taskQueue.poll(0, TimeUnit.MILLISECONDS);
         }
 
-        public void runWork(Runnable task) throws Exception {
-            task.run();
+        public boolean executeWork(Callable<Boolean> task) throws Exception {
+            return task.call();
         }
     }
 
@@ -104,7 +101,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
             for (int k = 0; k < threadpool.getDesiredPoolSize(); k++) {
                 TestRunnable task = interruptable ? new SleepingRunnable(delayMs) : new UninterruptableSleepingRunnable(delayMs);
                 list.add(task);
-                taskQueue.put(task);
+                taskQueue.put(Executors.callable(task,true));
             }
             giveOthersAChance();
             //make sure that all workers are executing a job.
@@ -166,7 +163,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
 
     public void newUnstartedThreadPool(int poolsize) {
         newUnstartedThreadPoolWithoutDefaultJob(poolsize);
-        threadpool.setWorkerJob(new TestWorkerJob());
+        threadpool.setWorkerJob(new TestThreadPoolJob());
     }
 
     public void newShutdownThreadpool() {
@@ -241,8 +238,8 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         return t;
     }
 
-    public SetDefaultWorkerJobThread scheduleSetDefaultWorkerJob(WorkerJob workerJob) {
-        SetDefaultWorkerJobThread t = new SetDefaultWorkerJobThread(workerJob);
+    public SetDefaultWorkerJobThread scheduleSetDefaultWorkerJob(ThreadPoolJob threadPoolJob) {
+        SetDefaultWorkerJobThread t = new SetDefaultWorkerJobThread(threadPoolJob);
         t.start();
         return t;
     }
@@ -282,15 +279,15 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     }
 
     public class SetDefaultWorkerJobThread extends TestThread {
-        private final WorkerJob workerJob;
+        private final ThreadPoolJob threadPoolJob;
 
-        public SetDefaultWorkerJobThread(WorkerJob workerJob) {
-            this.workerJob = workerJob;
+        public SetDefaultWorkerJobThread(ThreadPoolJob threadPoolJob) {
+            this.threadPoolJob = threadPoolJob;
         }
 
         @Override
         protected void runInternal() throws Exception {
-            threadpool.setWorkerJob(workerJob);
+            threadpool.setWorkerJob(threadPoolJob);
         }
     }
 

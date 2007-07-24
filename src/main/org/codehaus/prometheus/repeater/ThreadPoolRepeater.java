@@ -11,8 +11,8 @@ import org.codehaus.prometheus.references.RelaxedLendableReference;
 import org.codehaus.prometheus.references.StrictLendableReference;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
+import org.codehaus.prometheus.threadpool.ThreadPoolJob;
 import org.codehaus.prometheus.threadpool.ThreadPoolState;
-import org.codehaus.prometheus.threadpool.WorkerJob;
 import org.codehaus.prometheus.uninterruptiblesection.TimedUninterruptibleSection;
 
 import java.util.concurrent.RejectedExecutionException;
@@ -89,7 +89,7 @@ import java.util.concurrent.locks.Lock;
  * <p/>
  * If multiple threads are used, you have to make sure that the task that is executed, is threadsafe.
  * If multiple threads are used, and items are taken, processed and than put, it could lead to an
- * out of order put. This can be solved by using some sort of Resequencer. 
+ * out of order put. This can be solved by using some sort of Resequencer.
  *
  * @author Peter Veentjer.
  */
@@ -114,9 +114,10 @@ public class ThreadPoolRepeater implements RepeaterService {
         return new StandardThreadPool(poolsize);
     }
 
-    private final LendableReference<Repeatable> lendableRef;
-    private final ThreadPool threadPool;
-    private volatile boolean shutdownAfterFalse = false;
+    //fields are made protected so RepeatableExecutionStrategy has access to them
+    protected final LendableReference<Repeatable> lendableRef;
+    protected final ThreadPool threadPool;
+    private volatile RepeatableExecutionStrategy repeatableExecutionStrategy = new EndTaskStrategy();
 
     /**
      * Creates a new strict and unstarted ThreadPoolRepeater with one thread and a
@@ -175,16 +176,16 @@ public class ThreadPoolRepeater implements RepeaterService {
 
     /**
      * Creates a new unstarted ThreadPoolRepeater with the given threadPool and lendableReference.
-     * The ThreadPoolRepeater also sets the WorkerJob on the ThreadPool.
+     * The ThreadPoolRepeater also sets the ThreadPoolJob on the ThreadPool.
      *
-     * @param threadPool the ThreadPool this ThreadPoolRepeater uses to manage threads.
-     * @param lendableRef the LendableReference that is used to store the task to repeat. 
+     * @param threadPool  the ThreadPool this ThreadPoolRepeater uses to manage threads.
+     * @param lendableRef the LendableReference that is used to store the task to repeat.
      * @throws NullPointerException if threadPool or lendableRef is null
      */
     public ThreadPoolRepeater(ThreadPool threadPool, LendableReference<Repeatable> lendableRef) {
         if (threadPool == null || lendableRef == null) throw new NullPointerException();
         this.threadPool = threadPool;
-        this.threadPool.setWorkerJob(new WorkerJobImpl());
+        this.threadPool.setWorkerJob(new RepeaterThreadPoolJob());
         this.lendableRef = lendableRef;
     }
 
@@ -208,14 +209,24 @@ public class ThreadPoolRepeater implements RepeaterService {
         return threadPool;
     }
 
-    //todo: test
-    public void setShutdownAfterFalse(boolean shutdownAfterFalse) {
-        this.shutdownAfterFalse = shutdownAfterFalse;
+    /**
+     * Sets the new RepeatableExecutionStrategy
+     *
+     * @param repeatableExecutionStrategy the new RepeatableExecutionStrategy
+     * @throws NullPointerException if repeatableExecutionStrategy is null
+     */
+    public void setRepeatableExecutionStrategy(RepeatableExecutionStrategy repeatableExecutionStrategy) {
+        if (repeatableExecutionStrategy == null) throw new NullPointerException();
+        this.repeatableExecutionStrategy = repeatableExecutionStrategy;
     }
 
-    //todo: test
-    public boolean isShutdownAfterFalse() {
-        return shutdownAfterFalse;
+    /**
+     * Gets the current RepeatableExecutionStrategy. The returned value will never be null.
+     *
+     * @return the current RepeatableExecutionStrategy
+     */
+    public RepeatableExecutionStrategy getRepeatableExecutionStrategy() {
+        return repeatableExecutionStrategy;
     }
 
     public ExceptionHandler getExceptionHandler() {
@@ -272,7 +283,7 @@ public class ThreadPoolRepeater implements RepeaterService {
             case shutdown:
                 return RepeaterServiceState.shutdown;
             default:
-                throw new IllegalStateException("unhandeled state: "+state);
+                throw new IllegalStateException("unhandeled state: " + state);
         }
     }
 
@@ -301,7 +312,9 @@ public class ThreadPoolRepeater implements RepeaterService {
                 case running:
                     break;
                 case shuttingdown:
+                    //fall through
                 case forcedshuttingdown:
+                    //fall through
                 case shutdown:
                     throw new RejectedExecutionException();
                 default:
@@ -338,7 +351,7 @@ public class ThreadPoolRepeater implements RepeaterService {
         lendableRef.tryPut(task, timeout, unit);
     }
 
-    private class WorkerJobImpl implements WorkerJob<Repeatable> {
+    private class RepeaterThreadPoolJob implements ThreadPoolJob<Repeatable> {
 
         public Repeatable getWork() throws InterruptedException {
             return lendableRef.take();
@@ -350,18 +363,8 @@ public class ThreadPoolRepeater implements RepeaterService {
             return null;
         }
 
-        public void runWork(Repeatable task) throws Exception {
-            boolean again = true;
-            try {
-                again = task.execute();
-                if (!again && shutdownAfterFalse)
-                    shutdown();
-            } finally {
-                if (again)
-                    lendableRef.takeback(task);
-                else
-                    lendableRef.takebackAndReset(task);
-            }
+        public boolean executeWork(Repeatable task) throws Exception {
+            return  repeatableExecutionStrategy.execute(task, ThreadPoolRepeater.this);
         }
     }
 }

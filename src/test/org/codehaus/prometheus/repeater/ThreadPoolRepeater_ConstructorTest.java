@@ -34,7 +34,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertHasDefaultThreadPool();
         assertIsStrict(true);
         assertHasRepeatable(null);
-        assertShutdownAfterFalse(false);
+        assertHasEndTaskStrategy();
     }
 
     //================= ThreadPoolRepeater(int) ===========================
@@ -57,7 +57,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertHasDefaultThreadPool();
         assertIsStrict(true);
         assertHasRepeatable(null);
-        assertShutdownAfterFalse(false);
+        assertHasEndTaskStrategy();
     }
 
 //================= ThreadPoolRepeater(Repeatable) ===========================
@@ -81,7 +81,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertHasDefaultThreadPool();
         assertIsStrict(true);
         assertHasRepeatable(repeatable);
-        assertShutdownAfterFalse(false);
+        assertHasEndTaskStrategy();
     }
 
 
@@ -111,6 +111,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertIsStrict(true);
         assertHasDefaultLendableReference();
         assertHasDefaultThreadPool();
+        assertHasEndTaskStrategy();
     }
 
     public void test_Runnable() {
@@ -128,6 +129,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertIsStrict(true);
         assertHasDefaultLendableReference();
         assertHasDefaultThreadPool();
+        assertHasEndTaskStrategy();
     }
 
     //============= ThreadPoolRepeater(boolean,Repeatable,int,ThreadFactory =========
@@ -158,7 +160,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
         assertHasRepeatable(task);
         assertIsStrict(strict);
-        assertShutdownAfterFalse(false);
+        assertHasEndTaskStrategy();
 
         assertTrue(repeater.getThreadPool() instanceof StandardThreadPool);
         StandardThreadPool threadpool = (StandardThreadPool) repeater.getThreadPool();
@@ -192,14 +194,10 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertSame(lendableRef, repeater.getLendableRef());
         assertSame(threadPool, repeater.getThreadPool());
         assertNotNull(threadPool.getWorkerJob());
-        assertShutdownAfterFalse(false);
+        assertHasEndTaskStrategy();
     }
 
     //========================= asserts =======================
-
-    public void assertShutdownAfterFalse(boolean expected) {
-        assertEquals(expected, repeater.isShutdownAfterFalse());
-    }
 
     private void assertIsStrict(boolean strict) {
         LendableReference ref = repeater.getLendableRef();

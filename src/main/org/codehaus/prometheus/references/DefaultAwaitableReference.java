@@ -226,6 +226,25 @@ public class DefaultAwaitableReference<E> extends AbstractAwaitableReference<E> 
     }
 
     /**
+     * Sets the reference to null, if the expectedReference is equal to the expectedReference.
+     * If the expectedReference is not equal to the current reference, the call is ignored.
+     *
+     * @param expectedReference the reference expected to be found
+     */
+    public void conditionalReset(E expectedReference){
+        mainLock.lock();
+        try{
+            if(reference == null)
+                return;
+
+            if(reference.equals(expectedReference))
+                postNewReference(null);
+        }finally{
+            mainLock.unlock();
+        }
+    }
+
+    /**
      * Stores the new Reference. If the newReference is not <tt>null</tt>, all threads waiting for
      * the referenceAvailableCondition are signalled.
      * <p/>

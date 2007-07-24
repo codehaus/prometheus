@@ -8,15 +8,23 @@ package org.codehaus.prometheus.testsupport;
 import java.util.concurrent.Callable;
 
 /**
- * A dummy Callable that doesn't do anything and returns null when it is called. Useful
- * when a Callable is required.
+ * A dummy Callable that doesn't do much except returning the given value.
  *
  * @author Peter Veentjer.
  */
 ///CLOVER:OFF
 public class DummyCallable<E> implements Callable<E> {
+    private final E item;
+
+    public DummyCallable(){
+        this(null);
+    }
+
+    public DummyCallable(E item){
+        this.item = item;
+    }
 
     public E call() throws Exception {
-        return null;
+        return item;
     }
 }

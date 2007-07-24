@@ -85,7 +85,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         return taker;
     }
 
-    public void _tested_put(boolean startInterrupted, Integer oldRef, Integer newRef) {
+    public void spawned_put(boolean startInterrupted, Integer oldRef, Integer newRef) {
         PutThread putThread = schedulePut(newRef, startInterrupted);
         joinAll(putThread);
         putThread.assertSuccess(oldRef);
@@ -93,7 +93,13 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         assertHasReference(newRef);
     }
 
-    public void _tested_tryPut(long timeout, Integer newRef, Integer oldRef) {
+    public void spawned_conditionalReset(Integer expectedRef){
+        ConditionalResetThread t = scheduleConditionalReset(expectedRef);
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+    }
+
+    public void spawned_tryPut(long timeout, Integer newRef, Integer oldRef) {
         TimedTryPutThread putter = scheduleTryPut(newRef, timeout);
         joinAll(putter);
         putter.assertSuccess(oldRef);
@@ -113,16 +119,34 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         return t;
     }
 
-    public void _tested_put(Integer newRef, Integer expectedReturnedRef) {
+    public ConditionalResetThread scheduleConditionalReset(Integer ref){
+        ConditionalResetThread t = new ConditionalResetThread(ref);
+        t.start();
+        return t;
+    }
+
+    public void spawned_put(Integer newRef, Integer expectedReturnedRef) {
         PutThread putter = schedulePut(newRef);
         joinAll(putter);
         putter.assertSuccess(expectedReturnedRef);
     }
 
-    public void _tested_take(Integer expectedTakenRef) {
+    public void spawned_take(Integer expectedTakenRef) {
         TakeThread taker = scheduleTake();
         joinAll(taker);
         taker.assertSuccess(expectedTakenRef);
+    }
+
+    public class ConditionalResetThread extends TestThread{
+        private final Integer ref;
+
+        public ConditionalResetThread(Integer ref){
+            this.ref = ref;
+        }
+
+        public void runInternal(){
+            awaitableRef.conditionalReset(ref);
+        }
     }
 
     public class PutThread extends TestThread {

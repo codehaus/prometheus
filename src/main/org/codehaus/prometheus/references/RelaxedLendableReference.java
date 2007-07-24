@@ -75,17 +75,19 @@ public class RelaxedLendableReference<E> extends DefaultAwaitableReference<E> im
      * RelaxedLendableReference it is possible that at any given moment multiple references are
      * lend, and taking back doesn't do anything unlike the take back of the
      * StrictLendableReference. So incorrect references that are taking back, or not detected.
-     *
-     * @param ref {@inheritDoc}
-     * @throws NullPointerException {@inheritDoc}
      */
     public void takeback(E ref) {
         if (ref == null) throw new NullPointerException();
-        //nothing needs to be done because
     }
 
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * The reference is only reset when the current reference is equal to the reference that is
+     * taken back.
+     */
     public void takebackAndReset(E ref) {
         if (ref == null) throw new NullPointerException();
-        put(null);
+        conditionalReset(ref);
     }
 }

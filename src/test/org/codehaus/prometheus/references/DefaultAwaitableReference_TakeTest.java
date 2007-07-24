@@ -91,7 +91,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
 
         //do a put and check that the takes completed
         Integer newRef = 10;
-        _tested_put(newRef, null);
+        spawned_put(newRef, null);
         joinAll(takeThread1, takeThread2);
         takeThread1.assertSuccess(newRef);
         takeThread2.assertSuccess(newRef);
@@ -120,7 +120,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         takeThread2.assertIsStarted();
 
         //put an item, and make sure that the takers have completed.
-        _tested_put(newRef, null);
+        spawned_put(newRef, null);
         joinAll(takeThread1, takeThread2);
         takeThread1.assertSuccess(newRef);
         takeThread2.assertSuccess(newRef);

@@ -14,8 +14,8 @@ public abstract class RelaxedLendableReference_AbstractTest<E> extends Concurren
 
     public volatile RelaxedLendableReference<E> lendableRef;
 
-    public void assertHasRef(E ref) {
-        assertEquals(lendableRef.peek(), ref);
+    public void assertHasRef(E expectedRef) {
+        assertEquals(expectedRef, lendableRef.peek());
     }
 
     public TakeThread scheduleTake() {
@@ -36,22 +36,35 @@ public abstract class RelaxedLendableReference_AbstractTest<E> extends Concurren
         return t;
     }
 
-    public void _tested_takeback(E takenbackRef) {
-        TakeBackThread<Integer> takebackThread1 = scheduleTakeBack(takenbackRef);
-        joinAll(takebackThread1);
-        takebackThread1.assertSuccess();
+    public void spawned_put(E newRef){
+        E oldRef = lendableRef.peek();
+        PutThread<E> t = schedulePut(newRef);
+        joinAll(t);
+        t.assertSuccess(oldRef);
     }
 
-    public void _tested_takebackAndReset(E takenbackRef) {
-        TakebackAndResetThread takebackAndResetThread = scheduleTakebackAndReset(takenbackRef);
-        joinAll(takebackAndResetThread);
-        takebackAndResetThread.assertIsTerminatedNormally();
+    public PutThread schedulePut(E ref){
+        PutThread t = new PutThread(lendableRef,ref);
+        t.start();
+        return t;
     }
 
-    public void _tested_take(Integer expectedTakenRef) {
-        TakeThread takeThread = scheduleTake();
-        joinAll(takeThread);
-        takeThread.assertSuccess(expectedTakenRef);
+    public void spawned_takeback(E takenbackRef) {
+        TakeBackThread<Integer> t = scheduleTakeBack(takenbackRef);
+        joinAll(t);
+        t.assertSuccess();
+    }
+
+    public void spawned_takebackAndReset(E takenbackRef) {
+        TakebackAndResetThread t = scheduleTakebackAndReset(takenbackRef);
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+    }
+
+    public void spawned_take(Integer expectedTakenRef) {
+        TakeThread t = scheduleTake();
+        joinAll(t);
+        t.assertSuccess(expectedTakenRef);
     }
 
     public class TakebackAndResetThread extends TestThread {

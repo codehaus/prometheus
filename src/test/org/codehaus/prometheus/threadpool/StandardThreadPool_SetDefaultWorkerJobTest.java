@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.threadpool;
 
 /**
- * Unittests the {@link StandardThreadPool#setWorkerJob(WorkerJob)} method.
+ * Unittests the {@link StandardThreadPool#setWorkerJob(ThreadPoolJob)} method.
  *
  * @author Peter Veentjer.
  */
@@ -20,7 +20,7 @@ public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPo
     public void testWhileUnstarted() {
         newUnstartedThreadPool();
 
-        WorkerJob firstJob = new DummyWorkerJob();
+        ThreadPoolJob firstJob = new DummyThreadPoolJob();
         SetDefaultWorkerJobThread setThread = scheduleSetDefaultWorkerJob(firstJob);
         joinAll(setThread);
 
@@ -30,7 +30,7 @@ public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPo
         assertSame(firstJob, threadpool.getWorkerJob());
 
         //try to set another job after the first has been set, should succeed.
-        WorkerJob secondJob = new DummyWorkerJob();
+        ThreadPoolJob secondJob = new DummyThreadPoolJob();
         setThread = scheduleSetDefaultWorkerJob(secondJob);
 
         joinAll(setThread);
@@ -60,9 +60,9 @@ public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPo
     }
 
     private void assertSetDefaultWorkerJobIsRejected() {
-        WorkerJob oldjob = threadpool.getWorkerJob();
+        ThreadPoolJob oldjob = threadpool.getWorkerJob();
 
-        WorkerJob newjob = new DummyWorkerJob();
+        ThreadPoolJob newjob = new DummyThreadPoolJob();
         SetDefaultWorkerJobThread setThread = scheduleSetDefaultWorkerJob(newjob);
         joinAll(setThread);
 

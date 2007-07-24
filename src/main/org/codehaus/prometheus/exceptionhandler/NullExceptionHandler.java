@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.exceptionhandler;
 
 /**
- * A dummy ExceptionHandler that doesn't do anything. It can be used as in instanceof if no
+ * A dummy ExceptionHandler that doesn't do anything. It can be used as in instance if no
  * other instance is provided.
  *
  * @author Peyer Veentjer.

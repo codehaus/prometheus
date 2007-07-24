@@ -12,7 +12,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendableReference_AbstractTest<Integer> {
 
-    public void testNulltakeback() {
+    public void test_null() {
         Integer oldRef = 10;
         lendableRef = new RelaxedLendableReference(oldRef);
 
@@ -25,18 +25,29 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
         assertHasRef(oldRef);
     }
 
-    public void testTakebackByDifferentThread() {
-        Integer ref = 10;
-        lendableRef = new RelaxedLendableReference(ref);
+    public void test_differentInstanceButEqualValue(){
+        Integer ref1 = new Integer(10);
+        Integer ref2 = new Integer(10);
+        lendableRef = new RelaxedLendableReference(ref1);
 
-        _tested_take(ref);
-        _tested_takebackAndReset(ref);
+        spawned_take(ref1);
+        spawned_takebackAndReset(ref2);
         assertHasRef(null);
     }
 
-    public void testTakebackBySameThread() {
+    public void test_byDifferentThread() {
+        Integer ref = 10;
+        lendableRef = new RelaxedLendableReference(ref);
+
+        spawned_take(ref);
+        spawned_takebackAndReset(ref);
+        assertHasRef(null);
+    }
+
+    public void test_bySameThread() {
         final Integer ref = 10;
         lendableRef = new RelaxedLendableReference(ref);
+
         TestThread thread = new TestThread() {
             @Override
             protected void runInternal() throws InterruptedException, TimeoutException {
@@ -45,24 +56,68 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
                 lendableRef.takebackAndReset(ref);
             }
         };
+
         thread.start();
         joinAll(thread);
         thread.assertIsTerminatedNormally();
+
         assertHasRef(null);
     }
 
-    public void testMultipleIncorrectTackebacks() {
+    //make sure that the new value is not removed
+    public void test_differentValueAlreadySet(){
+        Integer oldRef = 10;
+        Integer newRef = 20;
+        lendableRef = new RelaxedLendableReference(oldRef);
+
+        spawned_take(oldRef);
+        spawned_put(newRef);
+        spawned_takebackAndReset(oldRef);
+        //the new value should not be overwritten by a null value.
+        assertHasRef(newRef);
+    }
+
+    public void test_multiple(){
+        Integer ref = 10;
+        lendableRef = new RelaxedLendableReference(ref);
+
+        spawned_take(ref);
+        spawned_take(ref);
+        spawned_takebackAndReset(ref);
+        assertHasRef(null);
+        spawned_takebackAndReset(ref);
+        assertHasRef(null);
+        spawned_takeback(ref);
+        assertHasRef(null);
+        spawned_takebackAndReset(ref);
+        assertHasRef(null);
+    }
+
+    public void test_differentValueSetInBetween(){
+        Integer oldRef = 10;
+        Integer newRef = 20;
+        lendableRef = new RelaxedLendableReference(oldRef);
+
+        spawned_take(oldRef);
+        spawned_put(newRef);
+        spawned_put(oldRef);
+        spawned_takebackAndReset(oldRef);
+        //even though a new value was set in between, the old value was restored eventually
+        //so the takeback and reset works.
+        assertHasRef(null);
+    }
+
+    public void test_MultipleIncorrectTackebacks() {
         Integer originalRef = 10;
         lendableRef = new RelaxedLendableReference(originalRef);
 
-        _tested_take(originalRef);
+        spawned_take(originalRef);
 
-        //do multiple takebacksAndResets with different reference, and check that the
-        //the reference has null
-        for (int k = 0; k < 10; k++) {
-            Integer replaceRef = 20 + k;
-            _tested_takebackAndReset(replaceRef);
-            assertHasRef(null);
-        }
+        spawned_takebackAndReset(originalRef+1);
+        assertHasRef(originalRef);
+        spawned_takebackAndReset(originalRef+2);
+        assertHasRef(originalRef);
+        spawned_takebackAndReset(originalRef);
+        assertHasRef(null);        
     }
 }

@@ -51,6 +51,11 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         awaitShutdownThread.assertIsTerminatedNormally();
     }
 
+    public void spawned_repeat(Repeatable repeatable){
+        RepeatThread t = scheduleRepeat(repeatable);
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+    }
 
     public void newShutdownRepeater() {
         newRunningStrictRepeater();
@@ -156,6 +161,14 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
     public void _tested_repeat(Repeatable task) {
         RepeatThread repeatThread = scheduleRepeat(task);
         joinAll(repeatThread);
+    }
+
+    public void assertHasEndTaskStrategy(){
+        assertTrue(repeater.getRepeatableExecutionStrategy() instanceof EndTaskStrategy);
+    }
+
+    public void assertHasExecuteRepeatableStrategy(RepeatableExecutionStrategy expected){
+        assertSame(expected,repeater.getRepeatableExecutionStrategy());
     }
 
     public void assertIsUnstarted() {
@@ -312,4 +325,6 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
             repeater.awaitShutdown();
         }
     }
+
+
 }

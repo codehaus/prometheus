@@ -32,7 +32,7 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
 
         //do a put and make sure it completes 
         Integer newRef = 20;
-        _tested_put(startInterrupted, oldRef, newRef);
+        spawned_put(startInterrupted, oldRef, newRef);
     }
 
     //========= waiting takers =============
@@ -49,14 +49,14 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
         taker2.assertIsStarted();
 
         //first put a null value and make sure the takers are still waiting
-        _tested_put(null, oldRef);
+        spawned_put(null, oldRef);
         taker1.assertIsStarted();
         taker2.assertIsStarted();
         assertHasReference(null);
 
         //now enter a non null value and make sure that the takers have completed
         Integer secondNewRef = 2;
-        _tested_put(secondNewRef, null);
+        spawned_put(secondNewRef, null);
         joinAll(taker1, taker2);
         assertHasReference(secondNewRef);
         taker1.assertSuccess(secondNewRef);
@@ -79,11 +79,11 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);
 
         //do a take
-        _tested_take(oldRef);
+        spawned_take(oldRef);
 
         //now do a put and make sure it completes (a relaxed lendable
         //reference doesn't care about previous takes)
         Integer newRef = 20;
-        _tested_put(startInterrupted, oldRef, newRef);
+        spawned_put(startInterrupted, oldRef, newRef);
     }
 }

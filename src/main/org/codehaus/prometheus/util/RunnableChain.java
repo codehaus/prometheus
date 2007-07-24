@@ -9,13 +9,14 @@ import java.util.List;
 
 /**
  * A RunnableChain is a composition of other Runnables. It is handy if you have
- * a sequence of Runnable's to be run.
+ * a sequence of Runnable's to be run. A Runnable chain can optionaly be unbreakable:
+ * if an exception occurrs, the remaining tasks are executed.
  * <p/>
  * The unbreakable nature of the chain only applies to Exceptions. Other forms of
  * Throwables like Errors are not caught and could break unbreakable chain. This behavior
  * is in sync with the standard approach for dealing with non exceptions.
  * <p/>
- * When an exception occurrs and the chain is unbreakable, the errorhandler is called
+ * When an exception occurrs and the chain is unbreakable, the exceptionHandler is called
  * and then the exception is dropt. The execution of an unbreakable chain will always
  * succeed. If a chain is breakable, the exceptionhandler is not used and exceptions
  * are propagated up the callstack.

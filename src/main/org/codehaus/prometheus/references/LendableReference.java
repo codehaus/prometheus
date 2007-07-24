@@ -85,34 +85,35 @@ public interface LendableReference<E> extends AwaitableReference<E> {
      * Takes back a lend reference back to this LendableReference. If an incorrect reference is
      * returned, a IncorrectReferenceTakenBackException could be thrown. The check on correctness is
      * done based on the equal method. So you are allowed to send back a different object, as long
-     * as it is equal. It is up to the implementation to decide if a IllegalTakebackException needs
+     * as it is equal. It is up to the implementation to decide if an IllegalTakebackException needs
      * or can be thrown.
      * <p/>
      * <p/>
-     * A different thread is allowed to tryTake the reference back.
+     * A different thread is allowed to take the reference back.
      * <p/>
-     * <p/>
-     * todo:
-     * what happens if a bogus takeback is done? So a value is taken back
-     * although nothing is lend.
      *
      * @param ref the reference taken back.
      * @throws NullPointerException     if ref is <tt>null</tt>. Because a <tt>null</tt> will
      *                                  never be lend, it can't be returned.
      * @throws IllegalTakebackException if a incorrect reference is returned. It
      *                                  depends on the implementation if this
-     *                                  exception is thrown. todo
+     *                                  exception is thrown.
      */
     void takeback(E ref);
 
     /**
      * Takes back a lend reference to this LendableReference and resets the reference to null.
+     * It depends on the implementation to decide the conditions under which the reference is
+     * set back to null.
      * <p/>
-     * A different thread is allowed to tryTake the reference back.
+     * A different thread is allowed to take the reference back.
      *
-     * @param ref
-     * @throws NullPointerException     if ref is null.
-     * @throws IllegalTakebackException
+     * @param ref the reference taken back.
+     * @throws NullPointerException     if ref is <tt>null</tt>. Because a <tt>null</tt> will
+     *                                  never be lend, it can't be returned.
+     * @throws IllegalTakebackException if a incorrect reference is returned. It
+     *                                  depends on the implementation if this
+     *                                  exception is thrown.
      */
     void takebackAndReset(E ref);
 }

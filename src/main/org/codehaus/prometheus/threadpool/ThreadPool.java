@@ -12,11 +12,11 @@ import java.util.concurrent.locks.Lock;
  * want to throw them away.
  * </p>
  * <p>
- * The workers in the ThreadPool keep repeating a {@link WorkerJob}. A threadpool can have
+ * The workers in the ThreadPool keep repeating a {@link ThreadPoolJob}. A threadpool can have
  * a default workjob for those cases you always want to keep repeating the same job over
- * and over. But a future improvement is planned: creating a Worker with a given WorkerJob.
- * For a worker to execute a WorkJob, it first needs to execute {@link WorkerJob#getWork()} method
- * and after it has got his task it calls the {@link WorkerJob#runWork(Object)}
+ * and over. But a future improvement is planned: creating a Worker with a given ThreadPoolJob.
+ * For a worker to execute a WorkJob, it first needs to execute {@link ThreadPoolJob#getWork()} method
+ * and after it has got his task it calls the {@link ThreadPoolJob#executeWork(Object)}
  * method. The getWork could be taking a reference from a LendableReference for example
  * (see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater}) or taking a task from a
  * blocking queue {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor}. Workers
@@ -24,9 +24,9 @@ import java.util.concurrent.locks.Lock;
  * they are working.
  * </p>
  * <p>
- * When a ThreadPool is shutdown, it starts calling the {@link WorkerJob#getShuttingdownWork()}.
+ * When a ThreadPool is shutdown, it starts calling the {@link ThreadPoolJob#getShuttingdownWork()}.
  * When a ThreadPool is forced to shutdown by calling the {@link #shutdownNow()} method, no methods
- * are called on the WorkerJob anymore and the pooled thread is able to rest in peace.
+ * are called on the ThreadPoolJob anymore and the pooled thread is able to rest in peace.
  * </p>
  * <h1>Exception handling</h1>
  * <p>
@@ -47,16 +47,16 @@ public interface ThreadPool {
      *
      * @return the job this ThreadPool is executing.
      */
-    WorkerJob getWorkerJob();
+    ThreadPoolJob getWorkerJob();
 
     /**
-     * Sets the WorkerJob this ThreadPool executes.
+     * Sets the ThreadPoolJob this ThreadPool executes.
      *
      * @param job the
      * @throws NullPointerException  if job is <tt>null</tt>.
      * @throws IllegalStateException if the ThreadPool isn't in the unstarted state anymore.
      */
-    void setWorkerJob(WorkerJob job);
+    void setWorkerJob(ThreadPoolJob job);
 
     /**
      * Gets the ExceptionHandler. The value will never be <tt>null</tt>.
@@ -89,13 +89,13 @@ public interface ThreadPool {
      * Starts this ThreadPool. If the ThreadPool already is running, the call is ignored.
      *
      * @throws IllegalStateException when the ThreadPool is shutting down, shutdown or
-     *                               if threads need to be created, but no default WorkerJob is set.
+     *                               if threads need to be created, but no default ThreadPoolJob is set.
      */
     void start();
 
     /**
      * Shuts down this ThreadPool. It doesn't interrupt workers while they are executing a task.
-     * This call doesn't block while this ThreadPool is shutting down.
+     * This call doesn't wait for the shutdown to complete.
      *
      * @return the previous state the ThreadPool was in.
      */
@@ -103,7 +103,7 @@ public interface ThreadPool {
 
     /**
      * Shuts down this ThreadPool immediately. It does interrupt workers while they are executing
-     * a task. This call doesn't block while this ThreadPool is shutting down.
+     * a task. This call doesn't wait for the shutdown to complete.
      *
      * @return the previous state the ThreadPool was in.
      */

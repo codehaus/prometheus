@@ -9,7 +9,7 @@ import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPoolState;
-import org.codehaus.prometheus.threadpool.WorkerJob;
+import org.codehaus.prometheus.threadpool.ThreadPoolJob;
 import static org.codehaus.prometheus.util.ConcurrencyUtil.ensureNoTimeout;
 
 import static java.lang.String.format;
@@ -103,7 +103,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         if (threadPool == null || workQueue == null) throw new NullPointerException();
         this.threadPool = threadPool;
         this.workQueue = workQueue;
-        this.threadPool.setWorkerJob(new WorkerJobImpl());
+        this.threadPool.setWorkerJob(new ThreadPoolJobImpl());
     }
 
     /**
@@ -308,7 +308,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         }
     }
 
-    private class WorkerJobImpl implements WorkerJob<Runnable> {
+    private class ThreadPoolJobImpl implements ThreadPoolJob<Runnable> {
 
         public Runnable getWork() throws InterruptedException {
             return workQueue.take();
@@ -318,8 +318,9 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
             return workQueue.poll(0, TimeUnit.NANOSECONDS);
         }
 
-        public void runWork(Runnable task) {
+        public boolean executeWork(Runnable task) {
             task.run();
+            return true;
         }
     }
 }

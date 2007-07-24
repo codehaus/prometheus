@@ -14,7 +14,7 @@ public class DefaultAwaitableReference_IsTakePossibleTest extends DefaultAwaitab
         assertTakeIsPossible();
 
         //if an item is taken, it doesn't influence the isTakePossible
-        _tested_take(ref);
+        spawned_take(ref);
         assertTakeIsPossible();
     }
 

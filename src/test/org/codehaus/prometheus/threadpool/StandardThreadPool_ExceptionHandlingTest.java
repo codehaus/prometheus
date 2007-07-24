@@ -6,6 +6,8 @@ import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 import org.codehaus.prometheus.testsupport.ThrowingRunnable;
 
+import java.util.concurrent.Executors;
+
 /**
  * Unittests the {@link StandardThreadPool} {@link org.codehaus.prometheus.exceptionhandler.ExceptionHandler}
  * functionality.
@@ -41,9 +43,13 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         assertIsRunning();
     }
 
+    public void placeTask(Runnable runnable){
+        taskQueue.add(Executors.callable(runnable,true));
+    }
+
     private void createBunchOfProblemTasks(int errorcount) {
         for (int k = 0; k < errorcount; k++)
-            taskQueue.add(new ThrowingRunnable());
+            placeTask(new ThrowingRunnable());
     }
 
     public void testHandlerIsNotCalledForGetWorkAndInterruptedException() {

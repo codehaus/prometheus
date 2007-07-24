@@ -99,61 +99,61 @@ public class StandardThreadPool_ConstructorTest extends StandardThreadPool_Abstr
         factory.assertNoThreadsCreated();
     }
 
-    //================== StandardThreadPool(WorkerJob,ThreadFactory) ========================
+    //================== StandardThreadPool(ThreadPoolJob,ThreadFactory) ========================
 
     public void test_WorkerJob_ThreadFactory() {
         try {
-            new StandardThreadPool(new DummyWorkerJob(), null);
+            new StandardThreadPool(new DummyThreadPoolJob(), null);
             fail();
         } catch (NullPointerException ex) {
         }
 
         test_WorkerJob_ThreadFactory(null);
-        test_WorkerJob_ThreadFactory(new DummyWorkerJob());
+        test_WorkerJob_ThreadFactory(new DummyThreadPoolJob());
     }
 
-    public void test_WorkerJob_ThreadFactory(WorkerJob workerJob) {
+    public void test_WorkerJob_ThreadFactory(ThreadPoolJob threadPoolJob) {
         TracingThreadFactory factory = new TracingThreadFactory();
-        threadpool = new StandardThreadPool(workerJob, factory);
+        threadpool = new StandardThreadPool(threadPoolJob, factory);
         assertIsUnstarted();
         assertSame(factory, threadpool.getThreadFactory());
         assertActualPoolsize(0);
         assertDesiredPoolsize(0);
-        assertSame(workerJob, threadpool.getWorkerJob());
+        assertSame(threadPoolJob, threadpool.getWorkerJob());
         assertHasNullExceptionHandler();
         factory.assertNoThreadsCreated();
     }
 
-    //================== StandardThreadPool(int,WorkerJob,ThreadFactory) ========================
+    //================== StandardThreadPool(int,ThreadPoolJob,ThreadFactory) ========================
 
     public void test_int_WorkerJob_ThreadFactory() {
         try {
-            new StandardThreadPool(-1, new DummyWorkerJob(), null);
+            new StandardThreadPool(-1, new DummyThreadPoolJob(), null);
             fail();
         } catch (IllegalArgumentException ex) {
         }
 
 
         try {
-            new StandardThreadPool(1, new DummyWorkerJob(), null);
+            new StandardThreadPool(1, new DummyThreadPoolJob(), null);
             fail();
         } catch (NullPointerException ex) {
         }
 
         test_int_WorkerJob_ThreadFactory(0, null);
-        test_int_WorkerJob_ThreadFactory(0, new DummyWorkerJob());
+        test_int_WorkerJob_ThreadFactory(0, new DummyThreadPoolJob());
         test_int_WorkerJob_ThreadFactory(1, null);
-        test_int_WorkerJob_ThreadFactory(1, new DummyWorkerJob());
+        test_int_WorkerJob_ThreadFactory(1, new DummyThreadPoolJob());
     }
 
-    public void test_int_WorkerJob_ThreadFactory(int poolsize, WorkerJob workerJob) {
+    public void test_int_WorkerJob_ThreadFactory(int poolsize, ThreadPoolJob threadPoolJob) {
         TracingThreadFactory factory = new TracingThreadFactory();
-        threadpool = new StandardThreadPool(poolsize, workerJob, factory);
+        threadpool = new StandardThreadPool(poolsize, threadPoolJob, factory);
         assertIsUnstarted();
         assertSame(factory, threadpool.getThreadFactory());
         assertActualPoolsize(0);
         assertDesiredPoolsize(poolsize);
-        assertSame(workerJob, threadpool.getWorkerJob());
+        assertSame(threadPoolJob, threadpool.getWorkerJob());
         assertHasNullExceptionHandler();
         factory.assertNoThreadsCreated();
     }

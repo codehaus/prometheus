@@ -24,7 +24,7 @@ package org.codehaus.prometheus.repeater;
  * @see org.codehaus.prometheus.repeater.RepeatableRunnable
  */
 public interface Repeatable {
-
+    
     /**
      * Executes this Repeatable.
      *

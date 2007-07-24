@@ -10,6 +10,9 @@ import java.io.PrintStream;
  */
 public class PrintStreamExceptionHandler implements ExceptionHandler {
 
+    /**
+     * An instanceof the PrintStreamExceptionHandler that writes to the System.out
+     */
     public final static PrintStreamExceptionHandler SYS_OUT = new PrintStreamExceptionHandler();
 
     private final PrintStream out;
