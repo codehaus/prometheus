@@ -78,6 +78,7 @@ package org.codehaus.prometheus.references;
  * java.util.prometheus, see {@link AwaitableReference}.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public interface LendableReference<E> extends AwaitableReference<E> {
 

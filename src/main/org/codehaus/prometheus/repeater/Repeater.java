@@ -54,6 +54,7 @@ import java.util.concurrent.TimeoutException;
  * @see org.codehaus.prometheus.repeater.ThreadPoolRepeater
  * @see java.util.concurrent.Executor
  * @see java.util.concurrent.ThreadPoolExecutor
+ * @since 0.1
  */
 public interface Repeater {
 

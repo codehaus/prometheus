@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.util;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
@@ -22,6 +27,7 @@ import java.util.List;
  * are propagated up the callstack.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class RunnableChain implements Runnable {
     private final List<Runnable> chain;

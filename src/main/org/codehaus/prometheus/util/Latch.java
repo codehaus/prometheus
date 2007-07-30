@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.util;
 
 import java.util.concurrent.TimeUnit;
@@ -12,11 +17,12 @@ import java.util.concurrent.TimeoutException;
  * </p>
  * <p>
  * Doug Lea his library also contained a
- * <a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/Latch.java">Latch"> but
+ * <a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/Latch.java">Latch</a> but
  * it never made it in the java.util.concurrent package.
  * </p>
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public interface Latch {
 

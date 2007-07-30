@@ -12,6 +12,7 @@ import java.util.concurrent.Executor;
  * task. The DirectExecutor is very useful for unittesting because no extra threads are introduced.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class DirectExecutor implements Executor {
 

@@ -41,6 +41,7 @@ import java.util.concurrent.TimeoutException;
  * Pauzing/throttling will be added in one of the next releases.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public interface RepeaterService extends Repeater {
 

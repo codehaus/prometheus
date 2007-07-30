@@ -24,6 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Peter Veentjer.
  * @see StrictLendableReference
  * @see org.codehaus.prometheus.references.DefaultAwaitableReference
+ * @since 0.1
  */
 public class RelaxedLendableReference<E> extends DefaultAwaitableReference<E> implements LendableReference<E> {
 

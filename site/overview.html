@@ -116,13 +116,17 @@ features (the best ones imho) are planned:
         like batch applications. The main goal is to separate 2 aspects:
         <ol>
             <li>the actual processing of messages (in most cases some form of transformation)</li>
-            <li>connecting and running processes (synchronous or asynchronous)</li>
+            <li>
+		plumbing: connecting processes (either directly or by some form of queueing), threading, 
+		exception handling and pattern matching on message type.
+	    </li>
         </ol>
-        Often these 2 aspects are integrated and form a monolithic piece of code
-        that prevents asynchronous execution of processes which in turn prevents all kinds
-        of techniques from being used; for example multi-threading. By separating these aspects, one
-        can wire up the same processes in a different manner and this makes a system
-        much more flexible.
+        Often these 2 aspects are integrated and form a monolithic piece of code is very hard to
+	test, to maintain, to understand, to change.By separating these aspects, one
+        can wire up the same processes in a different manner (sequential, a pipeline, parallel) 
+	and this makes a system much more flexible. Another important goal is to make it easy to 
+	wire Processes up in Spring (or any other IOC-container) so you can combine the functionality of
+	Processes with the power of Spring.
     </li>
     <li>
         <b>Waitpoint</b>: an abstraction for blocking behaviour. By injecting

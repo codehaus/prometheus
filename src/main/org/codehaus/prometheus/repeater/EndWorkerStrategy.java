@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.repeater;
 
 /**
@@ -6,6 +11,7 @@ package org.codehaus.prometheus.repeater;
  * ThreadPool ends.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class EndWorkerStrategy implements RepeatableExecutionStrategy {
 

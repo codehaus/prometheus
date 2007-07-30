@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.repeater;
 
 /**
@@ -10,6 +15,7 @@ package org.codehaus.prometheus.repeater;
  * The {@link #execute()} method always returns <tt>true</tt> unless a RuntimeException occurs.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class RepeatableRunnable implements Repeatable, Runnable {
 

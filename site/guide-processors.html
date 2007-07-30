@@ -1,0 +1,393 @@
+<h2>Processor guide</h2>
+<p>
+    This documentation is under construction. The functionality of the processors still is in the
+    sandbox. At the moment it is being used in an experimental project within <a href="http://www.xebia.com">Xebia</a>:
+    the company I'm part of. We use Prometheus as execution environment, and Terracotta as distribution mechanism.
+</p>
+
+<h3>Goal</h3>
+<p>
+    Make it easy to use multi-threading, focus on core logic and not on plumbing, provide
+    a flexible, extract looping, lightweight and powerful execution environment for multithreading and
+    distributed computing.
+</p>
+
+<h3>Process</h3>
+<p>
+    What is a Process:
+</p>
+<ol>
+    <li>Something that generates data: eg reading lines of text from a file</li>
+    <li>Something that consumes data: eg writing output to database or file</li>
+    <li>Something that transforms data: eg encrypt/decrypt etc</li>
+</ol>
+
+<h3>Processes in Prometheus</h3>
+<p>
+    A Process in Prometheus can be any class. You don't need to implement any interfaces, extend
+    classes. A Process only need to have a receive method for Messages (any POJO) it wants to receive:
+</p>
+<pre>
+    class AddOneProcess{
+
+        public Integer receive(Integer value){
+            return value++;
+        }
+    }
+</pre>
+<p>
+    As you can see there is no logic how to get data (maybe from a queue or the output of another process),
+    how to get rid of it (place it on a queue, give it as input to the next process), how a thread needs
+    to execute this process, how to deal with exceptions, figuring out which receive method to use.
+    This makes it very easy to wire up the some processes in different ways, it makes it easy
+    to test, to understand, ..
+    <br/>
+    The process functionality is not the magic solution if you need to deal with messages. In some cases you
+    need to deal with multiple queues, timeouts etc. If that is the case you can always go a step lower:
+    and write a processor (an environment for executing a process) yourself.
+</p>
+
+<h4>Multiple receive methods</h4>
+<p>
+    You can also create multiple receive methods:
+</p>
+<pre>
+    class AddOneProcess{
+
+        public Integer receive(Integer value){
+            return value++;
+        }
+
+        public Float receive(Float value){
+            return value++;
+        }
+    }
+</pre>
+<p>
+    Multiple receive methods can be used to deal with 'poison' messages.
+</p>
+<pre>
+    class FileWritingProcess{
+        FileWriter writer;
+
+        public void receive(String s){
+            writer.write(s);
+        }
+
+        public void receive(StartOfStreamEvent e){
+            writer = new FileWriter(e.getOutputFile());
+        }
+
+        public void receive(EndOfStreamEvent e){
+            writer.close();
+        }
+    }
+</pre>
+<p>
+    Todo: ambiguity, most strict receive.
+</p>
+
+<h4>Using a wildcard</h4>
+<p>
+    Using a wildcard  (wildcard is nothing special.. just a receive that accepts any
+    Object).
+</p>
+<pre>
+
+    class LoggingProcess{
+        Logger logger = ....
+
+        public void receive(Object o){
+            logger.info(o);
+        }
+    }
+</pre>
+<p>
+    A wildcard can be used in combination with normal receive methods:
+</p>
+<pre>
+    class LoggingProcess{
+        Logger logger = ....
+
+        public void receive(Integer i){
+            logger.info("Woehoe.. it was an integer: "+i);
+        }
+
+        public void receive(Object o){
+            logger.info(o);
+        }
+    }
+</pre>
+
+<h4>No match?</h4>
+<p>
+    If there is no matching receive, nothing bad happens. The message won't be gobbled up. 
+</p>
+
+<h4>Returning void</h4>
+<p>
+    If the received object is transformed, you don't need to declare a return type:
+</p>
+<pre>
+    class FireProcess{
+
+        public void receive(Employee e){
+            e.fire();
+        }
+    }
+</pre>
+
+<h4>Returning null</h4>
+<p>
+    There is no difference between returning the received message, and returning void.
+    If you want to gobble up a message, you can return null.
+</p>
+<pre>
+    class EvenNumberFilter{
+
+        public Integer receive(Integer i){
+            return i%2==0:i?null;
+        }
+    }
+</pre>
+
+<h4>Returning an Iterator</h4>
+<p>
+    In some cases you don't know the number of items that need to be returned in
+    advance (for example when you have some form of parsing process):
+</p>
+<pre>
+    class ParsingProcess{
+
+        public Iterator&lt;String&gt; receive(File file){
+            return new LineIterator(file);
+        }
+
+        //the SomeReader doesn't exist btw
+        class LineIterator implements Iterator&lt;String&gt;{
+            SomeReader reader;
+
+            LineIterator(File file){
+                reader = new SomeReader(file);
+            }
+
+            boolean hasNext(){
+                reader.hasMoreLines();
+            }
+
+            String next(){
+                reader.readLine();
+            }
+        }
+    }
+</pre>
+
+<h4>Receiving no arguments</h4>
+<p>
+    The receive method doesn't need to have an argument:
+</p>
+<pre>
+    class NanotimeProcess{
+        public Long receive(){
+            return System.nanotime();
+        }
+    }
+</pre>
+<p>
+    It is also possible to give return and have no argument in the receive method:
+</p>
+<pre>
+    class SomeProcess{
+        public void receive(){
+            System.out.println("hello")
+        }
+    }
+</pre>
+
+<h3>Processors</h3>
+<p>
+    A Processor is the execution environment for Processes. The StandardProcessor is the
+    default implementation that uses a InputChannel for input and an OutputChannel for output.    
+</p>
+
+<h4>Source processor</h4>
+<p>
+    A source processor is a processor that has no input, only output.
+</p>
+<pre>
+    OutputChannel output = ...
+    Processor processor = new StandardProcessor(generatingProcess, output);
+</pre>
+
+<h4>Piped processor</h4>
+<p>
+    A piped processor is a processor that has input and output. It doesn't
+    mean that for every message that is placed on the input, one message needs
+    to be placed on the output.
+</p>
+<pre>
+    InputChannel input = ...
+    OutputChannel output = ...
+    Processor processor = new StandardProcessor(input, transformingProcess, output);
+</pre>
+
+<h4>Sink processor</h4>
+<p>
+    A sink processor is a processor that only has input and no output.
+</p>
+<pre>
+    InputChannel input = ...
+    Processor processor = new StandardProcessor(input, consumingProcess);
+</pre>
+
+
+<h3>Running processors</h3>
+<p>
+    Give repeater example
+</p>
+<pre>
+    Processor processor = ...;
+    Repeater repeater = new ThreadPoolRepeater(new ProcessorRepeatable(processor));
+</pre>
+
+
+<h4>Stopping a processor</h4>
+<p>
+
+</p>
+
+<h4>Stopping a single worker</h4>
+<p>
+
+</p>
+
+<h3>Setting up a sequential process</h3>
+<p>
+    If you want to chain a few processes, you can do this:
+</p>
+<pre>
+    Processor processor = new StandardProcessor(
+        inputChannel,
+        new Object[]{process1,process2,process3},
+        outputChannel);
+</pre>
+
+<h3>Setting up parallel processes</h3>
+<p>
+    A single process can be run in parallel by placing multiple threads inside
+    the threadpool of the Repeater. The same process object now is executed by
+    multiple threads concurrently.
+</p>
+<pre>
+    Processor processor = new StandardProcessor(someprocess);
+    Repeater repeater = new ThreadPoolRepeater(2,new ProcessorRepeatable(processor));
+</pre>
+<p>
+    Process someprocess now is executed by concurrently (so by multiple threads
+    at the same moment). Prometheus doesn't provide an easy way to run every process
+    on its own thread. Maybe this is going to be added in the future.
+</p>
+
+<h3>Setting up a pipeline of processes</h3>
+<p>
+</p>
+<pre>
+    Process1 process1 = new Process1();
+    Process2 process2 = new Process2();
+    Process3 process3 = new Process3();
+
+    Channel channela = new BufferedChannel();
+    Channel channelb = new BufferedChannel();
+
+    Processor processor1 = new Processor(process1, channela);
+    Processor processor2 = new Processor(channela, process2, channelb);
+    Processor processor3 = new Processor(channelb, process3);
+</pre>
+
+<h3>Dealing with exceptions</h3>
+<p>
+    Exceptions can be thrown by processes:
+</p>
+<p>
+    class FireProcess{
+        void receive(Employee e)throws CantFireException{
+            if(e.getName().equals("Peter Veentjer"))
+                throw CantFireException();
+            e.fire();
+        }
+    }
+</p>
+<p>
+    By injecting an ErrorPolicy in the Processor you can deal with exceptions:
+</p>
+<ol>
+    <li><b>Drop_ErrorPolicy</b>: drops the message completely. This is handy if it doesn't matter that
+        some data is lost.
+    </li>
+    <li><b>Ignore_ErrorPolicy</b>: drops the exception, and lets the message that caused the problem continue
+        to the next process.
+    </li>
+    <li>
+        <b>Propagate_ErrorPolicy</b>: propagates the Exception so the thread that calls the Processor needs to
+        deal with the situation.
+    </li>
+    <li>
+        <b>Replace_ErrorPolicy</b>: replaces the message by something else, for example a CorruptedStream token
+        that lets others processes know an error occurred.
+    </li>
+    <li>
+        more
+    </li>
+</ol>
+<p>
+    You are also able to create your own ErrorPolicies is the existing ones don't fit your needs.
+</p>
+
+<h3>Dealing with out of order messages</h3>
+<p>
+    If messages are processed parallel, it could happen they get out of order. To resequence messages
+    a ResequenceProcess can be used.
+</p>
+<pre>
+    StandardProcessor processor = new StandardProcessor(
+        inputChannel,
+        new Object[]{new ResequenceProcess(),new FileWriteProcess()}
+    );
+</pre>
+<p>
+
+</p>
+
+<h3>Fork/Join</h3>
+<p>    
+</p>
+
+<h3>Distribution</h3>
+<p>
+    JMS, Terracotta etc. The provide middleware, Prometheus provides an execution environment.
+</p>
+
+<h3>Why no extra concurrency control required</h3>
+<p>
+    The processor functionality is just a form of message passing. And although the all messages
+    are in a shared memory space, only one thread at a time is able to touch an object (unless some
+    object reference is kept). This form of concurrency control is called confinement and is one
+    of the best ways to deal with concurrency control.
+</p>
+
+<h3>Processors and continuations</h3>
+<p>
+    The StandardProcessor supports continuations. This makes it possible that a single thread can
+    execute multiple processes in 'parallel'. It also makes it easy for thread management to control
+    the thread (throttling/pausing, stopping etc) because the thread keeps returning to the bottom of the
+    call stack. In the future I want to create a standardprocessor without continuations, and one
+    with (because continuations add overhead).
+</p>
+
+<h3>Processors and codegeneration</h3>
+<p>
+    I'm experimenting with code generation instead of using some kind of generic execution mechanism.
+    This makes it possible to optimize for certain situations and this can improve performance. The
+    code generation makes use of the new compiler api that is available in Java 6. This
+    will not be added to Prometheus for some time (I think). 
+</p>

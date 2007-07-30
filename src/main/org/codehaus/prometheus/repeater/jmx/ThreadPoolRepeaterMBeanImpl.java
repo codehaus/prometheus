@@ -12,6 +12,7 @@ import org.codehaus.prometheus.repeater.ThreadPoolRepeater;
  * The default implementation of the {@link ThreadPoolRepeaterMBean} interface.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class ThreadPoolRepeaterMBeanImpl implements ThreadPoolRepeaterMBean {
 

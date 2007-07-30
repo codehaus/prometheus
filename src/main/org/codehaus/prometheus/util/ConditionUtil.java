@@ -19,6 +19,7 @@ import java.util.concurrent.locks.Condition;
  * (timeout occurred).
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class ConditionUtil {
 

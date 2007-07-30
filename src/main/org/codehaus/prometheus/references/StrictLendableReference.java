@@ -34,6 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p/>
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class StrictLendableReference<E> extends AbstractAwaitableReference<E> implements LendableReference<E> {
 

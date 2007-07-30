@@ -13,9 +13,10 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Extends the {@link BlockingExecutor} and adds some control features like shutting
- * down and starting.
+ * down and starting, exceptionhandling.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public interface BlockingExecutorService extends BlockingExecutor {
 
@@ -77,7 +78,7 @@ public interface BlockingExecutorService extends BlockingExecutor {
     BlockingExecutorServiceState getState();
 
     /**
-     * Waits until this service completely is shut down.
+     * Waits til this service has shutdown completely.
      * <p/>
      * This call can finish in 2 ways:
      * <ol>
@@ -90,7 +91,7 @@ public interface BlockingExecutorService extends BlockingExecutor {
     void awaitShutdown() throws InterruptedException;
 
     /**
-     * Waits until this service compelely is shut down.
+     * Waits til this service has shutdown completely.
      * <p/>
      * This call can finish in 3 ways:
      * <ol>

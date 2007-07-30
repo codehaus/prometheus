@@ -8,7 +8,6 @@ package org.codehaus.prometheus.util;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 /**
  * A customizable implementation of the {@link java.util.concurrent.ThreadFactory}.
  * <p/>
@@ -21,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * construction?
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class StandardThreadFactory implements ThreadFactory {
 

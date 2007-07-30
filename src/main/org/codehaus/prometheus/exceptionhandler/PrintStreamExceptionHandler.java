@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.exceptionhandler;
 
 import java.io.PrintStream;
@@ -7,6 +12,7 @@ import java.io.PrintStream;
  * the System.out as PrintStream.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class PrintStreamExceptionHandler implements ExceptionHandler {
 

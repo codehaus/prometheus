@@ -23,7 +23,7 @@ public class ThreadPoolRepeater_SetRepeatableExecutionStrategyTest extends Threa
     public void testSetNonNull(){
         newRunningStrictRepeater();
 
-        RepeatableExecutionStrategy newStrategy = new ShutdownStrategy();
+        RepeatableExecutionStrategy newStrategy = new EndRepeaterStrategy();
         repeater.setRepeatableExecutionStrategy(newStrategy);
         assertHasExecuteRepeatableStrategy(newStrategy);
     }

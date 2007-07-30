@@ -50,6 +50,7 @@ import java.util.concurrent.locks.Lock;
  * task isn't on the queue, it is (being) processed.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
 
@@ -274,15 +275,11 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
             //with all jobs that were placed on the queue. We are only interrested in the
             //first case: job was placed, but maybe the shutdown was initiated in the meanwhile.
 
-
             if (threadPool.getState() != ThreadPoolState.running) {
-                //            System.out.println("threadpool.state!=running");
                 //the shutdown was initiated before the lock was obtained, so
                 //this call should try to remove the task because no guarantees
                 //are given that is ever is going to be processed.
                 shutdownOccurredDuringTaskPlacement = true;
-            } else {
-                //          System.out.println("threadpool.state==running");
             }
         } finally {
             lock.unlock();
@@ -303,7 +300,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
             throw new RejectedExecutionException();
         } else {
             //we were lucky, the task could not be found on the queue anymore, meaning
-            //that is was handeled (either because it was returned by the shutdownNow method
+            //that it was handeled (either because it was returned by the shutdownNow method
             //or because it is (being) processed.
         }
     }

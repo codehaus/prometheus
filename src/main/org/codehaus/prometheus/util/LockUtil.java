@@ -13,6 +13,7 @@ import java.util.concurrent.locks.Lock;
  * Utility functions for {@link Lock}.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class LockUtil {
 

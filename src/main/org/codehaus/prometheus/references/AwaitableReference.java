@@ -78,6 +78,7 @@ import java.util.concurrent.TimeoutException;
  * </dd>
  *
  * @author Peter Veentjer
+ * @since 0.1
  */
 public interface AwaitableReference<E> {
 

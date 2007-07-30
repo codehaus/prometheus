@@ -30,6 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p/>
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class JucLatch implements Latch {
 

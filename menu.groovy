@@ -36,7 +36,8 @@ def menus = [
         new MenuItem(title:'BlockingExecutor',      pageid:'guide-blockingexecutor'),
         new MenuItem(title:'References',            pageid:'guide-references'),
         new MenuItem(title:'Misc',                  pageid:'guide-misc'),
-        new MenuItem(title:'TestSupport',           pageid:'guide-testsupport')
+        new MenuItem(title:'TestSupport',           pageid:'guide-testsupport'),
+        new MenuItem(title:'Processors',             pageid:'guide-processors')
     ])
 ]    
 
@@ -51,6 +52,7 @@ def pages = [
     new Page( pageid: 'guide-references'),
     new Page( pageid: 'guide-misc'),
     new Page( pageid: 'guide-testsupport'),
+    new Page( pageid: 'guide-processors'),
     new Page( pageid: 'license')
 ]
 

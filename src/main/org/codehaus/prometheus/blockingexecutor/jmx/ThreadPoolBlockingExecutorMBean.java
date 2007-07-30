@@ -10,7 +10,12 @@ import org.codehaus.prometheus.blockingexecutor.BlockingExecutorServiceState;
 /**
  * A MBean that exposes a {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor}
  *
+ * idea: to prevent accidental shutdown of the repeater, maybe the ThreadPoolBlockingExecutorMBean
+ * should be configured to allow this action if this behavior is desired. In most cases it is dangerous
+ * so the default should be: don't allow it.
+ *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public interface ThreadPoolBlockingExecutorMBean {
 
@@ -51,7 +56,7 @@ public interface ThreadPoolBlockingExecutorMBean {
      * For more information see
      * {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor#setDesiredPoolSize(int)}
      *
-     * @param poolsize
+     * @param poolsize the desired poolsize
      */
     void setDesiredPoolSize(int poolsize);
 

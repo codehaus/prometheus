@@ -44,6 +44,7 @@ import java.util.concurrent.*;
  * <p/>
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public interface BlockingExecutor {
 

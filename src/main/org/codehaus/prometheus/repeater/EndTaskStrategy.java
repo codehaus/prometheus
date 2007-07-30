@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.repeater;
 
 /**
@@ -7,6 +12,7 @@ package org.codehaus.prometheus.repeater;
  * If the ThreadPoolRepeater is relaxed, it could lead to the
  *
  * @author Peter Veentjer
+ * @since 0.1
  */
 public class EndTaskStrategy implements RepeatableExecutionStrategy {
 

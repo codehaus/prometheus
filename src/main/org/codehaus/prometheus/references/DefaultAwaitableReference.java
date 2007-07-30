@@ -28,6 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * todo: lock fairness
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class DefaultAwaitableReference<E> extends AbstractAwaitableReference<E> {
 

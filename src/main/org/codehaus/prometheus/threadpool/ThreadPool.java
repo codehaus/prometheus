@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.threadpool;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
@@ -39,6 +44,7 @@ import java.util.concurrent.locks.Lock;
  * <p/>
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public interface ThreadPool {
 

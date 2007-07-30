@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Peter Veentjer.
  * @see UninterruptibleSection
+ * @since 0.1
  */
 public abstract class TimedUninterruptibleSection<E> {
 

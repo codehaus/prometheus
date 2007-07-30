@@ -15,6 +15,7 @@ import java.util.concurrent.TimeoutException;
  * be derived from other methods.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public abstract class AbstractAwaitableReference<E> implements AwaitableReference<E> {
 

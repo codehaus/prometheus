@@ -12,6 +12,7 @@ import java.util.concurrent.TimeoutException;
  * The ConcurrencyUtil contains various concurrency related convenience functions.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class ConcurrencyUtil {
 

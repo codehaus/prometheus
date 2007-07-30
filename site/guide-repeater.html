@@ -26,6 +26,20 @@ ThreadPoolRepeater repeater = new ThreadPoolRepeater(1);
 repeater.repeat(task);
 </pre>
 
+<h3>Interpreting the return value of the Repeatable</h3>
+<p>
+    There are different policies for dealing with the return value:
+</p>
+<ol>
+    <li><b>EndTask</b>: stops executing the repeatable. But doesn't shut down the threadpool,
+        so the Repeater is able to execute a new Repeatable.
+    </li>
+    <li><b>EndWorker</b>: stops the thread that executed the repeatable. If other threads
+        receive true, they can continue (the repeatable is not changed).
+    </li>
+    <li><b>EndRepeater</b>: stops the Repeater</li>
+</ol>
+
 <h2>Repeating a Runnable</h2>
 <p>
 In some cases it is easier to use a Runnable instead of a Repeatable. That is why 

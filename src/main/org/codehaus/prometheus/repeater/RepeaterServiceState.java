@@ -9,6 +9,7 @@ package org.codehaus.prometheus.repeater;
  * An enumeration of states a {@link RepeaterService} can be in.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public enum RepeaterServiceState {
     unstarted, running, shuttingdown, shutdown

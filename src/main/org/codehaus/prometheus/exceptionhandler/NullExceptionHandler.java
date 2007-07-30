@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.exceptionhandler;
 
 /**
@@ -5,6 +10,7 @@ package org.codehaus.prometheus.exceptionhandler;
  * other instance is provided.
  *
  * @author Peyer Veentjer.
+ * @since 0.1
  */
 public class NullExceptionHandler implements ExceptionHandler {
 

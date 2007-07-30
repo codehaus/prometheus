@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.threadpool;
 
 /**
@@ -32,6 +37,7 @@ package org.codehaus.prometheus.threadpool;
  * call should not block for ever.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public interface ThreadPoolJob<E> {
 

@@ -36,55 +36,73 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_ExceptionHandlingTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_ExceptionHandlingTest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/RelaxedLendableReference.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/RelaxedLendableReference.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/RunnableChain.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/RunnableChain.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_ConstructorTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_ConstructorTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_AbstractTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_AbstractTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_ConstructorTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_ConstructorTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/ShutdownStrategy.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site/overview.html" afterPath="$PROJECT_DIR$/site/overview.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/ThreadPoolRepeaterBenchmark.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/RepeatableExecutionStrategy.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/RepeatableExecutionStrategy.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/RepeaterServiceState.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/RepeaterServiceState.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/jmx/ThreadPoolRepeaterMBean.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/jmx/ThreadPoolRepeaterMBean.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/ShutdownStrategy.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/EndRepeaterStrategy.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/ThreadPoolBlockingExecutor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/EndWorkerStrategy.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/EndWorkerStrategy.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/DefaultAwaitableReference.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/DefaultAwaitableReference.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_PeekTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_PeekTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/DummyCallable.java" afterPath="$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/DummyCallable.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/ThreadPool.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/ThreadPool.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TimedTryTakeTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TimedTryTakeTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_ConditionalResetTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prometheus.ipr" afterPath="$PROJECT_DIR$/prometheus.ipr" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/BlockingExecutorServiceState.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/BlockingExecutorServiceState.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/uninterruptiblesection/TimedUninterruptibleSection.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/uninterruptiblesection/TimedUninterruptibleSection.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/Repeater.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/Repeater.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/StandardThreadFactory.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/StandardThreadFactory.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/BlockingExecutorService.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/BlockingExecutorService.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/PlainThreadBenchmark.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/uninterruptiblesection/UninterruptibleSection.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/uninterruptiblesection/UninterruptibleSection.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/BlockingExecutorBenchmarkTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/site/guide-processors.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/StressRunnable.java" afterPath="$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/StressRunnable.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site/guide-misc.html" afterPath="$PROJECT_DIR$/site/guide-misc.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/EndTaskStrategy.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/EndTaskStrategy.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/LendableReference.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/LendableReference.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TimedTryPutTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TimedTryPutTest.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/support/junit/junit-4.3.1.jar" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TakeTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_TakeTest.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/WorkerJob.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/ThreadPoolJob.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_EndWorkerStrategyTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_RunWorkTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/ThreadPoolExecutorBenchmark.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/PlainThreadBlockingQueueBenchmark.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/EndRepeaterStrategy.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/Repeatable.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/Repeatable.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_AbstractTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_AbstractTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/RelaxedLendableReference_TakebackAndResetTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/RelaxedLendableReference_TakebackAndResetTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/DummyRepeatable.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/DummyRepeatable.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/BenchmarkTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/RepeatableRunnable.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/RepeatableRunnable.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/BlockingExecutor.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/BlockingExecutor.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/exceptionhandler/NullExceptionHandler.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/exceptionhandler/NullExceptionHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/RelaxedLendableReference_TakebackTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/RelaxedLendableReference_TakebackTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_ShutdownStrategyTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/ThreadPoolJob.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/DummyThreadPoolJob.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_ShutdownAfterFalseTest.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_AbstractTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_AbstractTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/EndWorkerStrategy.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/ConditionUtil.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/ConditionUtil.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/RepeaterService.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/RepeaterService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/DirectExecutor.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/DirectExecutor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/ThreadPoolState.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/ThreadPoolState.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/PlainThreadBenchmark.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/menu.groovy" afterPath="$PROJECT_DIR$/menu.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/ConcurrencyUtil.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/ConcurrencyUtil.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/jmx/ThreadPoolBlockingExecutorMBean.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/jmx/ThreadPoolBlockingExecutorMBean.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/ThreadPoolJob.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/ThreadPoolJob.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/StrictLendableReference.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/StrictLendableReference.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/exceptionhandler/ExceptionHandler.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/exceptionhandler/ExceptionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/jmx/ThreadPoolRepeaterMBeanImpl.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/jmx/ThreadPoolRepeaterMBeanImpl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/exceptionhandler/Log4JExceptionHandler.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/exceptionhandler/Log4JExceptionHandler.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/BenchmarkExecutor.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prometheus.iws" afterPath="$PROJECT_DIR$/prometheus.iws" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/ThrowingCallable.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/EndTaskStrategy.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site/guide-repeater.html" afterPath="$PROJECT_DIR$/site/guide-repeater.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/JucLatch.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/JucLatch.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_SetRepeatableExecutionStrategyTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_SetRepeatableExecutionStrategyTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/AwaitableReference.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/AwaitableReference.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/AbstractAwaitableReference.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/AbstractAwaitableReference.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/exceptionhandler/PrintStreamExceptionHandler.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/exceptionhandler/PrintStreamExceptionHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/RelaxedLendableReference_AbstractTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/RelaxedLendableReference_AbstractTest.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/DummyWorkerJob.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/DummyThreadPoolJob.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/Latch.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/Latch.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/ThreadPoolRepeater.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/ThreadPoolRepeater.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_SetDefaultWorkerJobTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_SetDefaultWorkerJobTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/RepeatableExecutionStrategy.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/support/junit/junit-4.4.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_PutTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_PutTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_IsTakePossibleTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/references/DefaultAwaitableReference_IsTakePossibleTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_SetRepeatableExecutionStrategyTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/jmx/ThreadPoolBlockingExecutorMBeanImpl.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/jmx/ThreadPoolBlockingExecutorMBeanImpl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_ShutdownStrategyTest.java" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_ShutdownStrategyTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/BenchmarkTask.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/StressRepeatable.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/LockUtil.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/LockUtil.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/IllegalTakebackException.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/references/IllegalTakebackException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site/style.css" afterPath="$PROJECT_DIR$/site/style.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/BlockingExecutorBenchmark.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/StandardThreadPool.java" afterPath="$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/StandardThreadPool.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/org/codehaus/prometheus/repeater/ThreadPoolRepeater_EndTaskStrategyTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark" />
     </list>
     <list name="Failed commit: Default" comment="- improved the threadpool, better behaving while shutting down&#10;- improved the repeater so it makes use the threadpool improvement&#10;- improved the blockingexecutor so it makes use of the threadpool improvements" />
     <list name="Failed commit: Default (3)" comment="" />
@@ -267,97 +285,91 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="StandardThreadPool_RunWorkTest.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_RunWorkTest.java">
+      <file leaf-file-name="BlockingExecutorBenchmarkTest.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/BlockingExecutorBenchmarkTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="27" selection-start="1064" selection-end="1064" vertical-scroll-proportion="0.62032086">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ThreadPoolJob.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/ThreadPoolJob.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="80" selection-start="649" selection-end="649" vertical-scroll-proportion="0.32085562">
+            <state line="19" column="23" selection-start="648" selection-end="648" vertical-scroll-proportion="0.18716578">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TracingThreadFactory.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/TracingThreadFactory.java">
+      <file leaf-file-name="BenchmarkExecutor.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/BenchmarkExecutor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="129" column="0" selection-start="3905" selection-end="3905" vertical-scroll-proportion="0.742246">
+            <state line="13" column="21" selection-start="314" selection-end="314" vertical-scroll-proportion="0.2826087">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StandardThreadPool_ExceptionHandlingTest.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_ExceptionHandlingTest.java">
+      <file leaf-file-name="ThreadPoolRepeaterBenchmark.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/ThreadPoolRepeaterBenchmark.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="70" selection-start="43" selection-end="43" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StandardThreadPool.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/StandardThreadPool.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="555" column="48" selection-start="19929" selection-end="19929" vertical-scroll-proportion="0.8695652">
+            <state line="17" column="67" selection-start="653" selection-end="653" vertical-scroll-proportion="0.32085562">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ThreadPoolRepeater.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/ThreadPoolRepeater.java">
+      <file leaf-file-name="PlainThreadBenchmark.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/PlainThreadBenchmark.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="119" column="11" selection-start="6040" selection-end="6040" vertical-scroll-proportion="0.45652175">
+            <state line="0" column="4" selection-start="4" selection-end="4" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ThrowingCallable.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/ThrowingCallable.java">
+      <file leaf-file-name="StressRepeatable.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/StressRepeatable.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="13" selection-start="155" selection-end="155" vertical-scroll-proportion="0.14973262">
+            <state line="9" column="11" selection-start="288" selection-end="288" vertical-scroll-proportion="0.171123">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StandardThreadPool_AbstractTest.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_AbstractTest.java">
+      <file leaf-file-name="BenchmarkTest.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/BenchmarkTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="103" column="59" selection-start="3347" selection-end="3347" vertical-scroll-proportion="0.32608697">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BlockingQueue.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar:///java/jdk/jdk1.6.0_01/src.zip!/java/util/concurrent/BlockingQueue.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="204" column="9" selection-start="8483" selection-end="8483" vertical-scroll-proportion="0.34010696">
+            <state line="34" column="18" selection-start="1293" selection-end="1293" vertical-scroll-proportion="0.62032086">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="JucLatch.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/JucLatch.java">
+      <file leaf-file-name="PlainThreadBenchmark.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/PlainThreadBenchmark.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="33" column="13" selection-start="1076" selection-end="1076" vertical-scroll-proportion="0.34010696">
+            <state line="12" column="30" selection-start="457" selection-end="457" vertical-scroll-proportion="0.021390375">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BenchmarkTask.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/BenchmarkTask.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="2" column="17" selection-start="51" selection-end="51" vertical-scroll-proportion="0.04278075">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BlockingExecutorBenchmark.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/BlockingExecutorBenchmark.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="10" column="13" selection-start="396" selection-end="396" vertical-scroll-proportion="0.08695652">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StressRunnable.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/StressRunnable.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="13" column="27" selection-start="359" selection-end="359" vertical-scroll-proportion="0.27807486">
               <folding />
             </state>
           </provider>
@@ -763,6 +775,62 @@
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
+          <option name="myItemId" value="src-sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="src-sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src-sandbox/sandbox/org/codehaus/prometheus/processors/standardprocessor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
           <option name="myItemId" value="src" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
         </PATH_ELEMENT>
@@ -898,6 +966,28 @@
           <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
         <PATH_ELEMENT>
           <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/threadpool" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
@@ -950,6 +1040,14 @@
           <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
       </PATH>
       <PATH>
         <PATH_ELEMENT>
@@ -974,6 +1072,36 @@
         </PATH_ELEMENT>
         <PATH_ELEMENT>
           <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
       </PATH>
@@ -1047,111 +1175,7 @@
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus/uninterruptiblesection" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus/references" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus/exceptionhandler" />
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
       </PATH>
@@ -1178,6 +1202,10 @@
         </PATH_ELEMENT>
         <PATH_ELEMENT>
           <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/jmx" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
       </PATH>
@@ -1357,55 +1385,7 @@
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/lib" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/lib/support" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="root" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/lib" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/lib/support" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/lib/support/junit" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="prometheus" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="root" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/lib" />
+          <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/doc" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
       </PATH>
@@ -1448,8 +1428,8 @@
   <component name="PropertiesComponent">
     <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
-    <property name="RunManagerConfig.showSettingsBeforeRunnig" value="true" />
     <property name="RunManagerConfig.compileBeforeRunning" value="true" />
+    <property name="RunManagerConfig.showSettingsBeforeRunnig" value="true" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/target/junit-reports" />
     <property name="MemberChooser.showClasses" value="true" />
@@ -1458,36 +1438,37 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveMembersDialog.RECENTS_KEY">
-      <recent name="org.codehaus.prometheus.testsupport.TestUtil" />
-    </key>
     <key name="IntroduceConstantDialog.RECENTS_KEY">
       <recent name="" />
     </key>
+    <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="org.codehaus.prometheus.testsupport.TestUtil" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="org.codehaus.prometheus" />
+      <recent name="org.codehaus.prometheus.blockingexecutor.benchmark" />
       <recent name="org.codehaus.prometheus.util" />
       <recent name="org.codehaus.prometheus.testsupport" />
-      <recent name="org.codehaus.prometheus" />
       <recent name="org.codehaus.prometheus.resequencer" />
-      <recent name="org.codehaus.prometheus.processors.processes" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.org.codehaus.prometheus.threadpool in src">
-    <tempConfiguration default="false" name="org.codehaus.prometheus.threadpool in src" type="JUnit" factoryName="JUnit" enabled="false" merge="false">
+  <component name="RunManager" selected="JUnit.BenchmarkTest">
+    <tempConfiguration default="false" name="BenchmarkTest" type="JUnit" factoryName="JUnit" enabled="false" merge="false">
+      <pattern value="org.codehaus.prometheus.repeater.benchmark.*" />
       <module name="src" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.codehaus.prometheus.threadpool" />
-      <option name="MAIN_CLASS_NAME" />
+      <option name="PACKAGE_NAME" value="org.codehaus.prometheus.repeater.benchmark" />
+      <option name="MAIN_CLASS_NAME" value="org.codehaus.prometheus.repeater.benchmark.BenchmarkTest" />
       <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="package" />
+      <option name="TEST_OBJECT" value="class" />
       <option name="VM_PARAMETERS" />
       <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="ENV_VARIABLES" />
       <option name="ADDITIONAL_CLASS_PATH" />
       <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
+        <value defaultName="wholeProject" />
       </option>
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
@@ -1501,29 +1482,6 @@
       <option name="SHMEM_ADDRESS" value="javadebug" />
       <option name="HOST" value="localhost" />
       <option name="PORT" value="5005" />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="/java/ide/idea-6111/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-    </configuration>
-    <configuration default="true" type="Application" factoryName="Application" enabled="false" merge="false">
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <module name="" />
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit" enabled="false" merge="false">
       <module name="" />
@@ -1544,6 +1502,29 @@
       <method>
         <option name="Make" value="true" />
       </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application" enabled="false" merge="false">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <module name="" />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="/java/ide/idea-6111/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
     </configuration>
     <configuration default="false" name="StandardDispatcherTest" type="JUnit" factoryName="JUnit" enabled="false" merge="false">
       <pattern value="org.codehaus.prometheus.processors.*" />
@@ -1746,6 +1727,29 @@
         <option name="Make" value="true" />
       </method>
     </configuration>
+    <configuration default="false" name="BlockingExecutorBenchmarkTest.test" type="JUnit" factoryName="JUnit" enabled="false" merge="false">
+      <pattern value="org.codehaus.prometheus.blockingexecutor.benchmark.*" />
+      <module name="src" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="org.codehaus.prometheus.blockingexecutor.benchmark" />
+      <option name="MAIN_CLASS_NAME" value="org.codehaus.prometheus.blockingexecutor.benchmark.BlockingExecutorBenchmarkTest" />
+      <option name="METHOD_NAME" value="test" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="ADDITIONAL_CLASS_PATH" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="wholeProject" />
+      </option>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method>
+        <option name="Make" value="true" />
+      </method>
+    </configuration>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
       <Port>5050</Port>
@@ -1852,7 +1856,7 @@
       <window_info id="Maven projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
       <window_info id="Module Dependencies" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32905138" order="16" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3285102" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3279743" order="0" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497309" order="2" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.399" order="6" />
       <window_info id="Duplicates" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="9" />
@@ -1884,7 +1888,7 @@
     <option name="PERFORM_EDIT_IN_BACKGROUND" value="true" />
     <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="-repeater now uses strategy for execution&#10;-threadpool is now able to close individual thread by letting the threadpooljob return false&#10;-renamed workerjob to threadpooljob&#10;-upgraded to the newest junit&#10;-defaultawaitablereference now has a conditionalreset methode&#10;-relaxedrepeatablereference doesn't reset the current reference if the current reference is not the one for takebackandreset. This prevent overwriting newer values" />
+    <option name="LAST_COMMIT_MESSAGE" value="- added copyright stuff to sources&#10;- added version&#10;- added performance benchmarks for repeater and blockingexecutor" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
@@ -1910,6 +1914,7 @@
     <MESSAGE value="- improved documentation&#10;- cleaned up some tests" />
     <MESSAGE value="- updated documentation&#10;- introduced the RunnableChain&#10;- started working on threadpool so that individual threads can be deactivated" />
     <MESSAGE value="-repeater now uses strategy for execution&#10;-threadpool is now able to close individual thread by letting the threadpooljob return false&#10;-renamed workerjob to threadpooljob&#10;-upgraded to the newest junit&#10;-defaultawaitablereference now has a conditionalreset methode&#10;-relaxedrepeatablereference doesn't reset the current reference if the current reference is not the one for takebackandreset. This prevent overwriting newer values" />
+    <MESSAGE value="- added copyright stuff to sources&#10;- added version&#10;- added performance benchmarks for repeater and blockingexecutor" />
   </component>
   <component name="VssConfiguration">
     <option name="CLIENT_PATH" value="" />
@@ -1960,113 +1965,107 @@
     <option name="myLastEditedConfigurable" value="Default" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_StartTest.java">
+    <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/blockingexecutor/jmx/ThreadPoolBlockingExecutorMBean.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="13" selection-start="152" selection-end="152" vertical-scroll-proportion="0.14973262">
+        <state line="19" column="17" selection-start="673" selection-end="673" vertical-scroll-proportion="0.5076142">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar:///java/jdk/jdk1.6.0_01/src.zip!/java/util/concurrent/Callable.java">
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/PlainThreadBlockingQueueBenchmark.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="0" selection-start="880" selection-end="880" vertical-scroll-proportion="0.49197862">
+        <state line="12" column="13" selection-start="321" selection-end="321" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/StressTaskProducer.java">
+    <entry file="jar:///java/jdk/jdk1.6.0_01/src.zip!/java/util/concurrent/ThreadPoolExecutor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="13" selection-start="293" selection-end="293" vertical-scroll-proportion="0.0855615">
+        <state line="1758" column="0" selection-start="67481" selection-end="67481" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/util/JucLatch.java">
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/ThreadPoolExecutorBenchmark.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="13" selection-start="1076" selection-end="1076" vertical-scroll-proportion="0.34010696">
+        <state line="10" column="13" selection-start="328" selection-end="328" vertical-scroll-proportion="0.02173913">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar:///java/jdk/jdk1.6.0_01/src.zip!/java/util/concurrent/Executors.java">
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/StressTask.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="443" column="12" selection-start="19669" selection-end="20003" vertical-scroll-proportion="0.5037274">
+        <state line="14" column="13" selection-start="445" selection-end="445" vertical-scroll-proportion="0.2096436">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar:///java/jdk/jdk1.6.0_01/src.zip!/java/util/concurrent/BlockingQueue.java">
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/BlockingExecutorBenchmarkTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="204" column="9" selection-start="8483" selection-end="8483" vertical-scroll-proportion="0.34010696">
+        <state line="19" column="23" selection-start="648" selection-end="648" vertical-scroll-proportion="0.18716578">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_AbstractTest.java">
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/BenchmarkExecutor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="103" column="59" selection-start="3347" selection-end="3347" vertical-scroll-proportion="0.32608697">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/DummyCallable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="74" selection-start="280" selection-end="280" vertical-scroll-proportion="0.12578617">
+        <state line="13" column="21" selection-start="314" selection-end="314" vertical-scroll-proportion="0.2826087">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/ThrowingCallable.java">
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/ThreadPoolRepeaterBenchmark.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="13" selection-start="155" selection-end="155" vertical-scroll-proportion="0.14973262">
+        <state line="17" column="67" selection-start="653" selection-end="653" vertical-scroll-proportion="0.32085562">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/TracingThreadFactory.java">
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/PlainThreadBenchmark.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="129" column="0" selection-start="3905" selection-end="3905" vertical-scroll-proportion="0.742246">
+        <state line="0" column="4" selection-start="4" selection-end="4" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_RunWorkTest.java">
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/StressRepeatable.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="27" selection-start="1064" selection-end="1064" vertical-scroll-proportion="0.62032086">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/ThreadPoolJob.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="80" selection-start="649" selection-end="649" vertical-scroll-proportion="0.32085562">
+        <state line="9" column="11" selection-start="288" selection-end="288" vertical-scroll-proportion="0.171123">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/codehaus/prometheus/threadpool/StandardThreadPool_ExceptionHandlingTest.java">
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/PlainThreadBenchmark.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="70" selection-start="43" selection-end="43" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/threadpool/StandardThreadPool.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="555" column="48" selection-start="19929" selection-end="19929" vertical-scroll-proportion="0.8695652">
+        <state line="12" column="30" selection-start="457" selection-end="457" vertical-scroll-proportion="0.021390375">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/codehaus/prometheus/repeater/ThreadPoolRepeater.java">
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/BenchmarkTask.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="119" column="11" selection-start="6040" selection-end="6040" vertical-scroll-proportion="0.45652175">
+        <state line="2" column="17" selection-start="51" selection-end="51" vertical-scroll-proportion="0.04278075">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/blockingexecutor/benchmark/BlockingExecutorBenchmark.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="13" selection-start="396" selection-end="396" vertical-scroll-proportion="0.08695652">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/testsupport/org/codehaus/prometheus/testsupport/StressRunnable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="27" selection-start="359" selection-end="359" vertical-scroll-proportion="0.27807486">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/stresstest/org/codehaus/prometheus/repeater/benchmark/BenchmarkTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="18" selection-start="1293" selection-end="1293" vertical-scroll-proportion="0.62032086">
           <folding />
         </state>
       </provider>

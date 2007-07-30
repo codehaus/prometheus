@@ -92,6 +92,7 @@ import java.util.concurrent.locks.Lock;
  * out of order put. This can be solved by using some sort of Resequencer.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class ThreadPoolRepeater implements RepeaterService {
 

@@ -3,7 +3,7 @@ package org.codehaus.prometheus.repeater;
 import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 /**
- * Unittests {@link ShutdownStrategy}.
+ * Unittests {@link EndRepeaterStrategy}.
  *
  * @author Peter Veentjer
  */
@@ -41,6 +41,6 @@ public class ThreadPoolRepeater_ShutdownStrategyTest extends ThreadPoolRepeater_
 
     private void newRepeater(int poolsize) {
         newRunningRepeater(poolsize);
-        repeater.setRepeatableExecutionStrategy(new ShutdownStrategy());
+        repeater.setRepeatableExecutionStrategy(new EndRepeaterStrategy());
     }
 }

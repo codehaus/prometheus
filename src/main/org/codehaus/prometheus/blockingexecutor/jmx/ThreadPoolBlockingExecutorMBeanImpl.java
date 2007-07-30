@@ -12,6 +12,7 @@ import org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor;
  * Default implementation of the {@link ThreadPoolBlockingExecutorMBean}.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class ThreadPoolBlockingExecutorMBeanImpl implements ThreadPoolBlockingExecutorMBean {
 

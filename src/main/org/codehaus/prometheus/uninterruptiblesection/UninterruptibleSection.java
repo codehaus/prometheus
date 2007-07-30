@@ -83,6 +83,7 @@ package org.codehaus.prometheus.uninterruptiblesection;
  *
  * @author Peter Veentjer.
  * @see TimedUninterruptibleSection
+ * @since 0.1
  */
 public abstract class UninterruptibleSection<E> {
 

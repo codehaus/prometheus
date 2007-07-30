@@ -15,6 +15,7 @@ import org.codehaus.prometheus.repeater.RepeaterServiceState;
  * MBean yourself.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public interface ThreadPoolRepeaterMBean {
 

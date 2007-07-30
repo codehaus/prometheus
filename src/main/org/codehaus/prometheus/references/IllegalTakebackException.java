@@ -10,6 +10,7 @@ package org.codehaus.prometheus.references;
  * {@link LendableReference}.
  *
  * @author Peter Veentjer.
+ * @since 0.1
  */
 public class IllegalTakebackException extends RuntimeException {
 

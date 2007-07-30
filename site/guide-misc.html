@@ -1,18 +1,18 @@
-<h1>Miscelanious guide</h1>
+<h1>Miscellaneous guide</h1>
 <p>
-This documentation is under construction.
+    This documentation is under construction.
 </p>
 
 <h2>Latch</h2>
 <p>
-A <a href="http://prometheus.codehaus.org/javadoc/org/codehaus/prometheus/util/Latch.html">Latch</a>
-is single shot waiting mechanism. As long as the latch is closed, all passing threads block until
-the latch opens (or until a timeout occurs or the waiting thread is interrupted). As soon as it 
-is opened, all waiting threads wake up and exit the wait call. Once the Latch is opened, it can't
-be closed again (single shot). If a threads wants to wait on a Latch that already is open, it doesn't need to wait
-and can return immediately. After the Latch has been opened, subsequent calls to the open method are ignored. 
-Latches are useful if you need to wait for something to reach some final state, like waiting for the
-complete shutdown of a threadpool structure.
+    A <a href="http://prometheus.codehaus.org/javadoc/org/codehaus/prometheus/util/Latch.html">Latch</a>
+    is single shot waiting mechanism. As long as the latch is closed, all passing threads block until
+    the latch opens (or until a timeout occurs or the waiting thread is interrupted). As soon as it
+    is opened, all waiting threads wake up and exit the wait call. Once the Latch is opened, it can't
+    be closed again (single shot). If a threads wants to wait on a Latch that already is open, it doesn't need to wait
+    and can return immediately. After the Latch has been opened, subsequent calls to the open method are ignored.
+    Latches are useful if you need to wait for something to reach some final state, like waiting for the
+    complete shutdown of a threadpool structure.
 </p>
 
 <pre>
@@ -28,29 +28,29 @@ private void markAsShutdown(){
 
 </pre>
 <p>
-At the moment the only implementation is the JucLatch: juc stands for java.util.concurrent because the JucLatch 
-is based on the 
-<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/locks/Lock.html">java.util.concurrent.locks.Lock</a> 
-and <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/locks/Condition.html">java.util.concurrent.locks.Condition</a>.
+    At the moment the only implementation is the JucLatch: juc stands for java.util.concurrent because the JucLatch
+    is based on the
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/locks/Lock.html">java.util.concurrent.locks.Lock</a>
+    and <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/locks/Condition.html">java.util.concurrent.locks.Condition</a>.
 </p>
 
 <h2>Creating threads with the StandardThreadFactory</h2>
 <p>
-The java.util.concurrent, the new concurrency library found in Java 5 and higher, already has a factory interface for creating threads is
-available: the <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/ThreadFactory.html">ThreadFactory</a>. 
-The strange thing is that there is no customizable implementation of that interface. That is why I added one
-to Prometheus: the 
-<a href="http://prometheus.codehaus.org/javadoc/org/codehaus/prometheus/util/StandardThreadFactory.html">StandardThreadFactory</a>. 
-All kinds of properties can be set, like priorities, threadgroup, name etc. 
+    The java.util.concurrent library has a factory interface for creating threads: the <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/ThreadFactory.html">ThreadFactory</a>.
+    The strange thing is that there is no customizable implementation of that interface. That is why I added one
+    to Prometheus: the
+    <a href="http://prometheus.codehaus.org/javadoc/org/codehaus/prometheus/util/StandardThreadFactory.html">StandardThreadFactory</a>.
+    All kinds of properties can be set, like priorities, threadgroup, name etc.
 </p>
 
 <h2>UninterruptibleSection</h2>
 <p>
-In some cases you can't/won't deal with a call that can be interrupted by an InterruptedException. For these
-situations I have made a structure: the <a href="http://prometheus.codehaus.org/javadoc/main/org/codehaus/prometheus/uninterruptiblesection/UninterruptibleSection.html">UninterruptibleSection</a>.
-<br/>
-In the example you can see an uninterruptible wait on a latch. The interruptible await call on the latch
-is wrapped inside an UninterruptibleSection.
+    In some cases you can't/won't deal with a call that can be interrupted by an InterruptedException. For these
+    situations I have made a structure: the <a
+        href="http://prometheus.codehaus.org/javadoc/main/org/codehaus/prometheus/uninterruptiblesection/UninterruptibleSection.html">UninterruptibleSection</a>.
+    <br/>
+    In the example you can see an uninterruptible wait on a latch. The interruptible await call on the latch
+    is wrapped inside an UninterruptibleSection.
 </p>
 <pre>
 final Latch latch = new JucLatch();
@@ -65,8 +65,9 @@ void waitUninterruptibly(){
 }
 </pre>
 <p>
-There also is an uninterruptible section that uses a timeout:
-the <a href="http://prometheus.codehaus.org/javadoc/main/org/codehaus/prometheus/uninterruptiblesection/TimedUninterruptibleSection.html">TimedUninterruptibleSection</a>.
+    There also is an uninterruptible section that uses a timeout:
+    the <a
+        href="http://prometheus.codehaus.org/javadoc/main/org/codehaus/prometheus/uninterruptiblesection/TimedUninterruptibleSection.html">TimedUninterruptibleSection</a>.
 </p>
 <pre>
 void tryAwaitUninterruptibly(long timeout, TimeUnit unit){
@@ -79,10 +80,85 @@ void tryAwaitUninterruptibly(long timeout, TimeUnit unit){
 }
 </pre>
 <p>
-It executes the original section with the timeout. If the tryAwait is interrupted, the TimedUninterruptibleSection
-calculates how much timeout is left, and calls the original section again with the remaining timeout. This process 
-is repeated until the tryAwait succeeds or a timeout occurs.
-<br/>
-When closures are introduced in Java 7, they can replace the current clumsy inner class approach.
+    It executes the original section with the timeout. If the tryAwait is interrupted, the TimedUninterruptibleSection
+    calculates how much timeout is left, and calls the original section again with the remaining timeout. This process
+    is repeated until the tryAwait succeeds or a timeout occurs.
+    <br/>
+    When closures are introduced in Java 7, they can replace the current clumsy inner class approach.
 </p>
 
+
+<h2>RunnableChain</h2>
+<p>
+A RunnableChain makes it easy to chain some runnables. In a lot of cases some kind of object needs to be
+    created to chain a set of calls. If we are chaining a set of tasks, we would get something like this:
+</p>
+<pre>
+    public class TaskA implements Runnable{...}
+
+    public class TaskB implements Runnable{...}
+
+    public class TaskAB implements Runnable{
+        private final TaskA taska;
+        private final TaskB taskb;
+
+        TaskAB(TaskARunnable taska, TaskBRunnable taskb){
+            this.taska = taska;
+            this.taskb = taskb;
+        }
+
+        public void run(){
+            taska.run();
+            taskb.run();
+        }
+    }
+</pre>
+<p>
+    TaskAB in most cases it not very interesting itself (just a configuration detail), and in my opinion
+    introduces a lot of noise (interfaces/implementations/tests). Noise prevents you from focusing on the
+    stuff that is interesting/important (and plumbing in most cases isn't). That is why the RunnableChain
+    is introduced. 
+</p>
+<h3>RunnableChain and exceptions</h3>        
+<p>
+    When an exception occurs in a RunnableChain, the other elements in the chain are not executed. In
+    some cases this causes serious problems (especially some business process that is broken because a step in
+    that process keeps failing). But if the steps are isolated, failure of one step doesn't mean failure of
+    the others. That is why a RunnableChain can be made unbreakable by setting the unbreakable property.
+    When the unbreakable property is set, and an unchecked exception occurs, this exception is caught
+    (and passed to an ExceptionHandler so you have the chance to do some logging) and finally it is thrown away
+    so the next step can be executed.
+</p>
+<h3>RunnableChain in Spring</h3>
+<p>
+    A RunnableChain is useful for wiring up services that need to be hooked to some
+    kind of trigger (Quartz for example) that also expects some form of Runnable. In Spring you have the
+    MethodInvokingFactoryBean that makes it easy to execute a method on some bean. The RunnableChain makes
+    it possible to execute a chain of such calls.
+</p>
+<pre>
+    &lt;bean id=&quot;servicea&quot; class=&quot;....&quot;/&gt;
+
+    &lt;bean id=&quot;serviceb&quot; class=&quot;....&quot;/&gt;
+
+    &lt;bean id=&quot;taskab&quot; class=&quot;org.codehaus.prometheus.util.ChainedRunnable&quot;&gt;
+        &lt;constructor-arg&gt;
+            &lt;list&gt;
+                &lt;bean class=&quot;org.springframework.scheduling.support.MethodInvokingRunnable&quot;&gt;
+                    &lt;property name=&quot;targetObject&quot; ref=&quot;serviceA&quot;/&gt;
+                    &lt;property name=&quot;targetObject&quot; value=&quot;foo&quot;/&gt;
+                &lt;/bean&gt;
+                &lt;bean class=&quot;org.springframework.scheduling.support.MethodInvokingRunnable&quot;&gt;
+                    &lt;property name=&quot;targetObject&quot; ref=&quot;serviceB&quot;/&gt;
+                    &lt;property name=&quot;targetObject&quot; value=&quot;foo&quot;/&gt;
+                &lt;/bean&gt;
+            &lt;/list&gt;
+        &lt;/constructor-arg&gt;
+        &lt;property name=&quot;unbreakable&quot; value=&quot;true&quot;/&gt;
+    &lt;/bean&gt;
+</pre>
+<p>
+    If you want to hook this up with Quartz, you need to wrap the taskab in a
+    org.springframework.scheduling.quartz.DelegatingJob. And I realize that XML configuration is quite
+verbose, I hope this can be solved in the near future by providing some form of DSL.
+</p>
