@@ -13,6 +13,7 @@ import java.util.concurrent.TimeoutException;
  * A BaseTestRunnable that adds support for blocking calls.
  *
  * @author Peter Veentjer.
+ * @since 1.0
  */
 public abstract class BlockingRunnable extends TestRunnable {
 

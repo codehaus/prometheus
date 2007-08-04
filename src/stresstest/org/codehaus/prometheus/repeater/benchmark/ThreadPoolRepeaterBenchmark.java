@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.repeater.benchmark;
 
 import org.codehaus.prometheus.BenchmarkTask;
-import org.codehaus.prometheus.repeater.EndRepeaterStrategy;
+import org.codehaus.prometheus.repeater.EndRepeaterPolicy;
 import org.codehaus.prometheus.repeater.ThreadPoolRepeater;
 
 public class ThreadPoolRepeaterBenchmark implements BenchmarkTask {
@@ -16,7 +16,7 @@ public class ThreadPoolRepeaterBenchmark implements BenchmarkTask {
 
     public void beforeRun() throws Exception {
         repeater = new ThreadPoolRepeater(new StressRepeatable(load),threadcount);
-        repeater.setRepeatableExecutionStrategy(new EndRepeaterStrategy());
+        repeater.setRepeatableExecutionStrategy(new EndRepeaterPolicy());
     }
 
     public void run() throws Exception {

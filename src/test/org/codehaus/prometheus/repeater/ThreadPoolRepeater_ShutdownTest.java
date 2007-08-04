@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.repeater;
 
 /**
@@ -10,14 +15,14 @@ public class ThreadPoolRepeater_ShutdownTest extends ThreadPoolRepeater_Abstract
     public void testWhileUnstarted(){
         newShutdownRepeater();
 
-        spawned_assertShutdown();
+        spawned_shutdown();
         assertIsShutdown();
     }
 
     public void testWhileRunning_emptyPool(){
         newRunningRepeater(0);
 
-        spawned_assertShutdown();
+        spawned_shutdown();
         assertIsShutdown();
     }
 
@@ -44,7 +49,7 @@ public class ThreadPoolRepeater_ShutdownTest extends ThreadPoolRepeater_Abstract
     public void testWhileShutdown(){
         newShutdownRepeater();
 
-        spawned_assertShutdown();
+        spawned_shutdown();
         assertIsShutdown();
     }
 }

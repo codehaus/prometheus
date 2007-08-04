@@ -6,14 +6,14 @@
 package org.codehaus.prometheus.repeater;
 
 /**
- * A strategy that is used to determine how to deal with the execution of
+ * A Policy that is used to determine how to deal with the execution of
  * a Repeatable task. A repeatable task can return true/false or throw an
  * checked or unchecked exception.
  *
  * @author Peter Veentjer
  * @since 0.1
  */
-public interface RepeatableExecutionStrategy {
+public interface ExecutionPolicy {
 
     /**
      * @param task

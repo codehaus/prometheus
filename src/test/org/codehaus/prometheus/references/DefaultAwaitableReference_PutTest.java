@@ -5,7 +5,6 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.testsupport.InterruptedTrueFalse;
 import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 /**
@@ -25,7 +24,6 @@ public class DefaultAwaitableReference_PutTest extends DefaultAwaitableReference
         testNoTakers(START_INTERRUPTED);
     }
 
-    @InterruptedTrueFalse
     public void testNoTakers(boolean startInterrupted) {
         Integer oldRef = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>(oldRef);

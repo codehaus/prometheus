@@ -48,10 +48,10 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
     public void testTimeout() {
         newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_SMALL_MS)));
 
-        TryAwaitShutdownThread t1 = scheduleTryAwaitShutdown(1);
-        joinAll(t1);
+        TryAwaitShutdownThread t = scheduleTryAwaitShutdown(1);
+        joinAll(t);
 
-        t1.assertIsTimedOut();
+        t.assertIsTimedOut();
     }
 
     public void testNegativeTimeout() {

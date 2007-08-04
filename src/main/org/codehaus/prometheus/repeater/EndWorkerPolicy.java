@@ -6,19 +6,20 @@
 package org.codehaus.prometheus.repeater;
 
 /**
- * A Policy that ends the current worker. It doesn't change the current tasks. It could lead
- * to a shutdown of the Repeater if the ThreadPool shutdown when it figures out that the
- * ThreadPool ends.
+ * A {@link ExecutionPolicy} that ends the current worker-thread but doesn't influence
+ * other workers. It is useful when a single worker needs to terminate when the task
+ * returns false.
  *
  * @author Peter Veentjer.
  * @since 0.1
  */
-public class EndWorkerStrategy implements RepeatableExecutionStrategy {
+public class EndWorkerPolicy implements ExecutionPolicy {
 
-    public final static EndWorkerStrategy INSTANCE = new EndWorkerStrategy();
+    public final static EndWorkerPolicy INSTANCE = new EndWorkerPolicy();
 
     public boolean execute(Repeatable task, ThreadPoolRepeater repeater) throws Exception {
         try {
+            //false indicates that the worker thread should terminate itself.
             return task.execute();
         } finally {
             repeater.lendableRef.takeback(task);

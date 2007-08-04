@@ -52,7 +52,7 @@ public interface RepeaterService extends Repeater {
      * shutting down, or already is shutdown, an IllegalStateException is thrown.
      *
      * @throws IllegalStateException if the RepeaterService is shutting down, or
-     *                               already is shut down.
+     *                               is shutdown.
      */
     void start();
 

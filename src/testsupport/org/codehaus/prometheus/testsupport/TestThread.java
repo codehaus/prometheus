@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class TestThread extends Thread {
 
-    enum ThreadState{NEW, STARTED,TERMINATED};
+    enum ThreadState{NEW, STARTED,TERMINATED}
 
     protected volatile long delay = 0;
     protected volatile TimeUnit delayUnit;

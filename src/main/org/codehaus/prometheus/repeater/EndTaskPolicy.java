@@ -6,7 +6,7 @@
 package org.codehaus.prometheus.repeater;
 
 /**
- * An {@link RepeatableExecutionStrategy} that removes the current task that is repeated.
+ * An {@link ExecutionPolicy} that removes the current task that is repeated.
  * It doesn't change the state of worker.
  *
  * If the ThreadPoolRepeater is relaxed, it could lead to the
@@ -14,9 +14,9 @@ package org.codehaus.prometheus.repeater;
  * @author Peter Veentjer
  * @since 0.1
  */
-public class EndTaskStrategy implements RepeatableExecutionStrategy {
+public class EndTaskPolicy implements ExecutionPolicy {
 
-    public final static EndTaskStrategy INSTANCE = new EndTaskStrategy();
+    public final static EndTaskPolicy INSTANCE = new EndTaskPolicy();
 
     public boolean execute(Repeatable task, ThreadPoolRepeater repeater) throws Exception {
         boolean again = true;

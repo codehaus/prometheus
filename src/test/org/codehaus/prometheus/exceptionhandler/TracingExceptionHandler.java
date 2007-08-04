@@ -1,8 +1,13 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.exceptionhandler;
 
 import static junit.framework.Assert.assertEquals;
 
-import java.util.Collections;
+import static java.util.Collections.synchronizedList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +19,7 @@ import java.util.List;
 ///CLOVER:OFF
 public class TracingExceptionHandler implements ExceptionHandler {
 
-    private List<Exception> exceptionList = Collections.synchronizedList(new LinkedList());
+    private List<Exception> exceptionList = synchronizedList(new LinkedList());
 
     public int getCount(Class exceptionClass) {
         int count = 0;

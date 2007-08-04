@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.repeater;
 
 import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
@@ -6,16 +11,16 @@ import static org.codehaus.prometheus.testsupport.TestUtil.randomBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Unittests {@link EndWorkerStrategy}.
+ * Unittests {@link EndWorkerPolicy}.
  *
  * @author Peter Veentjer.
  */
-public class ThreadPoolRepeater_EndWorkerStrategyTest extends ThreadPoolRepeater_AbstractTest {
+public class ThreadPoolRepeater_EndWorkerPolicyTest extends ThreadPoolRepeater_AbstractTest {
 
     public void testRepeatableReturnsTrue() {
         int poolsize = 3;
         newRunningRepeater(poolsize);
-        repeater.setRepeatableExecutionStrategy(new EndWorkerStrategy());
+        repeater.setRepeatableExecutionStrategy(new EndWorkerPolicy());
 
         DummyRepeatable task = new DummyRepeatable(true);
         spawned_repeat(task);
@@ -31,7 +36,7 @@ public class ThreadPoolRepeater_EndWorkerStrategyTest extends ThreadPoolRepeater
         int poolsize = 6;
         int falsecount = 2;
         newRunningRepeater(poolsize);
-        repeater.setRepeatableExecutionStrategy(new EndWorkerStrategy());
+        repeater.setRepeatableExecutionStrategy(new EndWorkerPolicy());
 
         RandomFalseRepeatable task = new RandomFalseRepeatable(falsecount);
         spawned_repeat(task);

@@ -12,7 +12,8 @@ package org.codehaus.prometheus.repeater;
  * <li>inject a Runnable by using the constructor {@link #RepeatableRunnable(Runnable)} </li>
  * <li>subclass this RepeatableRunnable and override the {@link #run()} method</li>
  * </ol>
- * The {@link #execute()} method always returns <tt>true</tt> unless a RuntimeException occurs.
+ * The {@link #execute()} method always returns <tt>true</tt> unless a RuntimeException occurs
+ * (the exception is propagated).
  *
  * @author Peter Veentjer.
  * @since 0.1
@@ -42,8 +43,8 @@ public class RepeatableRunnable implements Repeatable, Runnable {
     }
 
     /**
-     * Returns the injected Runnable. If no runnable is injected, the RepeatableRunnable is returned
-     * because it also implements the Runnable interface.
+     * Returns Runnable that is executed. If a Runnable is injected, that instance is returned.
+     * If this RepeatableRunnable is subclassed, this RepeatableRunnable is returned.
      *
      * @return the injected Runnable.
      */

@@ -1,13 +1,18 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.repeater;
 
 import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 
 /**
- * Unittests {@link EndTaskStrategy}.
+ * Unittests {@link EndTaskPolicy}.
  *
  * @author Peter Veentjer.
  */
-public class ThreadPoolRepeater_EndTaskStrategyTest extends ThreadPoolRepeater_AbstractTest{
+public class ThreadPoolRepeater_EndTaskPolicyTest extends ThreadPoolRepeater_AbstractTest{
 
     public void testRepeatableReturnsTrue() throws InterruptedException {
         int poolsize = 5;

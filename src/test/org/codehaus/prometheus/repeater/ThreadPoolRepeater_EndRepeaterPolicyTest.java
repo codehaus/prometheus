@@ -1,13 +1,18 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.repeater;
 
 import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 /**
- * Unittests {@link EndRepeaterStrategy}.
+ * Unittests {@link EndRepeaterPolicy}.
  *
  * @author Peter Veentjer
  */
-public class ThreadPoolRepeater_ShutdownStrategyTest extends ThreadPoolRepeater_AbstractTest {
+public class ThreadPoolRepeater_EndRepeaterPolicyTest extends ThreadPoolRepeater_AbstractTest {
 
     public void testRepeatableReturnsTrue() {
         int poolsize = 3;
@@ -41,6 +46,6 @@ public class ThreadPoolRepeater_ShutdownStrategyTest extends ThreadPoolRepeater_
 
     private void newRepeater(int poolsize) {
         newRunningRepeater(poolsize);
-        repeater.setRepeatableExecutionStrategy(new EndRepeaterStrategy());
+        repeater.setRepeatableExecutionStrategy(new EndRepeaterPolicy());
     }
 }

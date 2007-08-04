@@ -6,14 +6,16 @@
 package org.codehaus.prometheus.repeater;
 
 /**
- * A Policy that shutsdown the ThreadPoolRepeater when a task returns false.
+ * An {@link ExecutionPolicy} that shuts down the {@link ThreadPoolRepeater} when a task
+ * returns <tt>false</tt>. It is useful when a ThreadPoolRepeater doesn't need to
+ * run forever, and needs to shutdown when the task returns false.
  *
  * @author Peter Veentjer
  * @since 0.1
  */
-public class EndRepeaterStrategy implements RepeatableExecutionStrategy {
+public class EndRepeaterPolicy implements ExecutionPolicy {
 
-    public final static EndRepeaterStrategy INSTANCE = new EndRepeaterStrategy();
+    public final static EndRepeaterPolicy INSTANCE = new EndRepeaterPolicy();
 
     public boolean execute(Repeatable task, ThreadPoolRepeater repeater) throws Exception {
         try {

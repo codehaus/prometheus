@@ -115,10 +115,10 @@ public class ThreadPoolRepeater implements RepeaterService {
         return new StandardThreadPool(poolsize);
     }
 
-    //fields are made protected so RepeatableExecutionStrategy has access to them
+    //fields are made protected so ExecutionPolicy has access to them
     protected final LendableReference<Repeatable> lendableRef;
     protected final ThreadPool threadPool;
-    private volatile RepeatableExecutionStrategy repeatableExecutionStrategy = new EndTaskStrategy();
+    private volatile ExecutionPolicy executionPolicy = new EndTaskPolicy();
 
     /**
      * Creates a new strict and unstarted ThreadPoolRepeater with one thread and a
@@ -211,23 +211,23 @@ public class ThreadPoolRepeater implements RepeaterService {
     }
 
     /**
-     * Sets the new RepeatableExecutionStrategy
+     * Sets the new ExecutionPolicy
      *
-     * @param repeatableExecutionStrategy the new RepeatableExecutionStrategy
-     * @throws NullPointerException if repeatableExecutionStrategy is null
+     * @param executionPolicy the new ExecutionPolicy
+     * @throws NullPointerException if executionPolicy is null
      */
-    public void setRepeatableExecutionStrategy(RepeatableExecutionStrategy repeatableExecutionStrategy) {
-        if (repeatableExecutionStrategy == null) throw new NullPointerException();
-        this.repeatableExecutionStrategy = repeatableExecutionStrategy;
+    public void setRepeatableExecutionStrategy(ExecutionPolicy executionPolicy) {
+        if (executionPolicy == null) throw new NullPointerException();
+        this.executionPolicy = executionPolicy;
     }
 
     /**
-     * Gets the current RepeatableExecutionStrategy. The returned value will never be null.
+     * Gets the current ExecutionPolicy. The returned value will never be null.
      *
-     * @return the current RepeatableExecutionStrategy
+     * @return the current ExecutionPolicy
      */
-    public RepeatableExecutionStrategy getRepeatableExecutionStrategy() {
-        return repeatableExecutionStrategy;
+    public ExecutionPolicy getExecutionPolicy() {
+        return executionPolicy;
     }
 
     public ExceptionHandler getExceptionHandler() {
@@ -365,7 +365,7 @@ public class ThreadPoolRepeater implements RepeaterService {
         }
 
         public boolean executeWork(Repeatable task) throws Exception {
-            return  repeatableExecutionStrategy.execute(task, ThreadPoolRepeater.this);
+            return  executionPolicy.execute(task, ThreadPoolRepeater.this);
         }
     }
 }

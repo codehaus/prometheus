@@ -40,7 +40,6 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
     }
 
-
     public void testShutdownNowCantForceNonInterruptibleTaskToEnd() {
         UninterruptableSleepingRunnable task = new UninterruptableSleepingRunnable(DELAY_SMALL_MS);
         newRunningStrictRepeater(new RepeatableRunnable(task));
@@ -52,7 +51,6 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         spawned_awaitShutdown();
         assertIsShutdown();
     }
-
 
     public void testStarted_poolIsEmpty() {
         newRunningRepeater(true, 0);
@@ -82,7 +80,6 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         assertIsShutdown();
         assertActualPoolSize(0);
     }
-
 
     //make sure that the workers are interrupted, when the threadpoolrepeater shuts down
     public void testShutdownInterruptsWorkers() throws InterruptedException {

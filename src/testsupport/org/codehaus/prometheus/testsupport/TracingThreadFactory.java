@@ -1,10 +1,15 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.testsupport;
 
 import static junit.framework.Assert.*;
 import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
-import java.util.Collections;
+import static java.util.Collections.synchronizedList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadFactory;
@@ -18,7 +23,7 @@ import java.util.concurrent.ThreadFactory;
  */
 public class TracingThreadFactory implements ThreadFactory {
     private final ThreadFactory targetFactory;
-    private final List<Thread> threadList = Collections.synchronizedList(new LinkedList<Thread>());
+    private final List<Thread> threadList = synchronizedList(new LinkedList<Thread>());
 
     /**
      * Creates a TracingThreadFactory with a {@link StandardThreadFactory}.

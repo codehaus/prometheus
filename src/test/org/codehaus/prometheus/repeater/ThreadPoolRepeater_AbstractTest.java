@@ -7,6 +7,7 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
+import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import org.codehaus.prometheus.testsupport.TracingThreadFactory;
 import org.codehaus.prometheus.testsupport.UninterruptableSleepingRunnable;
 
@@ -24,53 +25,53 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
 
         //if a repeater is available, make sure that is can shut down
         if (repeater != null) {
-            spawned_assertShutdownNow();
+            spawned_shutdownNow();
 
-            AwaitShutdownThread awaitShutdownThread = scheduleAwaitShutdown();
-            joinAll(awaitShutdownThread);
-            assertIsShutdown();
+            spawned_awaitShutdown();
         }
     }
 
-    //duplicate logic, should be removed
-    public void spawned_assertShutdownNow() {
-        ShutdownNowThread t = scheduleShutdownNow();
-        joinAll(t);
-        t.assertIsTerminatedNormally();
+    public void spawned_repeat(Runnable task) {
+        spawned_repeat((Repeatable) new RepeatableRunnable(task));
     }
 
-    public void spawned_shutdownNow() {
-        ShutdownNowThread shutdownNowThread = scheduleShutdownNow();
-        joinAll(shutdownNowThread);
-        shutdownNowThread.assertIsTerminatedNormally();
-    }
-
-    public void spawned_awaitShutdown() {
-        AwaitShutdownThread awaitShutdownThread = scheduleAwaitShutdown();
-        joinAll(awaitShutdownThread);
-        awaitShutdownThread.assertIsTerminatedNormally();
-    }
-
-    public void spawned_repeat(Repeatable repeatable){
+    public void spawned_repeat(Repeatable repeatable) {
         RepeatThread t = scheduleRepeat(repeatable);
         joinAll(t);
         t.assertIsTerminatedNormally();
     }
 
+    public void spawned_shutdownNow() {
+        ShutdownNowThread t = scheduleShutdownNow();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+    }
+
+    public void spawned_awaitShutdown() {
+        AwaitShutdownThread t = scheduleAwaitShutdown();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+        assertIsShutdown();
+    }
+
+    public void spawned_shutdown() {
+        ShutdownThread t = scheduleShutdown();
+        joinAll(t);
+        t.assertIsTerminatedNormally();
+        RepeaterServiceState state = repeater.getState();
+        assertTrue(state == RepeaterServiceState.shutdown || state == RepeaterServiceState.shuttingdown);
+    }
+
     public void newShutdownRepeater() {
         newRunningStrictRepeater();
-        repeater.shutdownNow();
-        try {
-            repeater.awaitShutdown();
-        } catch (InterruptedException e) {
-            fail();
-        }
+        spawned_shutdownNow();
+        spawned_awaitShutdown();
         assertIsShutdown();
     }
 
     public void newShutdownRepeater(boolean strict) {
         newRunningRepeater(strict);
-        spawned_assertShutdown();
+        spawned_shutdown();
         spawned_awaitShutdown();
         assertIsShutdown();
     }
@@ -99,7 +100,6 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertIsRunning();
     }
 
-
     public void newRunningRepeater(boolean strict, Repeatable task) {
         newUnstartedRepeater(strict);
         try {
@@ -110,7 +110,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
             //has runWork, the worker thread sees that the repeater is shutting down,
             //so the task is not going to be executed, and this is not
             //what we want.
-            Thread.yield();
+            giveOthersAChance();
         } catch (InterruptedException e) {
             fail();
         }
@@ -154,21 +154,12 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertIsShuttingdown();
     }
 
-    public void _tested_repeat(Runnable task) {
-        _tested_repeat((Repeatable) new RepeatableRunnable(task));
+    public void assertHasEndTaskStrategy() {
+        assertTrue(repeater.getExecutionPolicy() instanceof EndTaskPolicy);
     }
 
-    public void _tested_repeat(Repeatable task) {
-        RepeatThread repeatThread = scheduleRepeat(task);
-        joinAll(repeatThread);
-    }
-
-    public void assertHasEndTaskStrategy(){
-        assertTrue(repeater.getRepeatableExecutionStrategy() instanceof EndTaskStrategy);
-    }
-
-    public void assertHasExecuteRepeatableStrategy(RepeatableExecutionStrategy expected){
-        assertSame(expected,repeater.getRepeatableExecutionStrategy());
+    public void assertHasExecutionPolicy(ExecutionPolicy expected) {
+        assertSame(expected, repeater.getExecutionPolicy());
     }
 
     public void assertIsUnstarted() {
@@ -178,6 +169,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
     public void assertIsShutdown() {
         assertEquals(RepeaterServiceState.shutdown, repeater.getState());
         assertActualPoolSize(0);
+        //todo: desired poolsize
         if (repeaterThreadFactory != null)
             repeaterThreadFactory.assertThreadsHaveTerminated();
     }
@@ -227,14 +219,6 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         protected void runInternal() throws InterruptedException, TimeoutException {
             repeater.repeat(task);
         }
-    }
-
-    public void spawned_assertShutdown() {
-        ShutdownThread t = scheduleShutdown();
-        joinAll(t);
-        t.assertIsTerminatedNormally();
-        RepeaterServiceState state = repeater.getState();
-        assertTrue(state == RepeaterServiceState.shutdown || state == RepeaterServiceState.shuttingdown);
     }
 
     public ShutdownThread scheduleShutdown() {
@@ -325,6 +309,4 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
             repeater.awaitShutdown();
         }
     }
-
-
 }

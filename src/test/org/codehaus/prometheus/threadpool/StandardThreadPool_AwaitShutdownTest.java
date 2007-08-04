@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.threadpool;
 
 import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
@@ -32,7 +37,7 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
 
         spawned_assertShutdown();
 
-        //check that the awaiting threads spawned_assertShutdown
+        //check that the awaiting threads spawned_shutdown
         joinAll(awaitThread1, awaitThread2);
         awaitThread1.assertIsTerminatedNormally();
         awaitThread2.assertIsTerminatedNormally();

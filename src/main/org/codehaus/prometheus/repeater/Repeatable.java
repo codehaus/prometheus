@@ -11,9 +11,10 @@ package org.codehaus.prometheus.repeater;
  * difference between a Runnable is that the {@link #execute()} is able to return a boolean value:
  * </p>
  * <ol>
- * <li><tt>true</tt> indicates that if should be executed again</li>
+ * <li><tt>true</tt> indicates that it should be executed again</li>
  * <li><tt>false</tt> indicates that it should not be executed again</li>
  * </ol>
+ * The interpretation of the the return value can be selected by using a {@link EndRepeaterPolicy}.
  *
  * <p>
  * It also allows checked exceptions to be thrown (instead of just runtime exceptions).
@@ -25,8 +26,10 @@ package org.codehaus.prometheus.repeater;
  * <p/>
  *
  * @author Peter Veentjer
- * @see org.codehaus.prometheus.repeater.Repeater
- * @see org.codehaus.prometheus.repeater.RepeatableRunnable
+ * @see Repeater
+ * @see ThreadPoolRepeater
+ * @see RepeatableRunnable
+ * @see EndRepeaterPolicy
  * @since 0.1
  */
 public interface Repeatable {

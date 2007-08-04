@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2007 Peter Veentjer
+ *
+ * This program is made available under the terms of the MIT License.
+ */
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
@@ -5,6 +10,11 @@ import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 import org.codehaus.prometheus.testsupport.ThrowingRunnable;
 
+/**
+ * Unittests the exception handling behavior of the ThreadPoolRepeater.
+ *
+ * @author Peter Veentjer.
+ */
 public class ThreadPoolRepeater_ExceptionHandlingTest extends ThreadPoolRepeater_AbstractTest {
 
     public void testExceptionHandler() {
@@ -30,7 +40,7 @@ public class ThreadPoolRepeater_ExceptionHandlingTest extends ThreadPoolRepeater
 
         ThrowingRunnable task = new ThrowingRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
-        _tested_repeat(repeatable);
+        spawned_repeat(repeatable);
 
         sleepMs(DELAY_LONG_MS);
         task.assertExecutedOnceOrMore();
