@@ -14,13 +14,13 @@ import java.util.concurrent.TimeoutException;
 /**
  * Idea: at the moment only the testcase-executing thread is allowed to do asserts. Maybe allow
  * different threads also to make asserts.
- *
+ * <p/>
  * The TestThread doesn't use the {@link Thread#getState()} as a mechanism to determine the
  * state this Thread is in, see 12.1.2 of "Java Concurrency in Practice" for more information.
- *
+ * <p/>
  * The states a TestThread can be in are:
  * <ol>
- *  <li><b>new</b>: when the thread has been created but hasn't been running</li>
+ * <li><b>new</b>: when the thread has been created but hasn't been running</li>
  * <li><b>running</b>: a thread that is running, but hasn't been terminated. A thread that is blocking
  * also is in the running state.
  * </li>
@@ -31,7 +31,9 @@ import java.util.concurrent.TimeoutException;
  */
 public class TestThread extends Thread {
 
-    enum ThreadState{NEW, STARTED,TERMINATED}
+    enum ThreadState {
+        NEW, STARTED, TERMINATED
+    }
 
     protected volatile long delay = 0;
     protected volatile TimeUnit delayUnit;
@@ -39,11 +41,9 @@ public class TestThread extends Thread {
     protected volatile boolean startInterrupted = false;
     protected volatile boolean isInterruptedAtEnd = false;
     protected volatile Stopwatch stopwatch = new Stopwatch();
-
     protected volatile ThreadState state = ThreadState.NEW;
 
     private final Runnable task;
-
 
     /**
      * Creates a TestThread with a 0 delay.
@@ -52,8 +52,8 @@ public class TestThread extends Thread {
         task = this;
     }
 
-    public TestThread(Runnable task){
-        if(task == null)throw new NullPointerException();
+    public TestThread(Runnable task) {
+        if (task == null) throw new NullPointerException();
         this.task = task;
     }
 
@@ -100,17 +100,17 @@ public class TestThread extends Thread {
      *
      * @return the thrown RuntimeException.
      */
-    public Throwable getFoundThrowable() {
+    public final Throwable getFoundThrowable() {
         return foundThrowable;
     }
 
     /**
-     * Returns true if this TestThread should spawned_start interrupted, false otherwise.
+     * Returns true if this TestThread should start interrupted, false otherwise.
      * This method can be called anytime.
      *
-     * @return true if this Thread should spawned_start interrupted, false otherwise.
+     * @return true if this Thread should start interrupted, false otherwise.
      */
-    public boolean isStartInterrupted() {
+    public final boolean isStartInterrupted() {
         return startInterrupted;
     }
 
@@ -119,30 +119,18 @@ public class TestThread extends Thread {
      *
      * @throws IllegalStateException if the TestThread isn't terminated.
      */
-    private void ensureTerminated(){
-        if(state!=ThreadState.TERMINATED)
+    private void ensureTerminated() {
+        if (state != ThreadState.TERMINATED)
             throw new IllegalStateException();
     }
 
-    /**
-     * Returns true if the TestThread had the interrupt status when it terminated. False
-     * otherwise. If the TestThread is in the Thread.State.TERMINATED state, a
-     * IllegalStateException is thrown.
-     *
-     * @return true if the TestThread had the interrupt status when it terminated.
-     * @throws IllegalStateException if the TestThread is not terminated.
-     */
-    public boolean isInterruptedAtEnd() {
-        ensureTerminated();
-        return isInterruptedAtEnd;
-    }
 
     /**
      * Sets the delay.
      *
      * @param delay
      * @param delayUnit
-     * @throws NullPointerException if delayUnit is null.
+     * @throws NullPointerException  if delayUnit is null.
      * @throws IllegalStateException if the TestThread isn't in the java.lang.Thread.State.NEW state anymore.
      */
     public final void setDelay(long delay, TimeUnit delayUnit) {
@@ -162,8 +150,8 @@ public class TestThread extends Thread {
         setDelay(delayMs, TimeUnit.MILLISECONDS);
     }
 
-    protected void runInternal()throws Exception{
-        if(task == null)
+    protected void runInternal() throws Exception {
+        if (task == null)
             throw new IllegalStateException("runInternal method should be overridden, or a task injected");
         task.run();
     }
@@ -180,7 +168,7 @@ public class TestThread extends Thread {
                 interrupt();
 
             runInternal();
-        } catch(Throwable ex){
+        } catch (Throwable ex) {
             this.foundThrowable = ex;
         } finally {
             stopwatch.stop();
@@ -198,7 +186,21 @@ public class TestThread extends Thread {
     }
 
     /**
-     * Asserts that the TestThread is in the new state (so hasn't spawned_start running).
+     * Returns true if the TestThread had the interrupt status when it terminated. False
+     * otherwise. If the TestThread is in the Thread.State.TERMINATED state, a
+     * IllegalStateException is thrown.
+     *
+     * @return true if the TestThread had the interrupt status when it terminated.
+     * @throws IllegalStateException if the TestThread is not terminated.
+     */
+    public boolean isTerminatedWithInterruptedFlag() {
+        ensureTerminated();
+        return isInterruptedAtEnd;
+    }
+
+
+    /**
+     * Asserts that the TestThread is in the new state (so hasn't started running).
      */
     public final void assertIsNew() {
         assertEquals(ThreadState.NEW, state);
@@ -216,7 +218,7 @@ public class TestThread extends Thread {
      */
     public final void assertIsTerminatedNormally() {
         assertIsTerminated();
-        if(foundThrowable!=null)
+        if (foundThrowable != null)
             foundThrowable.printStackTrace();
         assertNull(foundThrowable);
     }
@@ -231,9 +233,9 @@ public class TestThread extends Thread {
         if (throwableClass == null) throw new NullPointerException();
 
         assertIsTerminated();
-        assertNotNull("no exception found",foundThrowable);
-        assertTrue(format("exception.class %s is not a subclass of %s",throwableClass,foundThrowable.getClass()),
-                    throwableClass.isInstance(foundThrowable));
+        assertNotNull("no exception found", foundThrowable);
+        assertTrue(format("exception.class %s is not a subclass of %s", throwableClass, foundThrowable.getClass()),
+                throwableClass.isInstance(foundThrowable));
         printInterrestingStacktrace();
     }
 
@@ -243,14 +245,14 @@ public class TestThread extends Thread {
      * part of the logic). If there is no found throwable, nothing happens.
      */
     public final void printInterrestingStacktrace() {
-        if(foundThrowable == null)
+        if (foundThrowable == null)
             return;
 
         boolean uninterresting = foundThrowable instanceof InterruptedException ||
                 foundThrowable instanceof TimeoutException;
-        if(uninterresting)
+        if (uninterresting)
             return;
-        
+
         foundThrowable.printStackTrace();
     }
 
@@ -271,30 +273,33 @@ public class TestThread extends Thread {
         printInterrestingStacktrace();
     }
 
-    
 
     /**
      * Asserts that the TestThread has not encountered any runtime exceptions.
+     * No assumption is made on the state the thread is in, so this call can be
+     * called anytime.
      */
-    public final void assertNoRuntimeException(){
+    public final void assertNoRuntimeException() {
         assertNull(foundThrowable);
     }
 
-    
+    /**
+     * Interrupts the Thread and joins. If the thread can't be joined in a
+     * certain amount of time, the call fails.
+     */
     public final void interruptAndJoin() {
         interrupt();
         try {
-            this.join(ConcurrentTestCase.DELAY_LONG_MS);
-            if (isAlive()) {
-                fail("thread is still alive");
-            }
+            join(ConcurrentTestCase.DELAY_LONG_MS);
+            if (isAlive())
+                fail(String.format("thread %s is still alive",this));
         } catch (InterruptedException e) {
             fail("interrupted while waiting to join");
         }
     }
 
     /**
-     * Checks if the BaseThread has the interrupted status set
+     * Checks if the TestThread has the interrupted status set
      * at the end of execution. No check is done on exception.
      * <p/>
      * The {@link Thread#isInterrupted()} can't be used, because
@@ -302,12 +307,10 @@ public class TestThread extends Thread {
      * and throws false when the thread completes (no matter what
      * the value was). That is why the isInterrupted is stored when
      * the thread completes and can be used for later use.
-     * <p/>
-     * Doesn't clear the interrupted status.
      *
-     * @param interrupted true if the
+     * @param interrupted true if the interrupt flag should be set, false otherwise.
      */
-    public final void assertIsTerminatedWithInterruptStatus(boolean interrupted) {
+    public final void assertIsTerminatedWithInterruptFlag(boolean interrupted) {
         assertIsTerminated();
         assertEquals(interrupted, isInterruptedAtEnd);
     }
@@ -318,22 +321,21 @@ public class TestThread extends Thread {
      * <p/>
      * This call doesn't clear the interrupted status.
      */
-    public final void assertIsTerminatedWithInterruptStatus() {
-        assertIsTerminatedWithInterruptStatus(true);
+    public final void assertIsTerminatedWithInterruptFlag() {
+        assertIsTerminatedWithInterruptFlag(true);
     }
 
+    /**
+     * Asserts that the TestThread#runInternal method threw an InterruptedException.
+     */
+    public final void assertIsTerminatedByInterruptedException() {
+        assertIsTerminatedWithThrowing(InterruptedException.class);
+    }
 
     /**
      * Asserts that the TestThread#runInternal method threw a TimeoutException.
      */
     public final void assertIsTimedOut() {
         assertIsTerminatedWithThrowing(TimeoutException.class);
-    }
-
-    /**
-     * Asserts that the TestThread#runInternal method threw an InterruptedException.
-     */
-    public final void assertIsInterruptedByException() {
-        assertIsTerminatedWithThrowing(InterruptedException.class);
     }
 }

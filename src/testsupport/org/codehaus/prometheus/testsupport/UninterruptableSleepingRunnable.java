@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.testsupport;
 
-import org.codehaus.prometheus.util.ConcurrencyUtil;
+import static org.codehaus.prometheus.util.ConcurrencyUtil.sleepUninterruptibly;
 
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +45,6 @@ public class UninterruptableSleepingRunnable extends BlockingRunnable {
     }
 
     public void runBlockingInternal() {
-        //todo: remove dependency
-        ConcurrencyUtil.sleepUninterruptibly(sleep, unit);
+        sleepUninterruptibly(sleep, unit);
     }
 }

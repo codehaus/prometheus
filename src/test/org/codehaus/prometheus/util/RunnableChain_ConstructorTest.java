@@ -5,16 +5,16 @@
  */
 package org.codehaus.prometheus.util;
 
-import org.codehaus.prometheus.testsupport.DummyRunnable;
+import org.codehaus.prometheus.testsupport.TestRunnable;
 
 import static java.util.Arrays.asList;
 
 public class RunnableChain_ConstructorTest extends RunnableChain_AbstractTest {
 
     public void test_RunnableArray() {
-        Runnable r1 = new DummyRunnable();
-        Runnable r2 = new DummyRunnable();
-        Runnable r3 = new DummyRunnable();
+        Runnable r1 = new TestRunnable();
+        Runnable r2 = new TestRunnable();
+        Runnable r3 = new TestRunnable();
 
         runnableChain = new RunnableChain(r1, r2, r3);
         assertIsBreakable();
@@ -23,9 +23,9 @@ public class RunnableChain_ConstructorTest extends RunnableChain_AbstractTest {
     }
 
     public void test_RunnableList() {
-        Runnable r1 = new DummyRunnable();
-        Runnable r2 = new DummyRunnable();
-        Runnable r3 = new DummyRunnable();
+        Runnable r1 = new TestRunnable();
+        Runnable r2 = new TestRunnable();
+        Runnable r3 = new TestRunnable();
 
         runnableChain = new RunnableChain(asList(r1, r2, r3));
         assertIsBreakable();

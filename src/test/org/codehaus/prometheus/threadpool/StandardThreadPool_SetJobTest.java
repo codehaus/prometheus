@@ -6,17 +6,17 @@
 package org.codehaus.prometheus.threadpool;
 
 /**
- * Unittests the {@link StandardThreadPool#setWorkerJob(ThreadPoolJob)} method.
+ * Unittests the {@link StandardThreadPool#setJob(ThreadPoolJob)} method.
  *
  * @author Peter Veentjer.
  */
-public class StandardThreadPool_SetDefaultWorkerJobTest extends StandardThreadPool_AbstractTest {
+public class StandardThreadPool_SetJobTest extends StandardThreadPool_AbstractTest {
 
     public void testArgument() {
         newUnstartedThreadPool();
 
         try {
-            threadpool.setWorkerJob(null);
+            threadpool.setJob(null);
             fail();
         } catch (NullPointerException ex) {
         }

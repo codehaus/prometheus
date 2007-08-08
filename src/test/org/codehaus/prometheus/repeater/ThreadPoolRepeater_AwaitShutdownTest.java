@@ -124,7 +124,7 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
         //now interrupt the awaitThread
         awaitThread.interrupt();
         joinAll(awaitThread);
-        awaitThread.assertIsInterruptedByException();
+        awaitThread.assertIsTerminatedByInterruptedException();
         assertIsShuttingdown();
     }
 

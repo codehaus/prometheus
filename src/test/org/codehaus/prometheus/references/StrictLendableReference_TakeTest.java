@@ -61,7 +61,7 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         //do a take with interruptstatus, and check that the call is interrupted
         TakeThread<Integer> takeThread1 = scheduleTake(START_INTERRUPTED);
         joinAll(takeThread1);
-        takeThread1.assertIsInterruptedByException();
+        takeThread1.assertIsTerminatedByInterruptedException();
         assertLendCount(0);
         assertHasRef(ref);
     }
@@ -77,7 +77,7 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         //interrupt the take
         takeThread.interrupt();
         joinAll(takeThread);
-        takeThread.assertIsInterruptedByException();
+        takeThread.assertIsTerminatedByInterruptedException();
         assertHasRef(null);
         assertPutIsPossible(1, null);
         assertLendCount(0);

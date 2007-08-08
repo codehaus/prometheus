@@ -54,7 +54,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         executeThread.interrupt();
         joinAll(executeThread);
 
-        executeThread.assertIsInterruptedByException();
+        executeThread.assertIsTerminatedByInterruptedException();
         assertActualPoolSize(poolsize);
         assertIsRunning();
         secondTask.assertIsUnstarted();

@@ -36,7 +36,7 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
 
         assertIsRunning();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -48,7 +48,7 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
 
         assertIsRunning();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -60,7 +60,7 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
 
         assertIsShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -72,7 +72,7 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
 
         assertIsForcedShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
     
@@ -84,7 +84,7 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
 
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(oldpoolsize);
-        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolThreadFactory.assertAllThreadsAreTerminated();
         threadPoolExceptionHandler.assertNoErrors();
     }
 }

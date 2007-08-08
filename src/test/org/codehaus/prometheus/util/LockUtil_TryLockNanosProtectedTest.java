@@ -68,6 +68,6 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
 
         tryLockThread.interrupt();
         joinAll(tryLockThread);
-        tryLockThread.assertIsInterruptedByException();
+        tryLockThread.assertIsTerminatedByInterruptedException();
     }
 }

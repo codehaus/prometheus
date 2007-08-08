@@ -62,8 +62,8 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
         assertShutdownNotifiesWaiters();
     }
 
-    public void testWhileForcedShuttingdown(){
-        newForcedShuttingdownThreadpool(3,DELAY_LONG_MS);
+    public void testWhileForcedShuttingdown() {
+        newForcedShuttingdownThreadpool(3, DELAY_LONG_MS);
         assertShutdownNotifiesWaiters();
     }
 
@@ -105,11 +105,10 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
         awaitThread1.assertIsStarted();
         awaitThread2.assertIsStarted();
 
-        awaitThread1.interrupt();
-
         //interrupt thread1 and see that thread1 is interrupted, and thread2 still is waiting
+        awaitThread1.interrupt();
         joinAll(awaitThread1);
-        awaitThread1.assertIsInterruptedByException();
+        awaitThread1.assertIsTerminatedByInterruptedException();
         awaitThread2.assertIsStarted();
         assertIsRunning();
     }

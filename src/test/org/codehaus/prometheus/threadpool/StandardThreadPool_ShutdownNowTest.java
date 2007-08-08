@@ -20,7 +20,7 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
     public void testWhileUnstarted() {
         newUnstartedThreadPool(10);
 
-        spawned_assertShutdownNow();
+        spawned_shutdownNow();
 
         assertIsShutdown();
         threadPoolThreadFactory.assertNoThreadsCreated();
@@ -30,7 +30,7 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
     public void testWhileRunningAndEmptyPool() {
         newStartedThreadpool(0);
 
-        spawned_assertShutdownNow();
+        spawned_shutdownNow();
 
         assertIsShutdown();
         threadPoolThreadFactory.assertNoThreadsCreated();
@@ -41,12 +41,12 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
-        spawned_assertShutdownNow();
+        spawned_shutdownNow();
 
         giveOthersAChance();
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolThreadFactory.assertAllThreadsAreTerminated();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -56,12 +56,12 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
         ensureNoIdleWorkers();
 
         giveOthersAChance();
-        spawned_assertShutdownNow();
+        spawned_shutdownNow();
 
         giveOthersAChance();
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolThreadFactory.assertAllThreadsAreTerminated();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -70,13 +70,13 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
 
         List<TestRunnable> list = newShuttingdownThreadpool(poolsize, DELAY_EON_MS);
 
-        spawned_assertShutdownNow();
+        spawned_shutdownNow();
 
         giveOthersAChance();
         //if the running thread wasn't interrupted, the pool would not shut down.
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolThreadFactory.assertAllThreadsAreTerminated();
         threadPoolExceptionHandler.assertNoErrors();
         //for(TestRunnable r: list)
         //    r.        
@@ -87,11 +87,11 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
         int poolsize = 3;
         newShuttingdownThreadpool(poolsize, DELAY_LONG_MS, false);
 
-        spawned_assertShutdownNow();
+        spawned_shutdownNow();
         giveOthersAChance();
         assertIsForcedShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -99,12 +99,12 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
         int poolsize = 3;
 
         newForcedShuttingdownThreadpool(poolsize, DELAY_LONG_MS);
-        spawned_assertShutdownNow();
+        spawned_shutdownNow();
 
         giveOthersAChance();
         assertIsForcedShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -112,11 +112,11 @@ public class StandardThreadPool_ShutdownNowTest extends StandardThreadPool_Abstr
         newShutdownThreadpool();
         int oldpoolsize = threadpool.getActualPoolSize();
 
-        spawned_assertShutdownNow();
+        spawned_shutdownNow();
 
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(oldpoolsize);
-        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolThreadFactory.assertAllThreadsAreTerminated();
         threadPoolExceptionHandler.assertNoErrors();
     }
 }

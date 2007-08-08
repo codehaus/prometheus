@@ -28,7 +28,7 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
         assertIsRunning();
         assertActualPoolSize(poolsize);
         threadFactory.assertCreatedCount(poolsize);
-        threadFactory.assertAllThreadsAlive();
+        threadFactory.assertAllThreadsAreAlive();
     }
 
     public void testWhileRunning() {
@@ -40,7 +40,7 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
         assertIsRunning();
         assertActualPoolSize(poolsize);
         threadFactory.assertCreatedCount(poolsize);
-        threadFactory.assertAllThreadsAlive();
+        threadFactory.assertAllThreadsAreAlive();
     }
 
     public void testWhileShuttingdown() {

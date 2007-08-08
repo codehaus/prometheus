@@ -30,7 +30,7 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
 
         assertIsOpen();
         t.assertIsTerminatedNormally();
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     public void testSomeWaitingNeeded_startInterrupted() {
@@ -39,7 +39,7 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
         PassThread passThread = schedulePass(START_INTERRUPTED);
 
         joinAll(passThread);
-        passThread.assertIsInterruptedByException();
+        passThread.assertIsTerminatedByInterruptedException();
     }
 
     public void testSomeWaitingNeeded() {
@@ -78,7 +78,7 @@ public class CloseableWaitpoint_PassTest extends CloseableWaitpoint_AbstractTest
         passThread.interrupt();
         joinAll(passThread);
 
-        passThread.assertIsInterruptedByException();
+        passThread.assertIsTerminatedByInterruptedException();
         assertIsClosed();
     }
 

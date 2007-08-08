@@ -174,7 +174,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
         //it could be that no reference to the threadfactory was assigned
         if (threadFactory != null)
-            threadFactory.assertThreadsHaveTerminated();
+            threadFactory.assertAllThreadsAreTerminated();
 
         assertActualPoolSize(0);
         assertWorkQueueIsEmpty();

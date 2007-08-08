@@ -19,7 +19,6 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.Lock;
 
 /**
  * The default implementation of the {@link RepeaterService} interface that {@link ThreadPool} to
@@ -186,7 +185,7 @@ public class ThreadPoolRepeater implements RepeaterService {
     public ThreadPoolRepeater(ThreadPool threadPool, LendableReference<Repeatable> lendableRef) {
         if (threadPool == null || lendableRef == null) throw new NullPointerException();
         this.threadPool = threadPool;
-        this.threadPool.setWorkerJob(new RepeaterThreadPoolJob());
+        this.threadPool.setJob(new RepeaterThreadPoolJob());
         this.lendableRef = lendableRef;
     }
 
@@ -289,7 +288,7 @@ public class ThreadPoolRepeater implements RepeaterService {
     }
 
     public void repeat(Repeatable task) throws InterruptedException {
-        ensureUsableRepeater();
+        ensureRunningRepeater();
 
         //it could be that the repeater just has begon shutting down,
         //or completely has shutdown. It is up to the task to figure out
@@ -300,34 +299,19 @@ public class ThreadPoolRepeater implements RepeaterService {
     /**
      * Makes sure that there is ThreadPoolRepeater that is able to work. If it isn't
      * possible, a RejectedExecutionException is thrown.
+     *
+     * @throws RejectedExecutionException
      */
-    private void ensureUsableRepeater() {
-        Lock lock = threadPool.getStateChangeLock();
-        lock.lock();
-        try {
-            ThreadPoolState state = threadPool.getState();
-            switch (state) {
-                case unstarted:
-                    start();
-                    break;
-                case running:
-                    break;
-                case shuttingdown:
-                    //fall through
-                case forcedshuttingdown:
-                    //fall through
-                case shutdown:
-                    throw new RejectedExecutionException();
-                default:
-                    throw new RuntimeException("unhandled state " + state);
-            }
-        } finally {
-            lock.unlock();
+    private void ensureRunningRepeater() {
+        try{
+            start();
+        }catch(IllegalStateException ex){
+            throw new RejectedExecutionException(ex.getMessage(),ex);
         }
     }
 
     public boolean tryRepeat(final Repeatable task) {
-        ensureUsableRepeater();
+        ensureRunningRepeater();
 
         TimedUninterruptibleSection section = new TimedUninterruptibleSection() {
             protected Object originalsection(long timeoutNs) throws InterruptedException, TimeoutException {
@@ -345,7 +329,7 @@ public class ThreadPoolRepeater implements RepeaterService {
     }
 
     public void tryRepeat(Repeatable task, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
-        ensureUsableRepeater();
+        ensureRunningRepeater();
 
         //it could be that this method is called even though the threadpool is shutting down, or shut down.
         //this means that a task is placed, but not executed.

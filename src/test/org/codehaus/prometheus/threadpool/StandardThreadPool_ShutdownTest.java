@@ -17,20 +17,20 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
     public void testWhileUnstarted() {
         newUnstartedThreadPool(10);
 
-        spawned_assertShutdown();
+        spawned_shutdown();
 
         assertIsShutdown();
-        threadPoolThreadFactory.assertCreatedCount(0);
+        threadPoolThreadFactory.assertNoThreadsCreated();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileRunningButEmptyPool() {
         newStartedThreadpool(0);
 
-        spawned_assertShutdown();
+        spawned_shutdown();
         giveOthersAChance();
         assertIsShutdown();
-        threadPoolThreadFactory.assertCreatedCount(0);
+        threadPoolThreadFactory.assertNoThreadsCreated();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -38,13 +38,13 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
-        spawned_assertShutdown();
+        spawned_shutdown();
 
         giveOthersAChance();
 
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertThreadsHaveTerminated();
+        threadPoolThreadFactory.assertAllThreadsAreTerminated();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -56,15 +56,15 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
         //give workers time to spawned_start executing the task.
         giveOthersAChance();
         //make sure that all workers are executing a job.
-        assertTrue(taskQueue.isEmpty());
+        assertTrue(workQueue.isEmpty());
 
-        spawned_assertShutdown();
+        spawned_shutdown();
 
         giveOthersAChance();
         assertIsShuttingdown();
         assertActualPoolsize(poolsize);
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -74,13 +74,13 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
 
         ensureNoIdleWorkers(DELAY_EON_MS);
 
-        spawned_assertShutdown();
+        spawned_shutdown();
 
         giveOthersAChance();
 
         assertIsShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -88,21 +88,26 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
         int poolsize = 3;
         newForcedShuttingdownThreadpool(poolsize,DELAY_LONG_MS);
 
-        spawned_assertShutdown();
+        spawned_shutdown();
         
         giveOthersAChance();
 
         assertIsForcedShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileShutdown() {
         newShutdownThreadpool();
 
-        spawned_assertShutdown();
+        int oldCreatedCount = threadPoolThreadFactory.getThreadCount();
+
+        spawned_shutdown();
 
         assertIsShutdown();
+        threadPoolThreadFactory.assertCreatedCount(oldCreatedCount);
+        threadPoolThreadFactory.assertAllThreadsAreTerminated();
+        threadPoolExceptionHandler.assertNoErrors();
     }
 }

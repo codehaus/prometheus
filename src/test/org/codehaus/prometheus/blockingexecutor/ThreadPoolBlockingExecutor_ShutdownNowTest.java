@@ -44,7 +44,7 @@ public class ThreadPoolBlockingExecutor_ShutdownNowTest extends ThreadPoolBlocki
         giveOthersAChance();
         assertIsShutdown();
         threadFactory.assertCreatedCount(poolsize);
-        threadFactory.assertThreadsHaveTerminated();
+        threadFactory.assertAllThreadsAreTerminated();
     }
 
     //there are workers and there is no unprocessed work

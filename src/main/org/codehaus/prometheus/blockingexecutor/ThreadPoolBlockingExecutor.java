@@ -8,43 +8,42 @@ package org.codehaus.prometheus.blockingexecutor;
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
-import org.codehaus.prometheus.threadpool.ThreadPoolState;
 import org.codehaus.prometheus.threadpool.ThreadPoolJob;
+import org.codehaus.prometheus.threadpool.ThreadPoolState;
 import static org.codehaus.prometheus.util.ConcurrencyUtil.ensureNoTimeout;
 
 import static java.lang.String.format;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.Lock;
 
 /**
  * An implementation of a {@link BlockingExecutorService} that uses a {@link ThreadPool} for thread
  * management and a workqueue (a {@link BlockingQueue}) to store unprocessed jobs.
  * <p/>
- * <h1>Out of order execution</h1> 
+ * <h1>Out of order execution</h1>
  * Event though a blocking queue is used to store the items,and an item won't be returned out of order
  * (FIFO contract) it could be that:
  * <ol>
- *  <li>a task takes a longer time than others to execute</li>
- *  <li>a taken task hasn't had the time to execute (maybe unlucky context switches).</li>
+ * <li>a task takes a longer time than others to execute</li>
+ * <li>a taken task hasn't had the time to execute (maybe unlucky context switches).</li>
  * </ol>
  * The FIFO contract can also be broken, check the {@link PriorityBlockingQueue}. Only when there is a
  * single thread you get the FIFO guarantee.
  * <p/>
  * <h1>Bounded workqueue</h1>
- * <p>
+ * <p/>
  * If you don't have control on the number of tasks in the workqueue, this could lead to resource problems
  * like running out of memory. That is why it is better to use a bounded BlockingQueue (an unbounded
  * blockingqueue would also not lead to blocking behaviour).
  * </p>
  * <h1>Workqueue without internal capacity</h1>
- * <p>
+ * <p/>
  * In some cases you don't want any unprocessed work, if that is the case, you can use a
  * {@link SynchronousQueue} as workqueue. A SynchronousQueue only accepts tasks if there is a
  * worker thread waiting for it. If no worker thread is available, the submission of the task blocks.
  * </p>
-  * If a task placement is running before a shutdown, but completes after the system is shutting down,
+ * If a task placement is running before a shutdown, but completes after the system is shutting down,
  * the placing thread is responsible to make sure that the task is processed. This is done by removing
  * the task from the queue if it is still there and throwing a RejectedExecutionException or if the
  * task isn't on the queue, it is (being) processed.
@@ -83,11 +82,11 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      * Creates a ThreadPoolBlockingExecutor with the given poolsize, ThreadPool
      * and workqueue.
      *
-     * @param poolsize    the initial number of threads in the threadpool
-     * @param factory the ThreadFactory responsible for filling the threadpool
+     * @param poolsize  the initial number of threads in the threadpool
+     * @param factory   the ThreadFactory responsible for filling the threadpool
      * @param workQueue the BlockingQueue used to store unprocessed work.
      * @throws IllegalArgumentException if poolsize is smaller than zero.
-     * @throws NullPointerException if factory or workQueue is null.
+     * @throws NullPointerException     if factory or workQueue is null.
      */
     public ThreadPoolBlockingExecutor(int poolsize, ThreadFactory factory, BlockingQueue<Runnable> workQueue) {
         this(createDefaultThreadPool(factory, poolsize), workQueue);
@@ -97,14 +96,14 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      * Creates a ThreadPoolBlockingExecutor with the given ThreadPool and workqueue.
      *
      * @param threadPool the ThreadPool that is used to manage threads.
-     * @param workQueue the BlockingQueue used to store unprocessed work.
+     * @param workQueue  the BlockingQueue used to store unprocessed work.
      * @throws NullPointerException if threadPool or workQueue is null.
      */
     public ThreadPoolBlockingExecutor(ThreadPool threadPool, BlockingQueue<Runnable> workQueue) {
         if (threadPool == null || workQueue == null) throw new NullPointerException();
         this.threadPool = threadPool;
         this.workQueue = workQueue;
-        this.threadPool.setWorkerJob(new ThreadPoolJobImpl());
+        this.threadPool.setJob(new ThreadPoolJobImpl());
     }
 
     /**
@@ -242,7 +241,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
 
     private void ensurePoolRunning() {
         if (threadPool.getState() != ThreadPoolState.running)
-            throw new RejectedExecutionException("task can't be executed because the ThreadPoolBlockingExecutor" +
+            throw new RejectedExecutionException("task can't be executed, the ThreadPoolBlockingExecutor" +
                     " isn't running");
     }
 
@@ -262,47 +261,23 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      * @param task the task to ensure to be handled.
      */
     private void ensureTaskHandeled(Runnable task) {
-        boolean shutdownOccurredDuringTaskPlacement = false;
-
-        Lock lock = threadPool.getStateChangeLock();
-        lock.lock();
-        try {
-            //the following sequence of actions could have occurred:
-            //-a shutdown was initiated before lock.unlock
-            //-a shutdown is initiated after lock.unlock.
-            //(shutdown can't happen concurrently because shutdown depends on the lock also)
-            //We are not interrested in the second case, but it is up to shutdown to deal
-            //with all jobs that were placed on the queue. We are only interrested in the
-            //first case: job was placed, but maybe the shutdown was initiated in the meanwhile.
-
-            if (threadPool.getState() != ThreadPoolState.running) {
-                //the shutdown was initiated before the lock was obtained, so
-                //this call should try to remove the task because no guarantees
-                //are given that is ever is going to be processed.
-                shutdownOccurredDuringTaskPlacement = true;
-            }
-        } finally {
-            lock.unlock();
-        }
-
-        //if no shutdown has occurred, the caller of the shutdown is now completely responsible for
-        //dealing with unprocessed tasks. If a shutdown has occurred, the task could have been placed,
-        //and the caller of the shutdown method, has no way of nowing this and is not able to deal
-        //with the task that was 'illegally' placed.
-        if (!shutdownOccurredDuringTaskPlacement)
+        //the structure is still running, the calling thread isn't responsible anymore
+        //for the handling of the task.
+        if (threadPool.getState() == ThreadPoolState.running)
             return;
 
         //the structure was shutdown, and we don't get any guarantee that the item is going to
         //be processed or dealt with. That is why we need to check if it is still there.
-        if (workQueue.remove(task)) {
-            //the task was still on the queue, it is removed now, so lets throw an
-            //rejected execution exception to indicate that the execution has failed.
-            throw new RejectedExecutionException();
-        } else {
+        if (!workQueue.remove(task)) {
             //we were lucky, the task could not be found on the queue anymore, meaning
             //that it was handeled (either because it was returned by the shutdownNow method
             //or because it is (being) processed.
+            return;
         }
+
+        //the task was still on the queue, it is removed now, so lets throw an
+        //RejectedExecutionException to indicate that the execution has failed.
+        throw new RejectedExecutionException();
     }
 
     private class ThreadPoolJobImpl implements ThreadPoolJob<Runnable> {

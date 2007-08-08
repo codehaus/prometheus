@@ -121,7 +121,7 @@ public class StrictLendableReference_TimedTryPutTest extends StrictLendableRefer
         //now interrupt the put and make sure that it is interrupted
         tryPutThread.interrupt();
         giveOthersAChance();
-        tryPutThread.assertIsInterruptedByException();
+        tryPutThread.assertIsTerminatedByInterruptedException();
         assertHasRef(originalRef);
         assertLendCount(1);
     }

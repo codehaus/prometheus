@@ -20,11 +20,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 ///CLOVER:OFF
 public class CountingCallable<E> implements Callable<E> {
 
-    private AtomicInteger count = new AtomicInteger();
+    private final AtomicInteger count = new AtomicInteger();
+    private final E result;
+
+    public CountingCallable(){
+        this(null);
+    }
+
+    public CountingCallable(E result){
+        this.result = result;
+    }
 
     public E call() throws Exception {
         count.incrementAndGet();
-        return null;
+        return result;
     }
 
     public int getCount(){
@@ -33,5 +42,9 @@ public class CountingCallable<E> implements Callable<E> {
 
     public void assertNotExecuted(){
         assertEquals(0,count.intValue());
+    }
+
+    public void assertExecutedOnce() {
+        assertEquals(1,count.intValue());
     }
 }

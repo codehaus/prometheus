@@ -89,7 +89,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
         PutThread putThread = schedulePut(newRef, startInterrupted);
         joinAll(putThread);
         putThread.assertSuccess(oldRef);
-        putThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        putThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
         assertHasReference(newRef);
     }
 

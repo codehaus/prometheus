@@ -100,7 +100,7 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
         //now interrupt the trytake and check that the call was interrupted
         tryTakeThread.interrupt();
         joinAll(tryTakeThread);
-        tryTakeThread.assertIsInterruptedByException();
+        tryTakeThread.assertIsTerminatedByInterruptedException();
         assertHasRef(null);
         assertLendCount(0);
     }

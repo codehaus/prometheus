@@ -54,7 +54,7 @@ public class ConditionUtil_TimedAwaitAndThrowTest extends ConditionUtil_Abstract
 
         awaitThread.interrupt();
         joinAll(awaitThread);
-        awaitThread.assertIsInterruptedByException();
+        awaitThread.assertIsTerminatedByInterruptedException();
     }
 
     public void testSomeWaiting() throws InterruptedException, TimeoutException {

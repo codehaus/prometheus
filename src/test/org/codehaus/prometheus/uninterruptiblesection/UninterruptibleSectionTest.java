@@ -47,7 +47,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
         ExecuteThread executeThread = scheduleExecute(startInterrupted);
         joinAll(executeThread);
         executeThread.assertSuccess(returnValue);
-        executeThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        executeThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     //========= some blocking ==================
@@ -76,7 +76,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
         latch.open();
         joinAll(executeThread);
         executeThread.assertSuccess(returnValue);
-        executeThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        executeThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     //=========== interrupted while blocking ==============
@@ -109,7 +109,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
         latch.open();
         joinAll(executeThread);
         executeThread.assertSuccess(returnValue);
-        executeThread.assertIsTerminatedWithInterruptStatus(true);
+        executeThread.assertIsTerminatedWithInterruptFlag(true);
     }
 
     //=========== runtime exception in block ================      
@@ -133,7 +133,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
         ExecuteThread executeThread = scheduleExecute(startInterrupted);
         joinAll(executeThread);
         executeThread.assertIsTerminatedWithThrowing(ex.getClass());
-        executeThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        executeThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     public ExecuteThread scheduleExecute(boolean startInterrupted) {

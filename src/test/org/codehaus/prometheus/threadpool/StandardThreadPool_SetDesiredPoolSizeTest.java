@@ -38,7 +38,7 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         assertActualPoolsize(poolsize);
         assertDesiredPoolsize(poolsize);
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -53,7 +53,7 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         assertActualPoolsize(newpoolsize);
         assertDesiredPoolsize(newpoolsize);
         threadPoolThreadFactory.assertCreatedCount(newpoolsize);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -81,7 +81,7 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         //let all workers work
         ensureNoIdleWorkers(2 * DELAY_MEDIUM_MS);
         sleepMs(DELAY_SMALL_MS);
-        assertTrue(taskQueue.isEmpty());
+        assertTrue(workQueue.isEmpty());
 
         //change the size of the pool, but workers don't give workers time to pick it up
         int newPoolsize = 2;
@@ -144,7 +144,7 @@ public class StandardThreadPool_SetDesiredPoolSizeTest extends StandardThreadPoo
         assertActualPoolsize(oldThreadcount);
         assertDesiredPoolsize(oldThreadcount);
         threadPoolThreadFactory.assertCreatedCount(oldThreadcount);
-        threadPoolThreadFactory.assertAllThreadsAlive();
+        threadPoolThreadFactory.assertAllThreadsAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 

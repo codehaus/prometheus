@@ -34,7 +34,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
         TryRepeatThread t = scheduleTryRepeat(repeatable, startInterrupted);
         joinAll(t);
         t.assertSuccess();
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
 
         assertHasRepeatable(repeatable);
         assertActualPoolSize(1);
@@ -64,7 +64,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
 
         joinAll(t);
         t.assertFailed();
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
         assertIsRunning();
         assertHasRepeatable(originalRepeatable);
         assertActualPoolSize(1);
@@ -91,7 +91,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
 
         joinAll(t);
         t.assertSuccess();
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
         assertIsRunning();
         assertHasRepeatable(repeatable);
         assertActualPoolSize(1);
@@ -119,7 +119,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
 
         joinAll(t);
         t.assertIsTerminatedWithThrowing(RejectedExecutionException.class);
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
         task.assertNotExecuted();
         assertHasRepeatable(originalTask);
         assertActualPoolSize(1);
@@ -144,7 +144,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
 
         joinAll(t);
         t.assertIsTerminatedWithThrowing(RejectedExecutionException.class);
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
         task.assertNotExecuted();
         assertIsShutdown();
         assertActualPoolSize(0);

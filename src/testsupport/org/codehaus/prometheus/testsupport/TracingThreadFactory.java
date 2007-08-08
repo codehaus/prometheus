@@ -94,7 +94,7 @@ public class TracingThreadFactory implements ThreadFactory {
     /**
      * Asserts that all threads created by the target ThreadFactory have terminated.
      */
-    public void assertThreadsHaveTerminated() {
+    public void assertAllThreadsAreTerminated() {
         giveOthersAChance();
         //todo: also picks up unstarted ones
         for (Thread thread : threadList) {
@@ -112,7 +112,7 @@ public class TracingThreadFactory implements ThreadFactory {
         assertCreatedCount(0);
     }
 
-    public void assertAllThreadsAlive() {
+    public void assertAllThreadsAreAlive() {
         for (Thread thread : threadList)
             assertTrue(thread.isAlive());
     }

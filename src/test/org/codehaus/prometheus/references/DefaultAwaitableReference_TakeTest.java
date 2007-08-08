@@ -39,7 +39,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
 
         //make sure that the taker is interrupted
         joinAll(taker);
-        taker.assertIsInterruptedByException();
+        taker.assertIsTerminatedByInterruptedException();
         assertHasReference(null);
     }
 
@@ -61,7 +61,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         TakeThread taker = scheduleTake(startInterrupted);
         joinAll(taker);
         taker.assertSuccess(ref);
-        taker.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        taker.assertIsTerminatedWithInterruptFlag(startInterrupted);
 
         assertHasReference(ref);
     }
@@ -75,7 +75,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
         //do a take and make sure it was interrupted
         TakeThread takeThread = scheduleTake(START_INTERRUPTED);
         joinAll(takeThread);
-        takeThread.assertIsInterruptedByException();
+        takeThread.assertIsTerminatedByInterruptedException();
         assertHasReference(ref);
     }
 

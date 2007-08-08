@@ -27,7 +27,7 @@ public class JucLatch_OpenWithoutLockingTest extends JucLatch_AbstractTest {
         joinAll(openThread);
         assertIsOpen();
         openThread.assertIsTerminatedNormally();
-        openThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        openThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     //=====================================
@@ -51,7 +51,7 @@ public class JucLatch_OpenWithoutLockingTest extends JucLatch_AbstractTest {
         OpenWithoutLockingThread openThread = scheduleOpenWithoutLocking(startInterrupted);
         joinAll(openThread);
         openThread.assertIsTerminatedWithThrowing(IllegalMonitorStateException.class);
-        openThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        openThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
         assertIsClosed();
     }
 

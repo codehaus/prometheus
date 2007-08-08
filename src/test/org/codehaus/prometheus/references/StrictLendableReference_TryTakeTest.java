@@ -30,8 +30,8 @@ public class StrictLendableReference_TryTakeTest extends StrictLendableReference
         joinAll(t1, t2);
         t1.assertSuccess(ref);
         t1.assertSuccess(ref);
-        t1.assertIsTerminatedWithInterruptStatus(startInterrupted);
-        t2.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t1.assertIsTerminatedWithInterruptFlag(startInterrupted);
+        t2.assertIsTerminatedWithInterruptFlag(startInterrupted);
         assertHasRef(ref);
         assertLendCount(2);
     }
@@ -53,7 +53,7 @@ public class StrictLendableReference_TryTakeTest extends StrictLendableReference
         TryTakeThread<Integer> t = scheduleTryTake(startInterrupted);
         joinAll(t);
         t.assertSuccess(null);
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
         assertHasRef(null);
         assertLendCount(0);
     }

@@ -7,7 +7,7 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.CountingRunnable;
-import org.codehaus.prometheus.testsupport.DummyRunnable;
+import org.codehaus.prometheus.testsupport.TestRunnable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,7 +25,7 @@ public class RepeatableRunnableTest extends ConcurrentTestCase {
         } catch (NullPointerException ex) {
         }
 
-        Runnable task = new DummyRunnable();
+        TestRunnable task = new TestRunnable();
         RepeatableRunnable repeatable = new RepeatableRunnable(task);
         assertSame(task, repeatable.getRunnable());
     }

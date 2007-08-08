@@ -61,7 +61,7 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
         joinAll(signalThread, t);
 
         t.assertSuccess();
-        t.assertIsTerminatedWithInterruptStatus(interrupted);
+        t.assertIsTerminatedWithInterruptFlag(interrupted);
     }
 
     //===========================================================
@@ -82,7 +82,7 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
         joinAll(t);
 
         t.assertIsTimedOut();
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     //===========================================================
@@ -110,6 +110,6 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
         Thread signalThread = scheduleSignallAll(lock, condition);
         joinAll(t, signalThread);
         t.assertSuccess();
-        t.assertIsTerminatedWithInterruptStatus();
+        t.assertIsTerminatedWithInterruptFlag();
     }
 }

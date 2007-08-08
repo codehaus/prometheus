@@ -106,7 +106,7 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
 
         awaitThread.interrupt();
         giveOthersAChance();
-        awaitThread.assertIsInterruptedByException();
+        awaitThread.assertIsTerminatedByInterruptedException();
         assertIsRunning();
     }
 
@@ -117,7 +117,7 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
 
         TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(DELAY_EON_MS, START_INTERRUPTED);
         giveOthersAChance();
-        awaitThread.assertIsInterruptedByException();
+        awaitThread.assertIsTerminatedByInterruptedException();
         assertIsShuttingdown();
     }
 
@@ -131,7 +131,7 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
 
         joinAll(awaitThread);
         awaitThread.assertSuccess();
-        awaitThread.assertIsTerminatedWithInterruptStatus(false);
+        awaitThread.assertIsTerminatedWithInterruptFlag(false);
         assertIsShutdown();
     }
 
@@ -156,7 +156,7 @@ public class ThreadPoolBlockingExecutor_TryAwaitShutdownTest extends ThreadPoolB
         joinAll(awaitThread);
 
         awaitThread.assertSuccess();
-        awaitThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        awaitThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
         assertIsShutdown();
     }
 }

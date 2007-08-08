@@ -29,7 +29,7 @@ public class JucLatch_AwaitTest extends JucLatch_AbstractTest {
 
         joinAll(awaitThread);
         awaitThread.assertIsTerminatedNormally();
-        awaitThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        awaitThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     //============== some waiting needed =========================
@@ -39,7 +39,7 @@ public class JucLatch_AwaitTest extends JucLatch_AbstractTest {
         AwaitThread awaitThread = scheduleAwait(START_INTERRUPTED);
 
         joinAll(awaitThread);
-        awaitThread.assertIsInterruptedByException();
+        awaitThread.assertIsTerminatedByInterruptedException();
     }
 
     public void testSomeWaitingNeeded() {
@@ -54,7 +54,7 @@ public class JucLatch_AwaitTest extends JucLatch_AbstractTest {
 
         joinAll(awaitThread, openThread);
         awaitThread.assertIsTerminatedNormally();
-        awaitThread.assertIsTerminatedWithInterruptStatus(false);
+        awaitThread.assertIsTerminatedWithInterruptFlag(false);
     }
 
     public void testInterruptedWhileWaiting() {
@@ -67,7 +67,7 @@ public class JucLatch_AwaitTest extends JucLatch_AbstractTest {
         awaitThread.interrupt();
 
         giveOthersAChance();
-        awaitThread.assertIsInterruptedByException();
+        awaitThread.assertIsTerminatedByInterruptedException();
     }
 
     public void testSpuriousWakeup() {
@@ -87,6 +87,6 @@ public class JucLatch_AwaitTest extends JucLatch_AbstractTest {
 
         joinAll(awaitThread, openThread);
         awaitThread.assertIsTerminatedNormally();
-        awaitThread.assertIsTerminatedWithInterruptStatus(false);
+        awaitThread.assertIsTerminatedWithInterruptFlag(false);
     }
 }

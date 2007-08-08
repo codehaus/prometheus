@@ -142,7 +142,7 @@ public class ThreadPoolRepeater_TimedTryRepeatTest extends ThreadPoolRepeater_Ab
         //interrupt the thread 
         tryRepeatThread.interrupt();
         joinAll(tryRepeatThread);
-        tryRepeatThread.assertIsInterruptedByException();
+        tryRepeatThread.assertIsTerminatedByInterruptedException();
         assertIsRunning();
         assertHasRepeatable(originalRepeatable);
     }

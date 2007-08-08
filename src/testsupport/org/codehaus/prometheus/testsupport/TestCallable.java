@@ -5,16 +5,25 @@
  */
 package org.codehaus.prometheus.testsupport;
 
-/**
- * A Runnable that can be extended (to be used for testing purposes) and adds some
- * assertions methods.
- *
- * @author Peter Veentjer.
- */
-///CLOVER:OFF
-public class TestRunnable extends RunSupport implements Runnable {
+import java.util.concurrent.Callable;
+
+public class TestCallable<E> extends RunSupport implements Callable<E> {
+    private final E result;
+
+    public TestCallable(E result) {
+        this.result = result;
+    }
+
+    public E getResult() {
+        return result;
+    }
+
+    public E call() throws Exception {
+        return result;
+    }
 
     public void runInternal() {
+
     }
 
     public final void run() {

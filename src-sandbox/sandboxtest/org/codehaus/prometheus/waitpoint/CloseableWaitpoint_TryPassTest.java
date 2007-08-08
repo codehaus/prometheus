@@ -26,7 +26,7 @@ public class CloseableWaitpoint_TryPassTest extends CloseableWaitpoint_AbstractT
 
         joinAll(t);
         t.assertSuccess();
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
 
@@ -44,6 +44,6 @@ public class CloseableWaitpoint_TryPassTest extends CloseableWaitpoint_AbstractT
 
         joinAll(t);
         t.assertFailure();
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 }

@@ -6,7 +6,7 @@
 package org.codehaus.prometheus.testsupport;
 
 import junit.framework.Assert;
-import org.codehaus.prometheus.util.ConcurrencyUtil;
+import static org.codehaus.prometheus.util.ConcurrencyUtil.sleepUninterruptibly;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -78,6 +78,11 @@ public final class TestUtil {
         return random.nextInt(Integer.MAX_VALUE);
     }
 
+    /**
+     * Returns a random long 0<=value<maxvalue
+     * @param maxvalue
+     * @return
+     */
     public synchronized static long randomLong(long maxvalue) {
         return Math.abs(random.nextLong() % maxvalue);
     }
@@ -138,7 +143,7 @@ public final class TestUtil {
         Runnable notifier = new Runnable() {
             public void run() {
                 //remove dependency                
-                ConcurrencyUtil.sleepUninterruptibly(delay, TimeUnit.MILLISECONDS);
+                sleepUninterruptibly(delay, TimeUnit.MILLISECONDS);
 
                 lock.lock();
                 try {

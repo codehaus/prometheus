@@ -35,7 +35,7 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
         awaitThread1.assertIsStarted();
         awaitThread2.assertIsStarted();
 
-        spawned_assertShutdown();
+        spawned_shutdown();
 
         //check that the awaiting threads spawned_shutdown
         joinAll(awaitThread1, awaitThread2);
@@ -73,7 +73,7 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
 
         //interrupt thread1 and see that thread1 is interrupted, and thread2 still is waiting
         joinAll(awaitThread1);
-        awaitThread1.assertIsInterruptedByException();
+        awaitThread1.assertIsTerminatedByInterruptedException();
         awaitThread2.assertIsStarted();
         assertIsRunning();
     }

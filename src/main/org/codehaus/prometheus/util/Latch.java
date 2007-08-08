@@ -34,27 +34,30 @@ public interface Latch {
     boolean isOpen();
 
     /**
-     * Opens the Latch. If the Latch already is open, nothing happens.
+     * Opens the Latch. If the Latch already is open, the call is ignored.
      */
     void open();
 
     /**
-     * Awaits for this Latch to open. If the Latch already is open, nothing happens.
+     * Awaits for this Latch to open. If the Latch already is open, the call
+     * returns immediately.
      *
      * This method allows an InterruptedException to be thrown, but it is up to the
-     * implementation to decide if this is done.
+     * implementation to decide if the call is responsive to interrupts.
      *
      * @throws InterruptedException if the calling thread is interrupted.
      */
     void await() throws InterruptedException;
 
     /**
-     * Awaits for this Latch to open. If the Latch already is open, nothing happens.
+     * Awaits for this Latch to open. If the Latch already is open, the call returns
+     * immediately.
      *
      * This method allows an InterruptedException to be thrown, but it is up to the
-     * implementation to decide if this is done. If
+     * implementation to decide if the call is responsive to interrupts.
      *
-     * @param timeout how long to wait before giving up in units of <tt>unit</tt>.
+     * @param timeout how long to wait before giving up in units of <tt>unit</tt>. Calling
+     *                with a negative timeout is interpret as a call with a zero timeout.
      * @param unit    a <tt>TimeUnit</tt> determining how to interpret the <tt>timeout</tt>
      *                parameter.
      * @throws InterruptedException if the calling thread is interrupted

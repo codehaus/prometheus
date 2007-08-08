@@ -6,8 +6,8 @@
 package org.codehaus.prometheus.blockingexecutor;
 
 import org.codehaus.prometheus.testsupport.CountingRunnable;
-import org.codehaus.prometheus.testsupport.DummyRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import org.codehaus.prometheus.testsupport.TestRunnable;
 import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
 
@@ -30,7 +30,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
         }
 
         try {
-            executor.tryExecute(new DummyRunnable(), 1, null);
+            executor.tryExecute(new TestRunnable(), 1, null);
             fail();
         } catch (NullPointerException ex) {
         }
@@ -39,7 +39,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
     public void testNegativeTimeout() throws InterruptedException {
         newStartedBlockingExecutor();
         try {
-            executor.tryExecute(new DummyRunnable(), -1, TimeUnit.SECONDS);
+            executor.tryExecute(new TestRunnable(), -1, TimeUnit.SECONDS);
             fail();
         } catch (TimeoutException ex) {
         }
@@ -67,7 +67,7 @@ public class ThreadpoolBlockingExecutor_TimedTryExecuteRunnableTest extends Thre
 
         executeThread.interrupt();
         joinAll(executeThread);
-        executeThread.assertIsInterruptedByException();
+        executeThread.assertIsTerminatedByInterruptedException();
 
         giveOthersAChance();
         task.assertNotExecuted();

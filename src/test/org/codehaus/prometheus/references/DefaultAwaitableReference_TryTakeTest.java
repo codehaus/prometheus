@@ -28,7 +28,7 @@ public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableRefer
         TryTakeThread t = scheduleTryTake(startInterrupted);
         joinAll(t);
         t.assertSuccess(ref);
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     //=======================================================
@@ -48,6 +48,6 @@ public class DefaultAwaitableReference_TryTakeTest extends DefaultAwaitableRefer
         TryTakeThread t = scheduleTryTake(startInterrupted);
         joinAll(t);
         t.assertSuccess(null);
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 }

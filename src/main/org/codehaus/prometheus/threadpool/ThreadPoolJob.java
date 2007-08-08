@@ -24,11 +24,9 @@ package org.codehaus.prometheus.threadpool;
  * interrupted if a threadpool needs to shutdown, or when idle threads needs to be removed
  * because the threadpool is shrinking.
  * <p/>
- * I think this interface is so StandardThreadPool implementation specific, and that it should
- * be removed from the {@link ThreadPool} interface.
- * <p/>
  * The problem is with the getWork method. If a threadpool decides to shut down, it interrupts
- * all idle threads. If thread is blocking for work, the interrupted exception is caught, but the
+ * all idle threads. If thread is blocking for work {@link #getWork}, the InterruptedException
+ * is caught, but the
  * threadpool decides to let the run the worker again -> deadlock. It wait for work that is
  * never comming. But if the threadpool decides to put the worker-thread down, it could lead
  * to unprocced work (the current situation at the BlockingThreadPoolExecutor). That is the reason
@@ -48,23 +46,34 @@ public interface ThreadPoolJob<E> {
      *
      * @return the data required for execution (value is not allowed to be null).
      * @throws InterruptedException if the calling thread was interrupted while waiting for work
+     * @see #getShuttingdownWork()
      */
     E getWork() throws InterruptedException;
 
     /**
+     * Gets a unit of work while the ThreadPool is shutting down.
+     *
      * This call should not block indefinitely.
      * 
      * @return the retrieved work, null indicates that no work is available anymore for processing.
      * @throws InterruptedException if the thread is interrupted while getting the shuttingdown work.
+     * @see #getWork()
      */
     E getShuttingdownWork() throws InterruptedException;
 
     /**
      * Execute the work that was obtained by {@link #getWork()}.
      *
+     * todo:
+     * what happens when false is returned, after work was received with the
+     * {@link #getShuttingdownWork()}
+     *
      * @param work the data required for execution. The value should never be null.
      * @throws Exception if something goes wrong while executing the work.
-     * @return true if the job should be executed again, false otherwise.
+     * @return true if the Thread that executes this ThreadPoolJob should run again, false if it
+     *              should terminate itself.
+     * @see #getWork()
+     * @see #getShuttingdownWork() 
      */
     boolean executeWork(E work) throws Exception;
 }

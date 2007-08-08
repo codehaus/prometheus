@@ -49,7 +49,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
     }
 
     public void placeTask(Runnable runnable){
-        taskQueue.add(Executors.callable(runnable,true));
+        workQueue.add(Executors.callable(runnable,true));
     }
 
     private void createBunchOfProblemTasks(int errorcount) {
@@ -61,7 +61,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         int poolsize = 3;
         newStartedThreadpool(poolsize);
 
-        spawned_assertShutdownNow();
+        spawned_shutdownNow();
 
         //make sure that no exception has been thrown.
         giveOthersAChance();

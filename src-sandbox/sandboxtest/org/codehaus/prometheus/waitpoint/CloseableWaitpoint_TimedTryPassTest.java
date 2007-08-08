@@ -37,7 +37,7 @@ public class CloseableWaitpoint_TimedTryPassTest extends CloseableWaitpoint_Abst
 
         TimedTryPassThread tryPassThread = scheduleTimedTryPass(START_INTERRUPTED, 3 * DELAY_SMALL_MS);
         joinAll(tryPassThread);
-        tryPassThread.assertIsInterruptedByException();
+        tryPassThread.assertIsTerminatedByInterruptedException();
     }
 
     public void testSomeWaitingNeeded() {
@@ -73,7 +73,7 @@ public class CloseableWaitpoint_TimedTryPassTest extends CloseableWaitpoint_Abst
         //interrupt the tryPass and make check that the thread was interrupted
         tryPassThread.interrupt();
         giveOthersAChance();
-        tryPassThread.assertIsInterruptedByException();
+        tryPassThread.assertIsTerminatedByInterruptedException();
     }
 
     public void testSpuriousWakeups() {

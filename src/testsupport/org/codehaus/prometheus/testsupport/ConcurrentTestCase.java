@@ -39,6 +39,7 @@ public abstract class ConcurrentTestCase extends TestCase {
         stopwatch = new Stopwatch();
     }
 
+    //todo: moven naar test support
     /**
      * Joins on all threads. If join times out, the testcase fails, so this call
      * won't block indefinetely, so it is also a way to detect deadlocks (waiting
@@ -53,6 +54,7 @@ public abstract class ConcurrentTestCase extends TestCase {
         joinAll(2 * DELAY_LONG_MS,threads);
     }
 
+    //todo: moven naar test support
     public void joinAll(long delayMs, Thread... threads) {
         for (int k = 0; k < threads.length; k++) {
             Thread t = threads[k];

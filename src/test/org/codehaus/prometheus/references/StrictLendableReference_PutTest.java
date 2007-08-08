@@ -29,7 +29,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         PutThread putThread = schedulePut(newRef, START_INTERRUPTED);
 
         joinAll(putThread);
-        putThread.assertIsInterruptedByException();
+        putThread.assertIsTerminatedByInterruptedException();
         assertHasRef(oldRef);
         assertLendCount(0);
     }
@@ -118,7 +118,7 @@ public class StrictLendableReference_PutTest extends StrictLendableReference_Abs
         putThread.interrupt();
 
         joinAll(putThread);
-        putThread.assertIsInterruptedByException();
+        putThread.assertIsTerminatedByInterruptedException();
         assertHasRef(oldRef);
     }
 

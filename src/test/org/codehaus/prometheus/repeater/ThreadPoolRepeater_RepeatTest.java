@@ -90,7 +90,7 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
 
         put.interrupt();
         joinAll(put);
-        put.assertIsInterruptedByException();
+        put.assertIsTerminatedByInterruptedException();
         assertIsRunning();
         assertHasRepeatable(originalRepeatable);
     }

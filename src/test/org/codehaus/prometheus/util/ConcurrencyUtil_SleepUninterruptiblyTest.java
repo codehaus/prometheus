@@ -43,7 +43,7 @@ public class ConcurrencyUtil_SleepUninterruptiblyTest extends ConcurrentTestCase
         joinAll(t);
         stopwatch.stop();
 
-        t.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
         stopwatch.assertElapsedBiggerOrEqualThanMs(1000);
     }
 
@@ -68,7 +68,7 @@ public class ConcurrencyUtil_SleepUninterruptiblyTest extends ConcurrentTestCase
         joinAll(t);
         stopwatch.stop();
 
-        t.assertIsTerminatedWithInterruptStatus(true);
+        t.assertIsTerminatedWithInterruptFlag(true);
         stopwatch.assertElapsedBiggerOrEqualThanMs(DELAY_LONG_MS);
     }
 

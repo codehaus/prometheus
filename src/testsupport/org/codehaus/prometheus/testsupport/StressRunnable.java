@@ -6,6 +6,7 @@
 package org.codehaus.prometheus.testsupport;
 
 import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
+import static org.codehaus.prometheus.testsupport.TestUtil.someCalculation;
 
 /**
  * A Runnable that stresses the CPU by doing some calculations.
@@ -24,6 +25,6 @@ public class StressRunnable implements Runnable{
     }
 
     public void run() {
-        TestUtil.someCalculation(iterations);
+        someCalculation(iterations);
     }
 }

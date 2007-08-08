@@ -84,7 +84,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
         TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, 0);
         joinAll(executeThread);
         executeThread.assertSuccess(returnValue);
-        executeThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        executeThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     //========== some waiting is done ===========
@@ -114,7 +114,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
         latch.open();
         joinAll(executeThread);
         executeThread.assertSuccess(returnValue);
-        executeThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        executeThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     //========= interrupted while waiting ===========
@@ -147,7 +147,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
         latch.open();
         joinAll(executeThread);
         executeThread.assertSuccess(returnValue);
-        executeThread.assertIsTerminatedWithInterruptStatus(true);
+        executeThread.assertIsTerminatedWithInterruptFlag(true);
     }
 
     //======= timeout ================================
@@ -171,7 +171,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
         TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, DELAY_SMALL_MS);
         joinAll(executeThread);
         executeThread.assertIsTimedOut();
-        executeThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        executeThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     //========== runtime exception ============
@@ -197,7 +197,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
         TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, DELAY_SMALL_MS);
         joinAll(executeThread);
         executeThread.assertIsTerminatedWithThrowing(ex.getClass());
-        executeThread.assertIsTerminatedWithInterruptStatus(startInterrupted);
+        executeThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
 
     public TimedExecuteThread scheduleTimedExecute(boolean startInterrupted, long timeoutMs) {

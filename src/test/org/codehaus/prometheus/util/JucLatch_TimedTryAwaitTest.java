@@ -54,7 +54,7 @@ public class JucLatch_TimedTryAwaitTest extends JucLatch_AbstractTest {
 
         joinAll(awaitThread);
         awaitThread.assertIsTerminatedNormally();
-        awaitThread.assertIsTerminatedWithInterruptStatus(startInterupted);
+        awaitThread.assertIsTerminatedWithInterruptFlag(startInterupted);
     }
 
     public void testWaitingNeeded_startInterrupted() {
@@ -63,7 +63,7 @@ public class JucLatch_TimedTryAwaitTest extends JucLatch_AbstractTest {
         TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_INTERRUPTED, 10);
 
         joinAll(awaitThread);
-        awaitThread.assertIsInterruptedByException();
+        awaitThread.assertIsTerminatedByInterruptedException();
     }
 
     public void testWaitingNeeded_startUninterrupted() {
@@ -78,7 +78,7 @@ public class JucLatch_TimedTryAwaitTest extends JucLatch_AbstractTest {
 
         joinAll(awaitThread);
         awaitThread.assertIsTerminatedNormally();
-        awaitThread.assertIsTerminatedWithInterruptStatus(false);
+        awaitThread.assertIsTerminatedWithInterruptFlag(false);
     }
 
     public void testTooMuchWaiting() {
@@ -101,7 +101,7 @@ public class JucLatch_TimedTryAwaitTest extends JucLatch_AbstractTest {
         //interrupt the awaitThread and make sure it is terminated 
         awaitThread.interrupt();
         joinAll(awaitThread);
-        awaitThread.assertIsInterruptedByException();
+        awaitThread.assertIsTerminatedByInterruptedException();
     }
 
     public void testSpuriousWakeups() {

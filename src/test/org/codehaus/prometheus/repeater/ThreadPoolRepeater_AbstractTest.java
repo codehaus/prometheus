@@ -171,7 +171,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertActualPoolSize(0);
         //todo: desired poolsize
         if (repeaterThreadFactory != null)
-            repeaterThreadFactory.assertThreadsHaveTerminated();
+            repeaterThreadFactory.assertAllThreadsAreTerminated();
     }
 
     public void assertIsRunning() {
