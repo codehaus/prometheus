@@ -7,7 +7,9 @@ package org.codehaus.prometheus.uninterruptiblesection;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 import org.codehaus.prometheus.util.JucLatch;
 import org.codehaus.prometheus.util.Latch;
 
@@ -107,7 +109,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
             }
         };
 
-        TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, DELAY_LONG_MS);
+        TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, Delays.LONG_MS);
         giveOthersAChance();
         executeThread.assertIsStarted();
 
@@ -136,7 +138,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
             }
         };
 
-        TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, DELAY_LONG_MS);
+        TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, Delays.LONG_MS);
         giveOthersAChance();
         executeThread.assertIsStarted();
 
@@ -168,7 +170,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
             }
         };
 
-        TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, DELAY_SMALL_MS);
+        TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, Delays.SMALL_MS);
         joinAll(executeThread);
         executeThread.assertIsTimedOut();
         executeThread.assertIsTerminatedWithInterruptFlag(startInterrupted);
@@ -194,7 +196,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
             }
         };
 
-        TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, DELAY_SMALL_MS);
+        TimedExecuteThread executeThread = scheduleTimedExecute(startInterrupted, Delays.SMALL_MS);
         joinAll(executeThread);
         executeThread.assertIsTerminatedWithThrowing(ex.getClass());
         executeThread.assertIsTerminatedWithInterruptFlag(startInterrupted);

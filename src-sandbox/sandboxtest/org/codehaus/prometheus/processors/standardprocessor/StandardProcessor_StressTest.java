@@ -2,8 +2,8 @@ package org.codehaus.prometheus.processors.standardprocessor;
 
 import org.codehaus.prometheus.processors.TestProcess;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TestUtil;
-import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
+import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.randomInt;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -53,7 +53,7 @@ public class StandardProcessor_StressTest extends StandardProcessor_AbstractTest
 
         try {
             for (Thread thread : threadList)
-                joinAll(10 * 1000, thread);
+                ConcurrentTestUtil.joinAll(10 * 1000, thread);
         } finally {
             System.out.println("retrieved items"+outputChannel.getInternalQueue().size());
         }
@@ -82,7 +82,7 @@ public class StandardProcessor_StressTest extends StandardProcessor_AbstractTest
 
         protected void runInternal() throws Exception {
             for (int k = 0; k < count; k++) {
-                TestUtil.someCalculation(10000);
+                ConcurrentTestUtil.someCalculation(10000);
 
 
                 if(k%100==0)

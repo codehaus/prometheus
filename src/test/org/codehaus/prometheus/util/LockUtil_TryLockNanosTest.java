@@ -5,10 +5,13 @@
  */
 package org.codehaus.prometheus.util;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.util.LockUtil.tryLockNanos;
 import org.easymock.EasyMock;
-import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -43,15 +46,15 @@ public class LockUtil_TryLockNanosTest extends LockUtil_AbstractTest {
     public void testNegativeTimeout() throws InterruptedException {
         lock = new ReentrantLock();
 
-        long remainingNs = LockUtil.tryLockNanos(lock, -1);
+        long remainingNs = tryLockNanos(lock, -1);
         assertTrue(remainingNs < 0);
         assertLockAvailable();
     }
 
     public void testSomeWaitingNeeded() throws InterruptedException {
-        newLockedLock(DELAY_MEDIUM_MS);
+        newLockedLock(Delays.MEDIUM_MS);
 
-        TryLockThread tryLock = scheduleTryLock(DELAY_LONG_MS, START_UNINTERRUPTED);
+        TryLockThread tryLock = scheduleTryLock(Delays.LONG_MS, START_UNINTERRUPTED);
 
         giveOthersAChance();
         tryLock.assertIsStarted();
@@ -61,7 +64,7 @@ public class LockUtil_TryLockNanosTest extends LockUtil_AbstractTest {
     }
 
     public void testTooMuchWaiting() throws InterruptedException {
-        newLockedLock(DELAY_LONG_MS);
+        newLockedLock(Delays.LONG_MS);
         long remaining = LockUtil.tryLockNanos(lock, 100);
         assertTrue(remaining < 0);
     }

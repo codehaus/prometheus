@@ -7,7 +7,8 @@ package org.codehaus.prometheus.util;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TestUtil;
+import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -39,11 +40,10 @@ public abstract class JucLatch_AbstractTest extends ConcurrentTestCase {
     }
 
     public Thread scheduleSpuriousWakeup() {
-        return TestUtil.scheduleSpuriousWakeup(latch.getMainLock(), latch.getOpenCondition(), 0);
+        return ConcurrentTestUtil.scheduleSpuriousWakeup(latch.getMainLock(), latch.getOpenCondition(), 0);
     }
 
-    public void open() {
-        //open the latch, and check that the awaitThread has finished successfully.
+    public void spawned_open() {
         OpenThread openThread = scheduleOpen();
         joinAll(openThread);
         openThread.assertIsTerminatedNormally();

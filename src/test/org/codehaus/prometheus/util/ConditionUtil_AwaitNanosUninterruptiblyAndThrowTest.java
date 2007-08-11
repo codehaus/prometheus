@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.util;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.TestUtil.scheduleSignallAll;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.*;
+import org.codehaus.prometheus.testsupport.Delays;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Condition;
@@ -51,7 +51,7 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
     public void testSomeWaitingNeeded(boolean interrupted) {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
-        long timeoutNs = millisToNanos(DELAY_MEDIUM_MS);
+        long timeoutNs = millisToNanos(Delays.MEDIUM_MS);
         AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock, condition, timeoutNs, interrupted);
 
         giveOthersAChance();
@@ -77,7 +77,7 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
     public void testTooMuchWaiting(boolean startInterrupted) {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
-        long timeoutNs = millisToNanos(DELAY_SMALL_MS);
+        long timeoutNs = millisToNanos(Delays.SMALL_MS);
         AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock, condition, timeoutNs, startInterrupted);
         joinAll(t);
 
@@ -98,7 +98,7 @@ public class ConditionUtil_AwaitNanosUninterruptiblyAndThrowTest extends Conditi
     public void testInterruptedWhileWaiting(boolean interrupted) {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
-        long timeoutNs = millisToNanos(DELAY_MEDIUM_MS);
+        long timeoutNs = millisToNanos(Delays.MEDIUM_MS);
 
         AwaitNanosUninterruptiblyAndThrowThread t = scheduleAwaitNanosUninterruptiblyAndThrow(lock, condition, timeoutNs, interrupted);
 

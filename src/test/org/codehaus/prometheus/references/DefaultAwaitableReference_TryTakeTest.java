@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+
 /**
  * Unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#tryTake()} method.
  *

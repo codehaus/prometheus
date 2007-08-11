@@ -5,9 +5,11 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.CountingRunnable;
-import org.codehaus.prometheus.testsupport.UninterruptableSleepingRunnable;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
+import org.codehaus.prometheus.testsupport.TestRunnable;
+import static org.codehaus.prometheus.testsupport.TestSupport.newUninterruptableSleepingRunnable;
 
 import java.util.concurrent.RejectedExecutionException;
 
@@ -28,7 +30,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
 
     public void testWhileUnstarted(boolean startInterrupted) {
         newUnstartedStrictRepeater();
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
 
         TryRepeatThread t = scheduleTryRepeat(repeatable, startInterrupted);
@@ -55,11 +57,11 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
     }
 
     public void testWhileRunning_someWaitingNeeded(boolean startInterrupted) {
-        Runnable originalTask = new UninterruptableSleepingRunnable(DELAY_LONG_MS);
+        Runnable originalTask = newUninterruptableSleepingRunnable(Delays.LONG_MS);
         RepeatableRunnable originalRepeatable = new RepeatableRunnable(originalTask);
         newRunningStrictRepeater(originalRepeatable);
 
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         TryRepeatThread t = scheduleTryRepeat(new RepeatableRunnable(task), startInterrupted);
 
         joinAll(t);
@@ -85,7 +87,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
 
     public void testWhileRunning_NoWaitingNeeded(boolean startInterrupted) {
         newRunningStrictRepeater();
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
         TryRepeatThread t = scheduleTryRepeat(repeatable, startInterrupted);
 
@@ -111,10 +113,37 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
     }
 
     public void testWhileShuttingdown(boolean startInterrupted) {
-        newShuttingdownRepeater(DELAY_LONG_MS);
+        newShuttingdownRepeater(Delays.LONG_MS);
         Repeatable originalTask = repeater.getLendableRef().peek();
 
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
+        TryRepeatThread t = scheduleTryRepeat(new RepeatableRunnable(task), startInterrupted);
+
+        joinAll(t);
+        t.assertIsTerminatedWithThrowing(RejectedExecutionException.class);
+        t.assertIsTerminatedWithInterruptFlag(startInterrupted);
+        task.assertNotExecuted();
+        assertHasRepeatable(originalTask);
+        assertActualPoolSize(1);
+        repeaterThreadFactory.assertCreatedAndAliveCount(1);
+        assertIsShuttingdown();
+    }
+
+    //=====================================================
+
+    public void testWhileForcedShuttingdown_startInterrupted() {
+        testWhileForcedShuttingdown(START_INTERRUPTED);
+    }
+
+    public void testWhileForcedShuttingdown_startUninterrupted() {
+        testWhileForcedShuttingdown(START_UNINTERRUPTED);
+    }
+
+    public void testWhileForcedShuttingdown(boolean startInterrupted) {
+        newForcedShuttingdownRepeater(Delays.LONG_MS, 1);
+        Repeatable originalTask = repeater.getLendableRef().peek();
+
+        TestRunnable task = new TestRunnable();
         TryRepeatThread t = scheduleTryRepeat(new RepeatableRunnable(task), startInterrupted);
 
         joinAll(t);
@@ -139,7 +168,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
 
     public void testWhileShutdown(boolean startInterrupted) {
         newShutdownRepeater();
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         TryRepeatThread t = scheduleTryRepeat(new RepeatableRunnable(task), startInterrupted);
 
         joinAll(t);
@@ -148,7 +177,7 @@ public class ThreadPoolRepeater_TryRepeatTest extends ThreadPoolRepeater_Abstrac
         task.assertNotExecuted();
         assertIsShutdown();
         assertActualPoolSize(0);
-        repeaterThreadFactory.assertCreatedAndTerminatedCount(1);
+        repeaterThreadFactory.assertCreatedAndNotAliveCount(1);
     }
 
     //==========================================================

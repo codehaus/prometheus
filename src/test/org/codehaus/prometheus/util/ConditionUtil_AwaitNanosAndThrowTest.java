@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.util;
 
-import org.easymock.EasyMock;
+import static org.easymock.EasyMock.*;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -19,7 +19,7 @@ public class ConditionUtil_AwaitNanosAndThrowTest extends ConditionUtil_Abstract
 
     public void setUp() throws Exception {
         super.setUp();
-        conditionMock = EasyMock.createMock(Condition.class);
+        conditionMock = createMock(Condition.class);
     }
 
     public void testArguments() throws InterruptedException, TimeoutException {
@@ -33,8 +33,8 @@ public class ConditionUtil_AwaitNanosAndThrowTest extends ConditionUtil_Abstract
 
     public void testInterruptedWhileWaiting() throws InterruptedException, TimeoutException {
         long timeout = 10;
-        EasyMock.expect(conditionMock.awaitNanos(timeout)).andThrow(new InterruptedException());
-        EasyMock.replay(conditionMock);
+        expect(conditionMock.awaitNanos(timeout)).andThrow(new InterruptedException());
+        replay(conditionMock);
 
         try {
             ConditionUtil.awaitNanosAndThrow(conditionMock, timeout);
@@ -42,33 +42,8 @@ public class ConditionUtil_AwaitNanosAndThrowTest extends ConditionUtil_Abstract
         } catch (InterruptedException e) {
             assertTrue(true);
         }
-        EasyMock.verify(conditionMock);
+        verify(conditionMock);
     }
-
-    /*
-    public void testALittleWaiting() throws TimeoutException, InterruptedException {
-        Lock lock = new ReentrantLock();
-        Condition cond = lock.newCondition();
-
-        TestThread t = new TestThread(){
-
-            protected void runInternal() throws InterruptedException, TimeoutException {
-                ConditionUtil.awaitAndThrow(cond,)
-            }
-        };
-        t.spawned_start();
-
-        
-
-
-        scheduleSignallAll(lock, cond, 500);
-        lock.lock();
-
-        long timeoutNs = TimeUnit.SECONDS.toNanos(1);
-        long remainingNs = ConditionUtil.awaitNanosAndThrow(cond, timeoutNs);
-        assertTrue(remainingNs >= 0);
-    }*/
-
 
     public void testIllegalMonitorState() throws TimeoutException, InterruptedException {
         Lock lock = new ReentrantLock();
@@ -95,9 +70,9 @@ public class ConditionUtil_AwaitNanosAndThrowTest extends ConditionUtil_Abstract
     public void testTimeoutOccurred(long remainingTimeoutNs, boolean timeoutOccurred) throws InterruptedException {
         long timeout = 10;
 
-        EasyMock.reset(conditionMock);
-        EasyMock.expect(conditionMock.awaitNanos(timeout)).andReturn(remainingTimeoutNs);
-        EasyMock.replay(conditionMock);
+        reset(conditionMock);
+        expect(conditionMock.awaitNanos(timeout)).andReturn(remainingTimeoutNs);
+        replay(conditionMock);
 
         try {
             ConditionUtil.awaitNanosAndThrow(conditionMock, timeout);
@@ -105,6 +80,6 @@ public class ConditionUtil_AwaitNanosAndThrowTest extends ConditionUtil_Abstract
         } catch (TimeoutException e) {
             assertTrue(timeoutOccurred);
         }
-        EasyMock.verify(conditionMock);
+        verify(conditionMock);
     }
 }

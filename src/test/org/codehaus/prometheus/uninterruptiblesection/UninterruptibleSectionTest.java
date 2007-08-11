@@ -7,7 +7,9 @@ package org.codehaus.prometheus.uninterruptiblesection;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
 import org.codehaus.prometheus.util.JucLatch;
 import org.codehaus.prometheus.util.Latch;
 
@@ -70,7 +72,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
         };
 
         ExecuteThread executeThread = scheduleExecute(startInterrupted);
-        sleepMs(DELAY_SMALL_MS);
+        sleepMs(Delays.SMALL_MS);
         executeThread.assertIsStarted();
 
         latch.open();
@@ -99,11 +101,11 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
         };
 
         ExecuteThread executeThread = scheduleExecute(startInterrupted);
-        sleepMs(DELAY_SMALL_MS);
+        sleepMs(Delays.SMALL_MS);
         executeThread.assertIsStarted();
 
         executeThread.interrupt();
-        sleepMs(DELAY_SMALL_MS);
+        sleepMs(Delays.SMALL_MS);
         executeThread.assertIsStarted();
 
         latch.open();

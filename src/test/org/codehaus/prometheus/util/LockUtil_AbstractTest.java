@@ -7,8 +7,9 @@ package org.codehaus.prometheus.util;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -47,7 +48,7 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
         TestThread t = new TestThread() {
             @Override
             public void runInternal() throws InterruptedException, TimeoutException {
-                if (!lock.tryLock(DELAY_MEDIUM_MS, TimeUnit.MILLISECONDS))
+                if (!lock.tryLock(Delays.MEDIUM_MS, TimeUnit.MILLISECONDS))
                     throw new TimeoutException();
             }
         };

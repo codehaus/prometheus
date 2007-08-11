@@ -14,6 +14,7 @@ import static org.codehaus.prometheus.util.ConcurrencyUtil.ensureNoTimeout;
 
 import static java.lang.String.format;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -167,11 +168,13 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         threadPool.setExceptionHandler(handler);
     }
 
-    public void shutdown() {
-        //todo
-        //if the threadpool has no threads, it can't process work in the workqueue. So this
-        //needs to be tackled in the interface of BlockingExecutorService
+    public List<Runnable> shutdown() {
         threadPool.shutdown();
+
+        if (threadPool.getState()==ThreadPoolState.shutdown)
+            return drainWorkQueue();
+        else
+            return Collections.EMPTY_LIST;
     }
 
     public List<Runnable> shutdownNow() {

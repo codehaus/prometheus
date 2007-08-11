@@ -6,7 +6,9 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
 
 import java.util.concurrent.TimeoutException;
 
@@ -57,7 +59,7 @@ public class RelaxedLendableReference_TakebackAndResetTest extends RelaxedLendab
             @Override
             protected void runInternal() throws InterruptedException, TimeoutException {
                 Integer ref = lendableRef.take();
-                sleepMs(DELAY_SMALL_MS);
+                sleepMs(Delays.SMALL_MS);
                 lendableRef.takebackAndReset(ref);
             }
         };

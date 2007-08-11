@@ -2,7 +2,7 @@ package org.codehaus.prometheus.blockingexecutor.benchmark;
 
 import org.codehaus.prometheus.BenchmarkExecutor;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.StressRunnable;
+import static org.codehaus.prometheus.testsupport.TestSupport.newStressRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ public class BlockingExecutorBenchmarkTest extends ConcurrentTestCase {
 
     public void test() throws Exception {
         int poolsize = 50;
-        int tasklistsize = 1000000;
+        int tasklistsize = 100000;
         int repeatCount = 10;
 
         BenchmarkExecutor executor = new BenchmarkExecutor(repeatCount);
@@ -42,7 +42,7 @@ public class BlockingExecutorBenchmarkTest extends ConcurrentTestCase {
     public List<Runnable> generateTaskList(int count) {
         List<Runnable> list = new ArrayList<Runnable>(count);
         for (int k = 0; k < count; k++) {
-            Runnable task = new StressRunnable();
+            Runnable task = newStressRunnable();
             list.add(task);
         }
 

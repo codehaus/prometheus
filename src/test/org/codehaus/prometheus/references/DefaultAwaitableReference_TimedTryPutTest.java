@@ -5,6 +5,9 @@
  */
 package org.codehaus.prometheus.references;
 
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -50,7 +53,7 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
 
     public void testNotReturnedValueDoesntBlockTryPut() {
         testNotReturnedValueDoesntBlockTryPut(0);
-        testNotReturnedValueDoesntBlockTryPut(DELAY_SMALL_MS);
+        testNotReturnedValueDoesntBlockTryPut(Delays.SMALL_MS);
     }
 
     /**
@@ -80,6 +83,6 @@ public class DefaultAwaitableReference_TimedTryPutTest extends DefaultAwaitableR
         awaitableRef = new DefaultAwaitableReference<Integer>(originalRef);
 
         Integer newRef = originalRef == null ? 1 : originalRef + 1;
-        spawned_tryPut(DELAY_SMALL_MS, newRef, originalRef);
+        spawned_tryPut(Delays.SMALL_MS, newRef, originalRef);
     }
 }

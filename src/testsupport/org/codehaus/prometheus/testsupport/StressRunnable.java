@@ -5,15 +5,14 @@
  */
 package org.codehaus.prometheus.testsupport;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
-import static org.codehaus.prometheus.testsupport.TestUtil.someCalculation;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.randomInt;
 
 /**
  * A Runnable that stresses the CPU by doing some calculations.
  *
  * @author Peter Veentjer.
  */
-public class StressRunnable implements Runnable{
+public class StressRunnable extends TestRunnable{
     private final int iterations;
 
     public StressRunnable(){
@@ -24,7 +23,8 @@ public class StressRunnable implements Runnable{
         this.iterations = iterations;
     }
 
-    public void run() {
-        someCalculation(iterations);
+    @Override
+    public void runInternal() {
+        ConcurrentTestUtil.someCalculation(iterations);
     }
 }

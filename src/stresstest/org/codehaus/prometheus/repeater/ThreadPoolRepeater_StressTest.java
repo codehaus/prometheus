@@ -6,8 +6,8 @@
 package org.codehaus.prometheus.repeater;
 
 import junit.framework.TestSuite;
-import org.codehaus.prometheus.testsupport.SleepingRunnable;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
 
 import java.util.Random;
 
@@ -35,7 +35,7 @@ public class ThreadPoolRepeater_StressTest {
         private Random random = new Random();
 
         public void test() {
-            newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(100)));
+            newRunningStrictRepeater(new RepeatableRunnable(newSleepingRunnable(100)));
 
             for (int k = 0; k < 20; k++) {
                 assertActualPoolsizeChanges(randomPoolsize());

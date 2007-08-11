@@ -7,11 +7,24 @@ package org.codehaus.prometheus.testsupport;
 
 import java.util.concurrent.Callable;
 
+/**
+ *
+ * @author Peter Veentjer.
+ */
 public class TestCallable<E> extends RunSupport implements Callable<E> {
+
     private final E result;
+    private final Exception throwingException;
 
     public TestCallable(E result) {
         this.result = result;
+        this.throwingException = null;
+    }
+
+    public TestCallable(Exception throwingException){
+        if(throwingException == null)throw new NullPointerException();
+        this.throwingException = throwingException;
+        this.result = null;
     }
 
     public E getResult() {
@@ -19,23 +32,9 @@ public class TestCallable<E> extends RunSupport implements Callable<E> {
     }
 
     public E call() throws Exception {
+        if(throwingException != null)
+            throw throwingException;
+
         return result;
-    }
-
-    public void runInternal() {
-
-    }
-
-    public final void run() {
-        try {
-            beginExecutionCount.incrementAndGet();
-            try {
-                runInternal();
-            } catch (RuntimeException ex) {
-                this.foundException = ex;
-            }
-        } finally {
-            executedCount.incrementAndGet();
-        }
     }
 }

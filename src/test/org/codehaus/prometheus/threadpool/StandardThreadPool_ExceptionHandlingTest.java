@@ -7,9 +7,10 @@ package org.codehaus.prometheus.threadpool;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.exceptionhandler.NullExceptionHandler;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
-import org.codehaus.prometheus.testsupport.ThrowingRunnable;
+import org.codehaus.prometheus.testsupport.TestRunnable;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
 
 import java.util.concurrent.Executors;
 
@@ -40,7 +41,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         int errorcount = 30;
         createBunchOfProblemTasks(errorcount);
 
-        sleepMs(DELAY_LONG_MS);
+        sleepMs(Delays.LONG_MS);
         threadPoolThreadFactory.assertCreatedAndAliveCount(poolsize);
         threadPoolExceptionHandler.assertCount(errorcount);
         assertActualPoolsize(poolsize);
@@ -54,7 +55,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
 
     private void createBunchOfProblemTasks(int errorcount) {
         for (int k = 0; k < errorcount; k++)
-            placeTask(new ThrowingRunnable());
+            placeTask(new TestRunnable(new RuntimeException()));
     }
 
     public void testHandlerIsNotCalledForGetWorkAndInterruptedException() {
@@ -65,7 +66,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
 
         //make sure that no exception has been thrown.
         giveOthersAChance();
-        threadPoolThreadFactory.assertCreatedAndTerminatedCount(poolsize);
+        threadPoolThreadFactory.assertCreatedAndNotAliveCount(poolsize);
         threadPoolExceptionHandler.assertCount(0);
     }
 
@@ -88,12 +89,12 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
     }
 
     public void testSet_whileShuttingDown() {
-        newShuttingdownThreadpool(3, DELAY_EON_MS);
+        newShuttingdownThreadpool(3, Delays.EON_MS);
         assertSetHandlerWorks();
     }
 
     public void testSetWhileForcedShuttingdown() {
-        newForcedShuttingdownThreadpool(3, DELAY_LONG_MS);
+        newForcedShuttingdownThreadpool(3, Delays.LONG_MS);
         assertSetHandlerWorks();
     }
 

@@ -6,10 +6,11 @@
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.testsupport.TestSupport.newUninterruptableSleepingRunnable;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 import org.codehaus.prometheus.testsupport.TracingThreadFactory;
-import org.codehaus.prometheus.testsupport.UninterruptableSleepingRunnable;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -100,8 +101,8 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertIsRunning();
     }
 
-    public void newRunningRepeater(boolean strict, Repeatable task) {
-        newUnstartedRepeater(strict);
+    public void newRunningRepeater(boolean strict, Repeatable task, int poolsize) {
+        newUnstartedRepeater(strict, poolsize);
         try {
             repeater.repeat(task);
             //give the worker in the threadpool time to spawned_start the task
@@ -118,8 +119,13 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
     }
 
     public void newRunningStrictRepeater(Repeatable task) {
-        newRunningRepeater(true, task);
+        newRunningRepeater(true, task, 1);
     }
+
+    public void newRunningStrictRepeater(Repeatable task, int poolsize) {
+        newRunningRepeater(true, task, poolsize);
+    }
+
 
     public void newUnstartedStrictRepeater() {
         repeaterThreadFactory = new TracingThreadFactory();
@@ -142,15 +148,22 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertIsUnstarted();
     }
 
-    public void newShuttingdownRepeater(long timeMs) {
-        newRunningStrictRepeater(new RepeatableRunnable(new UninterruptableSleepingRunnable(timeMs)));
+    public void newForcedShuttingdownRepeater(long timeMs, int poolsize) {
+        newRunningStrictRepeater(new RepeatableRunnable(newUninterruptableSleepingRunnable(timeMs)), poolsize);
         repeater.shutdownNow();
         assertIsShuttingdown();
     }
 
+
+    public void newShuttingdownRepeater(long timeMs) {
+        newRunningStrictRepeater(new RepeatableRunnable(newUninterruptableSleepingRunnable(timeMs)));
+        repeater.shutdown();
+        assertIsShuttingdown();
+    }
+
     public void newShuttingdownRepeater(boolean strict, long timeMs) {
-        newRunningRepeater(strict, new RepeatableRunnable(new UninterruptableSleepingRunnable(timeMs)));
-        repeater.shutdownNow();
+        newRunningRepeater(strict, new RepeatableRunnable(newUninterruptableSleepingRunnable(timeMs)),1);
+        repeater.shutdown();
         assertIsShuttingdown();
     }
 
@@ -171,7 +184,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
         assertActualPoolSize(0);
         //todo: desired poolsize
         if (repeaterThreadFactory != null)
-            repeaterThreadFactory.assertAllThreadsAreTerminated();
+            repeaterThreadFactory.assertAllAreNotAlive();
     }
 
     public void assertIsRunning() {
@@ -203,6 +216,12 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
 
     public RepeatThread scheduleRepeat(Repeatable task) {
         RepeatThread t = new RepeatThread(task);
+        t.start();
+        return t;
+    }
+
+    public AwaitShutdownThread scheduleAwaitSchutdown() {
+        AwaitShutdownThread t = new AwaitShutdownThread();
         t.start();
         return t;
     }

@@ -5,9 +5,11 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.CountingRunnable;
-import org.codehaus.prometheus.testsupport.SleepingRunnable;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import org.codehaus.prometheus.testsupport.TestRunnable;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 import java.util.concurrent.RejectedExecutionException;
 
@@ -30,7 +32,7 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
 
     public void testUnstartedEmptyRepeater_repeatSomeTask() throws InterruptedException {
         newUnstartedStrictRepeater();
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
 
         repeater.repeat(repeatable);
@@ -52,7 +54,7 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
 
     public void testStartedEmptyRepeater_repeatSomeTask() throws InterruptedException {
         newRunningStrictRepeater();
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
 
         repeater.repeat(repeatable);
@@ -66,19 +68,21 @@ public class ThreadPoolRepeater_RepeatTest extends ThreadPoolRepeater_AbstractTe
     //==================== shutting down repeater ===============
 
     public void testWhileShuttingdown() throws InterruptedException {
-        newShuttingdownRepeater(2 * DELAY_MEDIUM_MS);
+        newShuttingdownRepeater(2 * Delays.MEDIUM_MS);
         assertRepeatIsRejected(new DummyRepeatable());
         assertRepeatIsRejected(null);
     }
 
-    public void testWhileForcedShuttingdown(){
-        //todo
+    public void testWhileForcedShuttingdown() throws InterruptedException {
+        newForcedShuttingdownRepeater(Delays.LONG_MS,10);
+
+        assertRepeatIsRejected(new DummyRepeatable());
     }
 
     //================== interrupted while waiting to take place ===========
 
     public void testInterruptedWhileWaitingToPlaceTask() {
-        Runnable originalTask = new SleepingRunnable(DELAY_MEDIUM_MS);
+        Runnable originalTask = newSleepingRunnable(Delays.MEDIUM_MS);
         Repeatable originalRepeatable = new RepeatableRunnable(originalTask);
 
         newRunningStrictRepeater(originalRepeatable);

@@ -5,7 +5,8 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import org.codehaus.prometheus.testsupport.Delays;
 
 /**
  * Unittests the {@link StandardThreadPool#shutdown()} method.
@@ -20,7 +21,7 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
         spawned_shutdown();
 
         assertIsShutdown();
-        threadPoolThreadFactory.assertNoThreadsCreated();
+        threadPoolThreadFactory.assertNoneCreated();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -30,7 +31,7 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
         spawned_shutdown();
         giveOthersAChance();
         assertIsShutdown();
-        threadPoolThreadFactory.assertNoThreadsCreated();
+        threadPoolThreadFactory.assertNoneCreated();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -44,15 +45,15 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
 
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAreTerminated();
+        threadPoolThreadFactory.assertAllAreNotAlive();
         threadPoolExceptionHandler.assertNoErrors();
-    }
+    }        
 
     public void testNonIdleWorkerAreNotInterrupted() {
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
-        ensureNoIdleWorkers(DELAY_EON_MS);
+        ensureNoIdleWorkers(Delays.EON_MS);
         //give workers time to spawned_start executing the task.
         giveOthersAChance();
         //make sure that all workers are executing a job.
@@ -64,7 +65,7 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
         assertIsShuttingdown();
         assertActualPoolsize(poolsize);
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAreAlive();
+        threadPoolThreadFactory.assertAllAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -72,7 +73,7 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
         int poolsize = 10;
         newStartedThreadpool(poolsize);
 
-        ensureNoIdleWorkers(DELAY_EON_MS);
+        ensureNoIdleWorkers(Delays.EON_MS);
 
         spawned_shutdown();
 
@@ -80,13 +81,13 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
 
         assertIsShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAreAlive();
+        threadPoolThreadFactory.assertAllAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileForcedShuttingdown(){
         int poolsize = 3;
-        newForcedShuttingdownThreadpool(poolsize,DELAY_LONG_MS);
+        newForcedShuttingdownThreadpool(poolsize, Delays.LONG_MS);
 
         spawned_shutdown();
         
@@ -94,7 +95,7 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
 
         assertIsForcedShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAreAlive();
+        threadPoolThreadFactory.assertAllAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -107,7 +108,7 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
 
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(oldCreatedCount);
-        threadPoolThreadFactory.assertAllThreadsAreTerminated();
+        threadPoolThreadFactory.assertAllAreNotAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 }

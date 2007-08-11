@@ -5,6 +5,9 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
+
 /**
  * Unittests the {@link ThreadPoolBlockingExecutor#start()} method.
  *
@@ -28,7 +31,7 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
         assertIsRunning();
         assertActualPoolSize(poolsize);
         threadFactory.assertCreatedCount(poolsize);
-        threadFactory.assertAllThreadsAreAlive();
+        threadFactory.assertAllAreAlive();
     }
 
     public void testWhileRunning() {
@@ -40,16 +43,16 @@ public class ThreadPoolBlockingExecutor_StartTest extends ThreadPoolBlockingExec
         assertIsRunning();
         assertActualPoolSize(poolsize);
         threadFactory.assertCreatedCount(poolsize);
-        threadFactory.assertAllThreadsAreAlive();
+        threadFactory.assertAllAreAlive();
     }
 
     public void testWhileShuttingdown() {
-        newShuttingdownBlockingExecutor(DELAY_MEDIUM_MS);
+        newShuttingdownBlockingExecutor(Delays.MEDIUM_MS);
         assertStartIsIllegal();
     }
 
     public void testWhileForcedShuttingdown(){
-        newForcedShuttingdownBlockingExecutor(DELAY_LONG_MS,3);
+        newForcedShuttingdownBlockingExecutor(Delays.LONG_MS,3);
         assertStartIsIllegal();
     }
 

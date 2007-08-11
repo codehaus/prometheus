@@ -6,8 +6,9 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -25,8 +26,9 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         putter.assertIsStarted();
     }
 
-    public void assertPutSucceeds(E ref) {
+    public void spawned_put(E ref) {
         E oldRef = lendableRef.peek();
+
         PutThread<E> t = schedulePut(ref);
         joinAll(t);
         t.assertSuccess(oldRef);
@@ -40,38 +42,36 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
         assertSame(expectedRef, lendableRef.peek());
     }
 
-    public PutThread _tested_pendingPut(E newRef) {
-        PutThread putThread = schedulePut(newRef);
+    public PutThread spawned_pendingPut(E newRef) {
+        PutThread t = schedulePut(newRef);
         giveOthersAChance();
-        putThread.assertIsStarted();
-        return putThread;
+        t.assertIsStarted();
+        return t;
     }
 
-    public void _tested_takeback(E ref) {
+    public void spawned_takeback(E ref) {
         TakeBackThread<E> t = scheduleTakeback(ref);
         joinAll(t);
         t.assertSuccess();
     }
 
-    public void _tested_put(E newRef, E expectedOldRef) {
-        PutThread<E> putThread = schedulePut(newRef);
-        joinAll(putThread);
-        putThread.assertSuccess(expectedOldRef);
+    public void spawned_put(E newRef, E expectedOldRef) {
+        PutThread<E> t = schedulePut(newRef);
+        joinAll(t);
+        t.assertSuccess(expectedOldRef);
         assertHasRef(newRef);
     }
 
-    public void _tested_takebackAndReset(E ref) {
+    public void spawned_takebackAndReset(E ref) {
         TakebackAndResetThread<E> t = scheduleTakebackAndReset(ref);
         joinAll(t);
         t.assertIsTerminatedNormally();
     }
 
-    public E tested_take(E expectedTakenRef) {
-        TakeThread<E> takeThread = scheduleTake();
-        joinAll(takeThread);
-        takeThread.assertSuccess(expectedTakenRef);
-        assertHasRef(expectedTakenRef);
-        return takeThread.getTakenRef();
+    public void spawned_take(E expectedTakenRef) {
+        TakeThread<E> t = scheduleTake();
+        joinAll(t);
+        t.assertSuccess(expectedTakenRef);
     }
 
     public TakeThread<E> scheduleTake() {

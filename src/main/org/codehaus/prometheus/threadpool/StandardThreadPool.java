@@ -330,9 +330,7 @@ public class StandardThreadPool implements ThreadPool {
     }
 
     /**
-     * @inheritDoc
-     *
-     * Every time this method is called, all non idle threads are interrupted.
+     * @inheritDoc Every time this method is called, all non idle threads are interrupted.
      */
     public ThreadPoolState shutdownNow() {
         return shutdown(true);
@@ -373,6 +371,8 @@ public class StandardThreadPool implements ThreadPool {
                     }
                     return ThreadPoolState.shuttingdown;
                 case forcedshuttingdown:
+                    //this implementation allows for repeated interruptions of all 
+                    //(idle and non idle) workers.
                     if (forced)
                         interruptAllWorkers();
                 case shutdown:
@@ -400,7 +400,7 @@ public class StandardThreadPool implements ThreadPool {
 
         /**
          * todo: I'm not happy about the name..
-         *
+         * <p/>
          * Returns true if the threadPoolJob should be run again, false otherwise.
          * The Thread also is removed from the ThreadPool if it is unwanted.
          *

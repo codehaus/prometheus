@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
+import org.codehaus.prometheus.testsupport.Delays;
+
 /**
  * Unittests {@link ThreadPoolBlockingExecutor#setDesiredPoolSize(int)}
  *
@@ -57,12 +59,12 @@ public class ThreadPoolBlockingExecutor_SetDesiredPoolSizeTest extends ThreadPoo
     }
 
     public void testWhileShuttingdown() {
-        newShuttingdownBlockingExecutor(DELAY_EON_MS);
+        newShuttingdownBlockingExecutor(Delays.EON_MS);
         assertChangeInDesiredPoolsizeIsRejected();
     }
 
     public void testWhileForcedShuttingdown() {
-        newForcedShuttingdownBlockingExecutor(DELAY_LONG_MS,3);
+        newForcedShuttingdownBlockingExecutor(Delays.LONG_MS,3);
         assertChangeInDesiredPoolsizeIsRejected();
     }
 

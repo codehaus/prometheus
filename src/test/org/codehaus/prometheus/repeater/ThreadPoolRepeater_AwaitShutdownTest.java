@@ -5,8 +5,10 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.SleepingRunnable;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#awaitShutdown()} method.
@@ -56,7 +58,7 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
     }
 
     public void testStartedAndRunningJob(boolean strict) {
-        newRunningRepeater(strict, new RepeatableRunnable(new SleepingRunnable(DELAY_SMALL_MS)));
+        newRunningRepeater(strict, new RepeatableRunnable(newSleepingRunnable(Delays.SMALL_MS)),1);
         assertAwaitForTerminationSucceedsWhenShutdown();
     }
 
@@ -71,14 +73,16 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
     }
 
     public void testShuttingDown(boolean strict) throws InterruptedException {
-        newShuttingdownRepeater(strict, 2 * DELAY_SMALL_MS);
+        newShuttingdownRepeater(strict, 2 * Delays.SMALL_MS);
         assertAwaitForTerminationSucceedsWhenShutdown();
     }
 
     //==============forcedshuttingdown================================
 
     public void testForcedShuttingdown(){
-        //todo
+        newForcedShuttingdownRepeater(Delays.LONG_MS,1);
+
+        assertAwaitForTerminationSucceedsWhenShutdown();
     }
 
     //=========================================================
@@ -114,7 +118,7 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
     }
 
     public void testInterruptedWhileWaiting(boolean strict) {
-        newShuttingdownRepeater(strict, DELAY_MEDIUM_MS);
+        newShuttingdownRepeater(strict, Delays.MEDIUM_MS);
 
         AwaitShutdownThread awaitThread = scheduleAwaitSchutdown();
         //make sure it is waiting
@@ -129,12 +133,6 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
     }
 
     //=========================================================
-
-    public AwaitShutdownThread scheduleAwaitSchutdown() {
-        AwaitShutdownThread t = new AwaitShutdownThread();
-        t.start();
-        return t;
-    }
 
     //=========================================================
 

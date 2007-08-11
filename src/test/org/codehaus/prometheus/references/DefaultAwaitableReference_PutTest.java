@@ -5,7 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 /**
  * Unittests the {@link DefaultAwaitableReference#put(Object)} method.

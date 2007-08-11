@@ -5,6 +5,9 @@
  */
 package org.codehaus.prometheus.threadpool;
 
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
+
 /**
  * Unittests the {@link StandardThreadPool#setJob(ThreadPoolJob)} method.
  *
@@ -50,12 +53,12 @@ public class StandardThreadPool_SetJobTest extends StandardThreadPool_AbstractTe
     }
 
     public void testWhileShuttingdown() {
-        newShuttingdownThreadpool(10, DELAY_EON_MS);
+        newShuttingdownThreadpool(10, Delays.EON_MS);
         assertSetDefaultWorkerJobIsRejected();
     }
 
     public void testWhileForcedShuttingdown() {
-        newForcedShuttingdownThreadpool(3, DELAY_LONG_MS);
+        newForcedShuttingdownThreadpool(3, Delays.LONG_MS);
         assertSetDefaultWorkerJobIsRejected();
     }
 

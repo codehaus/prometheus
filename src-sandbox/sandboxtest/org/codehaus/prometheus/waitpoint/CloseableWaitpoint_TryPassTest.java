@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.waitpoint;
 
+import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
+
 /**
  * Unittests the {@link org.codehaus.prometheus.waitpoint.CloseableWaitpoint#tryPass()} method.
  *
@@ -24,7 +26,7 @@ public class CloseableWaitpoint_TryPassTest extends CloseableWaitpoint_AbstractT
         newOpenCloseableWaitpoint();
         TryPassThread t = scheduleTryPass(startInterrupted);
 
-        joinAll(t);
+        ConcurrentTestUtil.joinAll(t);
         t.assertSuccess();
         t.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }
@@ -42,7 +44,7 @@ public class CloseableWaitpoint_TryPassTest extends CloseableWaitpoint_AbstractT
         newClosedCloseableWaitpoint();
         TryPassThread t = scheduleTryPass(startInterrupted);
 
-        joinAll(t);
+        ConcurrentTestUtil.joinAll(t);
         t.assertFailure();
         t.assertIsTerminatedWithInterruptFlag(startInterrupted);
     }

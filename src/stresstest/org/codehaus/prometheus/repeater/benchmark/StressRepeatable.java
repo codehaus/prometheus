@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.repeater.benchmark;
 
 import org.codehaus.prometheus.repeater.Repeatable;
-import org.codehaus.prometheus.testsupport.TestUtil;
+import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
 
 public class StressRepeatable implements Repeatable {
     private final int[] complexity;
@@ -26,7 +26,7 @@ public class StressRepeatable implements Repeatable {
         if(nextIndex == -1)
             return false;
 
-        TestUtil.someCalculation(complexity[nextIndex]);
+        ConcurrentTestUtil.someCalculation(complexity[nextIndex]);
         return true;
     }
 }

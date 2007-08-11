@@ -6,7 +6,9 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -71,10 +73,10 @@ public class StrictLendableReference_TimedTryPutTest extends StrictLendableRefer
         lendableRef = new StrictLendableReference<Integer>(originalRef);
 
         //first execute a take
-        tested_take(originalRef);
+        spawned_take(originalRef);
 
         //now do a put, it should block because something is taken
-        TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, DELAY_LONG_MS);
+        TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, Delays.LONG_MS);
         giveOthersAChance();
         tryPutThread.assertIsStarted();
         assertHasRef(originalRef);
@@ -94,10 +96,10 @@ public class StrictLendableReference_TimedTryPutTest extends StrictLendableRefer
         lendableRef = new StrictLendableReference<Integer>(originalRef);
 
         //do a take
-        tested_take(originalRef);
+        spawned_take(originalRef);
 
         //a timed put is going to timeout because a value is taken 
-        TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, DELAY_TINY_MS);
+        TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, Delays.TINY_MS);
         joinAll(tryPutThread);
         tryPutThread.assertIsTimedOut();
         assertHasRef(originalRef);
@@ -109,11 +111,11 @@ public class StrictLendableReference_TimedTryPutTest extends StrictLendableRefer
         lendableRef = new StrictLendableReference<Integer>(originalRef);
 
         //do a take
-        tested_take(originalRef);
+        spawned_take(originalRef);
 
         //do a put and make sure that it is waiting because a value is taken
         Integer newRef = 20;
-        TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, DELAY_LONG_MS);
+        TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, Delays.LONG_MS);
         giveOthersAChance();
         tryPutThread.assertIsStarted();
         assertHasRef(originalRef);
@@ -134,7 +136,7 @@ public class StrictLendableReference_TimedTryPutTest extends StrictLendableRefer
         joinAll(takeThread);
 
         //the tryPut is waiting         
-        TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, DELAY_LONG_MS);
+        TimedTryPutThread tryPutThread = scheduleTimedTryPut(newRef, Delays.LONG_MS);
         giveOthersAChance();
         tryPutThread.assertIsStarted();
 

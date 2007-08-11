@@ -6,7 +6,9 @@
 package org.codehaus.prometheus.testsupport;
 
 import static junit.framework.Assert.*;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.assertAlive;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.assertNotAlive;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import static java.util.Collections.synchronizedList;
@@ -18,6 +20,13 @@ import java.util.concurrent.ThreadFactory;
  * A {@link ThreadFactory} that decorates a target ThreadFactory and registers all threads
  * that were created. It is useful when you want to keep track of the Threads that are
  * created by the target ThreadFactory.
+ * <p/>
+ * An important reminder: a thread that is not started, also is not alive. This threadfactory
+ * doesn't make a distinction between terminated and non started threads. 
+ *
+ * todo:
+ * because the tracing threadfactory only tracks threads, and not testthreads,
+ * a lot of useful info is hard to test. For example the exception status of the threads.
  *
  * @author Peter Veentjer.
  */
@@ -71,6 +80,35 @@ public class TracingThreadFactory implements ThreadFactory {
     }
 
     /**
+     * Returns the number of alive threads.
+     *
+     * @return number of alive threads.
+     */
+    public int getAliveCount() {
+        int count = 0;
+        for (Thread thread : threadList) {
+            if (thread.isAlive())
+                count++;
+        }
+        return count;
+    }
+
+    /**
+     * Returns the number of not alive Threads. A thread that is not started, also is not alive.
+     *
+     * @return number of terminated threads.
+     */
+    public int getNotAliveCount() {
+        return getThreadCount() - getAliveCount();
+    }
+
+    public Thread newThread(Runnable r) {
+        Thread t = targetFactory.newThread(r);
+        threadList.add(t);
+        return t;
+    }
+
+    /**
      * Asserts that the expected number of threads were created.
      *
      * @param expected the expected number of threads.
@@ -81,61 +119,73 @@ public class TracingThreadFactory implements ThreadFactory {
         assertEquals(expected, threadList.size());
     }
 
-    public void assertCreatedAndTerminatedCount(int expected){
-        assertCreatedCount(expected);
-        assertTerminatedCount(expected);
+    /**
+     * Asserts that no threads were created.
+     */
+    public void assertNoneCreated() {
+        assertCreatedCount(0);
     }
 
+    /**
+     * Asserts that the given number of threads are created, and all of them are
+     * not alive.
+     *
+     * @param expected the expected number of created and not alive threads.
+     */
+    public void assertCreatedAndNotAliveCount(int expected) {
+        assertCreatedCount(expected);
+        assertNotAliveCount(expected);
+    }
+
+    /**
+     * Asserts that the given number of threads are created, and all of them are
+     * alive.
+     *
+     * @param expected the expected number of created and alive threads.
+     */
     public void assertCreatedAndAliveCount(int expected) {
         assertCreatedCount(expected);
         assertAliveCount(expected);
     }
 
     /**
-     * Asserts that all threads created by the target ThreadFactory have terminated.
+     * Asserts that all threads created by the target ThreadFactory are not alive.
+     *
      */
-    public void assertAllThreadsAreTerminated() {
+    public void assertAllAreNotAlive() {
         giveOthersAChance();
-        //todo: also picks up unstarted ones
-        for (Thread thread : threadList) {
-            assertFalse(String.format("Thread '%s' is still alive", thread), thread.isAlive());
-        }
-    }
-
-    public Thread newThread(Runnable r) {
-        Thread t = targetFactory.newThread(r);
-        threadList.add(t);
-        return t;
-    }
-
-    public void assertNoThreadsCreated() {
-        assertCreatedCount(0);
-    }
-
-    public void assertAllThreadsAreAlive() {
         for (Thread thread : threadList)
-            assertTrue(thread.isAlive());
+            assertNotAlive(thread);
     }
 
-    public int getAliveCount() {
-        int count = 0;
-        for (Thread thread : threadList) {
-            if (thread.isAlive())
-                count++;
-        }
-        return count;
+
+    /**
+     * Asserts that all created threads are alive. If no threads are created,
+     * this call doesn't fail.
+     */
+    public void assertAllAreAlive() {
+        for (Thread thread : threadList)
+            assertAlive(thread);
     }
 
-    //todo: picks up also unstarted threads
-    public int getTerminatedCount() {
-        return getThreadCount() - getAliveCount();
-    }
 
+    /**
+     * Asserts that the given number of threads are alive. It doesn't say
+     * anything about the number of terminated threads.
+     *
+     * @param expected the expected number of alive threads.
+     */
     public void assertAliveCount(int expected) {
         assertEquals(expected, getAliveCount());
     }
 
-    public void assertTerminatedCount(int expected) {
-        assertEquals(expected, getTerminatedCount());
+    /**
+     * Asserts that the given number of threads are not alive. It doesn't say
+     * anything about the number of alive threads.
+     *
+     * @param expected the expected number of terminated threads.
+     */
+    public void assertNotAliveCount(int expected) {
+        assertEquals(expected, getNotAliveCount());
     }
 }

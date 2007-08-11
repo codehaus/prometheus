@@ -5,7 +5,9 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
 
 import java.util.concurrent.TimeoutException;
 
@@ -39,8 +41,8 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
     private void assertShutdownNotifiesWaiters() {
         int oldpoolsize = threadpool.getActualPoolSize();
 
-        TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_EON_MS);
-        TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_EON_MS);
+        TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(Delays.EON_MS);
+        TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(Delays.EON_MS);
 
         giveOthersAChance();
         awaitThread1.assertIsStarted();
@@ -58,12 +60,12 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
     }
 
     public void testWhileShuttingDown() {
-        newShuttingdownThreadpool(3, 2 * DELAY_MEDIUM_MS);
+        newShuttingdownThreadpool(3, 2 * Delays.MEDIUM_MS);
         assertShutdownNotifiesWaiters();
     }
 
     public void testWhileForcedShuttingdown() {
-        newForcedShuttingdownThreadpool(3, DELAY_LONG_MS);
+        newForcedShuttingdownThreadpool(3, Delays.LONG_MS);
         assertShutdownNotifiesWaiters();
     }
 
@@ -79,8 +81,8 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
     public void testTimedOut() {
         newStartedThreadpool(3);
 
-        TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_MEDIUM_MS);
-        TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_MEDIUM_MS);
+        TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(Delays.MEDIUM_MS);
+        TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(Delays.MEDIUM_MS);
 
         //check that the await wasn't successful immediately.
         giveOthersAChance();
@@ -97,8 +99,8 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
     public void testInterruptedWhileWaiting() {
         newStartedThreadpool(3);
 
-        TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(DELAY_EON_MS);
-        TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(DELAY_EON_MS);
+        TryAwaitShutdownThread awaitThread1 = scheduleTryAwaitShutdown(Delays.EON_MS);
+        TryAwaitShutdownThread awaitThread2 = scheduleTryAwaitShutdown(Delays.EON_MS);
 
         //check that the await wasn't successful immediately.
         giveOthersAChance();

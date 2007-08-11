@@ -2,7 +2,7 @@ package org.codehaus.prometheus.blockingexecutor;
 
 import static junit.framework.Assert.assertEquals;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepRandomMs;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepRandomMs;
 
 import java.util.concurrent.atomic.AtomicLong;
 

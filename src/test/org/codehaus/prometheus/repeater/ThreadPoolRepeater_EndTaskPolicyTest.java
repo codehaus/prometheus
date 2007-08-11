@@ -5,7 +5,8 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
+import org.codehaus.prometheus.testsupport.Delays;
 
 /**
  * Unittests {@link EndTaskPolicy}.
@@ -21,7 +22,7 @@ public class ThreadPoolRepeater_EndTaskPolicyTest extends ThreadPoolRepeater_Abs
         Repeatable repeatable = new DummyRepeatable(true);
         repeater.repeat(repeatable);
 
-        sleepMs(DELAY_MEDIUM_MS);
+        sleepMs(Delays.MEDIUM_MS);
 
         assertHasRepeatable(repeatable);
         assertIsRunning();
@@ -36,7 +37,7 @@ public class ThreadPoolRepeater_EndTaskPolicyTest extends ThreadPoolRepeater_Abs
         Repeatable repeatable = new DummyRepeatable(false);
         repeater.repeat(repeatable);
 
-        sleepMs(DELAY_MEDIUM_MS);
+        sleepMs(Delays.MEDIUM_MS);
 
         //todo: check if the task has not been executed more times than poolsize
         assertHasRepeatable(null);

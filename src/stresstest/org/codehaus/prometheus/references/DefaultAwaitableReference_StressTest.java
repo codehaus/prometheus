@@ -7,7 +7,7 @@ package org.codehaus.prometheus.references;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepRandomMs;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepRandomMs;
 import org.codehaus.prometheus.testsupport.TimedRepeatingThreadFactory;
 import org.codehaus.prometheus.uninterruptiblesection.UninterruptibleSection;
 

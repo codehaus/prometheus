@@ -5,9 +5,7 @@
  */
 package org.codehaus.prometheus.util;
 
-import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.TestRunnable;
-import org.codehaus.prometheus.testsupport.ThrowingRunnable;
 
 import javax.swing.undo.CannotRedoException;
 
@@ -21,9 +19,9 @@ public class RunnableChain_RunTest extends RunnableChain_AbstractTest {
     }
 
     public void testBreakableChain_noFailures() {
-        CountingRunnable r1 = new CountingRunnable();
-        CountingRunnable r2 = new CountingRunnable();
-        CountingRunnable r3 = new CountingRunnable();
+        TestRunnable r1 = new TestRunnable();
+        TestRunnable r2 = new TestRunnable();
+        TestRunnable r3 = new TestRunnable();
 
         newBreakableChain(r1, r2, r3);
 
@@ -37,9 +35,9 @@ public class RunnableChain_RunTest extends RunnableChain_AbstractTest {
 
     public void testBreakableChain_oneFailure() {
         RuntimeException ex = new CannotRedoException();
-        CountingRunnable r1 = new ThrowingRunnable(ex);
-        CountingRunnable r2 = new CountingRunnable();
-        CountingRunnable r3 = new CountingRunnable();
+        TestRunnable r1 = new TestRunnable(ex);
+        TestRunnable r2 = new TestRunnable();
+        TestRunnable r3 = new TestRunnable();
 
         newBreakableChain(r1, r2, r3);
 
@@ -58,8 +56,8 @@ public class RunnableChain_RunTest extends RunnableChain_AbstractTest {
 
     public void testBreakableChain_lastOneFails() {
         RuntimeException ex = new CannotRedoException();
-        CountingRunnable r1 = new CountingRunnable();
-        CountingRunnable r2 = new ThrowingRunnable(ex);
+        TestRunnable r1 = new TestRunnable();
+        TestRunnable r2 = new TestRunnable(ex);
 
         newBreakableChain(r1, r2);
 
@@ -94,10 +92,9 @@ public class RunnableChain_RunTest extends RunnableChain_AbstractTest {
     }
 
     public void testUnbreakableChain_multipleFailures() {
-        RuntimeException ex = new CannotRedoException();
-        CountingRunnable r1 = new ThrowingRunnable(ex);
-        CountingRunnable r2 = new ThrowingRunnable(ex);
-        CountingRunnable r3 = new CountingRunnable();
+        TestRunnable r1 = new TestRunnable(new CannotRedoException());
+        TestRunnable r2 = new TestRunnable(new CannotRedoException());
+        TestRunnable r3 = new TestRunnable();
 
         newUnbreakableChain(r1, r2, r3);
 
@@ -111,9 +108,9 @@ public class RunnableChain_RunTest extends RunnableChain_AbstractTest {
 
     public void testUnbreakableChain_lastOneFails() {
         RuntimeException ex = new CannotRedoException();
-        CountingRunnable r1 = new CountingRunnable();
-        CountingRunnable r2 = new ThrowingRunnable(ex);
-        
+        TestRunnable r1 = new TestRunnable();
+        TestRunnable r2 = new TestRunnable(ex);
+
         newUnbreakableChain(r1, r2);
 
         runnableChain.run();

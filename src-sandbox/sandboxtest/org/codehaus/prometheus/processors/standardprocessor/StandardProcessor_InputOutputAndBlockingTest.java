@@ -1,7 +1,8 @@
 package org.codehaus.prometheus.processors.standardprocessor;
 
 import org.codehaus.prometheus.processors.TestPipedProcess;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 /**
  * Unittests input/output related functionality of the {@link StandardProcessor}.

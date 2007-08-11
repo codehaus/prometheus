@@ -5,8 +5,9 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.CountingRunnable;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import org.codehaus.prometheus.testsupport.TestRunnable;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#start()} method.
@@ -25,7 +26,7 @@ public class ThreadPoolRepeater_StartTest extends ThreadPoolRepeater_AbstractTes
     }
 
     public void testWhileUnstarted_hasTask() {
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         newUnstartedRepeater(task);
 
         repeater.start();
@@ -51,7 +52,7 @@ public class ThreadPoolRepeater_StartTest extends ThreadPoolRepeater_AbstractTes
     }
 
     public void testWhileUnstarted_noThreads() {
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
 
         repeater = new ThreadPoolRepeater(repeatable, 0);
@@ -64,10 +65,19 @@ public class ThreadPoolRepeater_StartTest extends ThreadPoolRepeater_AbstractTes
     }
 
     public void testWhileShuttingdown() throws InterruptedException {
-        newShuttingdownRepeater(2 * DELAY_SMALL_MS);
+        newShuttingdownRepeater(2 * Delays.SMALL_MS);
 
         assertStartCausesIllegalStateException();
         assertActualPoolSize(1);
+    }
+
+    public void testWhileForcedShuttingdown()throws InterruptedException{
+        int poolsize = 10;
+        newForcedShuttingdownRepeater(Delays.LONG_MS,poolsize);
+
+        assertStartCausesIllegalStateException();
+        assertActualPoolSize(poolsize);
+        repeaterThreadFactory.assertAliveCount(poolsize);
     }
 
     public void testWhileShutdown() throws InterruptedException {

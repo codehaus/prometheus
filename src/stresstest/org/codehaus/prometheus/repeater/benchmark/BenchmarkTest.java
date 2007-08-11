@@ -3,7 +3,7 @@ package org.codehaus.prometheus.repeater.benchmark;
 import junit.framework.TestCase;
 import org.codehaus.prometheus.BenchmarkExecutor;
 import org.codehaus.prometheus.BenchmarkTask;
-import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.randomInt;
 
 import java.util.concurrent.TimeUnit;
 

@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.util;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.TestUtil.scheduleSignallAll;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.*;
+import org.codehaus.prometheus.testsupport.Delays;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -47,7 +47,7 @@ public class ConditionUtil_TimedAwaitAndThrowTest extends ConditionUtil_Abstract
     public void testInterruptedWhileWaiting() throws TimeoutException, InterruptedException {
         Lock lock = new ReentrantLock();
         Condition cond = lock.newCondition();
-        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock, cond, DELAY_LONG_MS);
+        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock, cond, Delays.LONG_MS);
 
         giveOthersAChance();
         awaitThread.assertIsStarted();
@@ -60,7 +60,7 @@ public class ConditionUtil_TimedAwaitAndThrowTest extends ConditionUtil_Abstract
     public void testSomeWaiting() throws InterruptedException, TimeoutException {
         Lock lock = new ReentrantLock();
         Condition cond = lock.newCondition();
-        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock, cond, DELAY_LONG_MS);
+        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock, cond, Delays.LONG_MS);
 
         giveOthersAChance();
         awaitThread.assertIsStarted();
@@ -68,14 +68,14 @@ public class ConditionUtil_TimedAwaitAndThrowTest extends ConditionUtil_Abstract
         Thread signalAllThread = scheduleSignallAll(lock, cond);
         joinAll(signalAllThread, awaitThread);
 
-        awaitThread.assertIsSuccess(DELAY_LONG_MS - DELAY_TINY_MS);
+        awaitThread.assertIsSuccess(Delays.LONG_MS - Delays.TINY_MS);
     }
 
     public void testTooMuchWaiting() throws InterruptedException {
         Lock lock = new ReentrantLock();
         Condition cond = lock.newCondition();
 
-        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock, cond, DELAY_MEDIUM_MS);
+        AwaitAndThrowThread awaitThread = scheduleAwaitAndThrow(lock, cond, Delays.MEDIUM_MS);
         joinAll(awaitThread);
 
         awaitThread.assertIsTimedOut();
@@ -86,7 +86,7 @@ public class ConditionUtil_TimedAwaitAndThrowTest extends ConditionUtil_Abstract
         Condition cond = lock.newCondition();
 
         try {
-            ConditionUtil.awaitAndThrow(cond, DELAY_SMALL_MS, TimeUnit.MILLISECONDS);
+            ConditionUtil.awaitAndThrow(cond, Delays.SMALL_MS, TimeUnit.MILLISECONDS);
             fail("IllegalMonitorStateException expected");
         } catch (IllegalMonitorStateException e) {
             assertTrue(true);

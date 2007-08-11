@@ -5,7 +5,8 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import org.codehaus.prometheus.testsupport.Delays;
 
 /**
  * Unittests {@link EndRepeaterPolicy}.
@@ -21,7 +22,7 @@ public class ThreadPoolRepeater_EndRepeaterPolicyTest extends ThreadPoolRepeater
         DummyRepeatable task = new DummyRepeatable(true);
         spawned_repeat(task);
 
-        giveOthersAChance(DELAY_MEDIUM_MS);
+        giveOthersAChance(Delays.MEDIUM_MS);
 
         assertActualPoolSize(poolsize);
         assertDesiredPoolSize(poolsize);
@@ -36,7 +37,7 @@ public class ThreadPoolRepeater_EndRepeaterPolicyTest extends ThreadPoolRepeater
         DummyRepeatable task = new DummyRepeatable(false);
         spawned_repeat(task);
 
-        giveOthersAChance(DELAY_MEDIUM_MS);
+        giveOthersAChance(Delays.MEDIUM_MS);
 
         assertActualPoolSize(0);
         assertDesiredPoolSize(poolsize);

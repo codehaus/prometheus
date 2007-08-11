@@ -7,9 +7,9 @@ package org.codehaus.prometheus.blockingexecutor;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
-import org.codehaus.prometheus.testsupport.CountingRunnable;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
-import org.codehaus.prometheus.testsupport.ThrowingRunnable;
+import org.codehaus.prometheus.testsupport.TestRunnable;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
 
 /**
  * Unittest the Exception handling functionality of the ThreadPoolBlockingExecutor.
@@ -44,9 +44,9 @@ public class ThreadPoolBlockingExecutor_ExceptionHandlingTest extends ThreadPool
 
     private void assertNormalTaskDoesntActivateExceptionHandler() {
         int oldExceptionCount = exceptionHandler.getCount();
-        CountingRunnable task = new CountingRunnable();
-        spawned_assertExecute(task);
-        giveOthersAChance(DELAY_MEDIUM_MS);
+        TestRunnable task = new TestRunnable();
+        spawned_execute(task);
+        giveOthersAChance(Delays.MEDIUM_MS);
         task.assertExecutedOnce();
         assertEquals(oldExceptionCount, exceptionHandler.getCount());
     }
@@ -54,9 +54,9 @@ public class ThreadPoolBlockingExecutor_ExceptionHandlingTest extends ThreadPool
     private void assertThrowingTaskActivatesExceptionHandler() {
         StringIndexOutOfBoundsException ex = new StringIndexOutOfBoundsException();
         int oldExceptionCount = exceptionHandler.getCount(ex.getClass());
-        ThrowingRunnable task = new ThrowingRunnable(ex);
-        spawned_assertExecute(task);
-        giveOthersAChance(DELAY_MEDIUM_MS);
+        TestRunnable task = new TestRunnable(ex);
+        spawned_execute(task);
+        giveOthersAChance(Delays.MEDIUM_MS);
         task.assertExecutedOnce();
         exceptionHandler.assertErrorCountAndNoOthers(ex.getClass(), oldExceptionCount + 1);
     }

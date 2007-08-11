@@ -7,7 +7,7 @@ package org.codehaus.prometheus.waitpoint;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TestUtil;
+import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -95,7 +95,7 @@ public abstract class CloseableWaitpoint_AbstractTest extends ConcurrentTestCase
     }
 
     public Thread scheduleSpuriousWakeup() {
-        return TestUtil.scheduleSpuriousWakeup(waitpoint.getMainLock(), waitpoint.getOpenCondition(), 0);
+        return ConcurrentTestUtil.scheduleSpuriousWakeup(waitpoint.getMainLock(), waitpoint.getOpenCondition(), 0);
     }
 
     public class TimedTryPassThread extends TestThread {

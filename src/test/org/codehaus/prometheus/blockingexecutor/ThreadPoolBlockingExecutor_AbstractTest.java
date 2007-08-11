@@ -6,7 +6,9 @@
 package org.codehaus.prometheus.blockingexecutor;
 
 import org.codehaus.prometheus.testsupport.*;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.testsupport.TestSupport.*;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.Arrays;
@@ -23,12 +25,6 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     public volatile ThreadPoolBlockingExecutor executor;
     public volatile TracingThreadFactory threadFactory;
 
-    public void spawned_assertExecute(Runnable task) {
-        ExecuteThread thread = scheduleExecute(task, START_UNINTERRUPTED);
-        joinAll(thread);
-        thread.assertIsTerminatedNormally();
-    }
-
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -40,7 +36,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public SleepingRunnable spawned_placeSleepingTask(long durationMs) {
-        SleepingRunnable task = new SleepingRunnable(durationMs);
+        SleepingRunnable task = newSleepingRunnable(durationMs);
         ExecuteThread executeThread = scheduleExecute(task, START_UNINTERRUPTED);
         joinAll(executeThread);
         executeThread.assertIsTerminatedNormally();
@@ -60,10 +56,10 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         t.assertIsTerminatedNormally();
     }
 
-    public void spawned_assertShutdown() {
+    public void spawned_shutdown(Runnable... outstandingTasks) {
         ShutdownThread t = scheduleShutdown();
         joinAll(t);
-        t.assertIsTerminatedNormally();
+        t.assertSuccess(outstandingTasks);
         assertIsShuttingDownOrShutdown();
     }
 
@@ -74,15 +70,17 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public void executeUninterruptibleSleepingTasks(long sleepMs, int count) {
-        List<TestRunnable> tasks = TestUtil.newUninterruptibleSleepingRunnables(sleepMs, count);
+        List<TestRunnable> tasks = newUninterruptibleSleepingRunnables(sleepMs, count);
         for (TestRunnable task : tasks)
             spawned_execute(task);
     }
 
-    public void spawned_execute(Runnable task) {
-        ExecuteThread t = scheduleExecute(task);
-        joinAll(t);
-        t.assertIsTerminatedNormally();
+    public void spawned_execute(Runnable... tasks) {
+        for (Runnable task : tasks) {
+            ExecuteThread t = scheduleExecute(task);
+            joinAll(t);
+            t.assertIsTerminatedNormally();
+        }
     }
 
     public void spawned_assertSetDesiredPoolSize(int poolsize) {
@@ -145,7 +143,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public void newShuttingdownBlockingExecutor(long timeMs) {
-        newStartedBlockingExecutor(1, 1, new SleepingRunnable(timeMs));
+        newStartedBlockingExecutor(1, 1, newSleepingRunnable(timeMs));
         executor.shutdown();
     }
 
@@ -174,7 +172,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
         //it could be that no reference to the threadfactory was assigned
         if (threadFactory != null)
-            threadFactory.assertAllThreadsAreTerminated();
+            threadFactory.assertAllAreNotAlive();
 
         assertActualPoolSize(0);
         assertWorkQueueIsEmpty();
@@ -215,7 +213,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public SleepingRunnable executeEonTask() {
-        SleepingRunnable sleepingRunnable = new SleepingRunnable(DELAY_EON_MS);
+        SleepingRunnable sleepingRunnable = newEonSleepingRunnable();
         try {
             executor.execute(sleepingRunnable);
         } catch (InterruptedException ex) {
@@ -328,25 +326,32 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
     }
 
     public class ShutdownThread extends TestThread {
+        private volatile List<Runnable> foundTasks;
 
         @Override
         protected void runInternal() {
-            executor.shutdown();
-        }
-    }
-
-    public class ShutdownNowThread extends TestThread {
-        private volatile List<Runnable> foundTask;
-
-        @Override
-        protected void runInternal() throws Exception {
-            foundTask = executor.shutdownNow();
+            foundTasks = executor.shutdown();
         }
 
         public void assertSuccess(Runnable... expectedTasks) {
             assertIsTerminatedNormally();
             List<Runnable> list = Arrays.asList(expectedTasks);
-            assertEquals(list, foundTask);
+            assertEquals(list, foundTasks);
+        }
+    }
+
+    public class ShutdownNowThread extends TestThread {
+        private volatile List<Runnable> foundTasks;
+
+        @Override
+        protected void runInternal() throws Exception {
+            foundTasks = executor.shutdownNow();
+        }
+
+        public void assertSuccess(Runnable... expectedTasks) {
+            assertIsTerminatedNormally();
+            List<Runnable> list = Arrays.asList(expectedTasks);
+            assertEquals(list, foundTasks);
         }
     }
 

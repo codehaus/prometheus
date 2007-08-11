@@ -5,8 +5,9 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.TestUtil.randomBoolean;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.randomBoolean;
+import org.codehaus.prometheus.testsupport.Delays;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,7 +26,7 @@ public class ThreadPoolRepeater_EndWorkerPolicyTest extends ThreadPoolRepeater_A
         DummyRepeatable task = new DummyRepeatable(true);
         spawned_repeat(task);
 
-        giveOthersAChance(DELAY_MEDIUM_MS);
+        giveOthersAChance(Delays.MEDIUM_MS);
         assertIsRunning();
         assertActualPoolSize(poolsize);
         assertDesiredPoolSize(poolsize);
@@ -41,7 +42,7 @@ public class ThreadPoolRepeater_EndWorkerPolicyTest extends ThreadPoolRepeater_A
         RandomFalseRepeatable task = new RandomFalseRepeatable(falsecount);
         spawned_repeat(task);
 
-        giveOthersAChance(DELAY_MEDIUM_MS);
+        giveOthersAChance(Delays.MEDIUM_MS);
         assertIsRunning();
         assertActualPoolSize(poolsize-falsecount);
         //desiredpoolsize

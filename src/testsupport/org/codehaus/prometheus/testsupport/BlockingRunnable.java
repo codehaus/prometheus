@@ -12,6 +12,8 @@ import java.util.concurrent.TimeoutException;
 /**
  * A BaseTestRunnable that adds support for blocking calls.
  *
+ * todo: there is a lot of overlap in this runnable and the testthread.
+ *
  * @author Peter Veentjer.
  * @since 1.0
  */
@@ -74,7 +76,7 @@ public abstract class BlockingRunnable extends TestRunnable {
      */
     public void assertState(BlockingState expectedState) {
         assertNoRuntimeException();
-        assertNotNull("blocking state has not been set, has the task runWork?", state);
+        assertNotNull("blocking state has not been set, has the task run?", state);
         assertEquals(expectedState, state);
     }
 

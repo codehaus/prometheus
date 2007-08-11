@@ -48,6 +48,7 @@ public class ConditionUtil {
     public static long awaitNanosAndThrow(Condition condition, long timeoutNs)
             throws InterruptedException, TimeoutException {
         if (condition == null) throw new NullPointerException();
+
         ensureNoTimeout(timeoutNs);
         long remainingNs = condition.awaitNanos(timeoutNs);
         if (remainingNs <= 0)

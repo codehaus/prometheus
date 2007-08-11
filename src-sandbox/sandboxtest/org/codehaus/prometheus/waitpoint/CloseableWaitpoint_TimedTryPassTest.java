@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.waitpoint;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.*;
+import org.codehaus.prometheus.testsupport.Delays;
 
 /**
  * Unittests the {@link org.codehaus.prometheus.waitpoint.CloseableWaitpoint#tryPass(long,java.util.concurrent.TimeUnit)}
@@ -28,14 +28,13 @@ public class CloseableWaitpoint_TimedTryPassTest extends CloseableWaitpoint_Abst
         newOpenCloseableWaitpoint();
         TimedTryPassThread t = scheduleTimedTryPass(startInterrupted, 0);
         joinAll(t);
-
         t.assertSuccess(0);
     }
 
     public void testSomeWaitingNeeded_startInterrupted() {
         newClosedCloseableWaitpoint();
 
-        TimedTryPassThread tryPassThread = scheduleTimedTryPass(START_INTERRUPTED, 3 * DELAY_SMALL_MS);
+        TimedTryPassThread tryPassThread = scheduleTimedTryPass(START_INTERRUPTED, 3 * Delays.SMALL_MS);
         joinAll(tryPassThread);
         tryPassThread.assertIsTerminatedByInterruptedException();
     }
@@ -43,19 +42,19 @@ public class CloseableWaitpoint_TimedTryPassTest extends CloseableWaitpoint_Abst
     public void testSomeWaitingNeeded() {
         newClosedCloseableWaitpoint();
 
-        TimedTryPassThread tryPassThread = scheduleTimedTryPass(3 * DELAY_SMALL_MS);
-        sleepMs(DELAY_SMALL_MS);
+        TimedTryPassThread tryPassThread = scheduleTimedTryPass(3 * Delays.SMALL_MS);
+        sleepMs(Delays.SMALL_MS);
         tryPassThread.assertIsStarted();
 
         OpenThread openThread = scheduleOpen();
         joinAll(openThread, tryPassThread);
-        tryPassThread.assertSuccess(2 * DELAY_SMALL_MS);
+        tryPassThread.assertSuccess(2 * Delays.SMALL_MS);
     }
 
     public void testTooMuchWaiting() {
         newClosedCloseableWaitpoint();
 
-        TimedTryPassThread tryPassThread = scheduleTimedTryPass(DELAY_SMALL_MS);
+        TimedTryPassThread tryPassThread = scheduleTimedTryPass(Delays.SMALL_MS);
         joinAll(tryPassThread);
 
         tryPassThread.assertIsTimedOut();
@@ -64,7 +63,7 @@ public class CloseableWaitpoint_TimedTryPassTest extends CloseableWaitpoint_Abst
     public void testInterruptedWhileWaiting() {
         newClosedCloseableWaitpoint();
 
-        TimedTryPassThread tryPassThread = scheduleTimedTryPass(DELAY_LONG_MS);
+        TimedTryPassThread tryPassThread = scheduleTimedTryPass(Delays.LONG_MS);
 
         //make sure the thread is waiting.
         giveOthersAChance();
@@ -79,18 +78,18 @@ public class CloseableWaitpoint_TimedTryPassTest extends CloseableWaitpoint_Abst
     public void testSpuriousWakeups() {
         newClosedCloseableWaitpoint();
 
-        TimedTryPassThread tryPassThread = scheduleTimedTryPass(4 * DELAY_SMALL_MS);
-        sleepMs(DELAY_SMALL_MS);
+        TimedTryPassThread tryPassThread = scheduleTimedTryPass(4 * Delays.SMALL_MS);
+        sleepMs(Delays.SMALL_MS);
         tryPassThread.assertIsStarted();
 
         Thread spuriousThread = scheduleSpuriousWakeup();
         joinAll(spuriousThread);
 
-        sleepMs(DELAY_SMALL_MS);
+        sleepMs(Delays.SMALL_MS);
         tryPassThread.assertIsStarted();
 
         OpenThread openThread = scheduleOpen();
         joinAll(openThread, tryPassThread);
-        tryPassThread.assertSuccess(2 * DELAY_SMALL_MS);
+        tryPassThread.assertSuccess(2 * Delays.SMALL_MS);
     }
 }

@@ -4,7 +4,8 @@ import static junit.framework.Assert.assertEquals;
 import junit.framework.TestSuite;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import static org.codehaus.prometheus.testsupport.TestUtil.*;
+import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.*;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.util.StandardThreadFactory;
@@ -87,7 +88,7 @@ public class ThreadPoolRepeater_RepeatStressTest {
             }
             
             sleepRandomMs(50);
-            someCalculation(randomInt(100000));
+            ConcurrentTestUtil.someCalculation(randomInt(100000));
             Thread.yield();
             return true;
         }

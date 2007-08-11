@@ -7,7 +7,8 @@ package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TestUtil;
+import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -40,7 +41,7 @@ public abstract class DefaultAwaitableReference_AbstractTest extends ConcurrentT
     }
 
     public TestThread scheduleSpuriousWakeup(long waitMs) {
-        return TestUtil.scheduleSpuriousWakeup(
+        return ConcurrentTestUtil.scheduleSpuriousWakeup(
                 awaitableRef.getMainLock(),
                 awaitableRef.getReferenceAvailableCondition(),
                 waitMs);

@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.blockingexecutor;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepRandom;
-import static org.codehaus.prometheus.testsupport.TestUtil.someCalculation;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepRandom;
+import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -24,6 +24,6 @@ public class StressTask implements Runnable {
         count.incrementAndGet();
         sleepRandom(20, TimeUnit.MILLISECONDS);
         //todo: random calculation
-        someCalculation(100000);
+        ConcurrentTestUtil.someCalculation(100000);
     }
 }

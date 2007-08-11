@@ -5,11 +5,13 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
-import org.codehaus.prometheus.testsupport.UninterruptableSleepingRunnable;
+import org.codehaus.prometheus.testsupport.TestRunnable;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestSupport.newUninterruptableSleepingRunnable;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#shutdownNow()} method.
@@ -27,7 +29,7 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
     }
 
     public void testWhileRunning_repeatableIsRunning() throws InterruptedException {
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         newRunningStrictRepeater(new RepeatableRunnable(task));
         assertShutdownHappens();
         task.assertNotRunningAnymore();
@@ -41,7 +43,7 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
     }
 
     public void testShutdownNowCantForceNonInterruptibleTaskToEnd() {
-        UninterruptableSleepingRunnable task = new UninterruptableSleepingRunnable(DELAY_SMALL_MS);
+        SleepingRunnable task = newUninterruptableSleepingRunnable(Delays.SMALL_MS);
         newRunningStrictRepeater(new RepeatableRunnable(task));
 
         spawned_shutdownNow();
@@ -60,18 +62,25 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
     }
 
     public void testWhileShuttingdown() {
-        newShuttingdownRepeater(DELAY_SMALL_MS);
+        newShuttingdownRepeater(Delays.SMALL_MS);
         repeater.shutdownNow();
         assertIsShuttingdown();
         assertActualPoolSize(1);
 
-        sleepMs(2 * DELAY_SMALL_MS);
+        sleepMs(2 * Delays.SMALL_MS);
         assertIsShutdown();
         assertActualPoolSize(0);
     }
 
     public void testWhileForcedShuttingdown(){
-        //todo
+        int poolsize = 10;
+        newForcedShuttingdownRepeater(Delays.LONG_MS,poolsize);
+
+        spawned_shutdownNow();
+
+        giveOthersAChance();
+        assertIsShuttingdown();
+        assertActualPoolSize(poolsize);
     }
 
     public void testWhileShutdown() {
@@ -84,7 +93,7 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
     //make sure that the workers are interrupted, when the threadpoolrepeater shuts down
     public void testShutdownInterruptsWorkers() throws InterruptedException {
         stopwatch.start();
-        SleepingRunnable task = new SleepingRunnable(DELAY_LONG_MS);
+        SleepingRunnable task = newSleepingRunnable(Delays.LONG_MS);
         newRunningStrictRepeater(new RepeatableRunnable(task));
 
         //make sure the task is waiting.
@@ -100,7 +109,7 @@ public class ThreadPoolRepeater_ShutdownNowTest extends ThreadPoolRepeater_Abstr
         spawned_awaitShutdown();
         stopwatch.stop();
 
-        Thread.yield();
+        giveOthersAChance();
         task.assertIsInterrupted();
         //if the threads were not interrupted, the elapsed time should be around 10 seconds and not 1.
         stopwatch.assertElapsedSmallerThanMs(1000);

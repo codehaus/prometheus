@@ -60,8 +60,8 @@ public interface RepeaterService extends Repeater {
      * Shuts down this RepeaterService. If a task is running, it is not interrupted. If you want
      * to interrupt the running task (to force shutdown), see {@link #shutdownNow()}.
      * <p/>
-     * If this RepeaterService already is shuttingdown, or shutdown, the call is ignored. This
-     * method can be called safely at every moment without throwing exceptions.
+     * If this RepeaterService already is shuttingdown, or shutdown, the call is ignored.
+     * This method can be called safely at every moment without throwing exceptions.
      * <p/>
      * This method doesn't block until this RepeaterService has shut down. See the
      * {@link #awaitShutdown()} for that.

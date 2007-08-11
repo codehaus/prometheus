@@ -7,7 +7,9 @@ package org.codehaus.prometheus.threadpool;
 
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.testsupport.*;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.LinkedList;
@@ -92,7 +94,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
 
     //all workers are going to execute a task that takes an eon to complete
     public List<TestRunnable> ensureNoIdleWorkers() {
-        return ensureNoIdleWorkers(DELAY_EON_MS, true);
+        return ensureNoIdleWorkers(Delays.EON_MS, true);
     }
 
     /**
@@ -104,7 +106,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         try {
             List<TestRunnable> list = new LinkedList<TestRunnable>();
             for (int k = 0; k < threadpool.getDesiredPoolSize(); k++) {
-                TestRunnable task = interruptable ? new SleepingRunnable(delayMs) : new UninterruptableSleepingRunnable(delayMs);
+                TestRunnable task = newSleepingRunnable(delayMs, interruptable);
                 list.add(task);
                 workQueue.put(Executors.callable(task,true));
             }
@@ -188,7 +190,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         assertEquals(ThreadPoolState.shutdown, threadpool.getState());
         assertEquals(0, threadpool.getActualPoolSize());
         if (threadPoolThreadFactory != null)
-            threadPoolThreadFactory.assertAllThreadsAreTerminated();
+            threadPoolThreadFactory.assertAllAreNotAlive();
     }
 
     public void assertIsForcedShuttingdown() {

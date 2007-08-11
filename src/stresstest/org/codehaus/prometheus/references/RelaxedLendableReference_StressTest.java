@@ -3,7 +3,9 @@ package org.codehaus.prometheus.references;
 import junit.framework.TestSuite;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.*;
+import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +51,7 @@ public class RelaxedLendableReference_StressTest {
             startPutters();
 
             TestThread[] threads = (TestThread[]) this.threads.toArray(new TestThread[this.threads.size()]);
-            joinAll(100 * DELAY_LONG_MS, threads);
+            joinAll(100 * Delays.LONG_MS, threads);
 
             assertIsTerminatedWithoutThrowing(threads);
         }
@@ -85,7 +87,7 @@ public class RelaxedLendableReference_StressTest {
                 for (int k = 0; k < repeatCountPutters; k++) {
                     lendableReference.put(randomInt(100000));
                     sleepRandomMs(10);
-                    someCalculation(randomInt(100000));
+                    ConcurrentTestUtil.someCalculation(randomInt(100000));
                 }
             }
         }
@@ -100,7 +102,7 @@ public class RelaxedLendableReference_StressTest {
                     Integer ref = lendableReference.take();
                     try {
                         sleepRandomMs(10);
-                        someCalculation(randomInt(100000));
+                        ConcurrentTestUtil.someCalculation(randomInt(100000));
                     } finally {
                         //todo: add 
                         lendableReference.takeback(ref);

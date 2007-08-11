@@ -6,7 +6,9 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -58,14 +60,14 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
         lendableRef = new StrictLendableReference<Integer>();
 
         //do a timed take, it should block because no value is available
-        TimedTryTakeThread tryTakeThread = scheduleTimedTryTake(DELAY_LONG_MS);
+        TimedTryTakeThread tryTakeThread = scheduleTimedTryTake(Delays.LONG_MS);
         giveOthersAChance();
         tryTakeThread.assertIsStarted();
         assertLendCount(0);
 
         //do a put and check that the tryTake was succesfull.
         Integer ref = 10;
-        _tested_put(ref, null);
+        spawned_put(ref, null);
         joinAll(tryTakeThread);
         tryTakeThread.assertSuccess(ref);
         assertHasRef(ref);
@@ -76,7 +78,7 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
         lendableRef = new StrictLendableReference<Integer>();
 
         //do a timed take, it should block because no value is available
-        TimedTryTakeThread tryTakeThread = scheduleTimedTryTake(DELAY_MEDIUM_MS);
+        TimedTryTakeThread tryTakeThread = scheduleTimedTryTake(Delays.MEDIUM_MS);
         giveOthersAChance();
         tryTakeThread.assertIsStarted();
         assertLendCount(0);
@@ -92,7 +94,7 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
         lendableRef = new StrictLendableReference<Integer>();
 
         //do a timed taked an make sure the call is waiting (because no value can be taken)
-        TimedTryTakeThread tryTakeThread = scheduleTimedTryTake(DELAY_LONG_MS);
+        TimedTryTakeThread tryTakeThread = scheduleTimedTryTake(Delays.LONG_MS);
         giveOthersAChance();
         tryTakeThread.assertIsStarted();
         assertLendCount(0);
@@ -109,7 +111,7 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
         lendableRef = new StrictLendableReference<Integer>();
 
         //do a timed take and make sure that it blocks (because no value can be taken)
-        TimedTryTakeThread tryTakeThread = scheduleTimedTryTake(DELAY_LONG_MS);
+        TimedTryTakeThread tryTakeThread = scheduleTimedTryTake(Delays.LONG_MS);
         giveOthersAChance();
         tryTakeThread.assertIsStarted();
         assertLendCount(0);
@@ -126,7 +128,7 @@ public class StrictLendableReference_TimedTryTakeTest extends StrictLendableRefe
 
         //do a put and check that the tryTake was succesfull.
         Integer newRef = 10;
-        _tested_put(newRef, null);
+        spawned_put(newRef, null);
         joinAll(tryTakeThread);
         tryTakeThread.assertSuccess(newRef);
         assertHasRef(newRef);

@@ -4,7 +4,7 @@ import junit.framework.TestSuite;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.*;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.*;
 
 import java.util.LinkedList;
 import java.util.List;

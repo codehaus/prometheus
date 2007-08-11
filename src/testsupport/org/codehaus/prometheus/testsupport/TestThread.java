@@ -31,10 +31,6 @@ import java.util.concurrent.TimeoutException;
  */
 public class TestThread extends Thread {
 
-    enum ThreadState {
-        NEW, STARTED, TERMINATED
-    }
-
     protected volatile long delay = 0;
     protected volatile TimeUnit delayUnit;
     protected volatile Throwable foundThrowable;
@@ -290,7 +286,7 @@ public class TestThread extends Thread {
     public final void interruptAndJoin() {
         interrupt();
         try {
-            join(ConcurrentTestCase.DELAY_LONG_MS);
+            join(Delays.LONG_MS);
             if (isAlive())
                 fail(String.format("thread %s is still alive",this));
         } catch (InterruptedException e) {

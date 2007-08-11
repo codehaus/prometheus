@@ -242,7 +242,7 @@ public class ThreadPoolRepeater implements RepeaterService {
     }
 
     public void shutdown() {
-        threadPool.shutdown();
+        threadPool.shutdown();                   
     }
 
     public void shutdownNow() {
@@ -332,7 +332,7 @@ public class ThreadPoolRepeater implements RepeaterService {
         ensureRunningRepeater();
 
         //it could be that this method is called even though the threadpool is shutting down, or shut down.
-        //this means that a task is placed, but not executed.
+        //this means that a task is placed, but not executed. This behavior is allowed for the Repeater.
         lendableRef.tryPut(task, timeout, unit);
     }
 
@@ -349,7 +349,7 @@ public class ThreadPoolRepeater implements RepeaterService {
         }
 
         public boolean executeWork(Repeatable task) throws Exception {
-            return  executionPolicy.execute(task, ThreadPoolRepeater.this);
+            return executionPolicy.execute(task, ThreadPoolRepeater.this);
         }
     }
 }

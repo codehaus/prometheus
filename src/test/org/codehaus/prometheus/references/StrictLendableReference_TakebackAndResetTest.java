@@ -5,7 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 /**
  * Unittests {@link StrictLendableReference#takebackAndReset(Object)}.
@@ -32,7 +33,7 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
         Integer originalRef = 10;
         lendableRef = new StrictLendableReference(originalRef);
 
-        tested_take(originalRef);
+        spawned_take(originalRef);
 
         //do a put and make sure it is blocking
         Integer newRef = 20;
@@ -47,7 +48,7 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
         assertLendCount(1);
 
         //do the good takeback and make sure that the structure wasn't corrupted by the bad takeback
-        _tested_takebackAndReset(originalRef);
+        spawned_takebackAndReset(originalRef);
         // and check that the put has finished
         giveOthersAChance();
         //the takebackandreset has reset the reference to null, so null is returned
@@ -62,8 +63,8 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
         Integer originalRef = 10;
         lendableRef = new StrictLendableReference(originalRef);
 
-        tested_take(originalRef);
-        tested_take(originalRef);
+        spawned_take(originalRef);
+        spawned_take(originalRef);
 
         //do a put and make sure it is blocking
         Integer newRef = 20;
@@ -72,14 +73,14 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
         putThread.assertIsStarted();
 
         //do the first good takebackandreset
-        _tested_takebackAndReset(originalRef);
+        spawned_takebackAndReset(originalRef);
         //now do a second bad takebackandreset
         Integer badRef = 30;
         assertTakebackAndResetIsRejected(badRef);
         assertHasRef(null);
 
         //now do a second good takeback
-        _tested_takebackAndReset(originalRef);
+        spawned_takebackAndReset(originalRef);
         // and check that the put has finished
         giveOthersAChance();
         //the takebackandreset has reset the reference to null, so null is returned
@@ -94,14 +95,14 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
         lendableRef = new StrictLendableReference(ref);
 
         //do a take
-        tested_take(ref);
+        spawned_take(ref);
 
         //do a put and make sure it is pending
         Integer newRef = 20;
-        PutThread putThread = _tested_pendingPut(newRef);
+        PutThread putThread = spawned_pendingPut(newRef);
 
         //do the takeback
-        _tested_takebackAndReset(ref);
+        spawned_takebackAndReset(ref);
 
         // and check that the put has finished
         giveOthersAChance();
@@ -117,14 +118,14 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
         lendableRef = new StrictLendableReference(ref);
 
         //do a take
-        tested_take(ref);
+        spawned_take(ref);
 
         //do a put and make sure it is pending
         Integer newRef = 20;
-        PutThread putThread = _tested_pendingPut(newRef);
+        PutThread putThread = spawned_pendingPut(newRef);
 
         //do the takeback
-        _tested_takebackAndReset(ref);
+        spawned_takebackAndReset(ref);
 
         // and check that the put has finished
         giveOthersAChance();
@@ -149,9 +150,9 @@ public class StrictLendableReference_TakebackAndResetTest extends StrictLendable
     public void testTooManyTakebacks_complex() {
         Integer ref = 10;
         lendableRef = new StrictLendableReference<Integer>(ref);
-        tested_take(ref);
+        spawned_take(ref);
 
-        _tested_takebackAndReset(ref);
+        spawned_takebackAndReset(ref);
 
         //now do the second takeback and reset and make sure it fails
         assertTakebackAndResetIsRejected(ref);

@@ -5,10 +5,11 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import org.codehaus.prometheus.testsupport.CountingCallable;
 import org.codehaus.prometheus.testsupport.TestCallable;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
-import org.codehaus.prometheus.testsupport.ThrowingCallable;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.TestSupport.newDummyCallable;
+import static org.codehaus.prometheus.testsupport.TestSupport.newThrowingCallable;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
 
 import java.awt.image.ImagingOpException;
 import java.io.IOException;
@@ -24,16 +25,16 @@ public class StandardThreadPool_RunWorkTest extends StandardThreadPool_AbstractT
         int poolsize = 4;
         newStartedThreadpool(poolsize);
 
-        workQueue.put(new TestCallable<Boolean>(false));
+        workQueue.put(newDummyCallable(false));
 
-        giveOthersAChance(DELAY_MEDIUM_MS);
+        giveOthersAChance(Delays.MEDIUM_MS);
 
         assertWorkQueueIsEmpty();
         assertIsRunning();
         assertDesiredPoolsize(poolsize);
         assertActualPoolsize(poolsize-1);
         threadPoolThreadFactory.assertAliveCount(poolsize-1);
-        threadPoolThreadFactory.assertTerminatedCount(1);
+        threadPoolThreadFactory.assertNotAliveCount(1);
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -41,24 +42,24 @@ public class StandardThreadPool_RunWorkTest extends StandardThreadPool_AbstractT
         int poolsize = 4;
         newStartedThreadpool(poolsize);
 
-        workQueue.put(new TestCallable<Boolean>(true));
+        workQueue.put(newDummyCallable(true));
 
-        giveOthersAChance(DELAY_MEDIUM_MS);
+        giveOthersAChance(Delays.MEDIUM_MS);
 
         assertWorkQueueIsEmpty();
         assertIsRunning();
         assertDesiredPoolsize(poolsize);
         assertActualPoolsize(poolsize);
         threadPoolThreadFactory.assertAliveCount(poolsize);
-        threadPoolThreadFactory.assertTerminatedCount(0);
+        threadPoolThreadFactory.assertNotAliveCount(0);
         threadPoolExceptionHandler.assertNoErrors();
     }
 
-    public void testWhileRunning_throwsUncheckedException() throws InterruptedException {
+    public void _testWhileRunning_throwsUncheckedException() throws InterruptedException {
         testWhileRunning_throwsException(new ImagingOpException("foo"));
     }
 
-    public void testWhileRunning_throwsCheckedException() throws InterruptedException {
+    public void _testWhileRunning_throwsCheckedException() throws InterruptedException {
         testWhileRunning_throwsException(new IOException());
     }
 
@@ -66,12 +67,12 @@ public class StandardThreadPool_RunWorkTest extends StandardThreadPool_AbstractT
         int poolsize = 1;
         newStartedThreadpool(poolsize);
 
-        workQueue.put(new ThrowingCallable(ex));
+        workQueue.put(newThrowingCallable(ex));
         //the trailing callable is placed to make sure that the threadpool isn't broken
-        CountingCallable trailingCallable = new CountingCallable(Boolean.TRUE);
+        TestCallable<Boolean> trailingCallable = new TestCallable<Boolean>(Boolean.TRUE);
         workQueue.put(trailingCallable);
 
-        giveOthersAChance(DELAY_MEDIUM_MS);
+        giveOthersAChance(Delays.MEDIUM_MS);
 
         assertWorkQueueIsEmpty();
         assertIsRunning();
@@ -79,7 +80,7 @@ public class StandardThreadPool_RunWorkTest extends StandardThreadPool_AbstractT
         assertActualPoolsize(poolsize);
         trailingCallable.assertExecutedOnce();
         threadPoolThreadFactory.assertAliveCount(poolsize);
-        threadPoolThreadFactory.assertTerminatedCount(0);
+        threadPoolThreadFactory.assertNotAliveCount(0);
         threadPoolExceptionHandler.assertErrorCountAndNoOthers(ex.getClass(),1);
     }
 
@@ -91,24 +92,24 @@ public class StandardThreadPool_RunWorkTest extends StandardThreadPool_AbstractT
 
     }
 
-    public void testWhileShuttingdown_throwsUncheckedException() throws InterruptedException {
+    public void _testWhileShuttingdown_throwsUncheckedException() throws InterruptedException {
         testWhileShuttingdown_throwsException(new ImagingOpException("foo"));
     }
 
-    public void testWhileShuttingdown_throwsCheckedException() throws InterruptedException {
+    public void _testWhileShuttingdown_throwsCheckedException() throws InterruptedException {
         testWhileShuttingdown_throwsException(new IOException());
     }
 
     public void testWhileShuttingdown_throwsException(Exception ex) throws InterruptedException {
         int poolsize = 1;
-        newShuttingdownThreadpool(poolsize, DELAY_EON_MS);
+        newShuttingdownThreadpool(poolsize, Delays.EON_MS);
 
-        workQueue.put(new ThrowingCallable(ex));
+        workQueue.put(newThrowingCallable(ex));
         //the trailing callable is placed to make sure that the threadpool isn't broken
-        CountingCallable trailingCallable = new CountingCallable(Boolean.TRUE);
+        TestCallable<Boolean> trailingCallable = newDummyCallable(Boolean.TRUE);
         workQueue.put(trailingCallable);
 
-        giveOthersAChance(DELAY_MEDIUM_MS);
+        giveOthersAChance(Delays.MEDIUM_MS);
 
         assertWorkQueueIsEmpty();
         assertIsShuttingdown();
@@ -116,7 +117,7 @@ public class StandardThreadPool_RunWorkTest extends StandardThreadPool_AbstractT
         assertActualPoolsize(poolsize);
         trailingCallable.assertExecutedOnce();
         threadPoolThreadFactory.assertAliveCount(poolsize);
-        threadPoolThreadFactory.assertTerminatedCount(0);
+        threadPoolThreadFactory.assertNotAliveCount(0);
         threadPoolExceptionHandler.assertErrorCountAndNoOthers(ex.getClass(),1);
     }
 

@@ -4,7 +4,7 @@ import org.codehaus.prometheus.processors.IntegerExceptionProcess;
 import org.codehaus.prometheus.processors.IntegerProcess;
 import org.codehaus.prometheus.processors.TestProcess;
 import org.codehaus.prometheus.processors.ThrowingIterator;
-import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.randomInt;
 
 import java.awt.*;
 import java.util.Iterator;

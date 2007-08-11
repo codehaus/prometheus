@@ -4,7 +4,9 @@ import junit.framework.TestSuite;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.*;
+import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.*;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
@@ -99,7 +101,7 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
             executor.shutdown();
             executor.awaitShutdown();
 
-            sleepMs(DELAY_LONG_MS);
+            sleepMs(Delays.LONG_MS);
             assertTrue(executor.getWorkQueue().isEmpty());
             assertAllProducersFinished();
         }
@@ -135,7 +137,7 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
             public void run() {
                 executedCount.incrementAndGet();
                 sleepRandom(20, TimeUnit.MILLISECONDS);
-                someCalculation(100000);
+                ConcurrentTestUtil.someCalculation(100000);
             }
         }
     }

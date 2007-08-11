@@ -6,7 +6,6 @@
 package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.TestRunnable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,7 +44,7 @@ public class RepeatableRunnableTest extends ConcurrentTestCase {
     }
 
     public void testExecutionWithInjection() {
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         RepeatableRunnable repeatable = new RepeatableRunnable(task);
         repeatable.execute();
         task.assertExecutedOnce();

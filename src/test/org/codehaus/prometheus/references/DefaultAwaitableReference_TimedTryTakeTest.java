@@ -5,7 +5,9 @@
  */
 package org.codehaus.prometheus.references;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -69,7 +71,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
 
     public void testSomeWaitingNeeded_startInterrupted() {
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        TimedTryTakeThread takeThread = scheduleTryTake(DELAY_SMALL_MS, START_INTERRUPTED);
+        TimedTryTakeThread takeThread = scheduleTryTake(Delays.SMALL_MS, START_INTERRUPTED);
         joinAll(takeThread);
         takeThread.assertIsTerminatedByInterruptedException();
     }
@@ -77,7 +79,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
     public void testSomeWaitingNeeded() throws TimeoutException, InterruptedException {
         Integer ref = 10;
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        TimedTryTakeThread takeThread = scheduleTryTake(DELAY_EON_MS);
+        TimedTryTakeThread takeThread = scheduleTryTake(Delays.EON_MS);
 
         giveOthersAChance();
         takeThread.assertIsStarted();
@@ -92,7 +94,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
     public void testTooMuchWaiting() throws InterruptedException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
 
-        TimedTryTakeThread taker = scheduleTryTake(DELAY_SMALL_MS);
+        TimedTryTakeThread taker = scheduleTryTake(Delays.SMALL_MS);
         joinAll(taker);
         taker.assertIsTimedOut();
         assertHasReference(null);
@@ -100,7 +102,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
 
     public void testInterruptedWhileWaiting() throws TimeoutException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        TimedTryTakeThread taker = scheduleTryTake(DELAY_EON_MS);
+        TimedTryTakeThread taker = scheduleTryTake(Delays.EON_MS);
 
         giveOthersAChance();
         taker.assertIsStarted();
@@ -113,7 +115,7 @@ public class DefaultAwaitableReference_TimedTryTakeTest extends DefaultAwaitable
 
     public void testSpuriousWakeup() throws TimeoutException, InterruptedException {
         awaitableRef = new DefaultAwaitableReference<Integer>();
-        TimedTryTakeThread taker = scheduleTryTake(DELAY_EON_MS);
+        TimedTryTakeThread taker = scheduleTryTake(Delays.EON_MS);
 
         giveOthersAChance();
         taker.assertIsStarted();

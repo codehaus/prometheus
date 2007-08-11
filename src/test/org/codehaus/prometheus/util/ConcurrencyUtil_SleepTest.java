@@ -7,6 +7,8 @@ package org.codehaus.prometheus.util;
 
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -43,7 +45,7 @@ public class ConcurrencyUtil_SleepTest extends ConcurrentTestCase {
     public void testInterruptedWhileSleeping() {
         stopwatch.start();
         SleepThread t = scheduleSleep(10, TimeUnit.SECONDS, false);
-        Thread.yield();
+        giveOthersAChance();
         t.assertIsStarted();
         t.interrupt();
 

@@ -5,8 +5,9 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.SleepingRunnable;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
+import org.codehaus.prometheus.testsupport.Delays;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#setDesiredPoolSize(int)}  method.
@@ -43,7 +44,7 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
     }
 
     public void testWhileStarted_poolsizeIsIncreased() {
-        newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_TINY_MS)));
+        newRunningStrictRepeater(new RepeatableRunnable(newSleepingRunnable(Delays.TINY_MS)));
 
         int[] sizes = new int[]{0, 10, 1, 0, 2, 0, 20, 0};
         for (int size : sizes) {
@@ -67,12 +68,13 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
     }
 
     public void testWhileShuttingdown() {
-        newShuttingdownRepeater(DELAY_SMALL_MS);
+        newShuttingdownRepeater(Delays.SMALL_MS);
         assertSetPoolSizeThrowsIllegalStateException();
     }
 
     public void testWhileForcedShuttingdown(){
-        //todo
+        newForcedShuttingdownRepeater(Delays.LONG_MS,1);
+        assertSetPoolSizeThrowsIllegalStateException();
     }
 
     public void testWhileShutdown() {
@@ -83,7 +85,7 @@ public class ThreadPoolRepeater_SetPoolSizeTest extends ThreadPoolRepeater_Abstr
     private void assertSetPoolSizeThrowsIllegalStateException() {
         RepeaterServiceState oldState = repeater.getState();
         try {
-            repeater.setDesiredPoolSize(100);
+            repeater.setDesiredPoolSize(repeater.getActualPoolSize()+1);
             fail();
         } catch (IllegalStateException ex) {
             assertTrue(true);

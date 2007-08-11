@@ -3,7 +3,9 @@ package org.codehaus.prometheus.processors.standardprocessor;
 import org.codehaus.prometheus.channels.StandardBufferedChannel;
 import org.codehaus.prometheus.processors.Processor_AbstractTest;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.randomInt;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -150,7 +152,7 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
 
     class TimedTakeThread extends TestThread {
         protected void runInternal() throws InterruptedException, TimeoutException {
-            outputChannel.poll(DELAY_SMALL_MS, TimeUnit.MILLISECONDS);
+            outputChannel.poll(Delays.SMALL_MS, TimeUnit.MILLISECONDS);
         }
     }
 }

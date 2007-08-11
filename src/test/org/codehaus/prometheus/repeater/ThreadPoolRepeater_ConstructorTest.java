@@ -165,7 +165,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertTrue(repeater.getThreadPool() instanceof StandardThreadPool);
         StandardThreadPool threadpool = (StandardThreadPool) repeater.getThreadPool();
         assertSame(threadFactory, threadpool.getThreadFactory());
-        threadFactory.assertNoThreadsCreated();
+        threadFactory.assertNoneCreated();
     }
 
     //================ ThreadPoolRepeater(ThreadPool, LendableReference)  ==========

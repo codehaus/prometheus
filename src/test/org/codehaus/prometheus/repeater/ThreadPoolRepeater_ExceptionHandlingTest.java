@@ -7,8 +7,11 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
-import org.codehaus.prometheus.testsupport.ThrowingRunnable;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
+import org.codehaus.prometheus.testsupport.Delays;
+import org.codehaus.prometheus.testsupport.TestRunnable;
+import org.codehaus.prometheus.testsupport.TestSupport;
+import static org.codehaus.prometheus.testsupport.TestSupport.newThrowingTestRunnable;
 
 /**
  * Unittests the exception handling behavior of the ThreadPoolRepeater.
@@ -25,12 +28,10 @@ public class ThreadPoolRepeater_ExceptionHandlingTest extends ThreadPoolRepeater
         assertSame(handler, repeater.getExceptionHandler());
     }
 
-    //with a strict repeater
     public void testRunningTaskCausesRuntimeException_strict() throws InterruptedException {
         testRunningTaskCausesRuntimeException(true);
     }
 
-    //with a relaxed repeater
     public void testRunningTaskCausesRuntimeException_relaxed() throws InterruptedException {
         testRunningTaskCausesRuntimeException(false);
     }
@@ -38,11 +39,11 @@ public class ThreadPoolRepeater_ExceptionHandlingTest extends ThreadPoolRepeater
     public void testRunningTaskCausesRuntimeException(boolean strict) throws InterruptedException {
         newRunningRepeater(strict, 1);
 
-        ThrowingRunnable task = new ThrowingRunnable();
+        TestRunnable task = newThrowingTestRunnable();
         Repeatable repeatable = new RepeatableRunnable(task);
         spawned_repeat(repeatable);
 
-        sleepMs(DELAY_LONG_MS);
+        sleepMs(Delays.LONG_MS);
         task.assertExecutedOnceOrMore();
         assertHasRepeatable(repeatable);
         assertIsRunning();

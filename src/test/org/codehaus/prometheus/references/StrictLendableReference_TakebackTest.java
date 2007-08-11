@@ -5,7 +5,9 @@
  */
 package org.codehaus.prometheus.references;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
 
 /**
  * Unittests the {@link StrictLendableReference#takeback(Object)} method.
@@ -30,7 +32,7 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         Integer takebackRef = 20;
         lendableRef = new StrictLendableReference(originalRef);
 
-        LendThread<Integer> lender = scheduleLend(takebackRef, DELAY_SMALL_MS);
+        LendThread<Integer> lender = scheduleLend(takebackRef, Delays.SMALL_MS);
         joinAll(lender);
         lender.assertIsIncorrectRef();
         assertLendCount(1);
@@ -43,18 +45,14 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         Integer originalRef = 10;
         lendableRef = new StrictLendableReference<Integer>(originalRef);
 
-        TakeThread taker = scheduleTake();
-        joinAll(taker);
-        taker.assertIsTerminatedNormally();
+        spawned_take(originalRef);
+        spawned_takeback(originalRef);
 
-        TakeBackThread takeBack = scheduleTakeback(originalRef);
-        joinAll(takeBack);
-
-        takeBack.assertSuccess();
         assertHasRef(originalRef);
         assertLendCount(0);
-        assertPutSucceeds(20);
+        spawned_put(20);
     }
+
 
     //a value that is lend multiple times by different threads, can be
     //taken back multiple times by a single thread
@@ -70,6 +68,7 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         MultipleTakebackThread takebackThread = scheduleMultipleTakebacks(3, orignalRef);
         joinAll(takebackThread);
         takebackThread.assertSuccess();
+
         assertHasRef(orignalRef);
         assertLendCount(0);
     }
@@ -82,10 +81,10 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
         TakeBackThread takeBack = scheduleTakeback(originalRef);
         joinAll(takeBack);
 
-        takeBack.assertTakeBackException();
+        takeBack.assertIllegalTakeback();
         assertLendCount(0);
         assertHasRef(originalRef);
-        assertPutSucceeds(30);
+        spawned_put(30);
     }
 
     //take followed by takeback of different instances of the same object
@@ -105,14 +104,14 @@ public class StrictLendableReference_TakebackTest extends StrictLendableReferenc
     public void testLendByOneThread(Integer originalRef, Integer takebackRef) {
         lendableRef = new StrictLendableReference<Integer>(originalRef);
 
-        LendThread<Integer> lender = scheduleLend(takebackRef, DELAY_MEDIUM_MS);
+        LendThread<Integer> lender = scheduleLend(takebackRef, Delays.MEDIUM_MS);
         giveOthersAChance();
         lender.assertIsTaken(originalRef);
 
         joinAll(lender);
         lender.assertIsTakenBack(originalRef);
         assertHasRef(originalRef);
-        assertPutSucceeds(20);
+        spawned_put(20);
     }
 }
 

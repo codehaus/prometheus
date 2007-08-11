@@ -2,7 +2,7 @@ package org.codehaus.prometheus.processors.standardprocessor;
 
 import junit.framework.TestCase;
 import org.codehaus.prometheus.processors.VoidValue;
-import static org.codehaus.prometheus.testsupport.TestUtil.randomInt;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.randomInt;
 
 /**
  * Unit tests {@link Replace_ErrorPolicy}.

@@ -53,8 +53,11 @@ public interface BlockingExecutorService extends BlockingExecutor {
      * <p/>
      * This call doesn't block until all outstanding and currently running tasks are executed,
      * a {@link #awaitShutdown()} has to be used for that.
+     *
+     * @return a list of unprocessed jobs. This list will only contain items if there are no threads
+     *         in the threadpool. If there are threads, the threads are processed.
      */
-    void shutdown();
+    List<Runnable> shutdown();
 
     /**
      * Shuts down this BlockingExecutor. Outstanding tasks are not executed, but are returned. New tasks are

@@ -81,7 +81,7 @@ public class StandardThreadPool_ConstructorTest extends StandardThreadPool_Abstr
         assertDesiredPoolsize(poolsize);
         assertHasNoDefaultWorkerJob();
         assertHasNullExceptionHandler();
-        factory.assertNoThreadsCreated();
+        factory.assertNoneCreated();
     }
 
     //================== StandardThreadPool(ThreadFactory) ========================
@@ -101,7 +101,7 @@ public class StandardThreadPool_ConstructorTest extends StandardThreadPool_Abstr
         assertDesiredPoolsize(0);
         assertHasNoDefaultWorkerJob();
         assertHasNullExceptionHandler();
-        factory.assertNoThreadsCreated();
+        factory.assertNoneCreated();
     }
 
     //================== StandardThreadPool(ThreadPoolJob,ThreadFactory) ========================
@@ -126,7 +126,7 @@ public class StandardThreadPool_ConstructorTest extends StandardThreadPool_Abstr
         assertDesiredPoolsize(0);
         assertSame(threadPoolJob, threadpool.getWorkerJob());
         assertHasNullExceptionHandler();
-        factory.assertNoThreadsCreated();
+        factory.assertNoneCreated();
     }
 
     //================== StandardThreadPool(int,ThreadPoolJob,ThreadFactory) ========================
@@ -160,7 +160,7 @@ public class StandardThreadPool_ConstructorTest extends StandardThreadPool_Abstr
         assertDesiredPoolsize(poolsize);
         assertSame(threadPoolJob, threadpool.getWorkerJob());
         assertHasNullExceptionHandler();
-        factory.assertNoThreadsCreated();
+        factory.assertNoneCreated();
     }
 
     //======================== asserts =========================

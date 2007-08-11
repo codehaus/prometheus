@@ -5,10 +5,13 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.testsupport.CountingRunnable;
 import org.codehaus.prometheus.testsupport.SleepingRunnable;
 import org.codehaus.prometheus.testsupport.TestRunnable;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.TestSupport.newEonSleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 import java.util.concurrent.RejectedExecutionException;
 
@@ -40,10 +43,10 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         newStartedBlockingExecutor(0, poolsize);
 
         //place first task
-        spawned_placeSleepingTask(DELAY_EON_MS);
+        spawned_placeSleepingTask(Delays.EON_MS);
 
         //place the second task. The placement of this task block because there is no space
-        SleepingRunnable secondTask = new SleepingRunnable(DELAY_EON_MS);
+        SleepingRunnable secondTask = newEonSleepingRunnable();
         ExecuteThread executeThread = scheduleExecute(secondTask, START_UNINTERRUPTED);
 
         //make sure that executeThread is blocking
@@ -63,7 +66,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
     public void testSuccess_noIdleWorkersButQueueHasSpace() {
         newStartedBlockingExecutor(10, 0);
 
-        SleepingRunnable task = spawned_placeSleepingTask(DELAY_EON_MS);
+        SleepingRunnable task = spawned_placeSleepingTask(Delays.EON_MS);
 
         giveOthersAChance();
         assertActualPoolSize(0);
@@ -75,7 +78,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
     public void testSuccess_noIdleWorkersAndQueueHasSpace() {
         newStartedBlockingExecutor(10, 1);
 
-        SleepingRunnable task = spawned_placeSleepingTask(DELAY_EON_MS);
+        SleepingRunnable task = spawned_placeSleepingTask(Delays.EON_MS);
 
         giveOthersAChance();
         assertActualPoolSize(1);
@@ -89,7 +92,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         int poolsize = 10;
         newStartedBlockingExecutor(0, poolsize);
 
-        SleepingRunnable task = spawned_placeSleepingTask(DELAY_EON_MS);
+        SleepingRunnable task = spawned_placeSleepingTask(Delays.EON_MS);
 
         giveOthersAChance();
         assertActualPoolSize(poolsize);
@@ -99,13 +102,13 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
     }
 
     public void testShuttingdown() {
-        newShuttingdownBlockingExecutor(DELAY_EON_MS);
+        newShuttingdownBlockingExecutor(Delays.EON_MS);
         assertExecuteIsRejected();
     }
 
     public void testWhileForcedShuttingdown() {
         int poolsize = 3;
-        newForcedShuttingdownBlockingExecutor(DELAY_LONG_MS,poolsize);
+        newForcedShuttingdownBlockingExecutor(Delays.LONG_MS,poolsize);
         assertExecuteIsRejected();
     }
 
@@ -116,7 +119,7 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
 
     private void assertExecuteIsRejected() {
         BlockingExecutorServiceState oldState = executor.getState();
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
 
         ExecuteThread t = scheduleExecute(task, false);
         joinAll(t);
@@ -132,18 +135,17 @@ public class ThreadPoolBlockingExecutor_ExecuteTest extends ThreadPoolBlockingEx
         newStartedBlockingExecutor(0, 1);
 
         //make sure that the executor is running some task
-        TestRunnable initialTask = new SleepingRunnable(DELAY_LONG_MS);
-        spawned_assertExecute(initialTask);
+        TestRunnable initialTask = newSleepingRunnable(Delays.LONG_MS);
+        spawned_execute(initialTask);
 
         //now place the second task. This call blocks untill space is available.
-        TestRunnable task = new SleepingRunnable(DELAY_LONG_MS);
+        TestRunnable task = newSleepingRunnable(Delays.LONG_MS);
         ExecuteThread executeThread = scheduleExecute(task, START_UNINTERRUPTED);
         giveOthersAChance();
         executeThread.assertIsStarted();
 
         //in the meanwhile we are going to shutdown the blockingexecutor
-        spawned_assertShutdown();
-        System.out.println("executor.shutdown is called");
+        spawned_shutdown();
         assertIsShuttingdown();
 
         //now check that the executeThread fails with a RejectedExecutionException because

@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.*;
+import org.codehaus.prometheus.testsupport.Delays;
 
 /**
  * The Take_Test unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#take()} method.
@@ -20,7 +20,7 @@ public class DefaultAwaitableReference_TakeTest extends DefaultAwaitableReferenc
 
         //do a take and make sure that the take is waiting
         TakeThread taker = scheduleTake();
-        sleepMs(DELAY_LONG_MS);
+        sleepMs(Delays.LONG_MS);
         taker.assertIsStarted();
         assertHasReference(null);
     }

@@ -5,6 +5,9 @@
  */
 package org.codehaus.prometheus.threadpool;
 
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
+
 /**
  * Unittests {@link StandardThreadPool#start()} method.
  *
@@ -36,7 +39,7 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
 
         assertIsRunning();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAreAlive();
+        threadPoolThreadFactory.assertAllAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
@@ -48,31 +51,31 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
 
         assertIsRunning();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAreAlive();
+        threadPoolThreadFactory.assertAllAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileShuttingdown() {
         int poolsize = 3;
-        newShuttingdownThreadpool(poolsize, DELAY_EON_MS);
+        newShuttingdownThreadpool(poolsize, Delays.EON_MS);
 
         spawned_startCausesIllegalStateException();
 
         assertIsShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAreAlive();
+        threadPoolThreadFactory.assertAllAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 
     public void testWhileForcedShuttingdown(){
         int poolsize = 3;
-        newForcedShuttingdownThreadpool(poolsize,DELAY_LONG_MS);
+        newForcedShuttingdownThreadpool(poolsize, Delays.LONG_MS);
 
         spawned_startCausesIllegalStateException();
 
         assertIsForcedShuttingdown();
         threadPoolThreadFactory.assertCreatedCount(poolsize);
-        threadPoolThreadFactory.assertAllThreadsAreAlive();
+        threadPoolThreadFactory.assertAllAreAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
     
@@ -84,7 +87,7 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
 
         assertIsShutdown();
         threadPoolThreadFactory.assertCreatedCount(oldpoolsize);
-        threadPoolThreadFactory.assertAllThreadsAreTerminated();
+        threadPoolThreadFactory.assertAllAreNotAlive();
         threadPoolExceptionHandler.assertNoErrors();
     }
 }

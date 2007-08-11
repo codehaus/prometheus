@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.util;
 
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+
 /**
  * Unittests the {@link JucLatch#openWithoutLocking()} method.
  *
@@ -58,6 +60,12 @@ public class JucLatch_OpenWithoutLockingTest extends JucLatch_AbstractTest {
     //=====================================================
 
     public void testClosed_LockOwner() {
+        newClosedLatch();
+        spawned_open();
+    }
 
+    public void testOpen_LockOwner() {
+        newOpenLatch();
+        spawned_open();
     }
 }

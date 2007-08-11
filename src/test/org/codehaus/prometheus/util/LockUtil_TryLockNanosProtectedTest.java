@@ -5,7 +5,9 @@
  */
 package org.codehaus.prometheus.util;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
@@ -37,10 +39,10 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
 
     public void testSomeWaitingNeeded() throws InterruptedException {
         lock = new ReentrantLock();
-        Thread lockAndUnlockThread = scheduleLockAndUnlock(DELAY_LONG_MS);
+        Thread lockAndUnlockThread = scheduleLockAndUnlock(Delays.LONG_MS);
         giveOthersAChance();
 
-        TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(DELAY_EON_MS);
+        TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(Delays.EON_MS);
         giveOthersAChance();
         tryLockThread.assertIsStarted();
 
@@ -50,19 +52,19 @@ public class LockUtil_TryLockNanosProtectedTest extends LockUtil_AbstractTest {
 
     public void testTooMuchWaiting() throws InterruptedException {
         lock = new ReentrantLock();
-        lockBySomeThread(DELAY_LONG_MS);
+        lockBySomeThread(Delays.LONG_MS);
 
-        TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(DELAY_SMALL_MS);
+        TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(Delays.SMALL_MS);
         joinAll(tryLockThread);
         tryLockThread.assertIsTimedOut();
     }
 
     public void testInterruptedWhileWaiting() {
         lock = new ReentrantLock();
-        scheduleLockAndUnlock(DELAY_EON_MS);
+        scheduleLockAndUnlock(Delays.EON_MS);
         giveOthersAChance();
 
-        TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(DELAY_EON_MS);
+        TryLockNanosProtectedThread tryLockThread = scheduleTryLockNanosProtected(Delays.EON_MS);
         giveOthersAChance();
         tryLockThread.assertIsStarted();
 

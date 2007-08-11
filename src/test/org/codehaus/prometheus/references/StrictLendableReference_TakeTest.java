@@ -6,7 +6,8 @@
 package org.codehaus.prometheus.references;
 
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
 
         //place a new value, and check that the takes were successful.
         Integer ref = 10;
-        _tested_put(ref, null);
+        spawned_put(ref, null);
         joinAll(takeThread1, takeThread2);
         takeThread1.assertSuccess(ref);
         takeThread2.assertSuccess(ref);
@@ -104,17 +105,17 @@ public class StrictLendableReference_TakeTest extends StrictLendableReference_Ab
         lendableRef = new StrictLendableReference<Integer>(ref);
 
         //take it the first time
-        tested_take(ref);
+        spawned_take(ref);
         assertLendCount(1);
         assertHasRef(ref);
 
         //take it the second time
-        tested_take(ref);
+        spawned_take(ref);
         assertLendCount(2);
         assertHasRef(ref);
 
         //take it the third time
-        tested_take(ref);
+        spawned_take(ref);
         assertLendCount(3);
         assertHasRef(ref);
     }

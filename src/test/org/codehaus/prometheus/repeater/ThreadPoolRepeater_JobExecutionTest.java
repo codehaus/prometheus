@@ -5,10 +5,11 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.CountingRunnable;
+import org.codehaus.prometheus.testsupport.TestRunnable;
 import org.codehaus.prometheus.testsupport.DetectingAndInterruptingRunnable;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.TestUtil.sleepMs;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -57,10 +58,10 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
     public void testSuccess() throws InterruptedException {
         newRunningRepeater(false, 10);
 
-        CountingRunnable task = new CountingRunnable();
+        TestRunnable task = new TestRunnable();
         spawned_repeat(task);
 
-        sleepMs(DELAY_LONG_MS);
+        sleepMs(Delays.LONG_MS);
         task.assertExecutedMoreThanOnce();
     }
 
@@ -110,7 +111,7 @@ public class ThreadPoolRepeater_JobExecutionTest extends ThreadPoolRepeater_Abst
     public void testUnsetOfInterruptStatus(boolean strict) throws InterruptedException {
         DetectingAndInterruptingRunnable detector = new DetectingAndInterruptingRunnable();
 
-        newRunningRepeater(strict, new RepeatableRunnable(detector));
+        newRunningRepeater(strict, new RepeatableRunnable(detector),1);
 
         //give the runnable some time to runWork.
         giveOthersAChance();

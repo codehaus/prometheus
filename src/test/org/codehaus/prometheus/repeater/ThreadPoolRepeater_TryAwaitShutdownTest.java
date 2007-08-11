@@ -5,9 +5,11 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.SleepingRunnable;
+import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
 import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -32,44 +34,43 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
 
     public void testWhileUnstarted() throws InterruptedException {
         newUnstartedStrictRepeater();
-        assertAwaitForTerminationSucceedsWhenShutdown(DELAY_SMALL_MS);
+        assertAwaitForTerminationSucceedsWhenShutdown(Delays.SMALL_MS);
     }
 
     public void testWhileRunning_noJob() {
         newRunningStrictRepeater();
-        assertAwaitForTerminationSucceedsWhenShutdown(DELAY_SMALL_MS);
+        assertAwaitForTerminationSucceedsWhenShutdown(Delays.SMALL_MS);
     }
 
     public void testRunning_hasJob() {
-        newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_SMALL_MS)));
-        assertAwaitForTerminationSucceedsWhenShutdown(DELAY_MEDIUM_MS);
+        newRunningStrictRepeater(new RepeatableRunnable(newSleepingRunnable(Delays.SMALL_MS)));
+        assertAwaitForTerminationSucceedsWhenShutdown(Delays.MEDIUM_MS);
     }
 
     public void testTimeout() {
-        newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_SMALL_MS)));
+        newRunningStrictRepeater(new RepeatableRunnable(newSleepingRunnable(Delays.SMALL_MS)));
 
         TryAwaitShutdownThread t = scheduleTryAwaitShutdown(1);
         joinAll(t);
-
         t.assertIsTimedOut();
     }
 
     public void testNegativeTimeout() {
         newShutdownRepeater();
 
-        TryAwaitShutdownThread t1 = scheduleTryAwaitShutdown(-1);
-        joinAll(t1);
-
-        t1.assertIsTimedOut();
+        TryAwaitShutdownThread t = scheduleTryAwaitShutdown(-1);
+        joinAll(t);
+        t.assertIsTimedOut();
     }
 
     public void testWhileShuttingdown() throws InterruptedException {
-        newShuttingdownRepeater(DELAY_MEDIUM_MS);
-        assertAwaitForTerminationSucceedsWhenShutdown(DELAY_EON_MS);
+        newShuttingdownRepeater(Delays.MEDIUM_MS);
+        assertAwaitForTerminationSucceedsWhenShutdown(Delays.EON_MS);
     }
 
     public void testWhileForcedShuttingdown(){
-        //todo
+        newForcedShuttingdownRepeater(Delays.MEDIUM_MS,10);
+        assertAwaitForTerminationSucceedsWhenShutdown(Delays.EON_MS);
     }
 
     public void testWhileShutdown() throws InterruptedException {
@@ -85,9 +86,9 @@ public class ThreadPoolRepeater_TryAwaitShutdownTest extends ThreadPoolRepeater_
     }
 
     public void testInterruptedWhileWaiting() {
-        newRunningStrictRepeater(new RepeatableRunnable(new SleepingRunnable(DELAY_MEDIUM_MS)));
+        newRunningStrictRepeater(new RepeatableRunnable(newSleepingRunnable(Delays.MEDIUM_MS)));
 
-        TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(DELAY_LONG_MS);
+        TryAwaitShutdownThread awaitThread = scheduleTryAwaitShutdown(Delays.LONG_MS);
         giveOthersAChance();
         awaitThread.assertIsStarted();
 

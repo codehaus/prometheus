@@ -38,7 +38,7 @@ public class TakeBackThread<E> extends TestThread {
         assertEquals(State.success, state);
     }
 
-    public void assertTakeBackException() {
+    public void assertIllegalTakeback() {
         assertIsTerminatedNormally();
         assertEquals(State.incorrectref, state);
     }

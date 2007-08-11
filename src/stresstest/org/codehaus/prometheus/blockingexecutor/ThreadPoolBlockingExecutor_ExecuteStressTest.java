@@ -3,6 +3,7 @@ package org.codehaus.prometheus.blockingexecutor;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
 import org.codehaus.prometheus.testsupport.TestThread;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 

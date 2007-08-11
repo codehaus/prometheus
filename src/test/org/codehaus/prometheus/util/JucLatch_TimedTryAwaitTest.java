@@ -5,7 +5,9 @@
  */
 package org.codehaus.prometheus.util;
 
-import static org.codehaus.prometheus.testsupport.TestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.testsupport.Delays;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -68,13 +70,13 @@ public class JucLatch_TimedTryAwaitTest extends JucLatch_AbstractTest {
 
     public void testWaitingNeeded_startUninterrupted() {
         newClosedLatch();
-        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, DELAY_EON_MS);
+        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, Delays.EON_MS);
 
         //make sure the awaitThread is waiting.
         giveOthersAChance();
         awaitThread.assertIsStarted();
 
-        open();
+        spawned_open();
 
         joinAll(awaitThread);
         awaitThread.assertIsTerminatedNormally();
@@ -83,7 +85,7 @@ public class JucLatch_TimedTryAwaitTest extends JucLatch_AbstractTest {
 
     public void testTooMuchWaiting() {
         newClosedLatch();
-        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, DELAY_SMALL_MS);
+        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, Delays.SMALL_MS);
 
         //let the awaitThread complete, and check that is has timed out.
         joinAll(awaitThread);
@@ -92,7 +94,7 @@ public class JucLatch_TimedTryAwaitTest extends JucLatch_AbstractTest {
 
     public void testInterruptedWhileWaiting() {
         newClosedLatch();
-        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, DELAY_EON_MS);
+        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, Delays.EON_MS);
 
         //make sure the awaitThread is waiting.
         giveOthersAChance();
@@ -106,7 +108,7 @@ public class JucLatch_TimedTryAwaitTest extends JucLatch_AbstractTest {
 
     public void testSpuriousWakeups() {
         newClosedLatch();
-        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, DELAY_EON_MS);
+        TimedTryAwaitThread awaitThread = scheduleTimedTryAwait(START_UNINTERRUPTED, Delays.EON_MS);
 
         //make sure the awaitThread is waiting.
         giveOthersAChance();
@@ -119,7 +121,7 @@ public class JucLatch_TimedTryAwaitTest extends JucLatch_AbstractTest {
         awaitThread.assertIsStarted();
 
         //open the latch, and check that the awaitThread has finished successfully.
-        open();
+        spawned_open();
         joinAll(awaitThread);
         awaitThread.assertIsTerminatedNormally();
     }

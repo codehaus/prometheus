@@ -13,11 +13,22 @@ import static junit.framework.Assert.assertSame;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * 
+ *
+ * @author Peter Veentjer
+ */
 public abstract class RunSupport {
 
+    //todo: only contains the last thrown exception
     protected volatile RuntimeException foundException;
     protected final AtomicInteger beginExecutionCount = new AtomicInteger();
     protected final AtomicInteger executedCount = new AtomicInteger();
+    protected volatile boolean catchruntimeexception = false;
+
+    public void setCatchRuntimeException(boolean catchruntimeexception) {
+        this.catchruntimeexception = catchruntimeexception;
+    }
 
     public void assertNotExecuted() {
         assertExecutedCount(0);
@@ -27,13 +38,34 @@ public abstract class RunSupport {
         assertExecutedCount(1);
     }
 
+    public void assertExecutedOnceOrMore(){
+        assertTrue(executedCount.intValue()>=1);
+    }
+
+    public void assertExecutedMoreThanOnce(){
+        assertTrue(executedCount.intValue()>1);
+    }
+
     public void assertExecutedCount(int count) {
         assertEquals(count, executedCount.intValue());
     }
 
+    /**
+     *
+     * @param expected
+     */
     public void assertBeginExecutionCount(int expected) {
         if (expected < 0) throw new IllegalArgumentException();
         assertEquals(expected, beginExecutionCount.intValue());
+    }
+
+    /**
+     * Returns the number of times it is executed.
+     *
+     * @return
+     */
+    public int getExecutedCount(){
+        return executedCount.intValue();
     }
 
     /**
