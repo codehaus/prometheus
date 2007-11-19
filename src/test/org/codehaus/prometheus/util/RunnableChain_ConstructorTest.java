@@ -5,11 +5,20 @@
  */
 package org.codehaus.prometheus.util;
 
-import org.codehaus.prometheus.testsupport.TestRunnable;
+import org.codehaus.prometheus.concurrenttesting.TestRunnable;
 
 import static java.util.Arrays.asList;
+import java.util.List;
 
 public class RunnableChain_ConstructorTest extends RunnableChain_AbstractTest {
+
+    public void test_RunnableArrayIsNull() {
+        try {
+            new RunnableChain((Runnable[]) null);
+            fail();
+        } catch (NullPointerException ex) {
+        }
+    }
 
     public void test_RunnableArray() {
         Runnable r1 = new TestRunnable();
@@ -20,6 +29,14 @@ public class RunnableChain_ConstructorTest extends RunnableChain_AbstractTest {
         assertIsBreakable();
         assertChain(r1, r2, r3);
         assertHasDefaultExceptionHandler();
+    }
+
+    public void test_RunnableListIsNull() {
+        try {
+            new RunnableChain((List<Runnable>) null);
+            fail();
+        } catch (NullPointerException ex) {
+        }
     }
 
     public void test_RunnableList() {

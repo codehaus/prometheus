@@ -48,7 +48,7 @@ public class StandardBufferedChannel<E> implements BufferedChannel<E> {
     }
 
     public void setRemainingCapacity(int capacity) {
-
+        throw new UnsupportedOperationException();
     }
 
     public int getRemainingCapacity() {
@@ -89,7 +89,11 @@ public class StandardBufferedChannel<E> implements BufferedChannel<E> {
     }
 
     public long offer(E item, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
-        queue.offer(item, timeout, unit);
-        throw new RuntimeException();
+        long startNs = System.nanoTime();
+
+        if (!queue.offer(item, timeout, unit))
+            throw new TimeoutException();
+
+        return startNs - System.nanoTime();
     }
 }

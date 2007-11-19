@@ -5,10 +5,10 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import static org.codehaus.prometheus.testsupport.TestSupport.newUninterruptableSleepingRunnable;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newUninterruptableSleepingRunnable;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
  * Unittests {@link ThreadPoolBlockingExecutor#awaitShutdown()}.
@@ -27,7 +27,7 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
         waiter1Thread.assertIsStarted();
         waiter2Thread.assertIsStarted();
 
-        spawned_shutdown();
+        spawned_shutdownPolitly();
 
         //make sure that all waiters have terminated without problems
         giveOthersAChance();
@@ -46,7 +46,7 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
         waiter1Thread.assertIsStarted();
         waiter2Thread.assertIsStarted();
 
-        spawned_shutdown();
+        spawned_shutdownPolitly();
 
         //make sure that all waiters have terminated without problems
         giveOthersAChance();
@@ -112,7 +112,7 @@ public class ThreadPoolBlockingExecutor_AwaitShutdownTest extends ThreadPoolBloc
         waiter1Thread.assertIsStarted();
         waiter2Thread.assertIsStarted();
 
-        spawned_shutdown();
+        spawned_shutdownPolitly();
                 
         //wait for the shutdown to complete and make sure that the waiters have completed
         joinAll(waiter1Thread, waiter2Thread);

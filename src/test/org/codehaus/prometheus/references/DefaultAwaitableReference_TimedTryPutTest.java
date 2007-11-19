@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

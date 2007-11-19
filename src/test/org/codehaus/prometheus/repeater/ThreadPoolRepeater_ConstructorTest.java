@@ -8,7 +8,7 @@ package org.codehaus.prometheus.repeater;
 import org.codehaus.prometheus.references.LendableReference;
 import org.codehaus.prometheus.references.RelaxedLendableReference;
 import org.codehaus.prometheus.references.StrictLendableReference;
-import org.codehaus.prometheus.testsupport.TracingThreadFactory;
+import org.codehaus.prometheus.concurrenttesting.TracingThreadFactory;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.util.StandardThreadFactory;
@@ -35,7 +35,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertIsStrict(true);
         assertHasRepeatable(null);
         assertHasEndTaskStrategy();
-    }
+   }
 
     //================= ThreadPoolRepeater(int) ===========================
 
@@ -193,7 +193,7 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
         assertActualPoolSize(0);
         assertSame(lendableRef, repeater.getLendableRef());
         assertSame(threadPool, repeater.getThreadPool());
-        assertNotNull(threadPool.getWorkerJob());
+        assertNotNull(threadPool.getJob());
         assertHasEndTaskStrategy();
     }
 

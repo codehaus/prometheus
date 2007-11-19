@@ -1,59 +1,66 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head><title>Prometheus - Java Concurrency Library</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <link rel="stylesheet" href="style.css" type="text/css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+
+    <!-- begin google analytics -->
+    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+        _uacct = "UA-2882464-1";
+        urchinTracker();
+    </script>
+    <!-- end google analytics -->
 </head>
 <body>
 
 <div id="main-header">
-  <div>
-    <h1 class="main-header-left">Java Concurrency Library</h1>
-    <hr class="hide"/>
-  </div>
+    <div>
+        <h1 class="main-header-left">Java Concurrency Library</h1>
+        <hr class="hide"/>
+    </div>
 </div>
 
 <div id="header">
-  <div id="header-title">
-    <h1>Prometheus</h1>
+    <div id="header-title">
+        <h1>Prometheus</h1>
 
-    <p>Created by <a href="mailto:alarmnummer@gmail.com">Peter Veentjer</a></p>
-  </div>
-  <!-- div id="header-logo" -->
+        <p>Created by <a href="mailto:alarmnummer@gmail.com">Peter Veentjer</a></p>
+    </div>
+    <!-- div id="header-logo" -->
     <!-- a id="header-logo" href="http://www.codehaus.org">codehaus.org</a -->
-  <!-- /div -->
-  <hr class="hide"/>
+    <!-- /div -->
+    <hr class="hide"/>
 </div>
 
 <div id="content">
     <div id="side">
-    <% for(menu in menus){%>
+        <% for(menu in menus){%>
         <div class="nav-title">
             <div><h3>${menu.name}</h3></div>
         </div>
         <ul class="nav">
-           <%for(item in menu.items) {
-                def onpage = item.pageid==page.pageid
-                def clazz = onpage ? 'selected' : 'unselected'
-                if(item.url){%>
-                    <li><a class="$clazz" href="${item.url}">${item.title}</a></li>
-              <%}else{%>
-                    <li><a class="$clazz" href="${item.pageid}.html">${item.title}</a></li>
-              <%}%>
-          <%}%>
+            <%for(item in menu.items) {
+            def onpage = item.pageid==page.pageid
+            def clazz = onpage ? 'selected' : 'unselected'
+            if(item.url){%>
+            <li><a class="$clazz" href="${item.url}">${item.title}</a></li>
+            <%}else{%>
+            <li><a class="$clazz" href="${item.pageid}.html">${item.title}</a></li>
+            <%}%>
+            <%}%>
         </ul>
         <div class="nav-footer">
-            <div></div>
+            <div/>
         </div>
         <hr class="hide"/>
-    <%}%>
+        <%}%>
     </div>
 
     <div id="mainContent">
         ${pagecontent}
     </div>
-
-<!-- end of main content -->
 
     <div id="footer">
         <hr class="hide"/>
@@ -62,6 +69,7 @@
             Copyright © 2007
         </div>
     </div>
-</div><!-- content -->
+</div>
+<!-- end content -->
 </body>
 </html>

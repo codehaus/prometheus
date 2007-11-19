@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.closeable;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
 
 
 public abstract class CloseableWaitsection_AbstractTest extends ConcurrentTestCase {

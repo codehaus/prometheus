@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.util;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
 
 /**
  * Unittests the {@link JucLatch#openWithoutLocking()} method.

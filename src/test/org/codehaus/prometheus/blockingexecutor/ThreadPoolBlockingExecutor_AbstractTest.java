@@ -5,10 +5,10 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.testsupport.*;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import static org.codehaus.prometheus.testsupport.TestSupport.*;
+import org.codehaus.prometheus.concurrenttesting.*;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.*;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.Arrays;
@@ -56,10 +56,10 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         t.assertIsTerminatedNormally();
     }
 
-    public void spawned_shutdown(Runnable... outstandingTasks) {
-        ShutdownThread t = scheduleShutdown();
+    public void spawned_shutdownPolitly(Runnable... expectedOutstandingTasks) {
+        ShutdownPolitlyThread t = scheduleShutdownPolitly();
         joinAll(t);
-        t.assertSuccess(outstandingTasks);
+        t.assertSuccess(expectedOutstandingTasks);
         assertIsShuttingDownOrShutdown();
     }
 
@@ -125,12 +125,12 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
     public void newShutdownBlockingExecutor() {
         newUnstartedBlockingExecutor(0, 0);
-        executor.shutdown();
+        executor.shutdownPolitly();
     }
 
     public void newShutdownBlockingExecutor(int queuesize, int poolsize) {
         newUnstartedBlockingExecutor(queuesize, poolsize);
-        executor.shutdown();
+        executor.shutdownPolitly();
     }
 
     public void newForcedShuttingdownBlockingExecutor(long sleepMs, int poolsize) {
@@ -144,7 +144,7 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
 
     public void newShuttingdownBlockingExecutor(long timeMs) {
         newStartedBlockingExecutor(1, 1, newSleepingRunnable(timeMs));
-        executor.shutdown();
+        executor.shutdownPolitly();
     }
 
     public void assertDesiredPoolSize(int expectedPoolSize) {
@@ -253,8 +253,8 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         return t;
     }
 
-    public ShutdownThread scheduleShutdown() {
-        ShutdownThread t = new ShutdownThread();
+    public ShutdownPolitlyThread scheduleShutdownPolitly() {
+        ShutdownPolitlyThread t = new ShutdownPolitlyThread();
         t.start();
         return t;
     }
@@ -325,12 +325,12 @@ public abstract class ThreadPoolBlockingExecutor_AbstractTest extends Concurrent
         }
     }
 
-    public class ShutdownThread extends TestThread {
+    public class ShutdownPolitlyThread extends TestThread {
         private volatile List<Runnable> foundTasks;
 
         @Override
         protected void runInternal() {
-            foundTasks = executor.shutdown();
+            foundTasks = executor.shutdownPolitly();
         }
 
         public void assertSuccess(Runnable... expectedTasks) {

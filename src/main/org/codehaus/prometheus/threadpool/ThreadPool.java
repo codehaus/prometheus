@@ -16,23 +16,23 @@ import java.util.concurrent.TimeoutException;
  * </p>
  * <p/>
  * The workers in the ThreadPool keep repeating a {@link ThreadPoolJob}.
- * For a worker to executes a WorkJob, it first needs to execute {@link ThreadPoolJob#getWork()} method
+ * For a worker to executes a WorkJob, it first needs to execute {@link ThreadPoolJob#takeWork()} method
  * and after it has got his task it calls the {@link ThreadPoolJob#executeWork(Object)}
- * method. The getWork could be taking a reference from a LendableReference for example
+ * method. The takeWork could be taking a reference from a LendableReference for example
  * (see {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater}) or taking a task from a
  * blocking queue {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor}. Workers
- * that are idle, are executing the getWork method (they are waiting for work to execute) and else
+ * that are idle, are executing the takeWork method (they are waiting for work to execute) and else
  * they are working.
  * </p>
  * <p/>
- * When a ThreadPool is shutdown, it starts calling the {@link ThreadPoolJob#getShuttingdownWork()}.
+ * When a ThreadPool is shutdown, it starts calling the {@link ThreadPoolJob#takeWorkForNormalShutdown()}.
  * When a ThreadPool is forced to shutdown by calling the {@link #shutdownNow()} method, no methods
  * are called on the ThreadPoolJob anymore and the pooled thread is able to rest in peace.
  * </p>
  * <h1>Exception handling</h1>
  * <p/>
  * Exception handler: by injecting an instanceof of an {@link ExceptionHandler} one is able to
- * handle exceptions. Default a {@link org.codehaus.prometheus.exceptionhandler.NullExceptionHandler}
+ * handle exceptions. Default a {@link org.codehaus.prometheus.exceptionhandler.NoOpExceptionHandler}
  * is used.
  * <p/>
  * Nothing is done with errors (they are not caught and this could lead to corrupted structures).
@@ -51,13 +51,14 @@ public interface ThreadPool {
      *
      * @throws IllegalStateException when the ThreadPool is shutting down, shutdown or
      *                               no default ThreadPoolJob is set.
-     * @see #shutdown()
+     * @see #shutdownPolitly()
      */
     void start();
 
     /**
      * Shuts down this ThreadPool. It doesn't interrupt worker-threads while they are executing
-     * a task.
+     * a task (this could influence the time between the start of the shutdown, and the actual
+     * shutdown).
      * <p/>
      * This method can be called safely whatever state the ThreadPool is in.
      * <p/>
@@ -67,7 +68,7 @@ public interface ThreadPool {
      * @see #shutdownNow()
      * @see #awaitShutdown()
      */
-    ThreadPoolState shutdown();
+    ThreadPoolState shutdownPolitly();
 
     /**
      * Shuts down this ThreadPool immediately by interrupting workers while they are executing
@@ -79,27 +80,27 @@ public interface ThreadPool {
      * This call doesn't wait for the shutdown to complete, see {@link #awaitShutdown()}
      *
      * @return the previous state the ThreadPool was in.
-     * @see #shutdown()
+     * @see #shutdownPolitly()
      * @see #awaitShutdown()
      */
     ThreadPoolState shutdownNow();
 
     /**
-     * Awaits the shutdown of the ThreadPool but doesn't influence the state of the ThreadPool. This
-     * call can be made safely no matter the state the ThreadPool is in. If the ThreadPool already is
-     * shutdown, it returned immediately.
+     * Awaits the shutdown of the ThreadPool but doesn't influence the state of the ThreadPool (so
+     * it doesn't shutdown the ThreadPool). This call can be made safely no matter the state the
+     * ThreadPool is in. If the ThreadPool already is shutdown, it returns immediately.
      *
      * @throws InterruptedException if the thread is interrupted while waiting for the complete shutdown
      *                              to take place.
-     * @see #shutdown()
+     * @see #shutdownPolitly()
      * @see #tryAwaitShutdown(long,java.util.concurrent.TimeUnit)
      */
     void awaitShutdown() throws InterruptedException;
 
     /**
-     * Awaits the shutdown of the ThreadPool but doesn't influence the state of the ThreadPool. This
-     * call can be made safely no matter the state the ThreadPool is in. If the ThreadPool already is
-     * shutdown, it returned immediately.
+     * Awaits the shutdown of the ThreadPool with a timeout but doesn't influence the state of the ThreadPool (so
+     * it doesn't shutdown the ThreadPool). This call can be made safely no matter the state the ThreadPool
+     * is in. If the ThreadPool already is shutdown, it returns immediately.
      *
      * @param timeout how long to wait before giving up, in units of unit
      * @param unit    a TimeUnit determining how to interpret the timeout parameter
@@ -107,24 +108,23 @@ public interface ThreadPool {
      *                              to take place.
      * @throws TimeoutException     if a timeout occurred. todo:neg timeout
      * @throws NullPointerException if unit is <tt>null</tt>.
-     * @see #shutdown()
+     * @see #shutdownPolitly()
      * @see #awaitShutdown()
      */
     void tryAwaitShutdown(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
 
-
     /**
-     * Gets the job this ThreadPool is executing.  If no job is set, <tt>null</tt> is returned.
+     * Gets the ThreadPoolJob this ThreadPool is executing.  If no ThreadPoolJob is set, <tt>null</tt> is returned.
      *
      * @return the job this ThreadPool is executing.
      * @see #setJob(ThreadPoolJob)
      */
-    ThreadPoolJob getWorkerJob();
+    ThreadPoolJob getJob();
 
     /**
      * Sets the ThreadPoolJob this ThreadPool executes.
      *
-     * @param job the
+     * @param job the ThreadPoolJob this ThreadPool is going to execute
      * @throws NullPointerException  if job is <tt>null</tt>.
      * @throws IllegalStateException if the ThreadPool isn't in the unstarted state anymore.
      * @see #setJob(ThreadPoolJob)
@@ -132,7 +132,7 @@ public interface ThreadPool {
     void setJob(ThreadPoolJob job);
 
     /**
-     * Gets the ExceptionHandler. The value will never be <tt>null</tt>.
+     * Gets the ExceptionHandler this ThreadPool uses to handle exceptions. It will never be <tt>null</tt>.
      *
      * @return the ExceptionHandler of this ThreadPool.
      * @see #setExceptionHandler(ExceptionHandler)

@@ -7,6 +7,7 @@ package org.codehaus.prometheus.util;
 
 import org.codehaus.prometheus.uninterruptiblesection.TimedUninterruptibleSection;
 import static org.codehaus.prometheus.util.ConcurrencyUtil.ensureNoTimeout;
+import static org.codehaus.prometheus.util.ConcurrencyUtil.toUsableNanos;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -24,10 +25,9 @@ import java.util.concurrent.locks.Condition;
 public class ConditionUtil {
 
     /**
-     * Waits for an event on a condition to occur.
-     * <p/>
-     * This function calls {@link Condition#awaitNanos(long)} but throws a TimeoutException instead
-     * of returning a value equal or smaller to zero to indicate that a timeout has occurred.
+     * Waits for an event on a condition to occur. This function calls {@link Condition#awaitNanos(long)} but
+     * throws a TimeoutException instead of returning a value equal or smaller to zero to indicate that a timeout
+     * has occurred. This means that the returned value always will be larger than zero.
      * <p/>
      * If the thread is now the owner of the condition (doesn't have the corresponding lock) it
      * could happen that a IllegalThreadMonitorException is thrown. This depends on the
@@ -45,19 +45,18 @@ public class ConditionUtil {
      * @throws TimeoutException     if a timeout occurs.
      * @see Condition#awaitNanos(long)
      */
-    public static long awaitNanosAndThrow(Condition condition, long timeoutNs)
+    public static long awaitNanosOrThrow(Condition condition, long timeoutNs)
             throws InterruptedException, TimeoutException {
         if (condition == null) throw new NullPointerException();
 
         ensureNoTimeout(timeoutNs);
         long remainingNs = condition.awaitNanos(timeoutNs);
-        if (remainingNs <= 0)
-            throw new TimeoutException();
+        ensureNoAwaitTimeout(remainingNs);
         return remainingNs;
     }
 
     /**
-     * @param condition the condition to wait on.
+     * @param condition the Condition to wait on.
      * @param timeout   how long to wait before giving up in units of <tt>unit</tt>.
      * @param unit      a <tt>TimeUnit</tt> determining how to interpret the <tt>timeout</tt>
      *                  parameter.
@@ -65,12 +64,12 @@ public class ConditionUtil {
      * @throws InterruptedException if the thread is interrupted while waiting.
      * @throws NullPointerException if condition or unit is <tt>null</tt>.
      * @throws TimeoutException     if a timeout occurs.
-     * @see #awaitNanosUninterruptiblyAndThrow(Condition,long)
+     * @see #awaitNanosUninterruptiblyOrThrow(Condition,long)
      */
-    public static long awaitAndThrow(Condition condition, long timeout, TimeUnit unit)
+    public static long awaitOrThrow(Condition condition, long timeout, TimeUnit unit)
             throws InterruptedException, TimeoutException {
         if (condition == null || unit == null) throw new NullPointerException();
-        return awaitNanosAndThrow(condition, unit.toNanos(timeout));
+        return awaitNanosOrThrow(condition, unit.toNanos(timeout));
     }
 
     /**
@@ -84,22 +83,51 @@ public class ConditionUtil {
      * @return the remaining timeout (always larger than 0)
      * @throws TimeoutException     when a timeout occurrs
      * @throws NullPointerException if condition is null.
+     * @see java.util.concurrent.locks.Condition#awaitUninterruptibly()
      */
-    public static long awaitNanosUninterruptiblyAndThrow(final Condition condition, long timeoutNs)
+    public static long awaitNanosUninterruptiblyOrThrow(final Condition condition, long timeoutNs)
             throws TimeoutException {
         if (condition == null) throw new NullPointerException();
 
         TimedUninterruptibleSection<Long> section = new TimedUninterruptibleSection<Long>() {
-            protected Long originalsection(long timeoutNs)
+            protected Long interruptibleSection(long timeoutNs)
                     throws InterruptedException, TimeoutException {
                 timeoutNs = condition.awaitNanos(timeoutNs);
-                if (timeoutNs <= 0)
-                    throw new TimeoutException();
+                ensureNoAwaitTimeout(timeoutNs);
                 return timeoutNs;
             }
         };
 
         return section.tryExecute(timeoutNs, TimeUnit.NANOSECONDS);
+    }
+
+    /**
+     * Waits on a Condition uninterruptible.
+     *
+     * @param condition the condition to wait on
+     * @param timeout   the timeout period in nanoseconds
+     * @param unit      a <tt>TimeUnit</tt> determining how to interpret the <tt>timeout</tt>
+     *                  parameter.
+     * @return the remaining timeout (always larger than 0)
+     * @throws TimeoutException     when a timeout occurrs
+     * @throws NullPointerException if condition or unit is null.
+     * @see #awaitNanosUninterruptiblyOrThrow(java.util.concurrent.locks.Condition, long)
+     */
+    public static long awaitUninterruptiblyOrThrow(Condition condition, long timeout, TimeUnit unit)
+            throws TimeoutException {
+        return awaitNanosUninterruptiblyOrThrow(condition, toUsableNanos(timeout, unit));
+    }
+
+    /**
+     * Makes sure that no timeout has occurred while doing an await on a Condition. A 0
+     * indicates that a timeout has occurred.
+     *
+     * @param remainingNs the remaining number of nanoseconds.
+     * @throws TimeoutException if timeout is smaller or equal to zero.
+     */
+    public static void ensureNoAwaitTimeout(long remainingNs) throws TimeoutException {
+        if (remainingNs <= 0)
+            throw new TimeoutException();
     }
 
     //we don't want any instances.

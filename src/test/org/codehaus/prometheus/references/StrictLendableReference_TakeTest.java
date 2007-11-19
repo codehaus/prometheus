@@ -5,9 +5,9 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.testsupport.TestThread;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
 
 import java.util.LinkedList;
 import java.util.List;

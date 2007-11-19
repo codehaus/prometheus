@@ -12,5 +12,9 @@ package org.codehaus.prometheus.threadpool;
  * @since 0.1
  */
 public enum ThreadPoolState {
-    unstarted, running, shuttingdown, forcedshuttingdown, shutdown
+    unstarted, running, shuttingdownnormally, shuttingdownforced, shutdown;
+
+    public boolean isShuttingdownState() {
+        return this == shuttingdownforced || this == shuttingdownnormally;
+    }
 }

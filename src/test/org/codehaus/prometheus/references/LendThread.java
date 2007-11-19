@@ -7,7 +7,7 @@ package org.codehaus.prometheus.references;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertSame;
-import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
 import org.codehaus.prometheus.util.ConcurrencyUtil;
 
 import java.util.concurrent.TimeUnit;

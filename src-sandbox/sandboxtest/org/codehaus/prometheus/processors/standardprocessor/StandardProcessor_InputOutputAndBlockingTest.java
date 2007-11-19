@@ -1,8 +1,8 @@
 package org.codehaus.prometheus.processors.standardprocessor;
 
 import org.codehaus.prometheus.processors.TestPipedProcess;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
 
 /**
  * Unittests input/output related functionality of the {@link StandardProcessor}.
@@ -26,7 +26,7 @@ public class StandardProcessor_InputOutputAndBlockingTest extends StandardProces
     public void testSomeWaitingNeeded() {
         Object item = new Object();
         TestPipedProcess process = new TestPipedProcess(item);
-        newProcessor(process);
+        newPipedProcessor(process);
 
         //spawned_start the processing, this call should block because no work is available.
         ProcessThread processThread = scheduleProcess();
@@ -46,7 +46,7 @@ public class StandardProcessor_InputOutputAndBlockingTest extends StandardProces
     public void testNoWaitingNeeded() {
         Object item = new Object();
         TestPipedProcess process = new TestPipedProcess(item);
-        newProcessor(process);
+        newPipedProcessor(process);
 
         spawned_assertPut(item);
 

@@ -1,8 +1,8 @@
 package org.codehaus.prometheus.blockingexecutor.benchmark;
 
 import org.codehaus.prometheus.BenchmarkExecutor;
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import static org.codehaus.prometheus.testsupport.TestSupport.newStressRunnable;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newStressRunnable;
 
 import java.util.ArrayList;
 import java.util.List;

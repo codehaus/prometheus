@@ -5,10 +5,10 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newSleepingRunnable;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#awaitShutdown()} method.
@@ -62,7 +62,7 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
         assertAwaitForTerminationSucceedsWhenShutdown();
     }
 
-    //=================shuttingdown========================================
+    //=================shuttingdownnormally========================================
 
     public void testShuttingDown_strict() throws InterruptedException {
         testShuttingDown(true);
@@ -77,7 +77,7 @@ public class ThreadPoolRepeater_AwaitShutdownTest extends ThreadPoolRepeater_Abs
         assertAwaitForTerminationSucceedsWhenShutdown();
     }
 
-    //==============forcedshuttingdown================================
+    //==============shuttingdownforced================================
 
     public void testForcedShuttingdown(){
         newForcedShuttingdownRepeater(Delays.LONG_MS,1);

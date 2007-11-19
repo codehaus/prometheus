@@ -19,6 +19,8 @@ import java.util.concurrent.TimeoutException;
  * the only thing that is different is that no value is returned.
  * The same comparison can be made between the Waitpoint and the
  * AwaitableReference.
+ * <p/>
+ * In java 7 a closure could be added to make it more attractive to use.
  *
  * @author Peter Veentjer.
  */

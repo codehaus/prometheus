@@ -9,12 +9,15 @@ import java.util.concurrent.*;
 
 /**
  * An Object that executes submitted tasks. The BlockingExecutor can be compared to the
- * {@link java.util.concurrent.Executor}, but the BlockingExecutor provides more control on
- * blocking behavior and timeouts. If an {@link ThreadPoolExecutor} receives a task, it places the
+ * {@link java.util.concurrent.Executor}, but provides more control on blocking behavior and timeouts.
+ * <p/>
+ * If an {@link ThreadPoolExecutor} receives a task, it places the
  * task on the workqueue using the offer method and a zero timeout. If no place is available on that
- * workqueue, the call doesn't block, but the RejectedExecutionHandler is called instead. In a
- * lot of cases you just want to block until space comes available, and you are left on your
- * own with the ThreadPoolExecutor. This is the gap the BlockingExecutor fills.
+ * workqueue, the call doesn't block, but the {@link java.util.concurrent.RejectedExecutionHandler} is called
+ * instead. The default handler throws a {@link RejectedExecutionException}. In a lot of cases don't want to
+ * receive this exception, but want you just want to block until space comes available, and you are left on your
+ * own with the ThreadPoolExecutor. Another problem with the Executor is that you can't place a task with
+ * a timeout per call (there is no easy way to pass the timeout parameter to the workqueue.offer).
  * <p/>
  * <td><b>What about Future's</b></td>
  * <dd>
@@ -53,17 +56,16 @@ public interface BlockingExecutor {
      * one of the following things happens:
      * <ol>
      * <li>the task is accepted</li>
-     * <li>the task is rejected and throws a RejectedExecutionException</li>
-     * <li>the call is interrupted and throws an InterruptedException</li>
+     * <li>the task is rejected and a RejectedExecutionException is thrown</li>
+     * <li>the call is interrupted and an InterruptedException is thrown</li>
      * </ol>
      * <p/>
-     * <p/>
-     * A difference with this method and the {@link java.util.concurrent.Executor#execute(Runnable)} is that
-     * former blocks and the latter uses a {@link RejectedExecutionHandler}.
+     * The main difference with this method and the {@link java.util.concurrent.Executor#execute(Runnable)} is that
+     * the former blocks and the latter uses a {@link RejectedExecutionHandler} when the queue is full.
      *
      * @param task the task to execute.
-     * @throws InterruptedException       if the current thread has been interrupted. If that happens,
-     *                                    the task is not executed.
+     * @throws InterruptedException       if the current thread has been interrupted while waiting for task placement.
+     *                                    If that happens, the task is not executed.
      * @throws RejectedExecutionException if the task is rejected for execution.
      * @throws NullPointerException       if task is <tt>null</tt>.
      */
@@ -74,18 +76,21 @@ public interface BlockingExecutor {
      * one of the following things happens:
      * <ol>
      * <li>the task is accepted</li>
-     * <li>the task is rejected and throws a RejectedExecutionException</li>
-     * <li>the call is interrupted and throws an InterruptedException</li>
-     * <li>a timeout has occurred and throws a TimeoutException</li>
+     * <li>the task is rejected and a RejectedExecutionException is thrown</li>
+     * <li>the call is interrupted and an InterruptedException is thrown</li>
+     * <li>a timeout has occurred and a TimeoutException is thrown</li>
      * </ol>
+     * The {@link Executor} doesn't allow for timeouts at the call level. An instance wide
+     * timeout could be realized by creating a custom RejectedExecutionHandler and place the
+     * item on the workqueue with a fixed timeout.
      *
      * @param task    the task to execute.
      * @param timeout how long to wait before giving up, in units of unit
      * @param unit    a TimeUnit determining how to interpret the timeout parameter
-     * @throws InterruptedException       if the current thread has been interrupted. If that happens,
-     *                                    the task is not executed by this BlockingExecutor.
-     * @throws NullPointerException       if task or unit is <tt>null</tt>.
-     * @throws RejectedExecutionException if the task is rejected
+     * @throws InterruptedException       if the current thread has been interrupted while waiting for task placement.
+     *                                    If that happens the task is not executed.
+     * @throws RejectedExecutionException if the task is rejected for execution.
+     * @throws NullPointerException       if task is <tt>null</tt>.
      * @throws TimeoutException           if the call times out.
      */
     void tryExecute(Runnable task, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;

@@ -15,7 +15,7 @@ import java.util.concurrent.TimeoutException;
  * <p/>
  * idea:
  * The ComposedWaitpoint should be able to execute all Waitpoints
- * under once single atomic action (using a lock). At the moment
+ * under runOnce single atomic action (using a lock). At the moment
  * all Waitpoint acquire their own lock, unless specified otherwise.
  *
  * @author Peter Veentjer.
@@ -34,7 +34,7 @@ public class ComposedWaitpoint implements Waitpoint {
     }
 
     public boolean isPassible() {
-        //if once of the waitpoints is not passible, this Waitpoint is not passible.
+        //if runOnce of the waitpoints is not passible, this Waitpoint is not passible.
         for (Waitpoint waitpoint : waitpoints) {
             if (!waitpoint.isPassible())
                 return false;
@@ -47,7 +47,7 @@ public class ComposedWaitpoint implements Waitpoint {
 
     public boolean tryPass() {
         for (Waitpoint waitpoint : waitpoints) {
-            //if once of the waitpoints is not passible, this waitpoint is not passible.
+            //if runOnce of the waitpoints is not passible, this waitpoint is not passible.
             if (!waitpoint.tryPass())
                 return false;
         }

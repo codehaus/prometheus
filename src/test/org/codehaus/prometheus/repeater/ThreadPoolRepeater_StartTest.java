@@ -5,9 +5,9 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.TestRunnable;
-import org.codehaus.prometheus.testsupport.Delays;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import org.codehaus.prometheus.concurrenttesting.TestRunnable;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#start()} method.

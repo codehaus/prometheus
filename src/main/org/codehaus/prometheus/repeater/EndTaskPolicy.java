@@ -9,7 +9,7 @@ package org.codehaus.prometheus.repeater;
  * An {@link ExecutionPolicy} that removes the current task that is repeated.
  * It doesn't change the state of worker.
  *
- * If the ThreadPoolRepeater is relaxed, it could lead to the
+ * Todo: think about consequences
  *
  * @author Peter Veentjer
  * @since 0.1

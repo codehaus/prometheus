@@ -74,7 +74,7 @@ public class ThreadPoolRepeaterMBeanImplTest extends TestCase {
     }
 
     public void testShutdown() {
-        repeaterMock.shutdown();
+        repeaterMock.shutdownPolitly();
         replayMocks();
         mbean.shutdown();
         verifyMocks();

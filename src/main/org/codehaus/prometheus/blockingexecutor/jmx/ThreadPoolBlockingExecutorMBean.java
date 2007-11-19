@@ -28,7 +28,7 @@ public interface ThreadPoolBlockingExecutorMBean {
 
     /**
      * For more information see
-     * {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor#shutdown()}
+     * {@link org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor#shutdownPolitly()}
      */
     void shutdown();
 

@@ -1,6 +1,6 @@
 package org.codehaus.prometheus.processors.standardprocessor;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
 
 /**
  *

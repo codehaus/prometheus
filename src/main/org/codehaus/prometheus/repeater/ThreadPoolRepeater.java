@@ -14,11 +14,13 @@ import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPoolJob;
 import org.codehaus.prometheus.threadpool.ThreadPoolState;
 import org.codehaus.prometheus.uninterruptiblesection.TimedUninterruptibleSection;
+import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The default implementation of the {@link RepeaterService} interface that {@link ThreadPool} to
@@ -99,7 +101,7 @@ public class ThreadPoolRepeater implements RepeaterService {
         return new StrictLendableReference<Repeatable>(repeatable);
     }
 
-    public static LendableReference<Repeatable> createDefaultLendableReference(boolean strict, Repeatable repeatable) {
+    public static LendableReference<Repeatable> createLendableReference(boolean strict, Repeatable repeatable) {
         if (strict)
             return new StrictLendableReference<Repeatable>(repeatable);
         else
@@ -110,14 +112,19 @@ public class ThreadPoolRepeater implements RepeaterService {
         return new StandardThreadPool(poolsize, threadFactory);
     }
 
+    private final static AtomicLong defaultThreadpoolnameCounter = new AtomicLong(1);
+
     public static ThreadPool createDefaultThreadpool(int poolsize) {
-        return new StandardThreadPool(poolsize);
+        String poolname = "repeater#"+defaultThreadpoolnameCounter.incrementAndGet();
+        ThreadFactory threadFactory = new StandardThreadFactory(poolname);
+        return createDefaultThreadpool(poolsize, threadFactory);
     }
 
     //fields are made protected so ExecutionPolicy has access to them
+    //todo: can be made private as soon as the ExecutionPolicy is made inner class
     protected final LendableReference<Repeatable> lendableRef;
     protected final ThreadPool threadPool;
-    private volatile ExecutionPolicy executionPolicy = new EndTaskPolicy();
+    private volatile ExecutionPolicy executionPolicy = EndTaskPolicy.INSTANCE;
 
     /**
      * Creates a new strict and unstarted ThreadPoolRepeater with one thread and a
@@ -171,7 +178,7 @@ public class ThreadPoolRepeater implements RepeaterService {
      * @throws IllegalArgumentException if poolsize smaller than 0.
      */
     public ThreadPoolRepeater(boolean strict, Repeatable task, int poolsize, ThreadFactory threadFactory) {
-        this(createDefaultThreadpool(poolsize, threadFactory), createDefaultLendableReference(strict, task));
+        this(createDefaultThreadpool(poolsize, threadFactory), createLendableReference(strict, task));
     }
 
     /**
@@ -241,8 +248,8 @@ public class ThreadPoolRepeater implements RepeaterService {
         threadPool.start();
     }
 
-    public void shutdown() {
-        threadPool.shutdown();                   
+    public void shutdownPolitly() {
+        threadPool.shutdownPolitly();
     }
 
     public void shutdownNow() {
@@ -276,9 +283,9 @@ public class ThreadPoolRepeater implements RepeaterService {
                 return RepeaterServiceState.unstarted;
             case running:
                 return RepeaterServiceState.running;
-            case shuttingdown:
+            case shuttingdownnormally:
                 return RepeaterServiceState.shuttingdown;
-            case forcedshuttingdown:
+            case shuttingdownforced:
                 return RepeaterServiceState.shuttingdown;
             case shutdown:
                 return RepeaterServiceState.shutdown;
@@ -303,10 +310,10 @@ public class ThreadPoolRepeater implements RepeaterService {
      * @throws RejectedExecutionException
      */
     private void ensureRunningRepeater() {
-        try{
+        try {
             start();
-        }catch(IllegalStateException ex){
-            throw new RejectedExecutionException(ex.getMessage(),ex);
+        } catch (IllegalStateException ex) {
+            throw new RejectedExecutionException(ex.getMessage(), ex);
         }
     }
 
@@ -314,7 +321,7 @@ public class ThreadPoolRepeater implements RepeaterService {
         ensureRunningRepeater();
 
         TimedUninterruptibleSection section = new TimedUninterruptibleSection() {
-            protected Object originalsection(long timeoutNs) throws InterruptedException, TimeoutException {
+            protected Object interruptibleSection(long timeoutNs) throws InterruptedException, TimeoutException {
                 lendableRef.tryPut(task, timeoutNs, TimeUnit.NANOSECONDS);
                 return null;
             }
@@ -338,11 +345,11 @@ public class ThreadPoolRepeater implements RepeaterService {
 
     private class RepeaterThreadPoolJob implements ThreadPoolJob<Repeatable> {
 
-        public Repeatable getWork() throws InterruptedException {
+        public Repeatable takeWork() throws InterruptedException {
             return lendableRef.take();
         }
 
-        public Repeatable getShuttingdownWork() throws InterruptedException {
+        public Repeatable takeWorkForNormalShutdown(){
             //no guarantees are made how many times a task is executed, so why try to retrieve
             //one if we aren't required to process it.
             return null;

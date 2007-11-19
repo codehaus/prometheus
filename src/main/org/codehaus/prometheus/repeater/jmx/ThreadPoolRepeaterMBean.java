@@ -20,7 +20,7 @@ import org.codehaus.prometheus.repeater.RepeaterServiceState;
 public interface ThreadPoolRepeaterMBean {
 
     /**
-     * See {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#shutdown()}
+     * See {@link org.codehaus.prometheus.repeater.ThreadPoolRepeater#shutdownPolitly()}
      */
     void shutdown();
 

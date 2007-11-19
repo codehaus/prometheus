@@ -2,10 +2,10 @@ package org.codehaus.prometheus.processors.standardprocessor;
 
 import org.codehaus.prometheus.channels.StandardBufferedChannel;
 import org.codehaus.prometheus.processors.Processor_AbstractTest;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.Delays;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.randomInt;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.randomInt;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,34 +18,33 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
     protected volatile StandardBufferedChannel inputChannel;
     protected volatile StandardBufferedChannel outputChannel;
 
-    public List<Integer> generateRandomNumberList(int count) {
+    public static List<Integer> generateRandomNumberList(int count) {
         final List<Integer> itemList = new LinkedList<Integer>();
         for (int k = 0; k < count; k++)
             itemList.add(randomInt());
         return itemList;
     }
 
-
-    public void newProcessor(Object... process) {
-        newProcessor(Integer.MAX_VALUE, Integer.MAX_VALUE, process);
+    public void newPipedProcessor(Object... process) {
+        newPipedProcessor(Integer.MAX_VALUE, Integer.MAX_VALUE, process);
     }
 
     public void newSourceProcessor(Object process) {
-        newProcessor(-1, Integer.MAX_VALUE, process);
+        newPipedProcessor(-1, Integer.MAX_VALUE, process);
     }
 
     public void newSinkProcessor(Object process) {
-        newProcessor(Integer.MAX_VALUE, -1, process);
+        newPipedProcessor(Integer.MAX_VALUE, -1, process);
     }
 
-    public void newProcessor(int inputCapacity, int outputCapacity, Object[] processes) {
+    public void newPipedProcessor(int inputCapacity, int outputCapacity, Object[] processes) {
         inputChannel = inputCapacity < 0 ? null : new StandardBufferedChannel(inputCapacity);
         outputChannel = outputCapacity < 0 ? null : new StandardBufferedChannel(outputCapacity);
         standardProcessor = new StandardProcessor(inputChannel, processes, outputChannel);
     }
 
-    public void newProcessor(int inputCapacity, int outputCapacity, Object process) {
-        newProcessor(inputCapacity, outputCapacity, new Object[]{process});
+    public void newPipedProcessor(int inputCapacity, int outputCapacity, Object process) {
+        newPipedProcessor(inputCapacity, outputCapacity, new Object[]{process});
     }
 
     public ProcessThread scheduleProcess() {
@@ -115,7 +114,7 @@ public abstract class StandardProcessor_AbstractTest extends Processor_AbstractT
 
         @Override
         protected void runInternal() throws Exception {
-            result = standardProcessor.once();
+            result = standardProcessor.runOnce();
         }
 
         public void assertSuccess(boolean expectedResult) {

@@ -2,10 +2,9 @@ package org.codehaus.prometheus.processors.standardprocessor;
 
 import org.codehaus.prometheus.channels.InputChannel;
 import org.codehaus.prometheus.channels.OutputChannel;
-import org.codehaus.prometheus.processors.Dispatcher;
-import org.codehaus.prometheus.processors.Processor;
-import org.codehaus.prometheus.processors.StandardDispatcher;
-import org.codehaus.prometheus.processors.VoidValue;
+import org.codehaus.prometheus.processors.StandardProcessDispatcher;
+import org.codehaus.prometheus.processors.ProcessDispatcher;
+import org.codehaus.prometheus.processors.*;
 import static org.codehaus.prometheus.processors.VoidValue.isVoid;
 
 import static java.lang.String.format;
@@ -25,7 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * </p>
  * <h1>Dispatching</h1>
  * <p/>
- * Dispatching can be customized by injecting a custom dispatcher. The StandardDispatcher in
+ * Dispatching can be customized by injecting a custom dispatcher. The StandardProcessDispatcher in
  * the current state still has some limitation (it isn't able to match on interfaces for
  * example).
  * </p>
@@ -79,12 +78,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  * <h1>Variable number or processes</h1>
  * <p/>
  * It is possible to chain an arbitrary number of process in the processor. The output of the
- * previousPosition process will be used as input for the next process (so the dispatcher for more
+ * previousPosition process will be used as inputChannel for the next process (so the dispatcher for more
  * information). The minimum number of processes is 0. Using a chain of processes can be seen
  * as the 'classic' single threaded sequential chain of calls. Unless multiple threads are
  * calling the evaluate method, in that case the same chain will be executed concurrently. A single
  * chain of execution will always be executed by a single thread that remains constant for all
- * steps in that execution. So taking of input, running the chain of processes and output will
+ * steps in that execution. So taking of inputChannel, running the chain of processes and output will
  * be done by the same thread.
  * </p>
  * <h1>Stateless vs statefull processes</h1>
@@ -143,14 +142,14 @@ import java.util.concurrent.LinkedBlockingQueue;
  * </p>
  * <p/>
  * The advantage of storing the continuations on a queue instead of a threadlocal is that the execution
- * is not bound to a single thread. If that thread doesn't call the once method anymore, you want a
+ * is not bound to a single thread. If that thread doesn't call the runOnce method anymore, you want a
  * different thread to take over. It can happen that threads stop calling: when the poolsize of the
  * ThreadPoolRepeater is decreased for example.
  * </p>
  * todo:
  * improve error handling:
  * -iterator is not protected very well
- * -take of item from input is not protected
+ * -take of item from inputChannel is not protected
  * -placement of item on outtake is not well protected
  * -calls to the error handler are without protection
  *
@@ -158,37 +157,37 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class StandardProcessor implements Processor {
     private final List processes;
-    private final InputChannel input;
+    private final InputChannel inputChannel;
     private final OutputChannel output;
     private final ChainStep[] chainSteps;
     private final BlockingQueue<Stack<ChainFrame>> callstackqueue = new LinkedBlockingQueue<Stack<ChainFrame>>();
 
     //todo: default another errorPolicy
     private volatile ErrorPolicy errorPolicy = new Propagate_ErrorPolicy();
-    private volatile Dispatcher dispatcher = new StandardDispatcher();
-    private volatile StopPolicy stopPolicy = new DefaultStopPolicy();
+    private volatile ProcessDispatcher dispatcher = new StandardProcessDispatcher();
+    private volatile StopPolicy stopPolicy = new TypeBasedStopPolicy();
 
 
     /**
      * Creates a sink processor: a sink processor is processor that runs a sink process
      * (a process that consumes data).
      *
-     * @param input
+     * @param inputChannel
      * @param process
      * @throws NullPointerException if process is null.
      */
-    public StandardProcessor(InputChannel input, Object process) {
-        this(input, process, null);
+    public StandardProcessor(InputChannel inputChannel, Object process) {
+        this(inputChannel, process, null);
     }
 
     /**
      * Creates a
      *
-     * @param input
+     * @param inputChannel
      * @param processes
      */
-    public StandardProcessor(InputChannel input, Object[] processes) {
-        this(input, processes, null);
+    public StandardProcessor(InputChannel inputChannel, Object[] processes) {
+        this(inputChannel, processes, null);
     }
 
     /**
@@ -217,24 +216,24 @@ public class StandardProcessor implements Processor {
      * Creates a piped processor: a processor that runs a
      * piped process (a process that transforms data).
      *
-     * @param input
+     * @param inputChannel
      * @param process
      * @param output
      * @throws NullPointerException if process is null.
      */
-    public StandardProcessor(InputChannel input, Object process, OutputChannel output) {
-        this(input, new Object[]{process}, output);
+    public StandardProcessor(InputChannel inputChannel, Object process, OutputChannel output) {
+        this(inputChannel, new Object[]{process}, output);
     }
 
     /**
      * Creates a sink process
      *
-     * @param input     the InputChannel where the messages are retrieved from
+     * @param inputChannel     the InputChannel where the messages are retrieved from
      * @param processes a list of processes.
      * @throws NullPointerException if processes is null
      */
-    public StandardProcessor(InputChannel input, List processes) {
-        this(input, processes, null);
+    public StandardProcessor(InputChannel inputChannel, List processes) {
+        this(inputChannel, processes, null);
     }
 
     /**
@@ -251,26 +250,26 @@ public class StandardProcessor implements Processor {
     /**
      * Creates a piped process.
      *
-     * @param input
+     * @param inputChannel
      * @param processes
      * @param output
      * @throws NullPointerException if processes is null
      */
-    public StandardProcessor(InputChannel input, List processes, OutputChannel output) {
-        this(input, processes.toArray(new Object[processes.size()]), output);
+    public StandardProcessor(InputChannel inputChannel, List processes, OutputChannel output) {
+        this(inputChannel, processes.toArray(new Object[processes.size()]), output);
     }
 
     /**
      * Creates a piped process.
      *
-     * @param input
+     * @param inputChannel
      * @param processes
      * @param output
      */
-    public StandardProcessor(InputChannel input, Object[] processes, OutputChannel output) {
+    public StandardProcessor(InputChannel inputChannel, Object[] processes, OutputChannel output) {
         if (processes == null) throw new NullPointerException();
         this.processes = unmodifiableList(asList(processes));
-        this.input = input;
+        this.inputChannel = inputChannel;
         this.output = output;
         chainSteps = createSteps();
     }
@@ -301,8 +300,8 @@ public class StandardProcessor implements Processor {
      *
      * @return the InputChannel this StandardProcessor uses.
      */
-    public InputChannel getInput() {
-        return input;
+    public InputChannel getInputChannel() {
+        return inputChannel;
     }
 
     /**
@@ -311,26 +310,26 @@ public class StandardProcessor implements Processor {
      *
      * @return the OutputChannel this StandardProcessor uses.
      */
-    public OutputChannel getOutput() {
+    public OutputChannel getOutputChannel() {
         return output;
     }
 
     /**
-     * Returns the Dispatcher.
+     * Returns the ProcessDispatcher.
      *
      * @return
      */
-    public Dispatcher getDispatcher() {
+    public ProcessDispatcher getDispatcher() {
         return dispatcher;
     }
 
     /**
-     * Sets the Dispatcher this Processor uses to dispach methods on the processes.
+     * Sets the ProcessDispatcher this Processor uses to dispach methods on the processes.
      *
      * @param dispatcher
      * @throws NullPointerException if dispatcher is null.
      */
-    public void setDispatcher(Dispatcher dispatcher) {
+    public void setDispatcher(ProcessDispatcher dispatcher) {
         if (dispatcher == null) throw new NullPointerException();
         this.dispatcher = dispatcher;
     }
@@ -389,19 +388,15 @@ public class StandardProcessor implements Processor {
         if (arg instanceof Iterator)
             return (Iterator) arg;
 
+        //in the future the collections could be supported as well
+
         //in the future a more lightweight iterator could be used
         LinkedList<Object> l = new LinkedList<Object>();
         l.add(arg);
         return l.iterator();
     }
 
-    //public boolean evaluate() throws Exception {
-    //    Object in = takeInput();
-    //    return evaluateSteps(0, in);
-    //}
-
-    public boolean once() throws Exception {
-
+    public boolean runOnce() throws Exception {
         Stack<ChainFrame> framestack = callstackqueue.poll();
         if (framestack == null) {
             framestack = new Stack<ChainFrame>();
@@ -417,7 +412,7 @@ public class StandardProcessor implements Processor {
             return true;
         } finally {
             //if a solution was found, we can put the framestack back again
-            //so another path can be tried the following time.
+            //so another path can be tried the next time.
             if (solutionFound)
                 callstackqueue.put(framestack);
         }
@@ -426,11 +421,10 @@ public class StandardProcessor implements Processor {
     private boolean once(Stack<ChainFrame> framestack) throws Exception {
         if (framestack.isEmpty()) {
             Object in = takeInput();
-            //todo: stop check
-
-            //if there is nothing to try, we are finished and can return true.
+           
+            //if there are no processes and output, is nothing to try, we are finished and can return true.
             if (chainSteps.length == 0)
-                return true;
+                return !stopPolicy.shouldStop(in);
 
             //lets create a new frame to find solutions
             ChainFrame frame = new ChainFrame(chainSteps[0], asIterator(in));
@@ -438,7 +432,7 @@ public class StandardProcessor implements Processor {
         }
 
         //lets try until we run out of frames or we find a solution
-        //the next time the once method is called, we will continue where
+        //the next time the runOnce method is called, we will continue where
         //we left
         do {
             ChainFrame frame = framestack.peek();
@@ -465,15 +459,15 @@ public class StandardProcessor implements Processor {
 
     /**
      * Takes a message from the takeInput. If no takeInput is available, a VoidValue
-     * is returned. This call blocks if input is not null and no input is
+     * is returned. This call blocks if inputChannel is not null and no inputChannel is
      * available.
      *
      * @return the taken message (always a not null value).
-     * @throws InterruptedException if blocking for input was interrupted.
+     * @throws InterruptedException if blocking for inputChannel was interrupted.
      */
     private Object takeInput() throws InterruptedException {
-        //todo: what about error handling around the input.take()
-        return input == null ? VoidValue.INSTANCE : input.take();
+        //todo: what about error handling around the inputChannel.take()
+        return inputChannel == null ? VoidValue.INSTANCE : inputChannel.take();
     }
 
     @Override
@@ -497,7 +491,7 @@ public class StandardProcessor implements Processor {
         }
 
         /**
-         * Evaluates the current ChainStep. The output of this ChainStep will be the input
+         * Evaluates the current ChainStep. The output of this ChainStep will be the inputChannel
          * of the following ChainStep. This method will try following 
          *
          * @return a non null value indicates that the this step has executed succesfully, a
@@ -537,7 +531,7 @@ public class StandardProcessor implements Processor {
 
                 return it.next();
             } catch (Exception ex) {
-                //todo: is this the correct call to the errorhandler? What about input arguments?
+                //todo: is this the correct call to the errorhandler? What about inputChannel arguments?
                 return errorPolicy.handleReceiveError(ex, VoidValue.INSTANCE);
             }
         }
@@ -558,7 +552,7 @@ public class StandardProcessor implements Processor {
          * Evaluates the ChainStep. When a ChainStep returns null, steps after the current
          * step should not be tried.
          *
-         * @param arg the input data of this step.
+         * @param arg the inputChannel data of this step.
          * @return the result of the step.
          * @throws Exception the evaluate method is allowed to throw Exceptions. Normally they
          *                   are caught by the ErrorHandler, but an ErrorHandler can decide to

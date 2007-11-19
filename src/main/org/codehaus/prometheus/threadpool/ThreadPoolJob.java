@@ -6,33 +6,23 @@
 package org.codehaus.prometheus.threadpool;
 
 /**
- * The Job a worker-thread in a ThreadPool executes. A WorkJob consists of 2 parts:
+ * The job a worker-thread in a {@link ThreadPool} executes. A ThreadPoolJob consists of 2 parts:
  * <ol>
- * <li>{@link #getWork()}: getting task to execute</li>
+ * <li>{@link #takeWork()} or {@link #takeWorkForNormalShutdown()}  getting task to execute</li>
  * <li>{@link #executeWork(Object)}: executing the task itself</li>
  * </ol>
  * <p/>
  * Examples:
- * The getWork could be obtaining an item from a BlockingQueue (ThreadPoolBlockingExecutor} or
+ * The takeWork could be obtaining an item from a BlockingQueue (ThreadPoolBlockingExecutor} or
  * obtaining a reference from a LendableReference (ThreadPoolRepeater).
- * <p/>
  * <p/>
  * A ThreadPoolJob can terminate the worker thread that executes by returning false in the
  * executeWork method (behavior while shutting down is undefined at the moment).
  * <p/>
- * The reason that the task is seperated in 2 parts is that the getWork parts can be
+ * The reason that the task is seperated in 2 parts is that the takeWork parts can be
  * interrupted if a threadpool needs to shutdown, or when idle threads needs to be removed
  * because the threadpool is shrinking.
  * <p/>
- * The problem is with the getWork method. If a threadpool decides to shut down, it interrupts
- * all idle threads. If thread is blocking for work {@link #getWork}, the InterruptedException
- * is caught, but the
- * threadpool decides to let the run the worker again -> deadlock. It wait for work that is
- * never comming. But if the threadpool decides to put the worker-thread down, it could lead
- * to unprocced work (the current situation at the BlockingThreadPoolExecutor). That is the reason
- * why the getWorkWhileShuttingDown was added. As soon as a Worker-thread is interrupted, it will
- * never use the getWork method anymore, but uses the getShuttingdownWork method instead. This
- * call should not block for ever.
  *
  * @author Peter Veentjer.
  * @since 0.1
@@ -40,40 +30,45 @@ package org.codehaus.prometheus.threadpool;
 public interface ThreadPoolJob<E> {
 
     /**
-     * Returns a piece of Work that needs to be run by {@link #executeWork(Object)}. This call should
-     * be responsive to interrupts because else the Threadpool isn't able to interrupt idle threads.
-     * This is important because else it isn't able to force a shutdown.
+     * Takes a unit of work that is going to be executed by a ThreadPool worker. This call is made when
+     * the ThreadPool is running normally. 
+     *
+     * This call should be responsive to interrupts, otherwise the Threadpool isn't able to interrupt
+     * workers that are blocking on this call. And this prevents a timely shutdown of the ThreadPool.
      *
      * @return the data required for execution (value is not allowed to be null).
      * @throws InterruptedException if the calling thread was interrupted while waiting for work
-     * @see #getShuttingdownWork()
+     * @see #takeWorkForNormalShutdown()
      */
-    E getWork() throws InterruptedException;
+    E takeWork() throws InterruptedException;
 
     /**
-     * Gets a unit of work while the ThreadPool is shutting down.
+     * Takes a unit of work that is going to be executed by a ThreadPool worker. This call is made when
+     * the ThreadPool shuts down normally (so no forced shutdown).  To indicate that no work was found
+     * for execution, null can be returned. 
      *
-     * This call should not block indefinitely.
+     * This call should not block indefinitely because this would lead to a ThreadPool that doesn't
+     * shutdown.
      * 
-     * @return the retrieved work, null indicates that no work is available anymore for processing.
-     * @throws InterruptedException if the thread is interrupted while getting the shuttingdown work.
-     * @see #getWork()
+     * @return the retrieved work, null indicates that no work is available anymore for execution.
+     * @throws InterruptedException if the thread is interrupted while taking work.
+     * @see #takeWork()
      */
-    E getShuttingdownWork() throws InterruptedException;
+    E takeWorkForNormalShutdown() throws InterruptedException;
 
     /**
-     * Execute the work that was obtained by {@link #getWork()}.
+     * Executes the work that was taken.
      *
      * todo:
-     * what happens when false is returned, after work was received with the
-     * {@link #getShuttingdownWork()}
+     * what happens when false is returned, when work was received with the
+     * {@link #takeWorkForNormalShutdown()}
      *
      * @param work the data required for execution. The value should never be null.
      * @throws Exception if something goes wrong while executing the work.
      * @return true if the Thread that executes this ThreadPoolJob should run again, false if it
      *              should terminate itself.
-     * @see #getWork()
-     * @see #getShuttingdownWork() 
+     * @see #takeWork ()
+     * @see #takeWorkForNormalShutdown ()
      */
     boolean executeWork(E work) throws Exception;
 }

@@ -5,10 +5,10 @@
  */
 package org.codehaus.prometheus.exceptionhandler;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
 
 /**
- * Unittests the {@link NullExceptionHandler}.
+ * Unittests the {@link NoOpExceptionHandler}.
  *
  * @author Peter Veentjer.
  */
@@ -16,10 +16,10 @@ public class NullExceptionHandlerTest extends ConcurrentTestCase {
 
     //check it doesn't complain when a null is passed.
     public void testHandleNull() {
-        NullExceptionHandler.INSTANCE.handle(null);
+        NoOpExceptionHandler.INSTANCE.handle(null);
     }
 
     public void testHandleException() {
-        NullExceptionHandler.INSTANCE.handle(new Exception());
+        NoOpExceptionHandler.INSTANCE.handle(new Exception());
     }
 }

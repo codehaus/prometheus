@@ -5,10 +5,10 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

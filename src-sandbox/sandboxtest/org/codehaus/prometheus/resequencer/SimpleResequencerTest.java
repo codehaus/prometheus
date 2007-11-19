@@ -1,7 +1,7 @@
 package org.codehaus.prometheus.resequencer;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepRandomMs;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.sleepRandomMs;
 
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;

@@ -1,21 +1,21 @@
 package org.codehaus.prometheus.processors.standardprocessor;
 
 /**
- * A Policy that provides a way for the StandardProcessor to shouldStop based on some message.
+ * A Policy that provides a way for the {@link StandardProcessor} to stop based on some message.
  *
  * @author Peter Veentjer.
  */
 public interface StopPolicy {
 
-    
-
     /**
-     * @param item the item to check
+     * Checks if the Processor should stop based on some message.
+     *
+     * @param message the message to check
      * @return true if the item indicates stop.
-     * @throws NullPointerException if item is null. It is up the the implementation
+     * @throws NullPointerException if message is null. It is up the the implementation
      *                              to decide if the check needs to be done, but the
      *                              StandardProcessor will never call this with a null
      *                              value.
      */
-    boolean shouldStop(Object item);
+    boolean shouldStop(Object message);
 }

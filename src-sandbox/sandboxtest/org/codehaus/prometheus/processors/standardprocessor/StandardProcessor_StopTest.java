@@ -10,9 +10,22 @@ import org.codehaus.prometheus.processors.TestProcess;
  */
 public class StandardProcessor_StopTest extends StandardProcessor_AbstractTest {
 
-    public void testNoProcess() {
+    //todo
+    public void _testNoProcessSinkProcessor(){
         int arg = 10;
-        newProcessor(new Object[]{});
+        newSinkProcessor(new Object[]{});
+
+        standardProcessor.setStopPolicy(new IntegerStopPolicy(arg));
+
+        spawned_assertPut(arg);
+        spawned_assertOnceAndReturnFalse();
+        spawned_assertTakeNotPossible();
+    }
+
+    //todo
+    public void _testNoProcess() {
+        int arg = 10;
+        newPipedProcessor(new Object[]{});
 
         standardProcessor.setStopPolicy(new IntegerStopPolicy(arg));
 
@@ -23,18 +36,18 @@ public class StandardProcessor_StopTest extends StandardProcessor_AbstractTest {
     }
 
     public void testInputReturnsStopableItem() {
-
+        //todo
     }
 
     public void testReceiveExceptionIsTransformedToStopableMessage() {
-
+       //todo
     }
 
-    public void testOnlyProcessReturnsStopableItem() {
+    public void _testOnlyProcessReturnsStopableItem() {
         int arg1 = 10;
         int arg2 = 20;
         TestProcess process = new IntegerProcess(arg1, arg2);
-        newProcessor(process);
+        newPipedProcessor(process);
 
         standardProcessor.setStopPolicy(new IntegerStopPolicy(arg2));
 

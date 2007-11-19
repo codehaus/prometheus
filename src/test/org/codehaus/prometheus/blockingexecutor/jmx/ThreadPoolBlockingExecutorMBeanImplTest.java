@@ -11,7 +11,6 @@ import org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor;
 import static org.easymock.classextension.EasyMock.*;
 
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Unittests the {@link ThreadPoolBlockingExecutorMBean}.
@@ -74,7 +73,7 @@ public class ThreadPoolBlockingExecutorMBeanImplTest extends TestCase {
     }
 
     public void testShutdown() {
-        expect(executorMock.shutdown()).andReturn(new LinkedList<Runnable>());
+        expect(executorMock.shutdownPolitly()).andReturn(new LinkedList<Runnable>());
 
         replayMocks();
         mbean.shutdown();

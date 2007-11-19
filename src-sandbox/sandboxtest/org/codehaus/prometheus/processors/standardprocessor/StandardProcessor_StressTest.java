@@ -1,9 +1,9 @@
 package org.codehaus.prometheus.processors.standardprocessor;
 
 import org.codehaus.prometheus.processors.TestProcess;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.randomInt;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.randomInt;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -15,7 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Stresstests the {@link StandardProcessor}.
  *
- * the once thread is not waiting the correct number of times. This has to do with
+ * the runOnce thread is not waiting the correct number of times. This has to do with
  * the thread could execute different frames (so frames created by other threads).
  * So it could do a wait for input that is never comming. So the test needs to be
  * changed.
@@ -31,7 +31,7 @@ public class StandardProcessor_StressTest extends StandardProcessor_AbstractTest
         System.out.println("finished generating data");
 
         TestProcess process = new StressProcess();
-        newProcessor(process);
+        newPipedProcessor(process);
         
         long startNs = System.currentTimeMillis();
 
@@ -84,12 +84,11 @@ public class StandardProcessor_StressTest extends StandardProcessor_AbstractTest
             for (int k = 0; k < count; k++) {
                 ConcurrentTestUtil.someCalculation(10000);
 
-
                 if(k%100==0)
                 Thread.yield();
                 if(k%1000==0)
                     System.out.println("thread "+this+" k="+k);
-                boolean result = standardProcessor.once();
+                boolean result = standardProcessor.runOnce();
                 assertTrue(result);
             }
             System.out.println("finished thread "+this+" count:"+count);

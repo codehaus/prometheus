@@ -22,12 +22,12 @@ public class MonitoringProcessor implements Processor, Monitorable {
         return target;
     }
 
-    public boolean once() throws Exception {
+    public boolean runOnce() throws Exception {
         if (on) {
             //todo: add monitor data.
-            return target.once();
+            return target.runOnce();
         } else {
-            return target.once();
+            return target.runOnce();
         }
     }
 

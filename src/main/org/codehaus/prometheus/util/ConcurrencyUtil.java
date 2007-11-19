@@ -9,9 +9,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * The ConcurrencyUtil contains various concurrency related convenience functions.
+ * The ConcurrencyUtil contains various concurrency related functions.
  *
  * @author Peter Veentjer.
+ * @see org.codehaus.prometheus.util.LockUtil
+ * @see org.codehaus.prometheus.util.ConditionUtil
  * @since 0.1
  */
 public class ConcurrencyUtil {
@@ -20,7 +22,7 @@ public class ConcurrencyUtil {
     private static final long NANOS_PER_MILLI = TimeUnit.MILLISECONDS.toNanos(1);
 
     /**
-     * Checks if a timeout occurred. A timeout occurrs when the timeout is smaller than 0. It
+     * Checks if a timeout has occurred. A timeout occurrs when the timeout is smaller than 0. It
      * doesn't matter in which TimeUnit timeout is expressed.
      * <p/>
      * This method should not be used to check awaits of Conditions because a 0 with a Condition
@@ -35,7 +37,7 @@ public class ConcurrencyUtil {
     }
 
     /**
-     * Makes sure no timeout occurs. If a timeout has occurred (the timeout is smaller than 0) a
+     * Makes sure no timeout has occurred. If a timeout has occurred (the timeout is smaller than 0) a
      * TimeoutException is thrown.
      * <p/>
      * This method should not be used to check awaits of Conditions because a 0 with a Condition
@@ -51,7 +53,8 @@ public class ConcurrencyUtil {
     }
 
     /**
-     * Converts a timeout and a unit to a non negative timeout in nanoseconds.
+     * Converts a timeout and a unit to a non negative timeout in nanoseconds. If the timeout
+     * is negative, a TimeoutException is thrown.
      *
      * @param timeout the timeout
      * @param unit    a <tt>TimeUnit</tt> determining how to interpret the <tt>timeout</tt>
@@ -69,20 +72,17 @@ public class ConcurrencyUtil {
     }
 
     /**
-     * Lets the current Thread sleepUninterruptibly for a certain period. If the period is equal or
-     * smaller than zero, no sleeping is done. This call can't be interrupted.
+     * Lets the current Thread sleep for a certain period without being responsive to
+     * interrupts. If the period is equal or smaller than zero, no sleeping is done and
+     * the method returns.
      * <p/>
-     * This method makes use of {@link Thread#sleep(long,int)}. If a call to this method is
-     * interrupted, a new sleepMsOld is tried with the remaining timeout.
-     * <p/>
-     * todo:
-     * remark about calling with interruptstatus set.
+     * This method makes use of {@link Thread#sleep(long,int)}. If the sleeping is
+     * interrupted, a new sleep is tried with the remaining timeout and also the interrupt
+     * flag on the Thread is set.
      *
-     * @param period
+     * @param period the period to sleep
      * @param unit   a <tt>TimeUnit</tt> determining how to interpret the <tt>period</tt> parameter.
-     * @throws RuntimeException     if this thread is interrupted while sleeping.
      * @throws NullPointerException if unit is null.
-     * @see #sleepUninterruptibly(long,java.util.concurrent.TimeUnit)
      * @see Thread#sleep(long,int)
      */
     @SuppressWarnings({"UnnecessaryLocalVariable"})
@@ -92,23 +92,21 @@ public class ConcurrencyUtil {
         if (period <= 0)
             return;
 
-        //todo: can't this be done with an uninterruptiblesection?
+        //reason why the TimedUninterruptibleSection is not used, it that
+        //the current signature is not very friendly. 
 
-        long remainingPeriodNs = unit.toNanos(period);
+        long remainingNs = unit.toNanos(period);
         boolean interrupted = Thread.interrupted();
         try {
-            while (remainingPeriodNs > 0) {
+            while (remainingNs > 0) {
                 long startNs = System.nanoTime();
                 try {
-                    long ms = TimeUnit.NANOSECONDS.toMillis(remainingPeriodNs);
-                    int ns = (int) (remainingPeriodNs % TimeUnit.MILLISECONDS.toNanos(1));
-
-                    Thread.sleep(ms, ns);
-                    remainingPeriodNs = 0;
+                    sleep(remainingNs,TimeUnit.NANOSECONDS);
+                    remainingNs = 0;
                 } catch (InterruptedException e) {
                     interrupted = true;
                     long elapsedNs = System.nanoTime() - startNs;
-                    remainingPeriodNs -= elapsedNs;
+                    remainingNs -= elapsedNs;
                 }
             }
         } finally {
@@ -118,13 +116,14 @@ public class ConcurrencyUtil {
     }
 
     /**
-     * Lets the calling thread sleepMsOld for a certain period. If the period is equal or smaller than
-     * zero, no sleeping is done. This call can be interrupted.
+     * Lets the calling thread sleep for a certain period. If the period is equal or smaller than
+     * zero, no sleeping is done. When the thread goes to sleep, it can be interrupted.
      * <p/>
-     * This method makes use of {@link Thread#sleep(long,int)}. At the moment there is no giveOthersAChance
-     * method in the JRE that accepts a period with a unit.
+     * This method makes use of {@link Thread#sleep(long,int)}. At the moment there is no
+     * sleep method in the JRE that accepts a period with a unit, so that is the reason this
+     * method exists.
      *
-     * @param period the period to giveOthersAChance
+     * @param period the period to sleep
      * @param unit   a <tt>TimeUnit</tt> determining how to interpret the <tt>period</tt> parameter.
      * @throws InterruptedException if the calling thread is interrupted while sleeping.
      * @throws NullPointerException if unit is <tt>null</tt>.
@@ -146,6 +145,4 @@ public class ConcurrencyUtil {
     //we don't want any instances.
     private ConcurrencyUtil() {
     }
-
-
 }

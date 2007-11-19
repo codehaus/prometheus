@@ -9,13 +9,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A synchronization stone that stores a reference to be shared between threads. If no reference
+ * A synchronization stone that stores a reference that can be shared between threads. If no reference
  * is available, taking a reference blocks.
  * <p/>
  * Depending on the implementation, the following things are possible:
  * <ol>
- * <li>multiple slaves have taken the same reference</li>
- * <li>different references are lend concurrently to multiple slaves</li>
+ * <li>multiple lenders have taken the same reference</li>
+ * <li>different references are lend concurrently by lenders</li>
  * </ol>
  * <p/>
  * todo:
@@ -47,7 +47,7 @@ import java.util.concurrent.TimeoutException;
  * The difference between a {@link java.util.concurrent.SynchronousQueue} and an AwaitableReference,
  * is the item is removed from the BlockingQueue and that a put can only take place when an take
  * is waiting. With the AwaitableReference, a put can take place even if there are no takes. The
- * AwaitableReference has an internal capacity one at most, the SynchronousQueue has no internal
+ * AwaitableReference has an internal capacity one, the SynchronousQueue has no internal
  * capacity at all.
  * </dd>
  * <p/>
@@ -55,10 +55,11 @@ import java.util.concurrent.TimeoutException;
  * <dd>
  * The difference between an {@link java.util.concurrent.Exchanger} and an AwaitableReference is
  * that an Exchanger exchanges references between threads. A reference can be exchanged from thread1
- * to thread2 only if thread2 has another reference to be transfer (this reference is transfered
- * from thread2 to thread1).With the AwaitableReference a reference only exchanged from the master
+ * to thread2 only if thread2 also has a reference to be transfered (this reference is transfered
+ * from thread2 to thread1). With the AwaitableReference a reference only exchanged from the master
  * thread to zero or more slave threads. A put without waiting takes doesn't block unlike the
- * Exchanger. So an Exchanger is bidirectional and an AwaitableReference is unidirectional.
+ * Exchanger. So passing a reference in an Exchanger is bidirectional and with an AwaitableReference
+ * is unidirectional.
  * </dd>
  * <p/>
  * <dt><b>AwaitableReference vs Future</b></dt>
@@ -66,15 +67,15 @@ import java.util.concurrent.TimeoutException;
  * The difference between a {@link java.util.concurrent.Future} and an AwaitableReference is that a
  * Future is a single shot mechanism (aka latch) that gets in a final state as soon as a reference
  * (the result of an asynchronous executed task) is available. The AwaitableReference has no final state,
- * and the reference it contains, can change multiple times. Another difference is that a Future
- * only contains functionality for waiting for completion, and not the actions to complete the
+ * and the reference it contains, can change multiple times over a period of time. Another difference is
+ * that a Future only contains functionality for waiting for completion, and not the actions to complete the
  * Future (in case of a Runnable, that would be the run method).
  * </dd>
  * <p/>
  * <dt><b>Save handoff</b></dt>
  * <dd>
  * The AwaitableReference can be used as a save handoff structure; this means that objects with
- * visibility problems can safely be exchanged by threads.
+ * visibility problems can safely be exchanged between threads.
  * </dd>
  *
  * @author Peter Veentjer
@@ -92,9 +93,9 @@ public interface AwaitableReference<E> {
 
     /**
      * Takes the reference this AwaitableReference contains. If the current reference is
-     * <tt>null</tt>, this method blocks until:
+     * <tt>null</tt>, this method blocks until one of the following things happens:
      * <ol>
-     * <li>a non <tt>null</tt> reference comes available</li>
+     * <li>a non <tt>null</tt> reference is put in thie AwaitableReference</li>
      * <li>the calling thread is interrupted</li>
      * </ol>
      *
@@ -107,7 +108,7 @@ public interface AwaitableReference<E> {
      * Tries to take the current reference. If no reference is available, <tt>null</tt> is returned.
      * <p/>
      * This call could do some locking to prevent isolation problems, but the locks are not hold for
-     * a long time.
+     * a long time (also the reason why no InterruptedException is thrown).
      * <p/>
      * The interrupt status is not influenced by this method.
      *
@@ -117,15 +118,14 @@ public interface AwaitableReference<E> {
 
     /**
      * Tries to take the reference this AwaitableReference contains. If the current reference is
-     * <tt>null</tt>, this method blocks until:
+     * <tt>null</tt>, this method blocks until one of the following things happens:
      * <ol>
-     * <li>a non <tt>null</tt> reference comes available</li>
+     * <li>a non <tt>null</tt> reference is put in this AwaitableReference</li>
      * <li>the calling thread is interrupted</li>
      * <li>a timeout occurs</li>
      * </ol>
      * <p/>
-     * If the timeout is smaller than zero, a TimeoutException is
-     * thrown.
+     * If the timeout is smaller than zero, a TimeoutException is thrown.
      * todo: nul timeouts
      *
      * @param timeout how long to wait before giving up in units of <tt>unit</tt>.
@@ -139,17 +139,28 @@ public interface AwaitableReference<E> {
     E tryTake(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
 
     /**
-     * Puts a new reference in this AwaitableReference.
+     * Puts a new reference in this AwaitableReference. This call blocks until one of the following
+     * things happens:
+     * <ol>
+     *  <li>the new reference is successfully put</li>
+     *  <li>the call is interrupted</li>.
+     * </ol>
      *
      * @param newRef the new reference. This new reference is allowed to be <tt>null</tt>.
      * @return the old reference, could be <tt>null</tt> if no old reference was available.
      * @throws InterruptedException if the calling thread is interrupted
+     * @see #tryPut(Object, long, java.util.concurrent.TimeUnit)
      */
     E put(E newRef) throws InterruptedException;
 
     /**
-     * Tries to put a new reference in this AwaitableReference.
-     * <p/>
+     * Tries to put a new reference in this AwaitableReference. This call blocks until one of the following
+     * things happens:
+     * <ol>
+     * <li>the item is successfully put</li>
+     * <li>a timeout occurrs</li>
+     * <li>the thread is interrupted</li>
+     * </ol>
      * todo: nul timeouts.
      *
      * @param newRef  the new reference. This new reference is allowed to be <tt>null</tt>.
@@ -159,6 +170,7 @@ public interface AwaitableReference<E> {
      * @return the old reference, could be <tt>null</tt>.
      * @throws InterruptedException if the calling thread is interrupted.
      * @throws TimeoutException     if a timeout occurrs.
+     * @see #put(Object)
      */
     E tryPut(E newRef, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
 

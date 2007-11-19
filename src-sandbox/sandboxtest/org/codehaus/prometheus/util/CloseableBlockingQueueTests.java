@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.util;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
 
 public abstract class CloseableBlockingQueueTests extends ConcurrentTestCase {
 }

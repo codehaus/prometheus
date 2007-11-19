@@ -5,12 +5,12 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import static org.codehaus.prometheus.testsupport.TestSupport.newUninterruptableSleepingRunnable;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.TracingThreadFactory;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newUninterruptableSleepingRunnable;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
+import org.codehaus.prometheus.concurrenttesting.TracingThreadFactory;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -157,13 +157,13 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
 
     public void newShuttingdownRepeater(long timeMs) {
         newRunningStrictRepeater(new RepeatableRunnable(newUninterruptableSleepingRunnable(timeMs)));
-        repeater.shutdown();
+        repeater.shutdownPolitly();
         assertIsShuttingdown();
     }
 
     public void newShuttingdownRepeater(boolean strict, long timeMs) {
         newRunningRepeater(strict, new RepeatableRunnable(newUninterruptableSleepingRunnable(timeMs)),1);
-        repeater.shutdown();
+        repeater.shutdownPolitly();
         assertIsShuttingdown();
     }
 
@@ -182,7 +182,6 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
     public void assertIsShutdown() {
         assertEquals(RepeaterServiceState.shutdown, repeater.getState());
         assertActualPoolSize(0);
-        //todo: desired poolsize
         if (repeaterThreadFactory != null)
             repeaterThreadFactory.assertAllAreNotAlive();
     }
@@ -248,7 +247,7 @@ public abstract class ThreadPoolRepeater_AbstractTest extends ConcurrentTestCase
 
     public class ShutdownThread extends TestThread {
         protected void runInternal() throws Exception {
-            repeater.shutdown();
+            repeater.shutdownPolitly();
         }
     }
 

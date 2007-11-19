@@ -1,6 +1,6 @@
 package org.codehaus.prometheus.channels;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
 
 /**
  * Unittests the {@link BufferedChannel}.

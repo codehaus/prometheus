@@ -7,11 +7,10 @@ package org.codehaus.prometheus.repeater;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
-import org.codehaus.prometheus.testsupport.Delays;
-import org.codehaus.prometheus.testsupport.TestRunnable;
-import org.codehaus.prometheus.testsupport.TestSupport;
-import static org.codehaus.prometheus.testsupport.TestSupport.newThrowingTestRunnable;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.sleepMs;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import org.codehaus.prometheus.concurrenttesting.TestRunnable;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newThrowingTestRunnable;
 
 /**
  * Unittests the exception handling behavior of the ThreadPoolRepeater.

@@ -7,9 +7,9 @@ package org.codehaus.prometheus.blockingexecutor;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
-import org.codehaus.prometheus.testsupport.TestRunnable;
-import org.codehaus.prometheus.testsupport.Delays;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import org.codehaus.prometheus.concurrenttesting.TestRunnable;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
 
 /**
  * Unittest the Exception handling functionality of the ThreadPoolBlockingExecutor.

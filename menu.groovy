@@ -58,7 +58,7 @@ def pages = [
 
 def outputdirectory = 'target/site'
 
-def lastupdate = '30 June, 2007'
+def lastupdate = '28 October, 2007'
 
 //=============== template engine ==================
 

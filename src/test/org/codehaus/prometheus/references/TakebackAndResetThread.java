@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
 
 public class TakebackAndResetThread<E> extends TestThread {
     private final LendableReference<E> lendableRef;

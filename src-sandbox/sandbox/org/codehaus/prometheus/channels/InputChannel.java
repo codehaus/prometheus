@@ -9,16 +9,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * todo:
- * RuntimeException on all methods
+ * A InputChannel is responsible for providing access for retrieving items.
+ *
+ * Every method in the InputChannel is allowed to throw RuntimeExceptions. Implementation of the
+ * InputChannel could make use of environment (for example Javaspaces) to retrieve items from. It could
+ * happen that something goes wrong while access the environment.
  *
  * @author Peter Veentjer.
+ * @see OutputChannel
+ * @see java.util.concurrent.BlockingQueue
  */
 public interface InputChannel<I> {
 
     /**
-     * @return
+     * @return the item that was taken. The value will never be null.
      * @throws InterruptedException
+     * @throws RuntimeException if the take fails.
      */
     I take() throws InterruptedException;
 
@@ -29,16 +35,20 @@ public interface InputChannel<I> {
      * @throws TimeoutException     if a timeout occurred
      * @throws InterruptedException
      * @throws NullPointerException if unit is null.
+     * @throws RuntimeException if the poll fails.
      */
     I poll(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException;
 
     /**
      * @return
+     * @throws RuntimeException if the poll fails.
      */
     I poll();
 
     /**
      * @return
+     * @throws RuntimeException if the peek fails.
      */
     I peek();
 }
+                                                                     

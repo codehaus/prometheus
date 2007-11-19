@@ -38,7 +38,7 @@ public class ThreadPoolBlockingExecutorMBeanImpl implements ThreadPoolBlockingEx
     }
 
     public void shutdown() {
-        executor.shutdown();
+        executor.shutdownPolitly();
     }
 
     public int getActualPoolSize() {

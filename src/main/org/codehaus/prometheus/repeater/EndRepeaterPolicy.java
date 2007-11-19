@@ -21,7 +21,7 @@ public class EndRepeaterPolicy implements ExecutionPolicy {
         try {
             boolean shutdown = !task.execute();
             if (shutdown)
-                repeater.shutdown();
+                repeater.shutdownPolitly();
 
             return true;
         } finally {

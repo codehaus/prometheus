@@ -9,10 +9,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * A customizable implementation of the {@link java.util.concurrent.ThreadFactory}.
- * <p/>
- * <p/>
- * todo: daemon threads.
+ * A customizable implementation of the {@link java.util.concurrent.ThreadFactory}. The new
+ * java.util.concurrency library provides a {@link ThreadFactory} interface, which is a great
+ * thing, but strangely enough it doesn't provide an customizeable implementation.
  * <p/>
  * If the maximum priority of the threadgroup is changed after this StandardThreadFactory is
  * constructed, then this will be ignored by the StandardThreadFactory. So it could be that a
@@ -31,14 +30,14 @@ public class StandardThreadFactory implements ThreadFactory {
     }
 
     private final ThreadGroup threadGroup;
-    private final AtomicInteger _threadNumber = new AtomicInteger(1);
+    private final AtomicInteger threadNumber = new AtomicInteger(1);
     private final String namePrefix;
     private final boolean daemon;
     private volatile int priority;
 
     /**
      * Constructs a new StandardThreadFactory with a Thread.NORM_PRIORITY as priority and a newly
-     * created ThreadGroup.
+     * created ThreadGroup. The created Threads are not daemons.
      */
     public StandardThreadFactory() {
         this(Thread.NORM_PRIORITY, createThreadGroupName());
@@ -46,7 +45,7 @@ public class StandardThreadFactory implements ThreadFactory {
 
     /**
      * Constructs a new StandardThreadFactory with a Thread.NORM_PRIORITY as priority and with a
-     * newly created ThreadGroup with the given groupName.
+     * newly created ThreadGroup with the given groupName. The created threads are not daemons.
      *
      * @param groupName the name of the ThreadGroup (is allowed to be null).
      */
@@ -54,23 +53,39 @@ public class StandardThreadFactory implements ThreadFactory {
         this(Thread.NORM_PRIORITY, groupName);
     }
 
+    /**
+     * Constructs a new StandardThreadFactory with the given priority. The created threads are
+     * not daemons.
+     *
+     * @param priority the priority of th threads.
+     * @throws IllegalArgumentException if the priority is not valid.
+     */
     public StandardThreadFactory(int priority) {
         this(priority, createThreadGroupName());
     }
 
     /**
      * Constructs a new StandardThreadFactory with the given priority and with a newly created
-     * ThreadGroup with the given groupname.
+     * ThreadGroup with the given groupname.  The created threads are not daemons.
      *
      * @param priority  the priority of the threads this StandardThreadFactory is going to create.
      * @param groupName the name of the ThreadGroup (is allowed to be null).
-     * @throws IllegalArgumentException if priority is not a valid priority.
+     * @throws IllegalArgumentException if priority is not a valid value.
      */
     public StandardThreadFactory(int priority, String groupName) {
         this(priority, new ThreadGroup(Thread.currentThread().getThreadGroup(), groupName), false);
     }
 
     //todo: unit testen.
+    /**
+     * Constructs a new StandardThreadFactory with the given priority and are part of the give
+     * ThreadGroup. The created threads are not deamons.
+     *
+     * @param priority          the priority of the created threads.
+     * @param threadGroup       the ThreadGroup the created Threads are part of.
+     * @throws NullPointerException if threadGroup is null
+     * @throws IllegalArgumentException if the priority is not valid value.
+     */
     public StandardThreadFactory(int priority, ThreadGroup threadGroup) {
         this(priority, threadGroup, false);
     }
@@ -87,15 +102,15 @@ public class StandardThreadFactory implements ThreadFactory {
     public StandardThreadFactory(int priority, ThreadGroup threadGroup, boolean daemon) {
         if (threadGroup == null) throw new NullPointerException();
 
-        ensureValidPriority(priority, threadGroup);
-
-        this.priority = priority;
         this.threadGroup = threadGroup;
+        ensureValidPriority(priority);
+        this.priority = priority;
+
         this.daemon = daemon;
-        this.namePrefix = "pool-" + threadGroup.getName() + "-thread-";
+        this.namePrefix = threadGroup.getName() + "-thread#";
     }
 
-    private void ensureValidPriority(int priority, ThreadGroup threadGroup) {
+    private void ensureValidPriority(int priority) {
         if (priority < Thread.MIN_PRIORITY) {
             throw new IllegalArgumentException("priority can`t be smaller than: " +
                     Thread.MIN_PRIORITY + ", priority was: " + priority);
@@ -135,7 +150,7 @@ public class StandardThreadFactory implements ThreadFactory {
 
     /**
      * Returns the priority of created Threads. This is a value ranging from
-     * Thread.MIN_PRIORITY and Thread.MAX_PRIORITY.
+     * Thread.MIN_PRIORITY to Thread.MAX_PRIORITY.
      *
      * @return the priortity of created Threads.
      */
@@ -146,6 +161,17 @@ public class StandardThreadFactory implements ThreadFactory {
     /**
      * Sets the priority of the threads. This will only effect newly created Threads. A value must
      * be set ranging from Thread.MIN_PRIORITY and Thread.MAX_PRIORITY.
+     * <p/>
+     * This call is not completely threadsafe, the following scenario could happen:
+     * <ol>
+     *  <li>thread1 call setPriority and start the checking part of this method and the check passes</li>
+     *  <li>thread2 calls the threadgroup directly and lowers the priority</li>
+     *  <li>thread1 sets the priority on this StandardThreadFactory</li>
+     * </ol>
+     * The consequence is that the priority of this StandardThreadFactory is higher than the maximum
+     * priority of the ThreadGroup and this means that thread creation could fail because threads are
+     * created with a too high priority. This race problem is very hard to prevent because the check/set
+     * can't be done atomic because the ThreadGroup is exposed.
      *
      * @param priority the new priority.
      * @throws IllegalArgumentException if priority is smaller than {@link Thread#MIN_PRIORITY} or
@@ -153,14 +179,14 @@ public class StandardThreadFactory implements ThreadFactory {
      *                                  maximum priority of the ThreadGroup.
      */
     public void setPriority(int priority) {
-        ensureValidPriority(priority, getThreadGroup());
+        ensureValidPriority(priority);
         this.priority = priority;
     }
 
     public Thread newThread(Runnable runnable) {
         if (runnable == null) throw new NullPointerException();
 
-        String threadName = namePrefix + _threadNumber.getAndIncrement();
+        String threadName = namePrefix + threadNumber.getAndIncrement();
         Thread thread = new Thread(threadGroup, runnable, threadName);
         thread.setDaemon(daemon);
         thread.setPriority(priority);

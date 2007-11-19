@@ -5,9 +5,9 @@
  */
 package org.codehaus.prometheus.waitpoint;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

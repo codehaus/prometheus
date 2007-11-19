@@ -5,11 +5,11 @@
  */
 package org.codehaus.prometheus.uninterruptiblesection;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.Delays;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
 import org.codehaus.prometheus.util.JucLatch;
 import org.codehaus.prometheus.util.Latch;
 
@@ -35,7 +35,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
 
     public void testArgs() throws TimeoutException {
         section = new TimedUninterruptibleSection() {
-            protected Object originalsection(long timeoutNs) {
+            protected Object interruptibleSection(long timeoutNs) {
                 fail();
                 return null;
             }
@@ -51,7 +51,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
 
     public void testNegativeTimeout() {
         section = new TimedUninterruptibleSection() {
-            protected Object originalsection(long timeoutNs) {
+            protected Object interruptibleSection(long timeoutNs) {
                 fail();
                 return null;
             }
@@ -78,7 +78,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
     public void testNoWaitingIsDone(boolean startInterrupted) {
         final Object returnValue = "foo";
         section = new TimedUninterruptibleSection() {
-            protected Object originalsection(long timeoutNs) throws TimeoutException, InterruptedException {
+            protected Object interruptibleSection(long timeoutNs) throws TimeoutException, InterruptedException {
                 return returnValue;
             }
         };
@@ -103,7 +103,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
     public void testSomeWaitingIsDone(boolean startInterrupted) {
         final Object returnValue = 20;
         section = new TimedUninterruptibleSection() {
-            protected Object originalsection(long timeoutNs) throws TimeoutException, InterruptedException {
+            protected Object interruptibleSection(long timeoutNs) throws TimeoutException, InterruptedException {
                 latch.tryAwait(timeoutNs, TimeUnit.NANOSECONDS);
                 return returnValue;
             }
@@ -132,7 +132,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
     public void testInterruptedWhileWaiting(boolean startInterrupted) {
         final Object returnValue = 10;
         section = new TimedUninterruptibleSection() {
-            protected Object originalsection(long timeoutNs) throws TimeoutException, InterruptedException {
+            protected Object interruptibleSection(long timeoutNs) throws TimeoutException, InterruptedException {
                 latch.tryAwait(timeoutNs, TimeUnit.NANOSECONDS);
                 return returnValue;
             }
@@ -164,7 +164,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
 
     public void testTimeout(boolean startInterrupted) {
         section = new TimedUninterruptibleSection() {
-            protected Object originalsection(long timeoutNs) throws TimeoutException, InterruptedException {
+            protected Object interruptibleSection(long timeoutNs) throws TimeoutException, InterruptedException {
                 latch.tryAwait(timeoutNs, TimeUnit.NANOSECONDS);
                 return null;
             }
@@ -178,7 +178,6 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
 
     //========== runtime exception ============
 
-
     public void testRuntimeException_startUninterrupted() {
         testRuntimeException(START_UNINTERRUPTED);
     }
@@ -191,7 +190,7 @@ public class TimedUninterruptibleSectionTest extends ConcurrentTestCase {
         final RuntimeException ex = new RuntimeException();
 
         section = new TimedUninterruptibleSection() {
-            protected Object originalsection(long timeoutNs) throws TimeoutException, InterruptedException {
+            protected Object interruptibleSection(long timeoutNs)  {
                 throw ex;
             }
         };

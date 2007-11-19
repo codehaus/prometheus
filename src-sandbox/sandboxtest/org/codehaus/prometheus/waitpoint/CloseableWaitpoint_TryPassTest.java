@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.waitpoint;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil;
 
 /**
  * Unittests the {@link org.codehaus.prometheus.waitpoint.CloseableWaitpoint#tryPass()} method.

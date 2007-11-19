@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.waitpoint;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
 
 /**
  * Unittests the {@link org.codehaus.prometheus.waitpoint.CloseableWaitpoint#pass()} method.

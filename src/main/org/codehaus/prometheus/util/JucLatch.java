@@ -6,7 +6,7 @@
 package org.codehaus.prometheus.util;
 
 import static org.codehaus.prometheus.util.ConcurrencyUtil.toUsableNanos;
-import static org.codehaus.prometheus.util.ConditionUtil.awaitNanosAndThrow;
+import static org.codehaus.prometheus.util.ConditionUtil.awaitNanosOrThrow;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -150,7 +150,7 @@ public class JucLatch implements Latch {
         mainLock.lockInterruptibly();
         try {
             while (!open)
-                timeoutNs = awaitNanosAndThrow(isOpenCondition, timeoutNs);
+                timeoutNs = awaitNanosOrThrow(isOpenCondition, timeoutNs);
         } finally {
             mainLock.unlock();
         }

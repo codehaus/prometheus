@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
  * Unittests the {@link StandardThreadPool#setJob(ThreadPoolJob)} method.
@@ -35,7 +35,7 @@ public class StandardThreadPool_SetJobTest extends StandardThreadPool_AbstractTe
         setThread.assertIsTerminatedNormally();
         //make sure that the threadpool hasn't running.
         assertIsUnstarted();
-        assertSame(firstJob, threadpool.getWorkerJob());
+        assertSame(firstJob, threadpool.getJob());
 
         //try to set another job after the first has been set, should succeed.
         ThreadPoolJob secondJob = new DummyThreadPoolJob();
@@ -44,7 +44,7 @@ public class StandardThreadPool_SetJobTest extends StandardThreadPool_AbstractTe
         joinAll(setThread);
         setThread.assertIsTerminatedNormally();
         assertIsUnstarted();
-        assertSame(secondJob, threadpool.getWorkerJob());
+        assertSame(secondJob, threadpool.getJob());
     }
 
     public void testWhileStarted() {
@@ -68,13 +68,13 @@ public class StandardThreadPool_SetJobTest extends StandardThreadPool_AbstractTe
     }
 
     private void assertSetDefaultWorkerJobIsRejected() {
-        ThreadPoolJob oldjob = threadpool.getWorkerJob();
+        ThreadPoolJob oldjob = threadpool.getJob();
 
         ThreadPoolJob newjob = new DummyThreadPoolJob();
         SetDefaultWorkerJobThread setThread = scheduleSetDefaultWorkerJob(newjob);
         joinAll(setThread);
 
         setThread.assertIsTerminatedWithThrowing(IllegalStateException.class);
-        assertSame(oldjob, threadpool.getWorkerJob());
+        assertSame(oldjob, threadpool.getJob());
     }
 }

@@ -6,14 +6,14 @@
 package org.codehaus.prometheus.repeater;
 
 /**
- * A {@link Repeatable} that adapts a {@link Runnable} so it can be used as a Repeatable.
- * There are two different ways to use it:
+ * A {@link Repeatable} that adapts a {@link Runnable} so it can be used as a Repeatable (see Adapter
+ * design pattern for more information). There are two different ways to use it:
  * <ol>
  * <li>inject a Runnable by using the constructor {@link #RepeatableRunnable(Runnable)} </li>
  * <li>subclass this RepeatableRunnable and override the {@link #run()} method</li>
  * </ol>
- * The {@link #execute()} method always returns <tt>true</tt> unless a RuntimeException occurs
- * (the exception is propagated).
+ * The {@link #execute()} method always returns <tt>true</tt> unless a RuntimeException occurs.
+ * This exception will not be handled (todo: idea?) but will be propated.
  *
  * @author Peter Veentjer.
  * @since 0.1

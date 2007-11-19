@@ -5,9 +5,9 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
  * Unittests the {@link StandardThreadPool#awaitShutdown()} method.
@@ -23,7 +23,7 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
     }
 
     public void testWhileStarted() {
-        int poolsize = 10;
+        int poolsize = 2;
         newStartedThreadpool(poolsize);
 
         assertShutdownTerminatesWaiters(poolsize);
@@ -77,7 +77,7 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
         joinAll(awaitThread1);
         awaitThread1.assertIsTerminatedByInterruptedException();
         awaitThread2.assertIsStarted();
-        assertIsRunning();
+        assertIsRunning();        
     }
 
     public void testWhileShutdown() {

@@ -5,11 +5,11 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import org.codehaus.prometheus.testsupport.ConcurrentTestUtil;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.sleepMs;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
  * Unittests the {@link StandardThreadPool#setDesiredPoolsize(int)} method.

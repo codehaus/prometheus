@@ -6,10 +6,10 @@
 package org.codehaus.prometheus.threadpool;
 
 import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
-import org.codehaus.prometheus.testsupport.*;
-import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.*;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newSleepingRunnable;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.LinkedList;
@@ -75,11 +75,11 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
      */
     public class TestThreadPoolJob implements ThreadPoolJob<Callable<Boolean>> {
 
-        public Callable<Boolean> getWork() throws InterruptedException {
+        public Callable<Boolean> takeWork() throws InterruptedException {
             return workQueue.take();
         }
 
-        public Callable<Boolean> getShuttingdownWork() throws InterruptedException {
+        public Callable<Boolean> takeWorkForNormalShutdown() throws InterruptedException {
             return workQueue.poll(0, TimeUnit.MILLISECONDS);
         }
 
@@ -194,11 +194,11 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     }
 
     public void assertIsForcedShuttingdown() {
-        assertEquals(ThreadPoolState.forcedshuttingdown, threadpool.getState());
+        assertEquals(ThreadPoolState.shuttingdownforced, threadpool.getState());
     }
 
     public void assertIsShuttingdown() {
-        assertEquals(ThreadPoolState.shuttingdown, threadpool.getState());
+        assertEquals(ThreadPoolState.shuttingdownnormally, threadpool.getState());
     }
 
     public void assertDesiredPoolsize(int expectedPoolsize) {
@@ -285,7 +285,7 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     public class ShutdownThread extends TestThread {
         @Override
         protected void runInternal() {
-            threadpool.shutdown();
+            threadpool.shutdownPolitly();
         }
     }
 

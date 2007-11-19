@@ -32,7 +32,7 @@ public class BlockingExecutorBenchmark implements BenchmarkTask {
         for (Runnable task : tasklist)
             executor.execute(task);
 
-        executor.shutdown();
+        executor.shutdownPolitly();
         executor.awaitShutdown();
     }
 

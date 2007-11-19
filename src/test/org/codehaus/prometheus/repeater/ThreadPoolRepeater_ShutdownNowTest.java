@@ -5,13 +5,13 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.SleepingRunnable;
-import org.codehaus.prometheus.testsupport.TestRunnable;
-import org.codehaus.prometheus.testsupport.Delays;
-import static org.codehaus.prometheus.testsupport.TestSupport.newSleepingRunnable;
-import static org.codehaus.prometheus.testsupport.TestSupport.newUninterruptableSleepingRunnable;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
+import org.codehaus.prometheus.concurrenttesting.SleepingRunnable;
+import org.codehaus.prometheus.concurrenttesting.TestRunnable;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newSleepingRunnable;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newUninterruptableSleepingRunnable;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.sleepMs;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#shutdownNow()} method.

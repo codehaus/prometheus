@@ -25,6 +25,10 @@ public class Log4JExceptionHandler implements ExceptionHandler {
         this(LogManager.getLogger(Log4JExceptionHandler.class));
     }
 
+    public Log4JExceptionHandler(Class clazz) {
+        initializeLogManager(clazz);
+    }
+
     public Log4JExceptionHandler(Logger logger) {
         if (logger == null) throw new NullPointerException();
         this.logger = logger;
@@ -32,6 +36,11 @@ public class Log4JExceptionHandler implements ExceptionHandler {
 
     public Logger getLogger() {
         return logger;
+    }
+
+    public void initializeLogManager(Class clazz) {
+        if (clazz == null) throw new NullPointerException();
+        setLogger(LogManager.getLogger(clazz));
     }
 
     public void setLogger(Logger logger) {

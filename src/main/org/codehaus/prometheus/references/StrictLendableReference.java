@@ -6,7 +6,7 @@
 package org.codehaus.prometheus.references;
 
 import static org.codehaus.prometheus.util.ConcurrencyUtil.toUsableNanos;
-import static org.codehaus.prometheus.util.ConditionUtil.awaitNanosAndThrow;
+import static org.codehaus.prometheus.util.ConditionUtil.awaitNanosOrThrow;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -28,8 +28,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p/>
  * <td><b>Why the ReadWriteLock can't be used</b></td>
  * <dd>
- * ReadWriteLock can't be used because references can be taken back by a different thread than took
- * it. Lock implementation normally only allow the same thread to take the value back.
+ * ReadWriteLock can't be used because the LendableReference allows a reference to be taken back by a different
+ * thread, than took the reference. Lock implementation normally only allow the same thread to take the value back.
  * </dd>
  * <p/>
  *
@@ -50,7 +50,7 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
     private final Lock mainLock;
     private final Condition refAvailableCondition;
     private final Condition noTakersCondition;
-    private volatile long lendCount = 0;
+    private volatile long takeCount = 0;
     private volatile E ref;
     private volatile E takebackRef;
 
@@ -111,7 +111,7 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
     }
 
     /**
-     * Returns the refAvailable Condition.
+     * Returns the  Condition that is used to signal if a reference is available.
      *
      * @return the refAvailable Condition.
      */
@@ -120,7 +120,7 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
     }
 
     /**
-     * Returns the noTakers Condition.
+     * Returns the Condition that is used to signal if all references are returned.
      *
      * @return the noTakers condition.
      */
@@ -129,15 +129,14 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
     }
 
     /**
-     * Returns the number of lends. If no references are lend, 0 is returned. The value could be
-     * stale at the moment it is received.s
+     * Returns the number of takes. If no references are taken, 0 is returned. The value could be
+     * stale at the moment it is received.
      *
-     * @return the current number of lends.
+     * @return the current number of takes.
      */
-    public long getLendCount() {
-        return lendCount;
+    public long getTakeCount() {
+        return takeCount;
     }
-
 
     public boolean isTakePossible() {
         return ref != null;
@@ -145,12 +144,11 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
 
     public E take() throws InterruptedException {
         mainLock.lockInterruptibly();
-
         try {
             while (ref == null)
                 refAvailableCondition.await();
 
-            lendCount++;
+            takeCount++;
             return ref;
         } finally {
             mainLock.unlock();
@@ -159,37 +157,39 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
 
     public E tryTake(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
         long timeoutNs = toUsableNanos(timeout, unit);
+
         mainLock.lockInterruptibly();
         try {
             while (ref == null)
-                timeoutNs = awaitNanosAndThrow(refAvailableCondition, timeoutNs);
+                timeoutNs = awaitNanosOrThrow(refAvailableCondition, timeoutNs);
 
-            lendCount++;
+            takeCount++;
             return ref;
         } finally {
             mainLock.unlock();
         }
     }
 
-
     /**
-     * Decreases the lendCount. If the lendCount reaches 0, the noTakersCondition is signalled.
-     * When the lendCount already is 0, an IllegalTakebackException is thrown.
+     * Decreases the takeCount. If the takeCount reaches 0, the noTakersCondition is signalled.
+     * When the takeCount already is 0, an IllegalTakebackException is thrown.
      * <p/>
      * This call only should be made when the mainLock is held.
      */
-    private void decreaseLendCount() {
-        checkLendcount();
+    private void decreaseTakeCount() {
+        ensureAtLeastOneReferenceIsTaken();
 
-        lendCount--;
-        if (lendCount == 0)
+        takeCount--;
+        if (takeCount == 0)
             noTakersCondition.signalAll();
     }
 
-    /**
+    /**              \
+     * Checks if the ref is the correct reference for takeback.
+     *
      * @param ref the argument to check. Shouldn't be null.
      */
-    private void checkReference(E ref) {
+    private void checkReferenceForTakeback(E ref) {
         if (!ref.equals(takebackRef))
             throw new IllegalTakebackException("incorrect reference is taken back");
     }
@@ -199,8 +199,8 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
 
         mainLock.lock();
         try {
-            checkReference(ref);
-            decreaseLendCount();
+            checkReferenceForTakeback(ref);
+            decreaseTakeCount();
         } finally {
             mainLock.unlock();
         }
@@ -211,32 +211,32 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
 
         mainLock.lock();
         try {
-            checkReference(ref);
-            decreaseLendCount();
+            checkReferenceForTakeback(ref);
+            decreaseTakeCount();
             this.ref = null;
         } finally {
             mainLock.unlock();
         }
     }
 
-    private void checkLendcount() {
-        if (lendCount == 0)
+    private void ensureAtLeastOneReferenceIsTaken() {
+        if (takeCount == 0)
             throw new IllegalTakebackException("no references are lend");
     }
 
     /**
-     * Checks if there are lenders.
+     * Checks if there are takes.
      *
-     * @return <tt>true</tt> if there are lenders, false otherwise.
+     * @return <tt>true</tt> if there are takes, false otherwise.
      */
-    private boolean hasLenders() {
-        return lendCount > 0;
+    private boolean hasTakers() {
+        return takeCount > 0;
     }
 
     public E put(E newRef) throws InterruptedException {
         mainLock.lockInterruptibly();
         try {
-            while (hasLenders())
+            while (hasTakers())
                 noTakersCondition.await();
 
             return updateReference(newRef);
@@ -245,6 +245,14 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
         }
     }
 
+    /**
+     * Updates the reference this StrictLendableReference holds.
+     *
+     * Call only should be made when the mainLock is hold.
+     *
+     * @param newRef   the reference to set
+     * @return  the old reference.
+     */
     private E updateReference(E newRef) {
         E oldRef = ref;
         this.ref = newRef;
@@ -259,8 +267,8 @@ public class StrictLendableReference<E> extends AbstractAwaitableReference<E> im
 
         mainLock.lockInterruptibly();
         try {
-            while (hasLenders())
-                timeoutNs = awaitNanosAndThrow(noTakersCondition, timeoutNs);
+            while (hasTakers())
+                timeoutNs = awaitNanosOrThrow(noTakersCondition, timeoutNs);
 
             return updateReference(newRef);
         } finally {

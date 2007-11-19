@@ -80,7 +80,8 @@ package org.codehaus.prometheus.uninterruptiblesection;
  * todo: explain what happens when the calling thread is interrupted, or
  * already was interrupted when it running executing the execute method.<p/>
  * todo: closures and syntax improvement<p/>
- *
+ * <p>
+ * In java 7 a closure could be added to make it more attractive to use.
  * @author Peter Veentjer.
  * @see TimedUninterruptibleSection
  * @since 0.1
@@ -94,22 +95,22 @@ public abstract class UninterruptibleSection<E> {
      * @return a section should return a value (can be ignored)
      * @throws InterruptedException the execution of the section is interrupted.
      */
-    protected abstract E originalsection() throws InterruptedException;
+    protected abstract E interruptibleSection() throws InterruptedException;
 
     /**
      * Executes the interruptible interruptiblesection.
      * <p/>
-     * If the {@link #originalsection()} throws a RuntimeException, this exception is
-     * propagated.
+     * If the {@link #interruptibleSection()} throws a RuntimeException, this exception is
+     * propagated (nothing bad happens inside this UninterruptibleSection).
      *
-     * @return the return value from {@link #originalsection()}
+     * @return the return value from {@link # interruptibleSection ()}
      */
     public final E execute() {
         boolean restoreInterrupt = Thread.interrupted();
         try {
             while (true) {
                 try {
-                    return originalsection();
+                    return interruptibleSection();
                 } catch (InterruptedException ex) {
                     restoreInterrupt = true;
                 }

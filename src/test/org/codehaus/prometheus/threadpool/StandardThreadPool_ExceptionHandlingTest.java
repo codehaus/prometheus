@@ -6,11 +6,11 @@
 package org.codehaus.prometheus.threadpool;
 
 import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
-import org.codehaus.prometheus.exceptionhandler.NullExceptionHandler;
-import org.codehaus.prometheus.testsupport.TestRunnable;
-import org.codehaus.prometheus.testsupport.Delays;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
+import org.codehaus.prometheus.exceptionhandler.NoOpExceptionHandler;
+import org.codehaus.prometheus.concurrenttesting.TestRunnable;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.sleepMs;
 
 import java.util.concurrent.Executors;
 
@@ -25,8 +25,15 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
     public void testSetNullExceptionHandler() {
         newStartedThreadpool();
 
-        threadpool.setExceptionHandler(null);
-        assertTrue(threadpool.getExceptionHandler() instanceof NullExceptionHandler);
+        try {
+            threadpool.setExceptionHandler(null);
+            fail();
+        } catch (NullPointerException ex) {
+        }
+    }
+
+    public void testExceptionThrownByHandlerIsDiscarded(){
+        //todo
     }
 
     /**
@@ -49,8 +56,8 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         assertIsRunning();
     }
 
-    public void placeTask(Runnable runnable){
-        workQueue.add(Executors.callable(runnable,true));
+    public void placeTask(Runnable runnable) {
+        workQueue.add(Executors.callable(runnable, true));
     }
 
     private void createBunchOfProblemTasks(int errorcount) {
@@ -70,8 +77,12 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         threadPoolExceptionHandler.assertCount(0);
     }
 
-    public void test_getWork_otherException() {
+    public void test_getWorkThrowsException() {
+        int poolsize = 3;
+        newStartedThreadpool(poolsize);
+
         //todo
+
     }
 
     public void test_getShuttingdownWork_otherException() {
@@ -104,7 +115,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
     }
 
     public void assertSetHandlerWorks() {
-        ExceptionHandler handler = new NullExceptionHandler();
+        ExceptionHandler handler = new NoOpExceptionHandler();
         threadpool.setExceptionHandler(handler);
         assertSame(handler, threadpool.getExceptionHandler());
     }

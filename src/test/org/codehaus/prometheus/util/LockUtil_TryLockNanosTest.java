@@ -5,9 +5,9 @@
  */
 package org.codehaus.prometheus.util;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 import static org.codehaus.prometheus.util.LockUtil.tryLockNanos;
 import org.easymock.EasyMock;
 import static org.easymock.EasyMock.expect;

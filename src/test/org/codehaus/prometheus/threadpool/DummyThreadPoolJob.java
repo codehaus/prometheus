@@ -5,13 +5,18 @@
  */
 package org.codehaus.prometheus.threadpool;
 
+/**
+ * A ThreadPoolJob specific for testing purposes.
+ *
+ * @author Peter Veentjer.
+ */
 public class DummyThreadPoolJob implements ThreadPoolJob {
 
-    public Object getWork() throws InterruptedException {
+    public Object takeWork() throws InterruptedException {
         throw new RuntimeException();
     }
 
-    public Object getShuttingdownWork() throws InterruptedException {
+    public Object takeWorkForNormalShutdown() throws InterruptedException {
         throw new RuntimeException();
     }
 

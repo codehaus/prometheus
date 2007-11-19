@@ -14,6 +14,8 @@ import java.util.concurrent.TimeoutException;
 /**
  * A timed version of the {@link UninterruptibleSection}.
  *
+ * In java 7 a closure could be added to make it more attractive to use.
+
  * @author Peter Veentjer.
  * @see UninterruptibleSection
  * @since 0.1
@@ -30,7 +32,7 @@ public abstract class TimedUninterruptibleSection<E> {
      * @throws InterruptedException if the calling thread is interrupted while executing the section.
      * @throws TimeoutException     if a timeout occurs
      */
-    protected abstract E originalsection(long timeoutNs) throws InterruptedException, TimeoutException;
+    protected abstract E interruptibleSection(long timeoutNs) throws InterruptedException, TimeoutException;
 
     /**
      * Tries to execute the original section.
@@ -51,18 +53,17 @@ public abstract class TimedUninterruptibleSection<E> {
 
         boolean restoreInterrupt = Thread.interrupted();
         try {
-            while (true) {
+            while (timeoutNs >= 0) {
                 long startNs = System.nanoTime();
                 try {
-                    return originalsection(timeoutNs);
+                    return interruptibleSection(timeoutNs);
                 } catch (InterruptedException e) {
                     restoreInterrupt = true;
-
                     timeoutNs -= System.nanoTime() - startNs;
-                    if (timeoutNs <= 0)
-                        throw new TimeoutException();
                 }
             }
+
+            throw new TimeoutException();
         } finally {
             if (restoreInterrupt)
                 Thread.currentThread().interrupt();

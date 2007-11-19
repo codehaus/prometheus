@@ -7,7 +7,7 @@ package org.codehaus.prometheus.waitpoint;
 
 import org.codehaus.prometheus.closeable.Closeable;
 import static org.codehaus.prometheus.util.ConcurrencyUtil.toUsableNanos;
-import static org.codehaus.prometheus.util.ConditionUtil.awaitNanosAndThrow;
+import static org.codehaus.prometheus.util.ConditionUtil.awaitNanosOrThrow;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <dd>
  * Unlike a latch (like the {@link java.util.concurrent.Future} or the
  * {@link java.util.concurrent.CountDownLatch}, a CloseableWaitpoint can be closed after it has been
- * open, or opened after it has been closed. So there is no final state.
+ * open, and opened after it has been closed. So there is no final state.
  * </dd>
  * <p/>
  * todo:
@@ -174,7 +174,7 @@ public class CloseableWaitpoint extends AbstractWaitpoint implements Closeable {
         mainLock.lockInterruptibly();
         try {
             while (!open)
-                timeoutNs = awaitNanosAndThrow(isOpenCondition, timeoutNs);
+                timeoutNs = awaitNanosOrThrow(isOpenCondition, timeoutNs);
 
             return timeoutNs;
         } finally {

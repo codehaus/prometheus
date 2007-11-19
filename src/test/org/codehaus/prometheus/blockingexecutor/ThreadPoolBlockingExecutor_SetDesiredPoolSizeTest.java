@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.testsupport.Delays;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
  * Unittests {@link ThreadPoolBlockingExecutor#setDesiredPoolSize(int)}

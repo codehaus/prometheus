@@ -5,11 +5,11 @@
  */
 package org.codehaus.prometheus.util;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.Delays;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.sleepMs;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -71,7 +71,6 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
         t.assertIsStarted();
     }
 
-
     public TryLockThread scheduleTryLock(long timeoutMs, boolean startInterrupted) {
         TryLockThread t = new TryLockThread(timeoutMs);
         t.setStartInterrupted(startInterrupted);
@@ -94,9 +93,9 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
 
         public void assertSuccess() {
             assertIsTerminatedNormally();
+            assertTrue(foundTimeoutNs>=0);
         }
     }
-
 
     public TryLockNanosProtectedThread scheduleTryLockNanosProtected(long timeoutMs) {
         TryLockNanosProtectedThread t = new TryLockNanosProtectedThread(timeoutMs);
@@ -109,7 +108,6 @@ public abstract class LockUtil_AbstractTest extends ConcurrentTestCase {
         t.start();
         return t;
     }
-
 
     public class ScheduleLockAndUnlockThread extends TestThread {
         private final long durationMs;

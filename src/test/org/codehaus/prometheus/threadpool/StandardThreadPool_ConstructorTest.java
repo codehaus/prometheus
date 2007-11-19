@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import org.codehaus.prometheus.exceptionhandler.NullExceptionHandler;
-import org.codehaus.prometheus.testsupport.TracingThreadFactory;
+import org.codehaus.prometheus.exceptionhandler.NoOpExceptionHandler;
+import org.codehaus.prometheus.concurrenttesting.TracingThreadFactory;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.concurrent.ThreadFactory;
@@ -124,7 +124,7 @@ public class StandardThreadPool_ConstructorTest extends StandardThreadPool_Abstr
         assertSame(factory, threadpool.getThreadFactory());
         assertActualPoolsize(0);
         assertDesiredPoolsize(0);
-        assertSame(threadPoolJob, threadpool.getWorkerJob());
+        assertSame(threadPoolJob, threadpool.getJob());
         assertHasNullExceptionHandler();
         factory.assertNoneCreated();
     }
@@ -158,7 +158,7 @@ public class StandardThreadPool_ConstructorTest extends StandardThreadPool_Abstr
         assertSame(factory, threadpool.getThreadFactory());
         assertActualPoolsize(0);
         assertDesiredPoolsize(poolsize);
-        assertSame(threadPoolJob, threadpool.getWorkerJob());
+        assertSame(threadPoolJob, threadpool.getJob());
         assertHasNullExceptionHandler();
         factory.assertNoneCreated();
     }
@@ -166,11 +166,11 @@ public class StandardThreadPool_ConstructorTest extends StandardThreadPool_Abstr
     //======================== asserts =========================
 
     private void assertHasNullExceptionHandler() {
-        assertTrue(threadpool.getExceptionHandler() instanceof NullExceptionHandler);
+        assertTrue(threadpool.getExceptionHandler() instanceof NoOpExceptionHandler);
     }
 
     private void assertHasNoDefaultWorkerJob() {
-        assertNull(threadpool.getWorkerJob());
+        assertNull(threadpool.getJob());
     }
 
     private void assertStandardThreadFactory() {

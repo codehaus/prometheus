@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.TestRunnable;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.TestRunnable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

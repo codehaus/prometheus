@@ -8,6 +8,10 @@ package org.codehaus.prometheus.exceptionhandler;
 /**
  * A handler for exceptions.
  *
+ * todo: idea to let handle method return a value? In case of void, the caller knows that
+ * nothing interesting is returned. And in the other cases, the caller knows what to
+ * expect
+ *
  * @author Peter Veentjer.
  * @since 0.1
  */

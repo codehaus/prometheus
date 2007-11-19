@@ -6,7 +6,7 @@
 package org.codehaus.prometheus.references;
 
 import static junit.framework.Assert.assertEquals;
-import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
 
 public class TryTakeThread<E> extends TestThread {
     private final LendableReference<E> lendableRef;

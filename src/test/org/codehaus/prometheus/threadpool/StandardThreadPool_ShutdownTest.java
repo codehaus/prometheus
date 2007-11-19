@@ -5,11 +5,11 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
- * Unittests the {@link StandardThreadPool#shutdown()} method.
+ * Unittests the {@link StandardThreadPool#shutdownPolitly()} method.
  *
  * @author Peter Veentjer.
  */
@@ -36,8 +36,10 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
     }
 
     public void testIdleWorkersAreInterrupted() {
-        int poolsize = 10;
+        int poolsize = 1;
         newStartedThreadpool(poolsize);
+
+        //the worker threads are now blocking while taking work.
 
         spawned_shutdown();
 

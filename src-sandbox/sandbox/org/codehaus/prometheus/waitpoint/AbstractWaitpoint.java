@@ -21,7 +21,7 @@ public abstract class AbstractWaitpoint implements Waitpoint {
     public boolean tryPass() {
         try {
             TimedUninterruptibleSection section = new TimedUninterruptibleSection() {
-                protected Object originalsection(long timeoutNs)
+                protected Object interruptibleSection(long timeoutNs)
                         throws InterruptedException, TimeoutException {
                     tryPass(timeoutNs, TimeUnit.NANOSECONDS);
                     return null;

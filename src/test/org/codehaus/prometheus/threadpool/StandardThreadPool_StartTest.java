@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
  * Unittests {@link StandardThreadPool#start()} method.

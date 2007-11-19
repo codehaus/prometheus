@@ -5,11 +5,11 @@
  */
 package org.codehaus.prometheus.uninterruptiblesection;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import org.codehaus.prometheus.testsupport.TestThread;
-import org.codehaus.prometheus.testsupport.Delays;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.sleepMs;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.sleepMs;
 import org.codehaus.prometheus.util.JucLatch;
 import org.codehaus.prometheus.util.Latch;
 
@@ -41,7 +41,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
     public void testNoBlocking(boolean startInterrupted) {
         final Object returnValue = 10;
         section = new UninterruptibleSection() {
-            protected Object originalsection() {
+            protected Object interruptibleSection() {
                 return returnValue;
             }
         };
@@ -65,7 +65,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
     public void testSomeWaitingNeeded(boolean startInterrupted) {
         final Object returnValue = 20;
         section = new UninterruptibleSection() {
-            protected Object originalsection() throws InterruptedException {
+            protected Object interruptibleSection() throws InterruptedException {
                 latch.await();
                 return returnValue;
             }
@@ -94,7 +94,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
     public void testInterruptedWhileWaiting(boolean startInterrupted) {
         final Object returnValue = 30;
         section = new UninterruptibleSection() {
-            protected Object originalsection() throws InterruptedException {
+            protected Object interruptibleSection() throws InterruptedException {
                 latch.await();
                 return returnValue;
             }
@@ -127,7 +127,7 @@ public class UninterruptibleSectionTest extends ConcurrentTestCase {
     public void testRuntimeException(boolean startInterrupted) {
         final RuntimeException ex = new RuntimeException();
         section = new UninterruptibleSection() {
-            protected Object originalsection() {
+            protected Object interruptibleSection() {
                 throw ex;
             }
         };

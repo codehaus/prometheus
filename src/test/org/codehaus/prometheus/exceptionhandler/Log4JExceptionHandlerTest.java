@@ -27,7 +27,7 @@ public class Log4JExceptionHandlerTest extends TestCase {
 
     public void testConstructor_Logger() {
         try {
-            new Log4JExceptionHandler(null);
+            new Log4JExceptionHandler((Logger)null);
             fail();
         } catch (NullPointerException ex) {
         }

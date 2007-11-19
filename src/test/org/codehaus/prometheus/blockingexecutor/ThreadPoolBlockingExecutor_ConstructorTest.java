@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.blockingexecutor;
 
-import org.codehaus.prometheus.exceptionhandler.NullExceptionHandler;
-import org.codehaus.prometheus.testsupport.TracingThreadFactory;
+import org.codehaus.prometheus.exceptionhandler.NoOpExceptionHandler;
+import org.codehaus.prometheus.concurrenttesting.TracingThreadFactory;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
@@ -45,7 +45,7 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         assertDesiredPoolSize(poolsize);
         assertHasDefaultThreadPool();
         assertHasDefaultExceptionHandler();
-    }
+   }
 
     //================ ThreadPoolBlockingExecutor(int) =========================
 
@@ -105,7 +105,7 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
     }
 
     private void assertHasDefaultExceptionHandler() {
-        assertTrue(executor.getExceptionHandler() instanceof NullExceptionHandler);
+        assertTrue(executor.getExceptionHandler() instanceof NoOpExceptionHandler);
     }
 }
 

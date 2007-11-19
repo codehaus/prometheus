@@ -5,10 +5,10 @@
  */
 package org.codehaus.prometheus.references;
 
-import org.codehaus.prometheus.testsupport.ConcurrentTestCase;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -35,7 +35,7 @@ public abstract class StrictLendableReference_AbstractTest<E> extends Concurrent
     }
 
     public void assertLendCount(int expectedLendCount) {
-        assertEquals(expectedLendCount, lendableRef.getLendCount());
+        assertEquals(expectedLendCount, lendableRef.getTakeCount());
     }
 
     public void assertHasRef(E expectedRef) {

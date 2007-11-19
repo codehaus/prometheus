@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.references;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.*;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.*;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
  * The Take_Test unittests the {@link org.codehaus.prometheus.references.DefaultAwaitableReference#take()} method.

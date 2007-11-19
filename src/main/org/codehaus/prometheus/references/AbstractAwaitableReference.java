@@ -22,7 +22,7 @@ public abstract class AbstractAwaitableReference<E> implements AwaitableReferenc
     public E tryTake() {
         try {
             TimedUninterruptibleSection<E> section = new TimedUninterruptibleSection<E>() {
-                protected E originalsection(long timeoutNs)
+                protected E interruptibleSection(long timeoutNs)
                         throws InterruptedException, TimeoutException {
                     return tryTake(timeoutNs, TimeUnit.NANOSECONDS);
                 }

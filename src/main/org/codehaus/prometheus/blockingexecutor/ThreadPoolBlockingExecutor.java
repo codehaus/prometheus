@@ -10,6 +10,7 @@ import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPoolJob;
 import org.codehaus.prometheus.threadpool.ThreadPoolState;
+import org.codehaus.prometheus.util.StandardThreadFactory;
 import static org.codehaus.prometheus.util.ConcurrencyUtil.ensureNoTimeout;
 
 import static java.lang.String.format;
@@ -17,37 +18,35 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * An implementation of a {@link BlockingExecutorService} that uses a {@link ThreadPool} for thread
+ * A {@link BlockingExecutorService} implementation that uses a {@link ThreadPool} for thread
  * management and a workqueue (a {@link BlockingQueue}) to store unprocessed jobs.
  * <p/>
  * <h1>Out of order execution</h1>
- * Event though a blocking queue is used to store the items,and an item won't be returned out of order
- * (FIFO contract) it could be that:
+ * Even though a blocking queue is used to store the items, and an item won't be taken out of order
+ * (FIFO contract) it could be that items are processed out of order for different reasons:
  * <ol>
- * <li>a task takes a longer time than others to execute</li>
+ * <li>a taken task takes a longer time than others to execute</li>
  * <li>a taken task hasn't had the time to execute (maybe unlucky context switches).</li>
  * </ol>
- * The FIFO contract can also be broken, check the {@link PriorityBlockingQueue}. Only when there is a
- * single thread you get the FIFO guarantee.
+ * The FIFO contract can also be broken, check the {@link PriorityBlockingQueue}. Using a single thread
+ * would solve this problem (but isn't always the best solution).
  * <p/>
  * <h1>Bounded workqueue</h1>
  * <p/>
- * If you don't have control on the number of tasks in the workqueue, this could lead to resource problems
- * like running out of memory. That is why it is better to use a bounded BlockingQueue (an unbounded
- * blockingqueue would also not lead to blocking behaviour).
+ * If you don't have control on the number of tasks in the workqueue, it could lead to resource problems
+ * like running out of memory. To ensure graceful degradation, it is better to use a bounded BlockingQueue.
+ * An unbounded BlockingQueue would not lead to blocking anyway..
  * </p>
  * <h1>Workqueue without internal capacity</h1>
  * <p/>
  * In some cases you don't want any unprocessed work, if that is the case, you can use a
- * {@link SynchronousQueue} as workqueue. A SynchronousQueue only accepts tasks if there is a
- * worker thread waiting for it. If no worker thread is available, the submission of the task blocks.
+ * {@link java.util.concurrent.SynchronousQueue} as workqueue. A SynchronousQueue only accepts tasks if
+ * there is a worker thread waiting for it. If no worker thread is available, the submission of the
+ * task blocks.
  * </p>
- * If a task placement is running before a shutdown, but completes after the system is shutting down,
- * the placing thread is responsible to make sure that the task is processed. This is done by removing
- * the task from the queue if it is still there and throwing a RejectedExecutionException or if the
- * task isn't on the queue, it is (being) processed.
  *
  * @author Peter Veentjer.
  * @since 0.1
@@ -62,18 +61,22 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         return new LinkedBlockingQueue<Runnable>();
     }
 
+    private final static AtomicLong defaultThreadPoolNameCounter = new AtomicLong(1);
+
     public static ThreadPool createDefaultThreadPool(int poolsize) {
-        return new StandardThreadPool(poolsize);
+        String poolname = "blockingexecutor#" + defaultThreadPoolNameCounter.incrementAndGet();
+        ThreadFactory threadFactory = new StandardThreadFactory(poolname);
+        return createDefaultThreadPool(threadFactory, poolsize);
     }
 
     private final ThreadPool threadPool;
     private final BlockingQueue<Runnable> workQueue;
 
     /**
-     * Creates a ThreadPoolBlockingExecutor with the given number of threads.
+     * Creates a ThreadPoolBlockingExecutor with the given poolsize.
      *
      * @param poolsize the initial number of threads in the ThreadPool.
-     * @throws IllegalArgumentException if poolsize smaller than 0.
+     * @throws IllegalArgumentException if poolsize is smaller than 0.
      */
     public ThreadPoolBlockingExecutor(int poolsize) {
         this(createDefaultThreadPool(poolsize), createDefaultWorkQueue());
@@ -86,7 +89,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      * @param poolsize  the initial number of threads in the threadpool
      * @param factory   the ThreadFactory responsible for filling the threadpool
      * @param workQueue the BlockingQueue used to store unprocessed work.
-     * @throws IllegalArgumentException if poolsize is smaller than zero.
+     * @throws IllegalArgumentException if poolsize is smaller than 0.
      * @throws NullPointerException     if factory or workQueue is null.
      */
     public ThreadPoolBlockingExecutor(int poolsize, ThreadFactory factory, BlockingQueue<Runnable> workQueue) {
@@ -168,23 +171,33 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         threadPool.setExceptionHandler(handler);
     }
 
-    public List<Runnable> shutdown() {
-        threadPool.shutdown();
-
-        if (threadPool.getState()==ThreadPoolState.shutdown)
-            return drainWorkQueue();
-        else
+    public List<Runnable> shutdownAndDrain() {
+        ThreadPoolState previousState = threadPool.shutdownPolitly();
+        if (previousState != ThreadPoolState.running)
             return Collections.EMPTY_LIST;
+
+        //this is the first thread that calls the shutdown, and this means we can drain the workqueue
+        return drainWorkQueue();
+    }
+
+    public List<Runnable> shutdownPolitly() {
+        ThreadPoolState previousState = threadPool.shutdownPolitly();
+        if (previousState != ThreadPoolState.running)
+            return Collections.EMPTY_LIST;
+
+        return getDesiredPoolSize() == 0?drainWorkQueue():Collections.EMPTY_LIST;
     }
 
     public List<Runnable> shutdownNow() {
-        threadPool.shutdownNow();
+        ThreadPoolState previousState = threadPool.shutdownNow();
+        if (previousState != ThreadPoolState.running)
+            return Collections.EMPTY_LIST;
+
+        //this is the first thread that calls the shutdown, and this means we can drain the workqueue
         return drainWorkQueue();
     }
 
     /**
-     * Drains all the items from the workqueue.
-     * <p/>
      * Drains all items from the workqueue. Execute-threads that are pending for placement, are not
      * required to have placed their item before this call being called. If this is the case,
      * their item will be placed on the workqueue. These execute-threads are responsible themselfes
@@ -206,8 +219,8 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
                 return BlockingExecutorServiceState.Unstarted;
             case running:
                 return BlockingExecutorServiceState.Running;
-            case forcedshuttingdown://fall through                      
-            case shuttingdown:
+            case shuttingdownforced://fall through
+            case shuttingdownnormally:
                 return BlockingExecutorServiceState.Shuttingdown;
             case shutdown:
                 return BlockingExecutorServiceState.Shutdown;
@@ -227,7 +240,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
     public void execute(Runnable task) throws InterruptedException {
         if (task == null) throw new NullPointerException();
 
-        ensurePoolRunning();
+        ensureRunning();
         workQueue.put(task);
         ensureTaskHandeled(task);
     }
@@ -236,13 +249,13 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         if (task == null || unit == null) throw new NullPointerException();
 
         ensureNoTimeout(timeout);
-        ensurePoolRunning();
+        ensureRunning();
         if (!workQueue.offer(task, timeout, unit))
             throw new TimeoutException();
         ensureTaskHandeled(task);
     }
 
-    private void ensurePoolRunning() {
+    private void ensureRunning() {
         if (threadPool.getState() != ThreadPoolState.running)
             throw new RejectedExecutionException("task can't be executed, the ThreadPoolBlockingExecutor" +
                     " isn't running");
@@ -278,18 +291,18 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
             return;
         }
 
-        //the task was still on the queue, it is removed now, so lets throw an
-        //RejectedExecutionException to indicate that the execution has failed.
+        //the task was still on the queue, it is removed now, so lets throw a
+        //RejectedExecutionException to indicate that the task was rejected.
         throw new RejectedExecutionException();
     }
 
     private class ThreadPoolJobImpl implements ThreadPoolJob<Runnable> {
 
-        public Runnable getWork() throws InterruptedException {
+        public Runnable takeWork() throws InterruptedException {
             return workQueue.take();
         }
 
-        public Runnable getShuttingdownWork() throws InterruptedException {
+        public Runnable takeWorkForNormalShutdown() throws InterruptedException {
             return workQueue.poll(0, TimeUnit.NANOSECONDS);
         }
 

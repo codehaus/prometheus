@@ -5,11 +5,11 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import org.codehaus.prometheus.testsupport.TestCallable;
-import org.codehaus.prometheus.testsupport.Delays;
-import static org.codehaus.prometheus.testsupport.TestSupport.newDummyCallable;
-import static org.codehaus.prometheus.testsupport.TestSupport.newThrowingCallable;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
+import org.codehaus.prometheus.concurrenttesting.TestCallable;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newDummyCallable;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newThrowingCallable;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
 
 import java.awt.image.ImagingOpException;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.io.IOException;
  */
 public class StandardThreadPool_RunWorkTest extends StandardThreadPool_AbstractTest{
 
-    //getWork and getWorkForShutdown have to be tested
+    //takeWork and getWorkForShutdown have to be tested
 
     public void testWhileRunning_returnsFalse() throws InterruptedException {
         int poolsize = 4;

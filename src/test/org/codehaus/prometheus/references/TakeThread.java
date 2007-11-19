@@ -6,7 +6,7 @@
 package org.codehaus.prometheus.references;
 
 import static junit.framework.TestCase.assertSame;
-import org.codehaus.prometheus.testsupport.TestThread;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
 
 /**
  * The TakeThread is a thread that tries to tryTake an item

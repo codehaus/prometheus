@@ -3,7 +3,7 @@ package org.codehaus.prometheus.processors;
 import junit.framework.TestCase;
 
 /**
- * Unittests {@link ProcessorRepeatable}.
+ * Unittests {@link ProcessorRunningRepeatable}.
  *
  * @author Peter Veentjer.
  */

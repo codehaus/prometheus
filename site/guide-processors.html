@@ -1,31 +1,66 @@
-<h2>Processor guide</h2>
+<h2>Process guide</h2>
 <p>
-    This documentation is under construction. The functionality of the processors still is in the
+    This documentation is under construction. The functionality is still is in the
     sandbox. At the moment it is being used in an experimental project within <a href="http://www.xebia.com">Xebia</a>:
     the company I'm part of. We use Prometheus as execution environment, and Terracotta as distribution mechanism.
 </p>
 
 <h3>Goal</h3>
 <p>
-    Make it easy to use multi-threading, focus on core logic and not on plumbing, provide
-    a flexible, extract looping, lightweight and powerful execution environment for multithreading and
-    distributed computing.
+    Creating multithreaded application is going to be more important, because of the increasing number of
+    cores on cpu's. The classic approach to concurrency control is procedure calls, but the big
+    problem is that it can be very complicated because of the synchronization (not enough synchronization
+    leads to race problems and too much synchronization leads to liveness problems).
+</p>
+<p>
+    A different approach to writing multithreaded applications is message passing. With message passing
+    an message (just an object) only can be touched by at most a single thread at any moment and this prevents a lot of
+    complexity. But message passing is not without problems either; the core logic (the transformation
+    of messages) often is polluted with infrastructural plumbing (threading, taking messages from queues,
+    putting messages on queues). The process functionality of Prometheus provides a lot of
+    inner-virtual machine plumbing and makes it easy to hook up tuple spaces (Javaspaces/Gigaspaces, but
+    also JMS and Terracotta) if . So the goal is not to create another data distribution technology,
+    but rather to complement these technologies.
+
+    This goal is realized by acknowledging the 2 different hats a
+</p>
+<ol>
+    <li>the core processing logic; transforming </li>
+    <li>wiring up the processes</li>    
+</ol>
+
+    Make it easy to use multi-threading, focus on core logic and not on plumbing/infrastructure for blocking
+    and passing data, lightweight and powerful execution environment for multithreading and
+    distributed computing. There also is a large overlap with batch processing, although this is not
+    a batching framework, so no functionality can be found for tracking batches, restarting them etc.
+
+      pipes and filters architectural patterns, spring friendly (di) but not tied to the spring framework.
+        can be used to write non distributed as wel as distributed applications.
 </p>
 
 <h3>Process</h3>
 <p>
-    What is a Process:
+    The most important concept you need to understand for the Process functionality, is the Process.
+    So what is a process:
 </p>
 <ol>
-    <li>Something that generates data: eg reading lines of text from a file</li>
-    <li>Something that consumes data: eg writing output to database or file</li>
-    <li>Something that transforms data: eg encrypt/decrypt etc</li>
+    <li>
+        Something that generates data: eg reading lines of text from a file, or reading records from the database.
+    </li>
+    <li>
+        Something that consumes data: eg writing output to database or file, or writing records to the database.
+    </li>
+    <li>
+        Something that transforms data: eg changes the state of domain objects like
+    </li>
 </ol>
 
 <h3>Processes in Prometheus</h3>
 <p>
-    A Process in Prometheus can be any class. You don't need to implement any interfaces, extend
-    classes. A Process only need to have a receive method for Messages (any POJO) it wants to receive:
+    A Process in Prometheus can be any POJO, so you don't need to implement any interfaces or extend
+    classes. A Process only needs to have one or more receive methods for every type of message (also POJO's)
+    it wants to receive. The following example is a process that transforms (replaces) a number by
+    adding one to it.
 </p>
 <pre>
     class AddOneProcess{
@@ -36,16 +71,59 @@
     }
 </pre>
 <p>
-    As you can see there is no logic how to get data (maybe from a queue or the output of another process),
-    how to get rid of it (place it on a queue, give it as input to the next process), how a thread needs
-    to execute this process, how to deal with exceptions, figuring out which receive method to use.
-    This makes it very easy to wire up the some processes in different ways, it makes it easy
-    to test, to understand, ..
-    <br/>
+    As you can see the code is very clear:
+<ol>
+    <li>
+        there is no logic for figuring out which receive method to use. The example only contains a single
+        receive method, but multiple receive methods can be declared inside a single process (link to
+        documentation).
+    </li>
+    <li>
+        there is no logic how to get the value: maybe it needs to be taken from some kind of queue or
+        is the output of another process. Removing this logic, makes it easy to 'wire' up the same process
+        in a different context. This property can be very handy if you are still looking for the right
+        setup for the processes. Another advantage is that testing is easier because no blocking on
+        queues takes place in the process, so you only need to test the core logic and not the infrastructure.
+    </li>
+    <li>
+        there is no logic how to get rid of the value : maybe it needs to be put on some kind of queue or
+        it could also be the input of another process. So the previous item for advantages.
+    </li>
+    <li>
+        no looping. If you need to run the process, on a stream of values, you normally get some kind of
+        loop in your system that keeps running the process. Such loops can be hard to test.
+    </li>
+    <li>
+        no internal threading logic: threading can be very hard, and having to deal with it all the time,
+        is just asking for problems. Threading can be externalized (in case of the Processor functionality,
+        the ThreadPoolRepeater (link to documentation) is responsible for this task.
+    </li>
+    <li>
+        no exception handling logic: a process could fail for some reason, but you want to externalize
+        this plumbing so the process only needs to focus on the core logic. Prometheus contains various
+        policies that can be used to deal with exceptions (link to these policies).
+    </li>
+</ol>
+
+<p>
     The process functionality is not the magic solution if you need to deal with messages. In some cases you
     need to deal with multiple queues, timeouts etc. If that is the case you can always go a step lower:
     and write a processor (an environment for executing a process) yourself.
 </p>
+
+<h4>What is is not</h4>
+<ol>
+    <li>data/object distribution technology like JMS, Terracotta, Javaspaces. The main task of these
+        technologies is the distribution of data in a cluster. The process functionality from Prometheus,
+        focusses on executing processes inside a single virtual machine. If data needs to be distributed
+        in a cluster, you could combine Prometheus with one of these technologies. At the moment, different
+        channel (link to documentation) experimental implementation have been made for Terracotta and
+        Gigaspaces.
+    </li>
+    <li>
+
+    </li>
+</ol>
 
 <h4>Multiple receive methods</h4>
 <p>
@@ -89,7 +167,7 @@
 
 <h4>Using a wildcard</h4>
 <p>
-    Using a wildcard  (wildcard is nothing special.. just a receive that accepts any
+    Using a wildcard (wildcard is nothing special.. just a receive that accepts any
     Object).
 </p>
 <pre>
@@ -121,7 +199,7 @@
 
 <h4>No match?</h4>
 <p>
-    If there is no matching receive, nothing bad happens. The message won't be gobbled up. 
+    If there is no matching receive, nothing bad happens. The message won't be gobbled up.
 </p>
 
 <h4>Returning void</h4>
@@ -181,6 +259,9 @@
         }
     }
 </pre>
+<p>
+    Support for other structures, like java.util.Collection/java.util.Iterator and arrays, is planned.
+</p>
 
 <h4>Receiving no arguments</h4>
 <p>
@@ -206,8 +287,8 @@
 
 <h3>Processors</h3>
 <p>
-    A Processor is the execution environment for Processes. The StandardProcessor is the
-    default implementation that uses a InputChannel for input and an OutputChannel for output.    
+    A Processor is the execution environment for a process. The StandardProcessor is the
+    default implementation that uses a InputChannel for input and an OutputChannel for output.
 </p>
 
 <h4>Source processor</h4>
@@ -240,16 +321,56 @@
     Processor processor = new StandardProcessor(input, consumingProcess);
 </pre>
 
-
 <h3>Running processors</h3>
 <p>
-    Give repeater example
+    The threading logic to run a process, could have been added to the Processor, but
+    this would complicate this very important structure. That is why threading has been removed
+    completely from the Processor and the only thing that the Processor exposes is
+    a method. This method needs to be executed by a Thread and this is a perfect
+    task for the Repeater/ThreaPoolRepeater, eg:
 </p>
 <pre>
-    Processor processor = ...;
+    Object sayHelloWorldProcess = Object(){
+        void receive(){
+            System.out.println("hello world");
+        }
+    };
+
+    Processor processor = new StandardProcessor(sayHelloWorldProcess);
     Repeater repeater = new ThreadPoolRepeater(new ProcessorRepeatable(processor));
 </pre>
+<p>
+    The ThreadPoolRepeater is a container for threads (just like the ThreadPoolExecutor). The big
+    difference between them is that the worker-threads in the ThreadPoolExecutor, try to take some
+    work from the workqueue and execute it, or block if no work is available, and the threads in the
+    ThreadPoolRepeater all execute the same task over and over again. For more information please check
+    the documentation of the Repeater and ThreadPoolRepeater.
+</p>
+<p>
+    A process
+</p>
 
+<p>
+    Multiple threads/out of order execution
+</p>
+
+<h4>Structure</h4>
+<p>
+
+</p>
+<ol>
+    <li>
+        <b>Process:</b> transforms, consumes or generates messages.
+    </li>
+    <li>
+        <b>Processor:</b> provides an execution environment for process. It takes care of exceptionhandling,
+        dispatching on the receive methods of the process, taking message from a channel or putting message on
+        another channel.
+    </li>
+    <li>
+        <b>Executor:</b> provides the threads to run the Processor.    
+    </li>
+</ol>
 
 <h4>Stopping a processor</h4>
 <p>
@@ -310,11 +431,11 @@
 </p>
 <p>
     class FireProcess{
-        void receive(Employee e)throws CantFireException{
-            if(e.getName().equals("Peter Veentjer"))
-                throw CantFireException();
-            e.fire();
-        }
+    void receive(Employee e)throws CantFireException{
+    if(e.getName().equals("Peter Veentjer"))
+    throw CantFireException();
+    e.fire();
+    }
     }
 </p>
 <p>
@@ -359,7 +480,7 @@
 </p>
 
 <h3>Fork/Join</h3>
-<p>    
+<p>
 </p>
 
 <h3>Distribution</h3>
@@ -389,5 +510,5 @@
     I'm experimenting with code generation instead of using some kind of generic execution mechanism.
     This makes it possible to optimize for certain situations and this can improve performance. The
     code generation makes use of the new compiler api that is available in Java 6. This
-    will not be added to Prometheus for some time (I think). 
+    will not be added to Prometheus for some time (I think).
 </p>

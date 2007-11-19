@@ -13,6 +13,7 @@ public class StandardThreadFactory_ConstructorTest extends TestCase {
         StandardThreadFactory factory = new StandardThreadFactory();
         assertEquals(Thread.NORM_PRIORITY, factory.getPriority());
         assertFalse(factory.isProducingDaemons());
+        assertNotNull(factory.getThreadGroup()) ;
     }
 
     public void test_String() {
@@ -27,7 +28,7 @@ public class StandardThreadFactory_ConstructorTest extends TestCase {
         assertEquals(Thread.currentThread().getThreadGroup(), factory.getThreadGroup().getParent());
         assertEquals(Thread.MAX_PRIORITY, factory.getThreadGroup().getMaxPriority());
         assertFalse(factory.isProducingDaemons());
-    }
+  }
 
     public void test_int() {
         try {

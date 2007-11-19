@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.repeater;
 
-import org.codehaus.prometheus.testsupport.Delays;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
  * Unittests the {@link ThreadPoolRepeater#getActualPoolSize()} method.
@@ -74,7 +74,7 @@ public class ThreadPoolRepeater_GetActualPoolSizeTest extends ThreadPoolRepeater
         assertActualPoolSize(1);
     }
 
-    //=============== forced shuttingdown ==============
+    //=============== forced shuttingdownnormally ==============
 
     public void testWhileForcedShuttingdown() {
         newForcedShuttingdownRepeater(Delays.MEDIUM_MS,1);

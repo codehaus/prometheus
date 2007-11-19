@@ -9,9 +9,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * An Object that keeps repeating a {@link Repeatable} task. If the task is <tt>null</tt>, the Repeater
- * does nothing.  You could see the Repeater as an engine, that can turn an axle
- * (the {@link Repeatable#execute()} method).
+ * An Object that keeps repeating a Repeater specific task: the {@link Repeatable}. If no Repeatable
+ * reference is set, the Repeater does nothing.  You could see the Repeater as an engine, that can
+ * turn an axle (the {@link Repeatable#execute()} method).  This seperation makes it easier to
+ * create multithreaded structures, because the actual logic (the axle that is turned) is seperated
+ * from the threading (the Repeater). Another advantage is that the Repeater is a reusable component
+ * with Ideclearly defined behavior and well tested.
  * <p/>
  * <td><b>Remove threading from components</b></td>
  * <dd>
@@ -74,37 +77,50 @@ public interface Repeater {
      *
      * @param task the task to repeat. This value can be null; if it is, the Repeater waits.
      * @throws java.util.concurrent.RejectedExecutionException
-     *                              if the task can't be accepted.
-     * @throws InterruptedException if the current thread is interrupted while waiting to place the
-     *                              task into this Repeater.
+     *                              if the task is rejected for execution.
+     * @throws InterruptedException if the current thread is interrupted while waiting to submit the task.
      * @see #tryRepeat(Repeatable,long,TimeUnit)
      */
     void repeat(Repeatable task) throws InterruptedException;
 
     /**
      * Tries to submit this task for repeated execution, but without blocking. If the task can't be
-     * accepted immeditately (maybe because the repeater is strict about different tasks being
-     * executed concurrently) <tt>false</tt> is returned and otherwise <tt>true</tt>.
+     * accepted immeditately, maybe because the repeater is strict about different tasks being
+     * executed concurrently, <tt>false</tt> is returned. If the task is accepted for execution,
+     * true is returned.
      * <p/>
      * If this Repeater currently is running a task, this task will not be interrupted.
      * <p/>
      * The interrupt status of the calling thread is ignored.
      * <p/>
      * The difference between returning false and throwing an RejectedExecutionException is that
-     * false indicates that the submit could be retried later. A RejectedExecutionException indicates
+     * false indicates that a timeout has occurred. A RejectedExecutionException indicates
      * that the message can't be executed because the Executor is not in the correct state (maybe it
      * already has shutdown).
      *
-     * @param task the task to repeat. This value can be <tt>null</tt>.
+     * todo:
+     * there is a difference between this signature and the other try: one returns a boolean,
+     * the other TimeoutException. This could lead to problems.
+     *
+     * @param task the task to repeat. This value can be <tt>null</tt>; meaning that the repeater
+     *             won't be executing a task but 'pauzes'.
      * @return <tt>true</tt> if the task has been accepted for repeating, <tt>false</tt> otherwise.
      * @throws java.util.concurrent.RejectedExecutionException
-     *          if the task can't be accepted.
+     *          if the task is rejected for execution.
      */
     boolean tryRepeat(Repeatable task);
 
     /**
-     * Tries to submit this task for repeated execution or block until it can be executed or until
-     * a timeout occurs.
+     * Tries to submit this task for repeated execution with a timeout. This call can complete in
+     * 3 different ways:
+     * <ol>
+     * <li>the call completes and the task is executed in some point in the future</li>
+     * <li>a InterruptedException is thrown to indicate that the call was interrupted</li>
+     * <li>a TimeoutException is thrown to indicate that call has timed out</li>
+     * <li>a RejectedExecutionException is thrown to indicate that this Repeater rejects the task
+     * (because it is shutting down for example) </li>
+     * </ol>
+     *
      * <p/>
      * If this Repeater currently is running a task, this task will not be interrupted.
      * <p/>
@@ -119,9 +135,8 @@ public interface Repeater {
      * @param unit    a <tt>TimeUnit</tt> determining how to interpret the <tt>timeout</tt>
      *                parameter.
      * @throws java.util.concurrent.RejectedExecutionException
-     *                              if the task is not accepted.
-     * @throws InterruptedException if the current thread is interrupted while waiting to place the
-     *                              task into this Repeater.
+     *                              if the task is rejected for execution.
+     * @throws InterruptedException if the current thread is interrupted while waiting to submit the task
      * @throws NullPointerException if unit is null.
      * @throws TimeoutException     if a timeout occurs while waiting to submit the task.
      * @see #repeat(Repeatable)

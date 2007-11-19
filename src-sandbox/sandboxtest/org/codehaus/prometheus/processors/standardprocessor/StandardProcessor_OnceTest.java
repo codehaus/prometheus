@@ -18,7 +18,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         String arg = "foo";
 
         TestProcess process = new IntegerProcess();
-        newProcessor(process);
+        newPipedProcessor(process);
 
         spawned_assertPut(arg);
         spawned_assertOnceAndReturnTrue();
@@ -31,7 +31,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         Integer arg = 10;
 
         IntegerProcess process = new IntegerProcess(arg, VoidValue.INSTANCE);
-        newProcessor(process);
+        newPipedProcessor(process);
 
         spawned_assertPut(arg);
         spawned_assertOnceAndReturnTrue();
@@ -46,7 +46,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
 
         IntegerProcess process1 = new IntegerProcess(arg1, VoidValue.INSTANCE);
         IntegerProcess process2 = new IntegerProcess(arg1,arg2);
-        newProcessor(process1,process2);
+        newPipedProcessor(process1,process2);
 
         spawned_assertPut(arg1);
         spawned_assertOnceAndReturnTrue();
@@ -58,7 +58,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
 
     public void testInputReturnsVoid() {
         TestProcess process = new NoArgProcess();
-        newProcessor(process);
+        newPipedProcessor(process);
 
         spawned_assertPut(VoidValue.INSTANCE);
         spawned_assertOnceAndReturnTrue();
@@ -83,7 +83,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         Integer arg = 10;
 
         TestProcess process = new IntegerProcess(arg, null);
-        newProcessor(process);
+        newPipedProcessor(process);
 
         spawned_assertPut(arg);
         spawned_assertOnceAndReturnTrue();
@@ -96,7 +96,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
 
         TestProcess process1 = new IntegerProcess(arg1, null);
         TestProcess process2 = new IntegerProcess();
-        newProcessor(process1, process2);
+        newPipedProcessor(process1, process2);
 
         spawned_assertPut(arg1);
         spawned_assertOnceAndReturnTrue();
@@ -110,7 +110,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         List<Integer> itemList = generateRandomNumberList(10);
 
         TestProcess process = new IntegerProcess(arg, itemList.iterator());
-        newProcessor(process);
+        newPipedProcessor(process);
 
         spawned_assertPut(arg);
         for (Integer item : itemList) {
@@ -123,7 +123,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
     public void testInputReturnsIterator() {
         List<Integer> itemList = generateRandomNumberList(10);
 
-        newProcessor();
+        newPipedProcessor();
 
         spawned_assertPut(itemList.iterator());
         for (Integer item : itemList) {
@@ -142,14 +142,14 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
 
 
     public void test_noInput_noOutput_noProcess() {
-        newProcessor(-1, -1, new Object[]{});
+        newPipedProcessor(-1, -1, new Object[]{});
         spawned_assertOnceAndReturnTrue();
     }
 
     public void test_noProcess() {
         Integer arg = 1;
 
-        newProcessor();
+        newPipedProcessor();
 
         spawned_assertPut(arg);
         spawned_assertOnceAndReturnTrue();
@@ -161,7 +161,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         Integer arg1 = 1;
         Integer arg2 = 2;
                                                             TestProcess process = new IntegerProcess(arg1, arg2);
-        newProcessor(new Object[]{process});
+        newPipedProcessor(new Object[]{process});
 
         spawned_assertPut(arg1);
         spawned_assertOnceAndReturnTrue();
@@ -195,7 +195,7 @@ public class StandardProcessor_OnceTest extends StandardProcessor_AbstractTest {
         TestProcess process2 = new IntegerProcess(arg2, arg3);
         TestProcess process3 = new IntegerProcess(arg3, arg4);
 
-        newProcessor(new Object[]{process1, process2, process3});
+        newPipedProcessor(new Object[]{process1, process2, process3});
 
         spawned_assertPut(arg1);
         spawned_assertOnceAndReturnTrue();

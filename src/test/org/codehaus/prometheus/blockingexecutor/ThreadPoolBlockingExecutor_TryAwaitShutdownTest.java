@@ -6,10 +6,10 @@
 package org.codehaus.prometheus.blockingexecutor;
 
 
-import static org.codehaus.prometheus.testsupport.TestSupport.newEonSleepingRunnable;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.giveOthersAChance;
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.joinAll;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newEonSleepingRunnable;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

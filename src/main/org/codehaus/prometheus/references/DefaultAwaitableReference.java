@@ -6,7 +6,7 @@
 package org.codehaus.prometheus.references;
 
 import static org.codehaus.prometheus.util.ConcurrencyUtil.toUsableNanos;
-import static org.codehaus.prometheus.util.ConditionUtil.awaitNanosAndThrow;
+import static org.codehaus.prometheus.util.ConditionUtil.awaitNanosOrThrow;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -205,7 +205,7 @@ public class DefaultAwaitableReference<E> extends AbstractAwaitableReference<E> 
      */
     private void waitUntilReferenceAvailable(long timeoutNs) throws InterruptedException, TimeoutException {
         while (noReferenceAvailable())
-            timeoutNs = awaitNanosAndThrow(referenceAvailableCondition, timeoutNs);        
+            timeoutNs = awaitNanosOrThrow(referenceAvailableCondition, timeoutNs);
     }
 
     public boolean isTakePossible() {

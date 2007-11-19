@@ -5,8 +5,8 @@
  */
 package org.codehaus.prometheus.waitpoint;
 
-import static org.codehaus.prometheus.testsupport.ConcurrentTestUtil.*;
-import org.codehaus.prometheus.testsupport.Delays;
+import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.*;
+import org.codehaus.prometheus.concurrenttesting.Delays;
 
 /**
  * Unittests the {@link org.codehaus.prometheus.waitpoint.CloseableWaitpoint#tryPass(long,java.util.concurrent.TimeUnit)}

@@ -5,7 +5,7 @@
  */
 package org.codehaus.prometheus.util;
 
-import org.codehaus.prometheus.testsupport.TestRunnable;
+import org.codehaus.prometheus.concurrenttesting.TestRunnable;
 
 import javax.swing.undo.CannotRedoException;
 

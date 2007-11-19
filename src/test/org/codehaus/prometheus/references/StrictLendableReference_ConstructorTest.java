@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class StrictLendableReference_ConstructorTest extends StrictLendableReference_AbstractTest {
 
-    public void testNoArg() {
+  public void testNoArg() {
         lendableRef = new StrictLendableReference();
 
         assertHasRef(null);
