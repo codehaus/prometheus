@@ -65,7 +65,8 @@ public class ThreadPoolBlockingExecutor_ShutdownStressTest extends ConcurrentTes
 
             ThreadFactory factory = new StandardThreadFactory(Thread.MIN_PRIORITY, "test");
             executor = new ThreadPoolBlockingExecutor(
-                    new StandardThreadPool(poolsize, factory),
+                    poolsize,
+                    new StandardThreadPool(factory),
                     new LinkedBlockingQueue<Runnable>(queuesize));
             executor.start();
             exceptionHandler = new TracingExceptionHandler();

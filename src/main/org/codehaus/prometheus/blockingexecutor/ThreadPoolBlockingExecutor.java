@@ -10,8 +10,8 @@ import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPool;
 import org.codehaus.prometheus.threadpool.ThreadPoolJob;
 import org.codehaus.prometheus.threadpool.ThreadPoolState;
-import org.codehaus.prometheus.util.StandardThreadFactory;
 import static org.codehaus.prometheus.util.ConcurrencyUtil.ensureNoTimeout;
+import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import static java.lang.String.format;
 import java.util.ArrayList;
@@ -53,8 +53,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
 
-    public static ThreadPool createDefaultThreadPool(ThreadFactory threadFactory, int poolsize) {
-        return new StandardThreadPool(poolsize, threadFactory);
+    public static ThreadPool createDefaultThreadPool(ThreadFactory threadFactory) {
+        return new StandardThreadPool(threadFactory);
     }
 
     public static BlockingQueue<Runnable> createDefaultWorkQueue() {
@@ -63,14 +63,17 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
 
     private final static AtomicLong defaultThreadPoolNameCounter = new AtomicLong(1);
 
-    public static ThreadPool createDefaultThreadPool(int poolsize) {
+    public static ThreadPool createDefaultThreadPool() {
         String poolname = "blockingexecutor#" + defaultThreadPoolNameCounter.incrementAndGet();
         ThreadFactory threadFactory = new StandardThreadFactory(poolname);
-        return createDefaultThreadPool(threadFactory, poolsize);
+        return createDefaultThreadPool(threadFactory);
     }
 
     private final ThreadPool threadPool;
     private final BlockingQueue<Runnable> workQueue;
+    private final ThreadPoolJobImpl job = new ThreadPoolJobImpl();
+    private volatile int desiredPoolsize;
+    private int threadsToTerminateCounter = 0;
 
     /**
      * Creates a ThreadPoolBlockingExecutor with the given poolsize.
@@ -79,7 +82,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      * @throws IllegalArgumentException if poolsize is smaller than 0.
      */
     public ThreadPoolBlockingExecutor(int poolsize) {
-        this(createDefaultThreadPool(poolsize), createDefaultWorkQueue());
+        this(poolsize, createDefaultThreadPool(), createDefaultWorkQueue());
     }
 
     /**
@@ -93,21 +96,24 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      * @throws NullPointerException     if factory or workQueue is null.
      */
     public ThreadPoolBlockingExecutor(int poolsize, ThreadFactory factory, BlockingQueue<Runnable> workQueue) {
-        this(createDefaultThreadPool(factory, poolsize), workQueue);
+        this(poolsize, createDefaultThreadPool(factory), workQueue);
     }
 
     /**
      * Creates a ThreadPoolBlockingExecutor with the given ThreadPool and workqueue.
      *
+     * @param poolsize   the number of threads in the pool
      * @param threadPool the ThreadPool that is used to manage threads.
      * @param workQueue  the BlockingQueue used to store unprocessed work.
      * @throws NullPointerException if threadPool or workQueue is null.
      */
-    public ThreadPoolBlockingExecutor(ThreadPool threadPool, BlockingQueue<Runnable> workQueue) {
+    public ThreadPoolBlockingExecutor(int poolsize, ThreadPool threadPool, BlockingQueue<Runnable> workQueue) {
         if (threadPool == null || workQueue == null) throw new NullPointerException();
+
         this.threadPool = threadPool;
         this.workQueue = workQueue;
-        this.threadPool.setJob(new ThreadPoolJobImpl());
+        this.threadPool.spawnWithoutStarting(job, poolsize);
+        this.desiredPoolsize = poolsize;
     }
 
     /**
@@ -149,7 +155,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      * @return the desired number of threads in the ThreadPool.
      */
     public int getDesiredPoolSize() {
-        return threadPool.getDesiredPoolSize();
+        return desiredPoolsize;
     }
 
     /**
@@ -160,7 +166,24 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      * @throws IllegalStateException    if the ThreadPool already is shutting down, or is shut down.
      */
     public void setDesiredPoolSize(int poolSize) {
-        threadPool.setDesiredPoolsize(poolSize);
+        threadPool.getStateChangeLock().lock();
+        try {
+            if (threadPool.getState() != ThreadPoolState.running)
+                throw new IllegalStateException();
+
+            int extraThreads = poolSize - desiredPoolsize;
+            if (extraThreads == 0)
+                return;
+
+            desiredPoolsize = poolSize;
+            if (extraThreads > 0) {
+                threadPool.spawn(job, extraThreads);
+            } else {
+                throw new RuntimeException();
+            }
+        } finally {
+            threadPool.getStateChangeLock().unlock();
+        }
     }
 
     public ExceptionHandler getExceptionHandler() {
@@ -182,10 +205,12 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
 
     public List<Runnable> shutdownPolitly() {
         ThreadPoolState previousState = threadPool.shutdownPolitly();
+        //if a different thread has already shut down the ThreadPool, an empty list
+        //can be returned.
         if (previousState != ThreadPoolState.running)
             return Collections.EMPTY_LIST;
 
-        return getDesiredPoolSize() == 0?drainWorkQueue():Collections.EMPTY_LIST;
+        return getActualPoolSize() == 0 ? drainWorkQueue() : Collections.EMPTY_LIST;
     }
 
     public List<Runnable> shutdownNow() {
@@ -201,7 +226,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      * Drains all items from the workqueue. Execute-threads that are pending for placement, are not
      * required to have placed their item before this call being called. If this is the case,
      * their item will be placed on the workqueue. These execute-threads are responsible themselfes
-     * for ensuring that the task is placed. See {@link #ensureTaskHandeled(Runnable)} for more
+     * for ensuring that the task is placed. See {@link #ensureHandeled(Runnable)} for more
      * information.
      *
      * @return a List containing all items in the workqueue (in the same order as on the workqueue).
@@ -239,10 +264,9 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
 
     public void execute(Runnable task) throws InterruptedException {
         if (task == null) throw new NullPointerException();
-
         ensureRunning();
         workQueue.put(task);
-        ensureTaskHandeled(task);
+        ensureHandeled(task);
     }
 
     public void tryExecute(Runnable task, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
@@ -252,7 +276,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         ensureRunning();
         if (!workQueue.offer(task, timeout, unit))
             throw new TimeoutException();
-        ensureTaskHandeled(task);
+        ensureHandeled(task);
     }
 
     private void ensureRunning() {
@@ -276,7 +300,7 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
      *
      * @param task the task to ensure to be handled.
      */
-    private void ensureTaskHandeled(Runnable task) {
+    private void ensureHandeled(Runnable task) {
         //the structure is still running, the calling thread isn't responsible anymore
         //for the handling of the task.
         if (threadPool.getState() == ThreadPoolState.running)
@@ -286,8 +310,8 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
         //be processed or dealt with. That is why we need to check if it is still there.
         if (!workQueue.remove(task)) {
             //we were lucky, the task could not be found on the queue anymore, meaning
-            //that it was handeled (either because it was returned by the shutdownNow method
-            //or because it is (being) processed.
+            //that it was handeled (either because it was the workqueue got drained on
+            //a shutdown or because it is being processed).
             return;
         }
 
@@ -299,16 +323,37 @@ public class ThreadPoolBlockingExecutor implements BlockingExecutorService {
     private class ThreadPoolJobImpl implements ThreadPoolJob<Runnable> {
 
         public Runnable takeWork() throws InterruptedException {
-            return workQueue.take();
-        }
+            //if the shutdown has been called before the getState:
+            //  the getState returns shuttingdown, and a non blocking poll needs to be done
+            //  to prevent a worker thread from waiting till end of time
+            //if the shutdown has been called after the getState:
+            //  the getState returns running, and a blocking call take is done. This thread
+            //  is considered idle, so it is interrupted by the shutdown (all idle threads are
+            //  interrupted.
+            //in both cases, the thread is not going to block forever on taking work from the workqueue.
 
-        public Runnable takeWorkForNormalShutdown() throws InterruptedException {
-            return workQueue.poll(0, TimeUnit.NANOSECONDS);
+            if (threadPool.getState() == ThreadPoolState.running)
+                return workQueue.take();
+            else
+                return workQueue.poll();
         }
 
         public boolean executeWork(Runnable task) {
+            if (task == null)
+                return false;
+
             task.run();
-            return true;
+
+            threadPool.getStateChangeLock().lock();
+            try {
+                if (threadsToTerminateCounter == 0)
+                    return true;
+
+                threadsToTerminateCounter--;
+                return false;
+            } finally {
+                threadPool.getStateChangeLock().unlock();
+            }
         }
     }
 }

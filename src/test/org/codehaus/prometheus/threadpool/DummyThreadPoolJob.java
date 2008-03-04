@@ -5,6 +5,10 @@
  */
 package org.codehaus.prometheus.threadpool;
 
+import junit.framework.Assert;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * A ThreadPoolJob specific for testing purposes.
  *
@@ -12,15 +16,41 @@ package org.codehaus.prometheus.threadpool;
  */
 public class DummyThreadPoolJob implements ThreadPoolJob {
 
-    public Object takeWork() throws InterruptedException {
-        throw new RuntimeException();
+    private final AtomicInteger takeCount = new AtomicInteger();
+    private final AtomicInteger executeWorkCount = new AtomicInteger();
+    private final ThreadPool threadpool;
+
+    public DummyThreadPoolJob(ThreadPool threadpool){
+        this.threadpool = threadpool;
     }
 
-    public Object takeWorkForNormalShutdown() throws InterruptedException {
-        throw new RuntimeException();
+    public void assertNoTakeWork(){
+        Assert.assertEquals(0,takeCount.intValue());
+    }
+
+    public void assertNoExecuteWork(){
+        Assert.assertEquals(0,executeWorkCount.intValue());
+    }
+
+    public void assertHasMultipleTakeWork(){
+        Assert.assertTrue(takeCount.intValue()>1);
+    }
+
+    public void assertHasMultipleExecuteWork(){
+        Assert.assertTrue(executeWorkCount.intValue()>1);
+    }
+
+    public Object takeWork() throws InterruptedException {
+        takeCount.incrementAndGet();
+        return "";
     }
 
     public boolean executeWork(Object task) throws Exception {
-        throw new RuntimeException();
+        if(threadpool.getState()!=ThreadPoolState.running){
+            return false;
+        }
+
+        executeWorkCount.incrementAndGet();
+        return true;
     }
 }

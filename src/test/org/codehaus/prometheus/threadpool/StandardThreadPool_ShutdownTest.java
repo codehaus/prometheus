@@ -89,7 +89,7 @@ public class StandardThreadPool_ShutdownTest extends StandardThreadPool_Abstract
 
     public void testWhileForcedShuttingdown(){
         int poolsize = 3;
-        newForcedShuttingdownThreadpool(poolsize, Delays.LONG_MS);
+        newForcedShuttingdownThreadpool(poolsize, Delays.MEDIUM_MS);
 
         spawned_shutdown();
         

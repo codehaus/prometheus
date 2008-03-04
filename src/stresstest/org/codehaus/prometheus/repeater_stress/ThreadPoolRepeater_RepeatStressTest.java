@@ -17,7 +17,7 @@ public class ThreadPoolRepeater_RepeatStressTest {
     public static TestSuite suite(){
         TestSuite suite = new TestSuite();
         int maximumPoolsize = 100*Runtime.getRuntime().availableProcessors();
-        for(int k=0;k<maximumPoolsize;k++){
+        for(int k=0;k<maximumPoolsize;k+=5){
             int executionCount = Integer.MAX_VALUE;
             suite.addTest(new RepeatingSameJobTest(k,executionCount, true));
             suite.addTest(new RepeatingSameJobTest(k,executionCount, false));
@@ -43,9 +43,10 @@ public class ThreadPoolRepeater_RepeatStressTest {
         public void setUp() throws Exception {
             super.setUp();
             
-            ThreadPool pool = new StandardThreadPool(poolsize,new StandardThreadFactory(Thread.MIN_PRIORITY));
+            ThreadPool pool = new StandardThreadPool(new StandardThreadFactory(Thread.MIN_PRIORITY));
             repeater = new ThreadPoolRepeater(
                     pool,
+                    poolsize,
                     ThreadPoolRepeater.createLendableReference(strict,null));
             exceptionHandler = new TracingExceptionHandler();
             repeater.setExceptionHandler(exceptionHandler);

@@ -76,6 +76,10 @@ package org.codehaus.prometheus.references;
  * <p/>
  * For other comparisons between the LendableReference and the synchronization stones from
  * java.util.prometheus, see {@link AwaitableReference}.
+ * <p/>
+ * <p>
+ * The LendableReference can also be compared to the SyncVar from Scala.
+ * </p>
  *
  * @author Peter Veentjer.
  * @since 0.1

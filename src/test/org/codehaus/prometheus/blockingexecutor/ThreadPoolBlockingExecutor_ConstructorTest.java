@@ -58,7 +58,7 @@ public class ThreadPoolBlockingExecutor_ConstructorTest extends ThreadPoolBlocki
         }
 
         try {
-            new ThreadPoolBlockingExecutor(1, null, new LinkedBlockingQueue<Runnable>());
+            new ThreadPoolBlockingExecutor(1, (ThreadFactory)null, new LinkedBlockingQueue<Runnable>());
             fail();
         } catch (NullPointerException ex) {
         }

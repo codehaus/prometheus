@@ -5,11 +5,11 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.concurrenttesting.*;
-import static org.codehaus.prometheus.concurrenttesting.TestSupport.newSleepingRunnable;
 import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
 import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import static org.codehaus.prometheus.concurrenttesting.TestSupport.newSleepingRunnable;
+import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.util.StandardThreadFactory;
 
 import java.util.LinkedList;
@@ -64,28 +64,14 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         t.assertIsTerminatedNormally();
     }
 
+    public void spawnNewWorker(){
+        threadpool.spawn(new TestThreadPoolJob());
+    }
+
     public void spawned_shutdownNow() {
         ShutdownNowThread t = scheduleShutdownNow();
         joinAll(t);
         t.assertIsTerminatedNormally();
-    }
-
-    /**
-     * A ThreadPoolJob that takes work from the taskQueue to execute.
-     */
-    public class TestThreadPoolJob implements ThreadPoolJob<Callable<Boolean>> {
-
-        public Callable<Boolean> takeWork() throws InterruptedException {
-            return workQueue.take();
-        }
-
-        public Callable<Boolean> takeWorkForNormalShutdown() throws InterruptedException {
-            return workQueue.poll(0, TimeUnit.MILLISECONDS);
-        }
-
-        public boolean executeWork(Callable<Boolean> task) throws Exception {
-            return task.call();
-        }
     }
 
     public List<TestRunnable> ensureNoIdleWorkers(long delayMs) {
@@ -103,12 +89,13 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
      * @param delayMs the duration of the task
      */
     public List<TestRunnable> ensureNoIdleWorkers(long delayMs, boolean interruptable) {
+
         try {
             List<TestRunnable> list = new LinkedList<TestRunnable>();
-            for (int k = 0; k < threadpool.getDesiredPoolSize(); k++) {
+            for (int k = 0; k < threadpool.getActualPoolSize(); k++) {
                 TestRunnable task = newSleepingRunnable(delayMs, interruptable);
                 list.add(task);
-                workQueue.put(Executors.callable(task,true));
+                workQueue.put(Executors.callable(task, true));
             }
             giveOthersAChance();
             //make sure that all workers are executing a job.
@@ -120,15 +107,15 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         }
     }
 
-
     public void newStartedThreadpool() {
         newUnstartedThreadPool();
         threadpool.start();
     }
 
     public void newStartedThreadpool(int poolsize) {
-        newUnstartedThreadPool(poolsize);
+        newUnstartedThreadPool();
         threadpool.start();
+        threadpool.spawn(new TestThreadPoolJob(), poolsize);
     }
 
     public List<TestRunnable> newShuttingdownThreadpool(int poolsize, long runningTimeMs) {
@@ -157,20 +144,15 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     }
 
     public void newUnstartedThreadPool() {
-        newUnstartedThreadPool(0);
-    }
-
-    public void newUnstartedThreadPoolWithoutDefaultJob(int poolsize) {
         threadPoolThreadFactory = new TracingThreadFactory(new StandardThreadFactory());
         threadpool = new StandardThreadPool(threadPoolThreadFactory);
-        threadpool.setDesiredPoolsize(poolsize);
         threadPoolExceptionHandler = new TracingExceptionHandler();
         threadpool.setExceptionHandler(threadPoolExceptionHandler);
     }
 
     public void newUnstartedThreadPool(int poolsize) {
-        newUnstartedThreadPoolWithoutDefaultJob(poolsize);
-        threadpool.setJob(new TestThreadPoolJob());
+        newUnstartedThreadPool();
+        threadpool.spawnWithoutStarting(new TestThreadPoolJob(), poolsize);
     }
 
     public void newShutdownThreadpool() {
@@ -179,37 +161,43 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
     }
 
     public void assertIsRunning() {
-        assertEquals(ThreadPoolState.running, threadpool.getState());
+        assertHasState(ThreadPoolState.running);
     }
 
     public void assertIsUnstarted() {
-        assertEquals(ThreadPoolState.unstarted, threadpool.getState());
+        assertHasState(ThreadPoolState.unstarted);
     }
 
     public void assertIsShutdown() {
-        assertEquals(ThreadPoolState.shutdown, threadpool.getState());
+        assertHasState(ThreadPoolState.shutdown);
         assertEquals(0, threadpool.getActualPoolSize());
         if (threadPoolThreadFactory != null)
             threadPoolThreadFactory.assertAllAreNotAlive();
     }
 
     public void assertIsForcedShuttingdown() {
-        assertEquals(ThreadPoolState.shuttingdownforced, threadpool.getState());
+        assertHasState(ThreadPoolState.shuttingdownforced);
     }
 
     public void assertIsShuttingdown() {
-        assertEquals(ThreadPoolState.shuttingdownnormally, threadpool.getState());
+        assertHasState(ThreadPoolState.shuttingdownnormally);
     }
 
+    public void assertHasState(ThreadPoolState expectedState) {
+        assertEquals(expectedState, threadpool.getState());
+    }
+
+
     public void assertDesiredPoolsize(int expectedPoolsize) {
-        assertEquals(expectedPoolsize, threadpool.getDesiredPoolSize());
+        // assertEquals(expectedPoolsize, threadpool.getDesiredPoolSize());
+        // throw new RuntimeException();
     }
 
     public void assertActualPoolsize(int expectedPoolsize) {
         assertEquals(expectedPoolsize, threadpool.getActualPoolSize());
     }
 
-    public void assertWorkQueueIsEmpty(){
+    public void assertWorkQueueIsEmpty() {
         assertTrue(workQueue.isEmpty());
     }
 
@@ -264,7 +252,8 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
 
         @Override
         protected void runInternal() throws InterruptedException, TimeoutException {
-            threadpool.setDesiredPoolsize(poolsize);
+            //threadpool.setDesiredPoolsize(poolsize);
+            throw new RuntimeException();
         }
     }
 
@@ -298,7 +287,8 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
 
         @Override
         protected void runInternal() throws Exception {
-            threadpool.setJob(threadPoolJob);
+            //threadpool.setJob(threadPoolJob);
+            throw new RuntimeException();
         }
     }
 
@@ -319,6 +309,23 @@ public abstract class StandardThreadPool_AbstractTest extends ConcurrentTestCase
         @Override
         protected void runInternal() throws InterruptedException {
             threadpool.awaitShutdown();
+        }
+    }
+
+    /**
+     * A ThreadPoolJob that takes work from the taskQueue to execute.
+     */
+    public class TestThreadPoolJob implements ThreadPoolJob<Callable<Boolean>> {
+
+        public Callable<Boolean> takeWork() throws InterruptedException {
+            if (threadpool.getState() == ThreadPoolState.running)
+                return workQueue.take();
+            else
+                return workQueue.poll();
+        }
+
+        public boolean executeWork(Callable<Boolean> task) throws Exception {
+            return task == null ? false : task.call();
         }
     }
 }

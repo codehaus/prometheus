@@ -5,7 +5,7 @@ import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
 import org.codehaus.prometheus.concurrenttesting.TestThread;
 import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.*;
-import org.codehaus.prometheus.blockingexecutor_stress.StressTaskProducer;
+import org.codehaus.prometheus.blockingexecutor_stress.ProduceThread;
 import org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor;
 
 import java.util.LinkedList;
@@ -28,7 +28,7 @@ public class ThreadPoolBlockingExecutor_ChangePoolsizeStressTest {
         private final int concurrentsetters;
         private volatile ThreadPoolBlockingExecutor executor;
         private volatile TracingExceptionHandler exceptionHandler;
-        private final List<StressTaskProducer> workerList = new LinkedList<StressTaskProducer>();
+        private final List<ProduceThread> workerList = new LinkedList<ProduceThread>();
         private final int workercount;
         private final int taskcount;
 
@@ -68,8 +68,8 @@ public class ThreadPoolBlockingExecutor_ChangePoolsizeStressTest {
                 scheduleWorker(taskCount);
         }
 
-        public StressTaskProducer scheduleWorker(int taskCount) {
-            StressTaskProducer thread = new StressTaskProducer(taskCount, executor);
+        public ProduceThread scheduleWorker(int taskCount) {
+            ProduceThread thread = new ProduceThread(taskCount, executor);
             workerList.add(thread);
             thread.start();
             return thread;

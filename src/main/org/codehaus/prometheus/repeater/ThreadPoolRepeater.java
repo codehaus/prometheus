@@ -85,7 +85,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Repeater better describing the fact that a task is repeated than an Executor. Another difference
  * is that even with such a Queue it difficult to make the repeater strict because an
  * ThreadPoolRepeater has no notion of giving the executed task back. So it is much more difficult
- * to determine when a task has completed.
+ * to determnine when a task has completed.
  * </dd>
  * <p/>
  * If multiple threads are used, you have to make sure that the task that is executed, is threadsafe.
@@ -108,22 +108,23 @@ public class ThreadPoolRepeater implements RepeaterService {
             return new RelaxedLendableReference<Repeatable>(repeatable);
     }
 
-    public static ThreadPool createDefaultThreadpool(int poolsize, ThreadFactory threadFactory) {
-        return new StandardThreadPool(poolsize, threadFactory);
+    public static ThreadPool createDefaultThreadpool(ThreadFactory threadFactory) {
+        return new StandardThreadPool(threadFactory);
     }
 
     private final static AtomicLong defaultThreadpoolnameCounter = new AtomicLong(1);
 
-    public static ThreadPool createDefaultThreadpool(int poolsize) {
-        String poolname = "repeater#"+defaultThreadpoolnameCounter.incrementAndGet();
+    public static ThreadPool createDefaultThreadpool() {
+        String poolname = "repeater#" + defaultThreadpoolnameCounter.incrementAndGet();
         ThreadFactory threadFactory = new StandardThreadFactory(poolname);
-        return createDefaultThreadpool(poolsize, threadFactory);
+        return createDefaultThreadpool(threadFactory);
     }
 
     //fields are made protected so ExecutionPolicy has access to them
     //todo: can be made private as soon as the ExecutionPolicy is made inner class
     protected final LendableReference<Repeatable> lendableRef;
     protected final ThreadPool threadPool;
+    private final RepeaterThreadPoolJob job = new RepeaterThreadPoolJob();
     private volatile ExecutionPolicy executionPolicy = EndTaskPolicy.INSTANCE;
 
     /**
@@ -131,7 +132,7 @@ public class ThreadPoolRepeater implements RepeaterService {
      * {@link org.codehaus.prometheus.util.StandardThreadFactory ()}.
      */
     public ThreadPoolRepeater() {
-        this(createDefaultThreadpool(1), createDefaultLendableReference(null));
+        this(createDefaultThreadpool(), 1, createDefaultLendableReference(null));
     }
 
     /**
@@ -142,7 +143,7 @@ public class ThreadPoolRepeater implements RepeaterService {
      * @throws IllegalArgumentException if poolsize smaller than 0
      */
     public ThreadPoolRepeater(int poolsize) {
-        this(createDefaultThreadpool(poolsize), createDefaultLendableReference(null));
+        this(createDefaultThreadpool(), poolsize, createDefaultLendableReference(null));
     }
 
     /**
@@ -152,7 +153,7 @@ public class ThreadPoolRepeater implements RepeaterService {
      * @param repeatable the task to repeat (is allowed to be null).
      */
     public ThreadPoolRepeater(Repeatable repeatable) {
-        this(createDefaultThreadpool(1), createDefaultLendableReference(repeatable));
+        this(createDefaultThreadpool(), 1, createDefaultLendableReference(repeatable));
     }
 
     /**
@@ -164,7 +165,7 @@ public class ThreadPoolRepeater implements RepeaterService {
      * @throws IllegalArgumentException if poolsize smaller than 0.
      */
     public ThreadPoolRepeater(Repeatable task, int poolsize) {
-        this(createDefaultThreadpool(poolsize), createDefaultLendableReference(task));
+        this(createDefaultThreadpool(), poolsize, createDefaultLendableReference(task));
     }
 
     /**
@@ -178,7 +179,7 @@ public class ThreadPoolRepeater implements RepeaterService {
      * @throws IllegalArgumentException if poolsize smaller than 0.
      */
     public ThreadPoolRepeater(boolean strict, Repeatable task, int poolsize, ThreadFactory threadFactory) {
-        this(createDefaultThreadpool(poolsize, threadFactory), createLendableReference(strict, task));
+        this(createDefaultThreadpool(threadFactory), poolsize, createLendableReference(strict, task));
     }
 
     /**
@@ -186,14 +187,15 @@ public class ThreadPoolRepeater implements RepeaterService {
      * The ThreadPoolRepeater also sets the ThreadPoolJob on the ThreadPool.
      *
      * @param threadPool  the ThreadPool this ThreadPoolRepeater uses to manage threads.
+     * @param poolsize the number of threads in the threadpool
      * @param lendableRef the LendableReference that is used to store the task to repeat.
      * @throws NullPointerException if threadPool or lendableRef is null
      */
-    public ThreadPoolRepeater(ThreadPool threadPool, LendableReference<Repeatable> lendableRef) {
+    public ThreadPoolRepeater(ThreadPool threadPool, int poolsize, LendableReference<Repeatable> lendableRef) {
         if (threadPool == null || lendableRef == null) throw new NullPointerException();
         this.threadPool = threadPool;
-        this.threadPool.setJob(new RepeaterThreadPoolJob());
         this.lendableRef = lendableRef;
+        this.threadPool.spawnWithoutStarting(job, poolsize);
     }
 
     /**
@@ -269,11 +271,13 @@ public class ThreadPoolRepeater implements RepeaterService {
     }
 
     public int getDesiredPoolSize() {
-        return threadPool.getDesiredPoolSize();
+        //return threadPool.getDesiredPoolSize();
+        throw new RuntimeException();
     }
 
     public void setDesiredPoolSize(int poolSize) {
-        threadPool.setDesiredPoolsize(poolSize);
+        //threadPool.setDesiredPoolsize(poolSize);
+        throw new RuntimeException();
     }
 
     public RepeaterServiceState getState() {
@@ -346,16 +350,16 @@ public class ThreadPoolRepeater implements RepeaterService {
     private class RepeaterThreadPoolJob implements ThreadPoolJob<Repeatable> {
 
         public Repeatable takeWork() throws InterruptedException {
-            return lendableRef.take();
-        }
-
-        public Repeatable takeWorkForNormalShutdown(){
-            //no guarantees are made how many times a task is executed, so why try to retrieve
-            //one if we aren't required to process it.
-            return null;
+            if (threadPool.getState() == ThreadPoolState.running)
+                return lendableRef.take();
+            else
+                return null;
         }
 
         public boolean executeWork(Repeatable task) throws Exception {
+            if(task == null)
+                return false;
+
             return executionPolicy.execute(task, ThreadPoolRepeater.this);
         }
     }

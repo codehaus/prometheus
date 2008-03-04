@@ -170,30 +170,29 @@ public class ThreadPoolRepeater_ConstructorTest extends ThreadPoolRepeater_Abstr
 
     //================ ThreadPoolRepeater(ThreadPool, LendableReference)  ==========
 
-    public void test_ThreadFactory_LendableRefeference() {
+    public void test_ThreadFactory_poolsize_LendableRefeference() {
         try {
-            new ThreadPoolRepeater(new StandardThreadPool(), null);
+            new ThreadPoolRepeater(new StandardThreadPool(),1, null);
             fail("NullPointerException expected");
         } catch (NullPointerException foundThrowable) {
         }
 
         try {
-            new ThreadPoolRepeater(null, new StrictLendableReference<Repeatable>());
+            new ThreadPoolRepeater(null, 1, new StrictLendableReference<Repeatable>());
             fail("NullPointerException expected");
         } catch (NullPointerException foundThrowable) {
         }
 
         LendableReference<Repeatable> lendableRef = new StrictLendableReference<Repeatable>();
         int poolsize = 10;
-        ThreadPool threadPool = new StandardThreadPool(poolsize);
-        repeater = new ThreadPoolRepeater(threadPool, lendableRef);
+        ThreadPool threadPool = new StandardThreadPool();
+        repeater = new ThreadPoolRepeater(threadPool, poolsize, lendableRef);
 
         assertIsUnstarted();
         assertDesiredPoolSize(poolsize);
         assertActualPoolSize(0);
         assertSame(lendableRef, repeater.getLendableRef());
         assertSame(threadPool, repeater.getThreadPool());
-        assertNotNull(threadPool.getJob());
         assertHasEndTaskStrategy();
     }
 

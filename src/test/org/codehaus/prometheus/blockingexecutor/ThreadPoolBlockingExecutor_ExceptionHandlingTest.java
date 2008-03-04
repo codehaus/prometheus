@@ -62,11 +62,11 @@ public class ThreadPoolBlockingExecutor_ExceptionHandlingTest extends ThreadPool
     }
 
     public void testFailingExceptionHandlerDoesntCorruptExecutor() {
-        //todo
+        fail();
     }
 
     //make sure that a throwable that is not an exception is not caugtht
     public void testErrorIsNotCaught() {
-        //todo
+        fail();
     }
 }

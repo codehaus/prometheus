@@ -22,6 +22,7 @@ public class EndTaskPolicy implements ExecutionPolicy {
         boolean again = true;
         try {
             again = task.execute();
+            //return true to indicate that the worker should not terminate itself.
             return true;
         } finally {
             if (again)

@@ -50,7 +50,7 @@ public class StandardThreadPool_AwaitShutdownTest extends StandardThreadPool_Abs
 
     public void testWhileShuttingdown() {
         int poolsize = 3;
-        newShuttingdownThreadpool(poolsize, Delays.LONG_MS);
+        newShuttingdownThreadpool(poolsize, Delays.MEDIUM_MS);
         assertShutdownTerminatesWaiters(poolsize);
     }
 

@@ -14,18 +14,6 @@ import org.codehaus.prometheus.concurrenttesting.Delays;
  */
 public class ThreadPoolBlockingExecutor_SetDesiredPoolSizeTest extends ThreadPoolBlockingExecutor_AbstractTest {
 
-    public void testIllegalArgument() {
-        newStartedBlockingExecutor();
-        int oldDesiredPoolSize = executor.getDesiredPoolSize();
-        int oldActualPoolSize = executor.getActualPoolSize();
-
-        spawned_assertSetDesiredPoolSizeThrowsException(-1, IllegalArgumentException.class);
-
-        assertActualPoolSize(oldActualPoolSize);
-        assertDesiredPoolSize(oldDesiredPoolSize);
-        assertIsRunning();
-    }
-
     public void testWhileUnstarted() {
         newUnstartedBlockingExecutor(100, 1);
 
@@ -58,24 +46,32 @@ public class ThreadPoolBlockingExecutor_SetDesiredPoolSizeTest extends ThreadPoo
         assertIsRunning();
     }
 
+    public void testWhileRunning_poolsizeDecreases() {
+        fail();
+    }
+
+    public void testWhileRunning_poolsizeIncreases() {
+        fail();
+    }
+
     public void testWhileShuttingdown() {
         newShuttingdownBlockingExecutor(Delays.EON_MS);
         assertChangeInDesiredPoolsizeIsRejected();
     }
 
     public void testWhileForcedShuttingdown() {
-        newForcedShuttingdownBlockingExecutor(Delays.LONG_MS,3);
+        newForcedShuttingdownBlockingExecutor(Delays.LONG_MS, 3);
         assertChangeInDesiredPoolsizeIsRejected();
     }
 
     public void testWhileShutdown() {
-        newShutdownBlockingExecutor(100, 3);
+        newShutdownBlockingExecutor();
         assertChangeInDesiredPoolsizeIsRejected();
     }
 
     private void assertChangeInDesiredPoolsizeIsRejected() {
         int oldDesiredPoolSize = executor.getDesiredPoolSize();
-        int newDesiredPoolSize = oldDesiredPoolSize+3;
+        int newDesiredPoolSize = oldDesiredPoolSize + 3;
         int oldActualPoolSize = executor.getActualPoolSize();
         BlockingExecutorServiceState oldState = executor.getState();
 

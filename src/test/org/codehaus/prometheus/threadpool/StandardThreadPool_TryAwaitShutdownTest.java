@@ -65,7 +65,7 @@ public class StandardThreadPool_TryAwaitShutdownTest extends StandardThreadPool_
     }
 
     public void testWhileForcedShuttingdown() {
-        newForcedShuttingdownThreadpool(3, Delays.LONG_MS);
+        newForcedShuttingdownThreadpool(3, Delays.MEDIUM_MS);
         assertShutdownNotifiesWaiters();
     }
 

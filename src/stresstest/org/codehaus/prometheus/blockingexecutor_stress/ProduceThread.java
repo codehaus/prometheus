@@ -8,12 +8,12 @@ import org.codehaus.prometheus.blockingexecutor.BlockingExecutor;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class StressTaskProducer extends TestThread {
+public class ProduceThread extends TestThread {
     private final long taskCount;
     private final BlockingExecutor executor;
     private final AtomicLong executionCount = new AtomicLong();
 
-    public StressTaskProducer(long taskCount, BlockingExecutor executor) {
+    public ProduceThread(long taskCount, BlockingExecutor executor) {
         this.taskCount = taskCount;
         this.executor = executor;
     }

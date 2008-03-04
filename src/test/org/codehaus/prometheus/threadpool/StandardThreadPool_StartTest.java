@@ -15,16 +15,6 @@ import org.codehaus.prometheus.concurrenttesting.Delays;
  */
 public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTest {
 
-    public void testWhileUnstartedAndNoDefaultWorkJob() {
-        newUnstartedThreadPoolWithoutDefaultJob(10);
-
-        spawned_startCausesIllegalStateException();
-
-        assertIsUnstarted();
-        threadPoolThreadFactory.assertCreatedCount(0);
-        threadPoolExceptionHandler.assertNoErrors();
-    }
-
     private void spawned_startCausesIllegalStateException() {
         StartThread startThread = scheduleStart();
         joinAll(startThread);
@@ -69,7 +59,7 @@ public class StandardThreadPool_StartTest extends StandardThreadPool_AbstractTes
 
     public void testWhileForcedShuttingdown(){
         int poolsize = 3;
-        newForcedShuttingdownThreadpool(poolsize, Delays.LONG_MS);
+        newForcedShuttingdownThreadpool(poolsize, Delays. MEDIUM_MS);
 
         spawned_startCausesIllegalStateException();
 

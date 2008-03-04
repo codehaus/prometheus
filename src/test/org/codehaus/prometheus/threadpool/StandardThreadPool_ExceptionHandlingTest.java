@@ -5,13 +5,18 @@
  */
 package org.codehaus.prometheus.threadpool;
 
-import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
-import org.codehaus.prometheus.exceptionhandler.NoOpExceptionHandler;
-import org.codehaus.prometheus.concurrenttesting.TestRunnable;
-import org.codehaus.prometheus.concurrenttesting.Delays;
 import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.giveOthersAChance;
 import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.sleepMs;
+import org.codehaus.prometheus.concurrenttesting.Delays;
+import org.codehaus.prometheus.concurrenttesting.TestCallable;
+import org.codehaus.prometheus.concurrenttesting.TestRunnable;
+import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
+import org.codehaus.prometheus.exceptionhandler.NoOpExceptionHandler;
 
+import java.awt.image.ImagingOpException;
+import static java.util.Arrays.asList;
+import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.Executors;
 
 /**
@@ -32,8 +37,48 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         }
     }
 
-    public void testExceptionThrownByHandlerIsDiscarded(){
-        //todo
+    public void testExceptionThrownByHandlerIsDiscarded() throws InterruptedException {                        
+        //the handler throws an exception when it is caught
+        RuntimeException handlerEx = new RuntimeException();
+        ThrowingExceptionHandler handler = new ThrowingExceptionHandler(handlerEx);
+        newStartedThreadpool(1);
+        threadpool.setExceptionHandler(handler);
+
+        //the initial task that causes an exception
+        Exception initialEx  = new ImagingOpException("");
+        TestCallable problemTask = new TestCallable(initialEx);
+        workQueue.put(problemTask);
+
+        //an extra task to see that the worker thread is still working
+        TestCallable trailingTask = new TestCallable(true);
+        workQueue.put(trailingTask);
+
+        giveOthersAChance(Delays.MEDIUM_MS);
+
+        assertIsRunning();
+        problemTask.assertExecutedOnce();
+        trailingTask.assertExecutedOnce();
+        threadPoolThreadFactory.assertCreatedAndAliveCount(1);
+        handler.assertHandledExceptions(initialEx);
+    }
+
+    class ThrowingExceptionHandler implements ExceptionHandler{
+
+        private final List<Exception> handledExceptions = new Vector<Exception>();
+        private final RuntimeException exception;
+
+        public ThrowingExceptionHandler(RuntimeException exception) {
+            this.exception = exception;
+        }
+
+        public void handle(Exception ex) {
+            handledExceptions.add(ex);
+            throw exception;
+        }
+
+        public void assertHandledExceptions(Exception... exceptions){
+            assertEquals(asList(exceptions), handledExceptions);
+        }
     }
 
     /**
@@ -48,7 +93,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
         int errorcount = 30;
         createBunchOfProblemTasks(errorcount);
 
-        sleepMs(Delays.LONG_MS);
+        sleepMs(Delays.MEDIUM_MS);
         threadPoolThreadFactory.assertCreatedAndAliveCount(poolsize);
         threadPoolExceptionHandler.assertCount(errorcount);
         assertActualPoolsize(poolsize);
@@ -105,7 +150,7 @@ public class StandardThreadPool_ExceptionHandlingTest extends StandardThreadPool
     }
 
     public void testSetWhileForcedShuttingdown() {
-        newForcedShuttingdownThreadpool(3, Delays.LONG_MS);
+        newForcedShuttingdownThreadpool(3, Delays.MEDIUM_MS);
         assertSetHandlerWorks();
     }
 

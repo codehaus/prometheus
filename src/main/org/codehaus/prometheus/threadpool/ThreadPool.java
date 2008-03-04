@@ -9,6 +9,7 @@ import org.codehaus.prometheus.exceptionhandler.ExceptionHandler;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Lock;
 
 /**
  * <p/>
@@ -25,10 +26,6 @@ import java.util.concurrent.TimeoutException;
  * they are working.
  * </p>
  * <p/>
- * When a ThreadPool is shutdown, it starts calling the {@link ThreadPoolJob#takeWorkForNormalShutdown()}.
- * When a ThreadPool is forced to shutdown by calling the {@link #shutdownNow()} method, no methods
- * are called on the ThreadPoolJob anymore and the pooled thread is able to rest in peace.
- * </p>
  * <h1>Exception handling</h1>
  * <p/>
  * Exception handler: by injecting an instanceof of an {@link ExceptionHandler} one is able to
@@ -37,6 +34,8 @@ import java.util.concurrent.TimeoutException;
  * <p/>
  * Nothing is done with errors (they are not caught and this could lead to corrupted structures).
  * <p/>
+ * <p/>
+ * todo: maximum poolsize
  *
  * @author Peter Veentjer.
  * @see org.codehaus.prometheus.repeater.ThreadPoolRepeater
@@ -45,6 +44,8 @@ import java.util.concurrent.TimeoutException;
  * @since 0.1
  */
 public interface ThreadPool {
+
+    Lock getStateChangeLock();
 
     /**
      * Starts this ThreadPool. If the ThreadPool already is running, the call is ignored.
@@ -114,22 +115,37 @@ public interface ThreadPool {
     void tryAwaitShutdown(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
 
     /**
-     * Gets the ThreadPoolJob this ThreadPool is executing.  If no ThreadPoolJob is set, <tt>null</tt> is returned.
+     * Spawns a ThreadPoolJob for execution.
      *
-     * @return the job this ThreadPool is executing.
-     * @see #setJob(ThreadPoolJob)
+     * @param job
+     * @throws NullPointerException if job is null
+     * @throws IllegalStateException if the threadpool is not running
      */
-    ThreadPoolJob getJob();
+    void spawn(ThreadPoolJob job);
 
     /**
-     * Sets the ThreadPoolJob this ThreadPool executes.
+     * Call is not atomic
      *
-     * @param job the ThreadPoolJob this ThreadPool is going to execute
-     * @throws NullPointerException  if job is <tt>null</tt>.
-     * @throws IllegalStateException if the ThreadPool isn't in the unstarted state anymore.
-     * @see #setJob(ThreadPoolJob)
+     * @param job
+     * @param count
      */
-    void setJob(ThreadPoolJob job);
+    void spawn(ThreadPoolJob job, int count);
+
+    /**
+     * Registers initial spawns. This method doesn't start the ThreadPool if it hasn't
+     * been started.
+     * <p/>
+     * If the job is not threadsafe, threadcount should be 1 to prevent other threads
+     * from access the same job.
+     *
+     * @param job
+     * @param threadcount the number of threads that are going to execute the job
+     * @throws NullPointerException     if job is null
+     * @throws IllegalArgumentException if threadcount smaller than 0
+     * @throws IllegalStateException    if the ThreadPool is not in the unstarted or running
+     *                                  state anymore.
+     */
+    void spawnWithoutStarting(ThreadPoolJob job, int threadcount);
 
     /**
      * Gets the ExceptionHandler this ThreadPool uses to handle exceptions. It will never be <tt>null</tt>.
@@ -160,7 +176,6 @@ public interface ThreadPool {
      * received.
      *
      * @return the actual number of threads in the ThreadPool.
-     * @see #getDesiredPoolSize()
      */
     int getActualPoolSize();
 
@@ -173,7 +188,7 @@ public interface ThreadPool {
      * @see #getActualPoolSize()
      * @see #setDesiredPoolsize(int)
      */
-    int getDesiredPoolSize();
+    //int getDesiredPoolSize();
 
     /**
      * Sets the desired poolsize of this ThreadPool. The actual poolsize doesn't have to match
@@ -185,5 +200,5 @@ public interface ThreadPool {
      * @throws IllegalStateException    if the ThreadPool is shutting down, or shutdown.
      * @see #getDesiredPoolSize()
      */
-    void setDesiredPoolsize(int desiredPoolsize);
+    //void setDesiredPoolsize(int desiredPoolsize);
 }

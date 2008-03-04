@@ -1,13 +1,12 @@
 package org.codehaus.prometheus.blockingexecutor_stress;
 
-import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
+import org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor;
 import org.codehaus.prometheus.concurrenttesting.ConcurrentTestCase;
-import org.codehaus.prometheus.concurrenttesting.TestThread;
 import static org.codehaus.prometheus.concurrenttesting.ConcurrentTestUtil.joinAll;
+import org.codehaus.prometheus.concurrenttesting.TestThread;
+import org.codehaus.prometheus.exceptionhandler.TracingExceptionHandler;
 import org.codehaus.prometheus.threadpool.StandardThreadPool;
 import org.codehaus.prometheus.util.StandardThreadFactory;
-import org.codehaus.prometheus.blockingexecutor_stress.StressTaskProducer;
-import org.codehaus.prometheus.blockingexecutor.ThreadPoolBlockingExecutor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +22,7 @@ import java.util.concurrent.ThreadFactory;
  */
 public class ThreadPoolBlockingExecutor_ExecuteStressTest extends ConcurrentTestCase {
     private volatile ThreadPoolBlockingExecutor executor;
-    private volatile List<StressTaskProducer> workerList;
+    private volatile List<ProduceThread> producerList;
     private volatile TracingExceptionHandler exceptionHandler;
 
     @Override
@@ -31,11 +30,12 @@ public class ThreadPoolBlockingExecutor_ExecuteStressTest extends ConcurrentTest
         super.setUp();
 
         ThreadFactory factory = new StandardThreadFactory(Thread.MIN_PRIORITY, "test");
-        executor = new ThreadPoolBlockingExecutor(new StandardThreadPool(10, factory), new LinkedBlockingQueue<Runnable>(50));
+        executor = new ThreadPoolBlockingExecutor(
+                10, new StandardThreadPool(factory), new LinkedBlockingQueue<Runnable>(50));
         executor.start();
         exceptionHandler = new TracingExceptionHandler();
         executor.setExceptionHandler(exceptionHandler);
-        workerList = new LinkedList<StressTaskProducer>();
+        producerList = new LinkedList<ProduceThread>();
     }
 
     @Override
@@ -53,78 +53,91 @@ public class ThreadPoolBlockingExecutor_ExecuteStressTest extends ConcurrentTest
         t.assertIsTerminatedNormally();
     }
 
-    public void test_1() throws InterruptedException {
+    public void test_1() throws Exception {
         stressTest(1, 10);
     }
 
-    public void test_2() throws InterruptedException {
-        stressTest(11, 100);
+    public void test_1_a() throws Exception {
+        stressTest(1, 100);
     }
 
-    public void test_3() throws InterruptedException {
+    public void test_1_b() throws Exception {
+        stressTest(1, 300);
+    }
+
+    public void test_2_a() throws Exception {
+        stressTest(10, 1);
+    }
+
+    public void test_2_b() throws Exception {
+        stressTest(10, 10);
+    }
+
+    public void test_2_c() throws Exception {
+        stressTest(10, 300);
+    }
+
+    public void test_3() throws Exception {
         stressTest(100, 1);
     }
 
-    public void test_4() throws InterruptedException {
+    public void test_4() throws Exception {
         stressTest(100, 10);
     }
 
-    public void test_5() throws InterruptedException {
+    public void test_5() throws Exception {
         stressTest(50, 50);
     }
 
     /**
-     * @param producerCount the number of producers
-     * @param repeatCount   the total number of times a procuder should repeat his producing task
+     * @param producerCount              the number of producers
+     * @param taskCountForSingleProducer the total number of times a procuder should repeat his producing task
      * @throws InterruptedException
      */
-    public void stressTest(int producerCount, int repeatCount) throws InterruptedException {
-        List<StressTaskProducer> producerList = startProducers(producerCount, repeatCount);
+    public void stressTest(int producerCount, int taskCountForSingleProducer) throws InterruptedException {
+        startProducers(producerCount, taskCountForSingleProducer);
         waitForAllWorkProcessed();
-        assertOk(producerList);
+        assertOk();
     }
 
-    private void assertOk(List<StressTaskProducer> producerList) {
-        for(StressTaskProducer producer: producerList)
+    private void assertOk() {
+        for (ProduceThread producer : producerList)
             producer.assertSuccess();
 
         exceptionHandler.printStacktraces();
         exceptionHandler.assertNoErrors();
     }
 
-    private List<StressTaskProducer> startProducers(int producerCount, int taskCount) {
-        List<StressTaskProducer> producerList = new LinkedList<StressTaskProducer>();
-        for (int k = 0; k < producerCount; k++){
-            StressTaskProducer producer = scheduleWorker(taskCount);
+    private void startProducers(int producerCount, int taskCount) {
+        producerList = new LinkedList<ProduceThread>();
+        for (int k = 0; k < producerCount; k++) {
+            ProduceThread producer = scheduleProduce(taskCount);
             producerList.add(producer);
         }
+    }
 
-        return producerList;
+    public ProduceThread scheduleProduce(int count) {
+        ProduceThread thread = new ProduceThread(count, executor);
+        thread.start();
+        return thread;
     }
 
     private void waitForAllWorkProcessed() throws InterruptedException {
-        waitForWorkersToComplete();
+        waitForProducersToComplete();
         executor.shutdownPolitly();
         executor.awaitShutdown();
-        assertTrue(executor.getWorkQueue().isEmpty());
+        assertTrue("item remainings: " + executor.getWorkQueue().size(), executor.getWorkQueue().isEmpty());
     }
 
-    public void waitForWorkersToComplete() {
-        for (StressTaskProducer t : workerList) {
+    public void waitForProducersToComplete() {
+        for (ProduceThread producer : producerList) {
             try {
-                //todo: using a join could lead to undetected concurrency problems, so fix it
-                t.join();
-                t.assertIsTerminatedNormally();
+                //todo: using a join could lead to late detection of too long blocking producer (test won't finish)
+                producer.join();
+                producer.assertIsTerminatedNormally();
             } catch (InterruptedException e) {
                 fail("unexpected InterruptedException");
             }
         }
-    }
-
-    public StressTaskProducer scheduleWorker(int count) {
-        StressTaskProducer thread = new StressTaskProducer(count, executor);
-        workerList.add(thread);
-        thread.start();
-        return thread;
     }
 }

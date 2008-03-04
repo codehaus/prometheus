@@ -142,7 +142,7 @@ public final class ConcurrentTestUtil {
     }
 
     //never returns a value smaller than 0
-    public static double PI(long i) {
+    public static double pi(long i) {
         double total = 0.0;
         for (long j = 1; j <= i; j += 4)
             total += 1.0 / j - 1.0 / (j + 2);
@@ -234,7 +234,7 @@ public final class ConcurrentTestUtil {
     }
 
     public static void someCalculation(long iterations) {
-        double pi = PI(iterations);
+        double pi = pi(iterations);
         if (pi <= -1)
             System.out.println("Benchmark exited with unrealistic value " + pi);
     }

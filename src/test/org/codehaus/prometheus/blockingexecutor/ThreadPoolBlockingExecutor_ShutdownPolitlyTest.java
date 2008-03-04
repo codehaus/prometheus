@@ -35,7 +35,7 @@ public class ThreadPoolBlockingExecutor_ShutdownPolitlyTest extends ThreadPoolBl
         threadFactory.assertNoneCreated();
     }
 
-    public void testWhileRunning_noWorkersUnprocessedWork() {
+    public void testWhileRunning_noWorkersLeadToUnprocessedWork() {
         TestRunnable task1 = newDummyRunnable();
         TestRunnable task2 = newDummyRunnable();
         TestRunnable task3 = newDummyRunnable();
