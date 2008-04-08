@@ -26,7 +26,7 @@ public class Log4JExceptionHandler implements ExceptionHandler {
     }
 
     public Log4JExceptionHandler(Class clazz) {
-        initializeLogManager(clazz);
+        this.logger = LogManager.getLogger(clazz);
     }
 
     public Log4JExceptionHandler(Logger logger) {
@@ -57,10 +57,10 @@ public class Log4JExceptionHandler implements ExceptionHandler {
         this.priority = priority;
     }
 
-    public void handle(Exception ex) {
+    public void handle(Exception exception) {
         if (!logger.isEnabledFor(priority))
             return;
 
-        logger.log(priority, ex.getMessage(), ex);
+        logger.log(priority, exception.getMessage(), exception);
     }
 }

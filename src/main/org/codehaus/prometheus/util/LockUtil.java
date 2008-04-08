@@ -5,6 +5,8 @@
  */
 package org.codehaus.prometheus.util;
 
+import static org.codehaus.prometheus.util.ConcurrencyUtil.ensureNoTimeout;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
@@ -15,7 +17,7 @@ import java.util.concurrent.locks.Lock;
  * @author Peter Veentjer.
  * @since 0.1
  */
-public class LockUtil {
+public final class LockUtil {
 
     /**
      * Acquires the lock if it is free within the given waiting time and the current thread has not
@@ -50,7 +52,7 @@ public class LockUtil {
      */
     public static long tryLockProtected(Lock lock, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
         long remainingNs = tryLock(lock, timeout, unit);
-        ConcurrencyUtil.ensureNoTimeout(remainingNs);
+        ensureNoTimeout(remainingNs);
         return remainingNs;
     }
 
@@ -68,9 +70,9 @@ public class LockUtil {
     public static long tryLockNanosProtected(Lock lock, long timeoutNs) throws InterruptedException, TimeoutException {
         if (lock == null) throw new NullPointerException();
 
-        timeoutNs = tryLockNanos(lock, timeoutNs);
-        ConcurrencyUtil.ensureNoTimeout(timeoutNs);
-        return timeoutNs;
+        long remainingNs = timeoutNs = tryLockNanos(lock, timeoutNs);
+        ensureNoTimeout(remainingNs);
+        return remainingNs;
     }
 
     /**
@@ -102,13 +104,12 @@ public class LockUtil {
             return -1;
 
         long startTimeNs = System.nanoTime();
-        boolean success = lock.tryLock(timeoutNs, TimeUnit.NANOSECONDS);
-        if (!success) {
+        boolean lockAcquired = lock.tryLock(timeoutNs, TimeUnit.NANOSECONDS);
+        if (!lockAcquired)
             return -1;//return -1 to signal the lock was not acquired.
-        } else {
-            long remainingNs = timeoutNs - (System.nanoTime() - startTimeNs);
-            return remainingNs > 0 ? remainingNs : 0;
-        }
+
+        long remainingNs = timeoutNs - (System.nanoTime() - startTimeNs);
+        return remainingNs > 0 ? remainingNs : 0;
     }
 
 

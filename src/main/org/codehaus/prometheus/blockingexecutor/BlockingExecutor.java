@@ -11,11 +11,11 @@ import java.util.concurrent.*;
  * An Object that executes submitted tasks. The BlockingExecutor can be compared to the
  * {@link java.util.concurrent.Executor}, but provides more control on blocking behavior and timeouts.
  * <p/>
- * If an {@link ThreadPoolExecutor} receives a task, it places the
- * task on the workqueue using the offer method and a zero timeout. If no place is available on that
- * workqueue, the call doesn't block, but the {@link java.util.concurrent.RejectedExecutionHandler} is called
- * instead. The default handler throws a {@link RejectedExecutionException}. In a lot of cases don't want to
- * receive this exception, but want you just want to block until space comes available, and you are left on your
+ * If a {@link ThreadPoolExecutor} receives a task, it places the task on the workqueue using the offer 
+ * method and a zero timeout. If no place is available on that workqueue, the call doesn't block, but the
+ * {@link java.util.concurrent.RejectedExecutionHandler} is called instead. The default handler throws a
+ * {@link RejectedExecutionException}. In a lot of cases don't want to receive this exception, but want you
+ * just want to block until space comes available, and you are left on your
  * own with the ThreadPoolExecutor. Another problem with the Executor is that you can't place a task with
  * a timeout per call (there is no easy way to pass the timeout parameter to the workqueue.offer).
  * <p/>
@@ -84,7 +84,7 @@ public interface BlockingExecutor {
      * timeout could be realized by creating a custom RejectedExecutionHandler and place the
      * item on the workqueue with a fixed timeout.
      *
-     * @param task    the task to execute.
+     * @param Ttask    the task to execute.
      * @param timeout how long to wait before giving up, in units of unit
      * @param unit    a TimeUnit determining how to interpret the timeout parameter
      * @throws InterruptedException       if the current thread has been interrupted while waiting for task placement.

@@ -51,7 +51,7 @@ public class PrintStreamExceptionHandler implements ExceptionHandler {
         return out;
     }
 
-    public void handle(Exception ex) {
-        ex.printStackTrace(out);
+    public void handle(Exception exception) {
+        exception.printStackTrace(out);
     }
 }

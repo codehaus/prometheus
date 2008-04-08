@@ -43,7 +43,7 @@ public class StandardThreadPool implements ThreadPool {
     private final Set<InitialSpawn> initialSpawns = new HashSet<InitialSpawn>();
 
     private volatile ThreadFactory threadFactory;
-    //is always protected by the mainLock
+    //is always protected by the mainLock, so no visibility problem
     private ThreadPoolState state = ThreadPoolState.unstarted;
     private volatile ExceptionHandler exceptionHandler = NoOpExceptionHandler.INSTANCE;
 
@@ -146,7 +146,9 @@ public class StandardThreadPool implements ThreadPool {
                     start();
                     //fall through
                 case running:
+                    //fall through
                 case shuttingdownnormally:
+                    //fall through
                 case shuttingdownforced:
                     for (int k = 0; k < count; k++)
                         createNewWorker(job);
@@ -212,11 +214,15 @@ public class StandardThreadPool implements ThreadPool {
         }
     }
 
+    /**
+     * Starts all initial threads and clears the initialSpawns set. Call must be made with the
+     * mainlock held.
+     */
     private void startInitialSpawnsAndCleanup() {
         for (InitialSpawn initialSpawn : initialSpawns)
             spawn(initialSpawn.job, initialSpawn.threadcount);
 
-        //we can remove the initial spawns to prevent memory leaks.
+        //we can remove the initial spawns to prevent unrequired memory usage.
         initialSpawns.clear();
     }
 

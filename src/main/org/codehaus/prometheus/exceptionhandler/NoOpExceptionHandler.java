@@ -16,7 +16,7 @@ public class NoOpExceptionHandler implements ExceptionHandler {
 
     public static final NoOpExceptionHandler INSTANCE = new NoOpExceptionHandler();
 
-    public void handle(Exception ex) {
+    public void handle(Exception exception) {
         //do nothing.
     }
 }
