@@ -264,7 +264,7 @@ public class StandardThreadPool implements ThreadPool {
 
     /**
      * Creates and registers a new Worker. The created worker is added to the
-     * set of workers. Actual reference to the Worker is not required for the moment,
+     * set of workers. Reference to the Worker is not required for the moment,
      * hence the void return value.
      * <p/>
      * Call only should be made when the main lock is held.
@@ -489,7 +489,7 @@ public class StandardThreadPool implements ThreadPool {
         }
     }
 
-    class InitialSpawn {
+    static class InitialSpawn {
         final int threadcount;
         final ThreadPoolJob job;
 
