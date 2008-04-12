@@ -38,6 +38,10 @@ dir_clover                      = "$dir_target/clover"
 dir_release                     = "$dir_target/$name_main-$version_main"
 dir_site                        = "$dir_target/site"
 
+
+dir_dav_prometheus              = "/mnt/dav-prometheus"
+dir_dav_prometheus_dist         = "/mnt/dav-prometheus-dist"
+
 clover_home                     = System.getenv ( ).'CLOVER_HOME'
 
 //================ paths ==================================================
@@ -330,8 +334,7 @@ target ( clover_report : 'Generates a clover report (also builds and tests)'){
     depends( clover_html )
 }
 
-target (site_generate : 'Generates the Prometheus site'){
-    Ant.delete( dir: dir_site )
+target(site_generate_main :'Generates the main Prometheus site (without reports, javadoc etc)'){
     Ant.mkdir( dir: dir_site )
     Ant.copy( file: 'site/style.css', todir: dir_site)
     Ant.copy( file: 'site/index.html', todir: dir_site)
@@ -339,6 +342,10 @@ target (site_generate : 'Generates the Prometheus site'){
     def engine = new GroovyScriptEngine('.')
     def value = engine.run('menu.groovy', new Binding())
 
+}
+
+target (site_generate : 'Generates the complete Prometheus site including javadoc, reports etc'){
+    depends(site_generate )
     depends( clover_report )
     Ant.copy(todir: "$dir_site/clover"){
         fileset(dir: "$dir_clover/htmlreport")
@@ -357,7 +364,7 @@ target (site_generate : 'Generates the Prometheus site'){
 
 target (site_update : 'Updates the prometheus website on the internet'){
     depends( site_generate )
-    Ant.copy(todir: "/mnt/prometheus"){
+    Ant.copy(todir: "$dir_dav_prometheus"){
         fileset(dir: dir_site)
     }
 }
@@ -424,7 +431,7 @@ target (make_release:'Makes a release (also does uploading)'){
     println('Makes the release, updates the site')
     depends(build_release)
 
-    Ant.copy(todir: "/mnt/prometheus/releases"){
+    Ant.copy(todir: "$dir_dav_prometheus_dist"){
         fileset(file: "${dir_target}/${name_main}-${version_main}.zip")
     }
 }

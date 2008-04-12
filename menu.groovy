@@ -58,7 +58,7 @@ def pages = [
 
 def outputdirectory = 'target/site'
 
-def lastupdate = '28 October, 2007'
+def lastupdate = '6 April, 2008'
 
 //=============== template engine ==================
 
@@ -69,8 +69,6 @@ if(!outputdirectoryfile.exists()){
         throw new Exception("file could not be created $outputdirectory")
     }
 }
-
-
 
 for(page in pages){
     def filename = "${page.pageid}.html"
@@ -89,4 +87,3 @@ for(page in pages){
 }
 
 println('finished')
-
